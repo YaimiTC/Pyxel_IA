@@ -4,7 +4,7 @@
         <field name="name">importation.cost.wizard.form</field>
         <field name="model">importation.cost.wizard</field>
         <field name="arch" type="xml">
-            <form string="Agregar Costos Adicionales" class="o_form_padding">
+            <form string="Add Additional Costs" class="o_form_padding">
                 <group>
                     <field name="evaluation_id" invisible="1"/>
                     <field name="cost_line_ids">
@@ -19,8 +19,8 @@
                     </field>
                 </group>
                 <footer>
-                    <button string="Confirmar" type="object" name="action_confirm" class="btn-primary"/>
-                    <button string="Cancelar" special="cancel" class="btn-secondary"/>
+                    <button string="Confirm" type="object" name="action_confirm" class="btn-primary"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary"/>
                 </footer>
             </form>
         </field>

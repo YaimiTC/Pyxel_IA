@@ -2,84 +2,84 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 STATE_SELECTION = [
-    ('in_progress', 'Importación en Progreso'),
-    ('done', 'Finalizado'),
-    ('cancelled', 'Cancelado'),
+    ('in_progress', 'Importation in Progress'),
+    ('done', 'Completed'),
+    ('cancelled', 'Cancelled'),
 ]
 
 
 class ImportationProcess(models.Model):
     _name = 'importation.process'
-    _description = 'Proceso de importación'
+    _description = 'Importation Process'
 
-    name = fields.Char(string='Referencia', required=True, default='Nuevo')
-    stage_id = fields.Many2one('importation.stage', string='Etapa del Proceso',
+    name = fields.Char(string='Reference', required=True, default='New')
+    stage_id = fields.Many2one('importation.stage', string='Process Stage',
                                default=lambda self: self.env['importation.stage'].search([], limit=1),
                                group_expand='_group_expand_stage_id',
                                ondelete='restrict')
     state = fields.Selection(
         STATE_SELECTION,
-        string='Estado',
+        string='State',
         default='draft',
         tracking=True,
     )
-    purchase_order_ids = fields.Many2many('purchase.order', string='Órdenes de Compra')
-    cost_line_ids = fields.One2many('importation.cost.line', 'importation_id', string='Costos adicionales')
-    total_cost = fields.Monetary(string='Costo Total', compute='_compute_total_cost')
+    purchase_order_ids = fields.Many2many('purchase.order', string='Purchase Orders')
+    cost_line_ids = fields.One2many('importation.cost.line', 'importation_id', string='Additional Costs')
+    total_cost = fields.Monetary(string='Total Cost', compute='_compute_total_cost')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
-    sale_order_id = fields.Many2one('sale.order', string='Presupuesto original',)
-    final_sale_order_id = fields.Many2one('sale.order', string='Oferta Final Generada', readonly=True)
+    sale_order_id = fields.Many2one('sale.order', string='Original Quotation')
+    final_sale_order_id = fields.Many2one('sale.order', string='Final Generated Offer', readonly=True)
 
-    provider_id = fields.Many2one('res.partner', string='Proveedor')
+    provider_id = fields.Many2one('res.partner', string='Supplier')
 
-    country_origin_id = fields.Many2one('res.country', string='País de Origen')
-    is_third_party_contract = fields.Boolean(string='Contrato con Tercero')
-    declaration = fields.Text(string='Declaración de la mercancía')
+    country_origin_id = fields.Many2one('res.country', string='Country of Origin')
+    is_third_party_contract = fields.Boolean(string='Third-Party Contract')
+    declaration = fields.Text(string='Goods Declaration')
 
-    estimated_start_date = fields.Date(string='Fecha estimada de inicio')
-    estimated_end_date = fields.Date(string='Fecha estimada de fin')
-    departure_date = fields.Date(string='Fecha de salida del origen')
-    declaration_date = fields.Date(string='Fecha de declaración de mercancía')
-    documentation_sent_date = fields.Date(string='Fecha de envío de documentación')
+    estimated_start_date = fields.Date(string='Estimated Start Date')
+    estimated_end_date = fields.Date(string='Estimated End Date')
+    departure_date = fields.Date(string='Departure Date from Origin')
+    declaration_date = fields.Date(string='Goods Declaration Date')
+    documentation_sent_date = fields.Date(string='Documentation Sent Date')
 
-    port = fields.Char(string='Puerto')
-    airport = fields.Char(string='Aeropuerto')
+    port = fields.Char(string='Port')
+    airport = fields.Char(string='Airport')
 
     purchase_condition = fields.Selection([
-        ('fcl', 'Importación marítima con contenedor lleno (FCL)'),
-        ('air', 'Importación vía aérea'),
-        ('local', 'Compra en plaza'),
-        ('grouped', 'Carga agrupada')
-    ], string='Condición de compra')
+        ('fcl', 'Maritime Import with Full Container Load (FCL)'),
+        ('air', 'Air Import'),
+        ('local', 'Local Purchase'),
+        ('grouped', 'Grouped Cargo'),
+    ], string='Purchase Condition')
 
-    purchase_condition_number = fields.Char(string='Número / Referencia según condición')
+    purchase_condition_number = fields.Char(string='Number/Reference by Condition')
 
-    # Documentos adjuntos
-    origin_certificate = fields.Binary(string='Certificado de Origen')
+    # Attached documents
+    origin_certificate = fields.Binary(string='Certificate of Origin')
     origin_certificate_filename = fields.Char()
 
-    export_certificate = fields.Binary(string='Certificado de Exportación')
+    export_certificate = fields.Binary(string='Export Certificate')
     export_certificate_filename = fields.Char()
 
-    quality_certificate = fields.Binary(string='Certificado de Calidad')
+    quality_certificate = fields.Binary(string='Quality Certificate')
     quality_certificate_filename = fields.Char()
 
-    commercial_invoice = fields.Binary(string='Factura Comercial')
+    commercial_invoice = fields.Binary(string='Commercial Invoice')
     commercial_invoice_filename = fields.Char()
 
-    signed_offer = fields.Binary(string='Oferta Firmada')
+    signed_offer = fields.Binary(string='Signed Offer')
     signed_offer_filename = fields.Char()
 
-    documentation_file = fields.Binary(string='Documentación (FCL / AWB)')
+    documentation_file = fields.Binary(string='Documentation (FCL / AWB)')
     documentation_file_filename = fields.Char()
 
-    packing_list = fields.Binary(string='Lista de Empaque')
+    packing_list = fields.Binary(string='Packing List')
     packing_list_filename = fields.Char()
 
     load_tracking_ids = fields.One2many(
         'importation.load',
         'importation_id',
-        string="Modelo de carga"
+        string="Cargo Model"
     )
 
     @api.depends('cost_line_ids.amount')
@@ -89,9 +89,9 @@ class ImportationProcess(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('name', 'Nuevo') == 'Nuevo':
+        if vals.get('name', 'New') == 'New':
             sequence = self.env['ir.sequence'].next_by_code('importation.process')
-            vals['name'] = sequence or 'Nuevo'
+            vals['name'] = sequence or 'New'
         return super().create(vals)
 
     def action_start_progress(self):
@@ -107,29 +107,27 @@ class ImportationProcess(models.Model):
 
 class ImportationCostLine(models.Model):
     _name = 'importation.cost.line'
-    _description = 'Línea de costo adicional de importación'
+    _description = 'Additional Import Cost Line'
 
-    importation_id = fields.Many2one('importation.process', string='Proceso de importación')
+    importation_id = fields.Many2one('importation.process', string='Importation Process')
     product_id = fields.Many2one(
         'product.product',
-        string='Servicio',
+        string='Service',
         domain=[('detailed_type', '=', 'service')],
         required=True
     )
 
-    name = fields.Char(string='Descripción', compute='_compute_name',  required=True)
-    amount = fields.Monetary(string='Monto')
+    name = fields.Char(string='Description', compute='_compute_name', required=True)
+    amount = fields.Monetary(string='Amount')
     distribution_type = fields.Selection([
-        ('fixed', 'Monto Fijo por orden'),
-        ('percentage', 'Porcentaje sobre orden'),
-    ], string='Tipo de distribución', required=True)
+        ('fixed', 'Fixed Amount per Order'),
+        ('percentage', 'Percentage on Order'),
+    ], string='Distribution Type', required=True)
     currency_id = fields.Many2one('res.currency', related='importation_id.currency_id', readonly=True)
 
-
-    # validar si aplica en divep (porq este habría q identificarlo en la línea para saber
-    # q se tiene en cuenta para diferencirlo en el reporte de conciliación de la facturación)
-
-    is_cost_special = fields.Boolean(string='Cost special', default=False)
+    # Validate if it applies to divep (this would need to be identified in the line
+    # to know it is considered for differentiation in the billing reconciliation report)
+    is_cost_special = fields.Boolean(string='Special Cost', default=False)
 
     @api.depends('product_id')
     def _compute_name(self):
@@ -139,10 +137,9 @@ class ImportationCostLine(models.Model):
 
 class ImportationStage(models.Model):
     _name = 'importation.stage'
-    _description = 'Etapas del proceso de importación'
+    _description = 'Importation Process Stages'
 
-    name = fields.Char(string='Nombre', required=True)
-    description = fields.Char(string='Descripcion')
+    name = fields.Char(string='Name', required=True)
+    description = fields.Char(string='Description')
     sequence = fields.Integer(required=True, default=1)
-    fold = fields.Boolean('Colapsado en Kanban', default=False)
-
+    fold = fields.Boolean('Folded in Kanban', default=False)
