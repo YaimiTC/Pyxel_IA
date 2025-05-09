@@ -1,66 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-        <record id="view_product_form_inherit_required_documents" model="ir.ui.view">
-            <field name="name">product.template.inherit.required.documents</field>
-            <field name="model">product.template</field>
-            <field name="inherit_id" ref="product.product_template_only_form_view"/>
-            <field name="arch" type="xml">
-              <xpath expr="//page[@name='sales']" position="after">
-                <page name="required_documents" string="Importación">
-                   <field name="required_document_ids">
-                            <tree editable="bottom">
-                                <field name="code"/>
-                                <field name="name"/>
-                                <field name="description"/>
-                            </tree>
-                   </field>
-                </page>
-              </xpath>
-            </field>
-          </record>
-
-        <record id="view_product_required_document_tree" model="ir.ui.view">
-            <field name="name">product.required.document.tree</field>
-            <field name="model">product.required.document</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="code"/>
-                    <field name="name"/>
-                    <field name="description"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="view_product_required_document_form" model="ir.ui.view">
-            <field name="name">product.required.document.form</field>
-            <field name="model">product.required.document</field>
-            <field name="arch" type="xml">
-                <form>
-                    <sheet>
-                        <group>
+    <record id="view_product_form_inherit_required_documents" model="ir.ui.view">
+        <field name="name">product.template.inherit.required.documents</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='sales']" position="after">
+                <page name="required_documents" string="Importation">
+                    <field name="required_document_ids">
+                        <tree editable="bottom">
                             <field name="code"/>
                             <field name="name"/>
                             <field name="description"/>
-                        </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
 
+    <record id="view_product_required_document_tree" model="ir.ui.view">
+        <field name="name">product.required.document.tree</field>
+        <field name="model">product.required.document</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
 
-        <!-- Acción para mostrar documentos -->
-        <record id="action_product_documents" model="ir.actions.act_window">
-            <field name="name">Documentos de Productos</field>
-            <field name="res_model">product.required.document</field>
-            <field name="view_mode">tree,form</field>
-        </record>
+    <record id="view_product_required_document_form" model="ir.ui.view">
+        <field name="name">product.required.document.form</field>
+        <field name="model">product.required.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
-        <!-- Menú bajo Productos -->
-        <menuitem id="menu_product_documents"
-                  name="Documentos de productos"
-                  parent="sale.product_menu_catalog"
-                  action="action_product_documents"
-                  sequence="30"/>
+    <!-- Action to display documents -->
+    <record id="action_product_documents" model="ir.actions.act_window">
+        <field name="name">Product Documents</field>
+        <field name="res_model">product.required.document</field>
+        <field name="view_mode">tree,form</field>
+    </record>
 
+    <!-- Menu under Products -->
+    <menuitem id="menu_product_documents"
+              name="Product Documents"
+              parent="sale.product_menu_catalog"
+              action="action_product_documents"
+              sequence="30"/>
 </odoo>

@@ -4,31 +4,31 @@ from odoo import models, fields, api, _
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    purchase_order_count = fields.Integer(string="Órdenes de Compra", compute='_compute_purchase_order_count')
+    purchase_order_count = fields.Integer(string="Purchase Orders", compute='_compute_purchase_order_count')
 
     purchase_provider_evaluation_ids = fields.One2many('purchase.provider.evaluation', 'sale_order_id')
 
-    purchase_evaluation_count = fields.Integer(string="Evaluaciones", compute='_compute_purchase_evaluation_count')
+    purchase_evaluation_count = fields.Integer(string="Evaluations", compute='_compute_purchase_evaluation_count')
 
-    evaluation_apply_id = fields.Many2one('purchase.provider.evaluation', string='Evaluación Aplicada')
+    evaluation_apply_id = fields.Many2one('purchase.provider.evaluation', string='Applied Evaluation')
 
     has_applicable_evaluations = fields.Boolean(
-        string='Tiene evaluaciones aplicables',
+        string='Has Applicable Evaluations',
         compute='_compute_has_applicable_evaluations'
     )
 
     order_type = fields.Selection([
-        ('ordinary', 'Ordinario'),
-        ('evaluation_initial', 'Evaluación Inicial'),
-        ('evaluation_final', 'Evaluación Final'),
-        ('importation_process', 'Proceso de Importación')
-    ], string='Tipo de Orden', default='ordinary')
+        ('ordinary', 'Ordinary'),
+        ('evaluation_initial', 'Initial Evaluation'),
+        ('evaluation_final', 'Final Evaluation'),
+        ('importation_process', 'Importation Process')
+    ], string='Order Type', default='ordinary')
 
     importation_process_id = fields.Many2one(
         'importation.process',
-        string='Proceso de Importación',
+        string='Importation Process',
         readonly=True,
-        help='Proceso de importación generado desde esta evaluación.'
+        help='Importation process generated from this evaluation.'
     )
 
     @api.depends('purchase_provider_evaluation_ids.has_evaluations_to_apply')
@@ -48,7 +48,7 @@ class SaleOrder(models.Model):
         }) for line in self.evaluation_apply_id.cost_line_temp_ids]
 
         provider = self.evaluation_apply_id.purchase_order_ids[0].partner_id
-        # Crear el proceso de importación desde la evaluación
+        # Create the importation process from the evaluation
         importation = self.env['importation.process'].create({
             'provider_id': provider.id,
             'purchase_order_ids': [(6, 0, self.evaluation_apply_id.purchase_order_ids.ids)],
@@ -82,7 +82,7 @@ class SaleOrder(models.Model):
     def action_view_related_purchase_orders(self):
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Órdenes de Compra Relacionadas',
+            'name': 'Related Purchase Orders',
             'res_model': 'purchase.order',
             'view_mode': 'tree,form',
             'domain': [('sale_order_id', '=', self.id)],

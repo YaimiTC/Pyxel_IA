@@ -6,10 +6,10 @@ _logger = logging.getLogger(__name__)
 
 class ImportationCostWizard(models.TransientModel):
     _name = 'importation.cost.wizard'
-    _description = 'Wizard para agregar costos adicionales desde evaluación'
+    _description = 'Wizard to add additional costs from evaluation'
 
     evaluation_id = fields.Many2one('purchase.provider.evaluation', required=True)
-    cost_line_ids = fields.One2many('importation.cost.wizard.line', 'wizard_id', string='Costos')
+    cost_line_ids = fields.One2many('importation.cost.wizard.line', 'wizard_id', string='Costs')
 
     def action_confirm(self):
         # Guarda temporalmente los costos en la evaluación
@@ -43,7 +43,7 @@ class ImportationCostWizard(models.TransientModel):
 
 class ImportationCostWizardLine(models.TransientModel):
     _name = 'importation.cost.wizard.line'
-    _description = 'Línea de Costo Adicional (wizard)'
+    _description = 'Additional Cost Line (wizard)'
 
     wizard_id = fields.Many2one('importation.cost.wizard', required=True, ondelete='cascade')
     product_id = fields.Many2one(
@@ -59,7 +59,7 @@ class ImportationCostWizardLine(models.TransientModel):
         ('fixed', 'Monto Fijo'),
         ('percentage', 'Porcentaje'),
     ], required=True)
-    is_cost_special = fields.Boolean(string='Costo especial')
+    is_cost_special = fields.Boolean(string='Special cost')
 
     @api.depends('product_id')
     def _compute_name(self):
