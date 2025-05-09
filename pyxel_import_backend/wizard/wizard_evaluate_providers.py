@@ -8,7 +8,7 @@ class WizardEvaluateProviders(models.TransientModel):
     _name = 'wizard.evaluate.providers'
 
     sale_order_id = fields.Many2one('sale.order', required=True)
-    apply_supplier_id = fields.Many2one('res.partner', string="Proveedor a aplicar")
+    apply_supplier_id = fields.Many2one('res.partner', string="Supplier to apply")
     evaluation_line_ids = fields.One2many('wizard.evaluate.providers.line', 'wizard_id')
 
     def default_get(self, fields_list):
@@ -19,24 +19,24 @@ class WizardEvaluateProviders(models.TransientModel):
             print("Active ID:", active_id)
 
             if not active_id:
-                print("No active_id, retornando res vacío")
+                print("No active_id, returning empty res")
                 return res
 
             sale_order = self.env['sale.order'].browse(active_id)
-            print("Orden de venta:", sale_order.name)
+            print("sales order:", sale_order.name)
             lines = []
             for line in sale_order.order_line:
                 if line.product_id.type in ('consu', 'product') and \
                         line.product_id.qty_available < line.product_uom_qty:
-                    print(f"Producto válido: {line.product_id.name}, ID: {line.product_id.id}")
+                    print(f"Valid product: {line.product_id.name}, ID: {line.product_id.id}")
                     lines.append((0, 0, {
                         'product_id': line.product_id.id,
                         'quantity': line.product_uom_qty,
                         'product_uom': line.product_uom.id,
                     }))
-            print("Líneas generadas:", lines)
+            print("Generated lines:", lines)
             if not lines:
-                raise ValidationError("No hay productos que requieran evaluación de proveedores.")
+                raise ValidationError("There are no products that require supplier evaluation..")
             res.update({
                 'sale_order_id': sale_order.id,
                 'evaluation_line_ids': lines,
@@ -44,20 +44,20 @@ class WizardEvaluateProviders(models.TransientModel):
             return res
 
     def action_confirm(self):
-        print("Iniciando action_confirm")
-        print("Orden de venta:", self.sale_order_id.name)
+        print("Starting action_confirm")
+        print("sales order:", self.sale_order_id.name)
         existing_eval = self.env['purchase.provider.evaluation'].search([
             ('sale_order_id', '=', self.sale_order_id.id),
             ('state', 'in', ['apply']),
         ], limit=1)
-        print("Evaluación existente:", existing_eval)
+        print("Existing evaluation:", existing_eval)
         if existing_eval:
-            raise ValidationError('Ya existe una evaluación activa para esta cotización.')
+            raise ValidationError('There is already an active evaluation for this quote.')
 
         valid_lines = self.evaluation_line_ids.filtered(lambda l: l.product_id)
-        print("Líneas válidas:", valid_lines)
+        print("Valid lines:", valid_lines)
         if not valid_lines:
-            raise ValidationError("No hay líneas válidas para evaluar.")
+            raise ValidationError("There are no valid lines to evaluate.")
 
         evaluation = self.env['purchase.provider.evaluation'].create({
             'state': 'evaluated',
@@ -70,9 +70,9 @@ class WizardEvaluateProviders(models.TransientModel):
                 'price_unit': line.estimated_price,
             }) for line in valid_lines]
         })
-        print("Evaluación creada:", evaluation)
+        print("Evaluation created:", evaluation)
         evaluation.action_generate_purchase_orders()
-        print("Órdenes de compra generadas")
+        print("Purchase orders generated")
         return {'type': 'ir.actions.act_window_close'}
 
     @api.onchange('apply_supplier_id')
@@ -95,14 +95,14 @@ class WizardEvaluateProvidersLine(models.TransientModel):
     _name = 'wizard.evaluate.providers.line'
 
     wizard_id = fields.Many2one('wizard.evaluate.providers', string='Wizard')
-    product_id = fields.Many2one('product.product', string='Producto')
-    product_uom = fields.Many2one('uom.uom', string='Unidad de medida')
-    quantity = fields.Float(string='Cantidad')
+    product_id = fields.Many2one('product.product', string='Product')
+    product_uom = fields.Many2one('uom.uom', string='Unit of measurement')
+    quantity = fields.Float(string='Amount')
     available_supplier_ids = fields.Many2one(
-        'res.partner', string='Proveedores disponibles', compute='_compute_suppliers'
+        'res.partner', string='Available providers', compute='_compute_suppliers'
     )
-    selected_supplier_id = fields.Many2one('res.partner', string='Proveedor seleccionado')
-    estimated_price = fields.Float(string='Precio estimado')
+    selected_supplier_id = fields.Many2one('res.partner', string='Selected supplier')
+    estimated_price = fields.Float(string='Estimated price')
 
     @api.depends('product_id')
     def _compute_suppliers(self):

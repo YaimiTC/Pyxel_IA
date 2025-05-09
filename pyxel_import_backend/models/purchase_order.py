@@ -4,13 +4,13 @@ from odoo import models, fields
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
-    sale_order_id = fields.Many2one('sale.order', string='Presupuesto relacionado')
-    evaluation_id = fields.Many2one('purchase.provider.evaluation', string='Evaluación')
+    sale_order_id = fields.Many2one('sale.order', string='Related Quotation')
+    evaluation_id = fields.Many2one('purchase.provider.evaluation', string='Evaluation')
 
     importation_id = fields.Many2one(
         'importation.process',
-        string='Proceso de Importación',
-        help='Proceso de importación al que pertenece esta orden de compra.')
+        string='Importation Process',
+        help='Importation process to which this purchase order belongs.')
 
     def write(self, vals):
         res = super().write(vals)
@@ -36,7 +36,7 @@ class PurchaseOrder(models.Model):
     def button_confirm(self):
         res = super(PurchaseOrder, self).button_confirm()
 
-        # Buscar las evaluaciones asociadas a las órdenes confirmadas
+        # Find evaluations associated with confirmed orders
         for order in self:
             evaluations = self.env['purchase.provider.evaluation'].search([
                 ('purchase_order_ids', 'in', order.id),
@@ -51,4 +51,4 @@ class PurchaseOrder(models.Model):
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
-    sale_order_line_id = fields.Many2one('sale.order.line', string='Línea de venta origen')
+    sale_order_line_id = fields.Many2one('sale.order.line', string='Source Sales Line')

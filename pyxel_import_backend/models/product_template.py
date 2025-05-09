@@ -1,4 +1,3 @@
-
 from odoo import models, fields
 
 
@@ -7,14 +6,14 @@ class ProductTemplate(models.Model):
 
     required_document_ids = fields.Many2many(
         'product.required.document',
-        string='Documentos Requeridos para Importación de Producto'
+        string='Required Documents for Product Importation'
     )
 
 
 class ProductRequiredDocument(models.Model):
     _name = 'product.required.document'
-    _description = 'Documentos Requeridos para Importación de Producto'
+    _description = 'Required Documents for Product Importation'
 
-    name = fields.Char(string='Nombre del Documento', required=True)
-    code = fields.Char(string='Código Interno')
-    description = fields.Text(string='Descripción')
+    name = fields.Char(string='Document Name', required=True)
+    code = fields.Char(string='Internal Code')
+    description = fields.Text(string='Description')

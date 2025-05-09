@@ -3,7 +3,7 @@
     <data noupdate="1">
 
         <record id="seq_importation_process" model="ir.sequence">
-            <field name="name">Secuencia Proceso de Importación</field>
+            <field name="name">Import Process Sequence</field>
             <field name="code">importation.process</field>
             <field name="prefix">IMP</field>
             <field name="padding">5</field>

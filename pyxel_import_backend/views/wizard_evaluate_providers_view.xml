@@ -5,7 +5,7 @@
             <field name="name">wizard.evaluate.providers.form</field>
             <field name="model">wizard.evaluate.providers</field>
             <field name="arch" type="xml">
-                <form string="Evaluar Proveedor">
+                <form string="Evaluate Supplier">
                      <group>
                            <h1>
                             <field name="sale_order_id" readonly="1"/>
@@ -14,7 +14,7 @@
                      <group>
                            <field name="apply_supplier_id"/>
                      </group>
-                    <separator string="Líneas de evaluación"/>
+                    <separator string="Evaluation lines"/>
                     <field name="evaluation_line_ids" create="false" deleted="false" options="{'no_create': True}">
                         <tree editable="top">
                             <field name="product_id" readonly="1" force_save="1"/>
@@ -27,8 +27,8 @@
                     </field>
 
                     <footer>
-                        <button name="action_confirm" type="object" string="Confirmar Evaluación" class="btn-primary"/>
-                        <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                        <button name="action_confirm" type="object" string="Confirm Evaluation" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
             </field>

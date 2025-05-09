@@ -38,8 +38,8 @@
                     <field name="arch" type="xml">
                         <form>
                             <header>
-                                <button name="action_start_progress" string="Iniciar Importación" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
-                                <button name="action_finish_progress" string="Finalizar" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+                                <button name="action_start_progress" string="Start Import" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
+                                <button name="action_finish_progress" string="Finish" type="object" class="btn-success" invisible="state != 'in_progress'"/>
 <!--                                <field name="state" widget="statusbar" statusbar_visible="draft,evaluating,in_progress,done"/>-->
                                 <field name="stage_id" widget="statusbar" options="{'clickable': True}" domain="[]"/>
                             </header>
@@ -64,7 +64,7 @@
                                 </group>
 
                                 <notebook>
-                                    <page string="Documentos">
+                                    <page string="Documents">
                                         <group>
                                             <field name="origin_certificate" filename="origin_certificate_filename"/>
                                             <field name="export_certificate" filename="export_certificate_filename"/>
@@ -76,7 +76,7 @@
                                         </group>
                                     </page>
 
-                                    <page string="Carga">
+                                    <page string="Load">
                                         <field name="load_tracking_ids">
                                             <tree>
                                                 <field name="name"/>
@@ -103,7 +103,7 @@
                                                     <field name="supplier_invoice_number"/>
                                                   </group>
 
-                                                  <group string="Estado del Contenedor">
+                                                  <group string="Container Status">
                                                     <field name="arrival_date"/>
                                                     <field name="release_date"/>
                                                     <field name="extraction_date"/>
@@ -111,7 +111,7 @@
                                                     <field name="state" readonly="1"/>
                                                   </group>
 
-                                                  <group string="Transporte">
+                                                  <group string="Transport">
                                                     <field name="airline"/>
                                                     <field name="transit_agency"/>
                                                     <field name="pre_appointment_date"/>
@@ -123,14 +123,14 @@
                                                     <field name="driver"/>
                                                   </group>
 
-                                                  <group string="Transbordo">
+                                                  <group string="Transfer">
                                                     <field name="is_transferred"/>
                                                     <field name="is_transshipment"/>
                                                     <field name="transshipment_type" invisible="is_transshipment == False"/>
                                                   </group>
 
                                                   <notebook>
-                                                    <page string="Líneas de Producto">
+                                                    <page string="Product Lines">
                                                       <field name="cargo_line_ids">
                                                         <tree editable="bottom">
                                                           <field name="purchase_order_line_id"/>
@@ -146,7 +146,7 @@
                                         </field>
                                     </page>
 
-                                    <page string="Órdenes de Compra">
+                                    <page string="Purchase Orders">
                                         <field name="purchase_order_ids">
                                             <tree>
                                                 <field name="name"/>
@@ -156,7 +156,7 @@
                                             </tree>
                                         </field>
                                     </page>
-                                    <page string="Costos de importación">
+                                    <page string="Import costs">
                                        <field name="cost_line_ids">
                                             <tree editable="bottom">
                                                 <field name="product_id" context="{'default_type': 'service'}"/>
@@ -173,19 +173,19 @@
                 </record>
 
                 <record id="action_importation_process" model="ir.actions.act_window">
-                    <field name="name">Importaciones</field>
+                    <field name="name">Imports</field>
                     <field name="res_model">importation.process</field>
                     <field name="view_mode">kanban,tree,form</field>
                     <field name="context">{'group_by': 'stage_id'}</field>
                     <field name="help" type="html">
-                        <p>Gestione los procesos de importación desde esta vista.</p>
+                        <p>Manage import processes from this view.</p>
                     </field>
                 </record>
 
 
-             <menuitem id="menu_importation_root" name="Importaciones" sequence="10"/>
-             <menuitem id="menu_importation_process" name="Importaciones" parent="menu_importation_root" >
-                 <menuitem id="menu_importation_solicitud" sequence="1" name="Solicitud" action="action_importation_process"/>
+             <menuitem id="menu_importation_root" name="Imports" sequence="10"/>
+             <menuitem id="menu_importation_process" name="Imports" parent="menu_importation_root" >
+                 <menuitem id="menu_importation_solicitud" sequence="1" name="Imports" action="action_importation_process"/>
              </menuitem>
 
 
