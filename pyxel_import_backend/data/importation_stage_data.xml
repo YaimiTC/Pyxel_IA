@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="importation_stage_solicitud" model="importation.stage">
+        <field name="name">SOLICITUD</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="importation_stage_tramites_origen" model="importation.stage">
+        <field name="name">TRAMITES EN ORIGEN</field>
+        <field name="sequence">2</field>
+    </record>
+
+    <record id="importation_stage_transito_puerto" model="importation.stage">
+        <field name="name">EN TRANSITO A PUERTO DE DESTINO</field>
+        <field name="sequence">3</field>
+    </record>
+
+    <record id="importation_stage_tramites_destino" model="importation.stage">
+        <field name="name">TRÁMITES EN DESTINO</field>
+        <field name="sequence">4</field>
+    </record>
+
+    <record id="importation_stage_listo_extraer" model="importation.stage">
+        <field name="name">LISTO PARA EXTRAER</field>
+        <field name="sequence">5</field>
+    </record>
+
+    <record id="importation_stage_devolucion_contenedor" model="importation.stage">
+        <field name="name">DEVOLUCION DEL CONTENEDOR</field>
+        <field name="sequence">6</field>
+    </record>
+
+    <record id="importation_stage_almacen_cliente" model="importation.stage">
+        <field name="name">EN ALMACÉN CLIENTE</field>
+        <field name="sequence">7</field>
+    </record>
+</odoo>

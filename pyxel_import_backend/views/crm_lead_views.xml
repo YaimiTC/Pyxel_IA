@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_crm_lead_form_inherit_quotation" model="ir.ui.view">
+            <field name="name">crm.lead.form.inherit.quotation</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Smart button -->
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button type="object" name="action_view_sale_orders"
+                            class="oe_stat_button" icon="fa-file-text">
+                        <field name="sale_order_count" widget="statinfo" string="Presupuestos"/>
+                    </button>
+                </xpath>
+
+                <!-- Botón para crear presupuesto, visible solo si está en etapa Ganada -->
+               <xpath expr="//header" position="inside">
+                     <field name="can_create_quotation" invisible="1" />
+                     <button name="action_create_quotation"
+                                type="object"
+                                string="Presupuesto"
+                                class="btn-primary" invisible="can_create_quotation == False"/>
+               </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

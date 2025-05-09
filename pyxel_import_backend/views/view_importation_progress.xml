@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_importation_process_kanban" model="ir.ui.view">
+            <field name="name">importation.process.kanban</field>
+            <field name="model">importation.process</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="stage_id" group_create="false">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click">
+                                <field name="name"/>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+            <record id="view_importation_process_tree" model="ir.ui.view">
+                <field name="name">importation.process.tree</field>
+                <field name="model">importation.process</field>
+                <field name="arch" type="xml">
+                    <tree>
+                        <field name="name"/>
+                        <field name="provider_id"/>
+                        <field name="purchase_condition"/>
+                        <field name="state"/>
+                        <field name="estimated_start_date"/>
+                        <field name="estimated_end_date"/>
+                    </tree>
+                </field>
+            </record>
+
+             <record id="view_importation_process_form" model="ir.ui.view">
+                    <field name="name">importation.process.form</field>
+                    <field name="model">importation.process</field>
+                    <field name="arch" type="xml">
+                        <form>
+                            <header>
+                                <button name="action_start_progress" string="Iniciar Importación" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
+                                <button name="action_finish_progress" string="Finalizar" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+<!--                                <field name="state" widget="statusbar" statusbar_visible="draft,evaluating,in_progress,done"/>-->
+                                <field name="stage_id" widget="statusbar" options="{'clickable': True}" domain="[]"/>
+                            </header>
+
+                            <sheet>
+                                <group>
+                                    <group>
+                                        <field name="name" readonly="1"/>
+                                        <field name="provider_id"/>
+                                        <field name="purchase_condition"/>
+                                        <field name="country_origin_id"/>
+                                        <field name="is_third_party_contract"/>
+                                         <field name="state"/>
+                                    </group>
+                                    <group>
+                                        <field name="estimated_start_date"/>
+                                        <field name="estimated_end_date"/>
+                                        <field name="departure_date"/>
+                                        <field name="declaration_date"/>
+                                        <field name="documentation_sent_date"/>
+                                    </group>
+                                </group>
+
+                                <notebook>
+                                    <page string="Documentos">
+                                        <group>
+                                            <field name="origin_certificate" filename="origin_certificate_filename"/>
+                                            <field name="export_certificate" filename="export_certificate_filename"/>
+                                            <field name="quality_certificate" filename="quality_certificate_filename"/>
+                                            <field name="commercial_invoice" filename="commercial_invoice_filename"/>
+                                            <field name="signed_offer" filename="signed_offer_filename"/>
+                                            <field name="documentation_file" filename="documentation_file_filename"/>
+                                            <field name="packing_list" filename="packing_list_filename"/>
+                                        </group>
+                                    </page>
+
+                                    <page string="Carga">
+                                        <field name="load_tracking_ids">
+                                            <tree>
+                                                <field name="name"/>
+                                                <field name="cargo_type"/>
+                                                <field name="size"/>
+                                                <field name="weight"/>
+                                                <field name="volume"/>
+                                                <field name="arrival_date"/>
+                                                <field name="release_date"/>
+                                                <field name="return_date"/>
+                                                <field name="extraction_date"/>
+                                                <field name="state"/>
+                                            </tree>
+                                            <form>
+                                                <sheet>
+                                                  <group>
+                                                    <field name="name"/>
+                                                    <field name="importation_id"/>
+                                                    <field name="purchase_condition" readonly="1"/>
+                                                    <field name="cargo_type"/>
+                                                    <field name="size"/>
+                                                    <field name="weight"/>
+                                                    <field name="volume"/>
+                                                    <field name="supplier_invoice_number"/>
+                                                  </group>
+
+                                                  <group string="Estado del Contenedor">
+                                                    <field name="arrival_date"/>
+                                                    <field name="release_date"/>
+                                                    <field name="extraction_date"/>
+                                                    <field name="return_date"/>
+                                                    <field name="state" readonly="1"/>
+                                                  </group>
+
+                                                  <group string="Transporte">
+                                                    <field name="airline"/>
+                                                    <field name="transit_agency"/>
+                                                    <field name="pre_appointment_date"/>
+                                                    <field name="appointment_date"/>
+                                                    <field name="transport_company"/>
+                                                    <field name="province"/>
+                                                    <field name="truck_plate"/>
+                                                    <field name="destination"/>
+                                                    <field name="driver"/>
+                                                  </group>
+
+                                                  <group string="Transbordo">
+                                                    <field name="is_transferred"/>
+                                                    <field name="is_transshipment"/>
+                                                    <field name="transshipment_type" invisible="is_transshipment == False"/>
+                                                  </group>
+
+                                                  <notebook>
+                                                    <page string="Líneas de Producto">
+                                                      <field name="cargo_line_ids">
+                                                        <tree editable="bottom">
+                                                          <field name="purchase_order_line_id"/>
+                                                          <field name="product_id" readonly="1"/>
+                                                          <field name="quantity"/>
+                                                        </tree>
+                                                      </field>
+                                                    </page>
+                                                  </notebook>
+
+                                                </sheet>
+                                              </form>
+                                        </field>
+                                    </page>
+
+                                    <page string="Órdenes de Compra">
+                                        <field name="purchase_order_ids">
+                                            <tree>
+                                                <field name="name"/>
+                                                <field name="partner_id"/>
+                                                <field name="amount_total"/>
+                                                <field name="state"/>
+                                            </tree>
+                                        </field>
+                                    </page>
+                                    <page string="Costos de importación">
+                                       <field name="cost_line_ids">
+                                            <tree editable="bottom">
+                                                <field name="product_id" context="{'default_type': 'service'}"/>
+                                                <field name="amount"/>
+                                                <field name="distribution_type"/>
+                                                <field name="is_cost_special"/>
+                                            </tree>
+                                        </field>
+                                    </page>
+                                </notebook>
+                            </sheet>
+                        </form>
+                    </field>
+                </record>
+
+                <record id="action_importation_process" model="ir.actions.act_window">
+                    <field name="name">Importaciones</field>
+                    <field name="res_model">importation.process</field>
+                    <field name="view_mode">kanban,tree,form</field>
+                    <field name="context">{'group_by': 'stage_id'}</field>
+                    <field name="help" type="html">
+                        <p>Gestione los procesos de importación desde esta vista.</p>
+                    </field>
+                </record>
+
+
+             <menuitem id="menu_importation_root" name="Importaciones" sequence="10"/>
+             <menuitem id="menu_importation_process" name="Importaciones" parent="menu_importation_root" >
+                 <menuitem id="menu_importation_solicitud" sequence="1" name="Solicitud" action="action_importation_process"/>
+             </menuitem>
+
+
+
+</odoo>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_wizard_evaluate_providers_form" model="ir.ui.view">
+            <field name="name">wizard.evaluate.providers.form</field>
+            <field name="model">wizard.evaluate.providers</field>
+            <field name="arch" type="xml">
+                <form string="Evaluar Proveedor">
+                     <group>
+                           <h1>
+                            <field name="sale_order_id" readonly="1"/>
+                           </h1>
+                     </group>
+                     <group>
+                           <field name="apply_supplier_id"/>
+                     </group>
+                    <separator string="Líneas de evaluación"/>
+                    <field name="evaluation_line_ids" create="false" deleted="false" options="{'no_create': True}">
+                        <tree editable="top">
+                            <field name="product_id" readonly="1" force_save="1"/>
+                            <field name="product_uom" readonly="1" force_save="1"/>
+                            <field name="quantity" readonly="1" force_save="1"/>
+                            <field name="available_supplier_ids" readonly="1" force_save="1"/>
+                            <field name="selected_supplier_id"/>
+                            <field name="estimated_price"/>
+                        </tree>
+                    </field>
+
+                    <footer>
+                        <button name="action_confirm" type="object" string="Confirmar Evaluación" class="btn-primary"/>
+                        <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="action_open_evaluar_proveedor" model="ir.actions.act_window">
+            <field name="name">Evaluar Proveedor</field>
+            <field name="res_model">wizard.evaluate.providers</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="context">{'default_sale_order_id': active_id}</field>
+        </record>
+
+</odoo>

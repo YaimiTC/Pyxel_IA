@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_order_form_inherit_evaluar_proveedor" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.evaluar.proveedor</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <!-- Botón para abrir el wizard Evaluar Proveedor -->
+                  <field name="has_applicable_evaluations" invisible="1"/>
+                  <field name="order_type" invisible="1"/>
+                  <field name="importation_process_id" invisible="1"/>
+                  <button name="%(action_open_evaluar_proveedor)d"
+                        type="action"
+                        string="Evaluar Proveedor"
+                        class="btn-secondary"
+                        context="{'default_sale_order_id': active_id}"
+                        invisible="has_applicable_evaluations or order_type in ('evaluation_final', 'importation_process')"/>
+                   <button name="action_initial_process_importation"
+                                type="object"
+                                string="Iniciar Importación"
+                                class="btn-secondary" invisible="state != 'sale' or importation_process_id"/>
+
+
+                </xpath>
+                <xpath expr="//div[@class='oe_button_box']" position="inside">
+                    <button name="action_view_related_purchase_orders"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-shopping-cart">
+                        <field name="purchase_order_count" widget="statinfo" string="Compras"/>
+                    </button>
+                    <button type="action"
+                            name="%(action_purchase_provider_evaluation)d"
+                            class="oe_stat_button"
+                            icon="fa-balance-scale"
+                            invisible="order_type in ('evaluation_final', 'importation_process')"
+                            context="{'active_id': active_id, 'default_sale_order_id': active_id}">
+                         <field name="purchase_evaluation_count" widget="statinfo" string="Evaluaciones"/>
+                    </button>
+                 </xpath>
+                 <xpath expr="//field[@name='partner_id']" position="after">
+                      <field name="order_type" string="Tipo de orden" readonly="1"/>
+                     <field name="importation_process_id" string="Proceso de Importación" readonly="1" invisible="order_type != 'importation_process'"/>
+                 </xpath>
+            </field>
+        </record>
+
+        <record id="view_order_tree_inherit_order_type" model="ir.ui.view">
+            <field name="name">sale.order.tree.inherit.order_type</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='partner_id']" position="after">
+                    <field name="order_type" string="Tipo de Orden"/>
+                </xpath>
+            </field>
+        </record>
+
+
+</odoo>

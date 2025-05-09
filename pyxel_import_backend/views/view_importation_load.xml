@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+          <record id="view_importation_cargo_tree" model="ir.ui.view">
+            <field name="name">importation.load.tree</field>
+            <field name="model">importation.load</field>
+            <field name="arch" type="xml">
+              <tree string="Cargas de Importación">
+                <field name="name"/>
+                <field name="importation_id"/>
+                <field name="cargo_type"/>
+                <field name="state"/>
+                <field name="arrival_date"/>
+                <field name="extraction_date"/>
+                <field name="return_date"/>
+              </tree>
+            </field>
+          </record>
+
+           <record id="view_importation_load_form" model="ir.ui.view">
+                <field name="name">importation.load.form</field>
+                <field name="model">importation.load</field>
+                <field name="arch" type="xml">
+                  <form string="Carga de Importación">
+                    <sheet>
+                      <group>
+                        <field name="name"/>
+                        <field name="importation_id"/>
+                        <field name="purchase_condition" readonly="1"/>
+                        <field name="cargo_type"/>
+                        <field name="size"/>
+                        <field name="weight"/>
+                        <field name="volume"/>
+                        <field name="supplier_invoice_number"/>
+                      </group>
+
+                      <group string="Estado del Contenedor">
+                        <field name="arrival_date"/>
+                        <field name="release_date"/>
+                        <field name="extraction_date"/>
+                        <field name="return_date"/>
+                        <field name="state" readonly="1"/>
+                      </group>
+
+                      <group string="Transporte">
+                        <field name="airline"/>
+                        <field name="transit_agency"/>
+                        <field name="pre_appointment_date"/>
+                        <field name="appointment_date"/>
+                        <field name="transport_company"/>
+                        <field name="province"/>
+                        <field name="truck_plate"/>
+                        <field name="destination"/>
+                        <field name="driver"/>
+                      </group>
+
+                      <group string="Transbordo">
+                        <field name="is_transferred"/>
+                        <field name="is_transshipment"/>
+                        <field name="transshipment_type" invisible="is_transshipment == False"/>
+                      </group>
+
+                      <notebook>
+                        <page string="Líneas de Producto">
+                          <field name="cargo_line_ids">
+                            <tree editable="bottom">
+                              <field name="purchase_order_line_id"/>
+                              <field name="product_id" readonly="1"/>
+                              <field name="quantity"/>
+                            </tree>
+                          </field>
+                        </page>
+                      </notebook>
+
+                    </sheet>
+                  </form>
+                </field>
+              </record>
+
+              <!-- Acción y Menú -->
+              <record id="action_importation_load" model="ir.actions.act_window">
+                <field name="name">Cargas de Importación</field>
+                <field name="res_model">importation.load</field>
+                <field name="view_mode">tree,form</field>
+              </record>
+
+              <menuitem id="menu_importation_load" name="Cargas" parent="menu_importation_process" sequence="2" action="action_importation_load"/>
+
+
+</odoo>

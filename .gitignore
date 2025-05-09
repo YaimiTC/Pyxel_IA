@@ -1,0 +1,7 @@
+*.py[co]
+.idea
+odoo.conf
+venv
+.vscode
+.rar
+__pycache__/
