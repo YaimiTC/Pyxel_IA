@@ -23,12 +23,12 @@
                         invisible="state != 'sale' or importation_process_id"/>
             </xpath>
             <xpath expr="//div[@class='oe_button_box']" position="inside">
-                <button name="action_view_related_purchase_orders"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-shopping-cart">
-                    <field name="purchase_order_count" widget="statinfo" string="Purchases"/>
-                </button>
+<!--                <button name="action_view_related_purchase_orders"-->
+<!--                        type="object"-->
+<!--                        class="oe_stat_button"-->
+<!--                        icon="fa-shopping-cart">-->
+<!--                    <field name="purchase_order_count" widget="statinfo" string="Purchases"/>-->
+<!--                </button>-->
                 <button type="action"
                         name="%(action_purchase_provider_evaluation)d"
                         class="oe_stat_button"
