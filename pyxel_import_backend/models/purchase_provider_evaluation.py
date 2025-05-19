@@ -93,6 +93,7 @@ class PurchaseProviderEvaluation(models.Model):
                 evaluation.has_evaluations_to_apply = any(
                     po.state not in ('draft', 'cancel') for po in evaluation.purchase_order_ids
                 )
+            else:
                 evaluation.has_evaluations_to_apply = False
 
     def _check_apply_status(self):
