@@ -87,11 +87,13 @@ class PurchaseProviderEvaluation(models.Model):
 
     @api.depends('purchase_order_ids.state')
     def _compute_has_evaluations_to_apply(self):
-        for EVALuation in self:
+        for evaluation in self:
             # If any order is in a state other than 'draft' or 'cancel', it can be applied
-            evaluation.has_evaluations_to_apply = any(
-                po.state not in ('draft', 'cancel') for po in evaluation.purchase_order_ids
-            )
+            if evaluation.purchase_order_ids:
+                evaluation.has_evaluations_to_apply = any(
+                    po.state not in ('draft', 'cancel') for po in evaluation.purchase_order_ids
+                )
+                evaluation.has_evaluations_to_apply = False
 
     def _check_apply_status(self):
         for evaluation in self:
