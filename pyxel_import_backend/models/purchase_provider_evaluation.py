@@ -280,6 +280,8 @@ class EvaluationCostLine(models.Model):
         ('percentage', 'Percentage'),
     ], required=True)
     is_cost_special = fields.Boolean()
+    purchase_ids = fields.Many2many('purchase.order', string='Purchase Orders Applied',
+                                    domain="[('id', 'in', parent.purchase_order_ids)]")
 
     @api.depends('product_id')
     def _compute_name(self):

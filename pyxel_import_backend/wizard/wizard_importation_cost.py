@@ -59,6 +59,7 @@ class ImportationCostWizardLine(models.TransientModel):
         ('fixed', 'Monto Fijo'),
         ('percentage', 'Porcentaje'),
     ], required=True)
+
     is_cost_special = fields.Boolean(string='Special cost')
 
     @api.depends('product_id')

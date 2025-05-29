@@ -37,7 +37,15 @@
                     <field name="model">importation.process</field>
                     <field name="arch" type="xml">
                         <form>
+
                             <header>
+                                <field name="final_sale_order_id" invisible="1"/>
+                                <button name="action_create_cost_sale_order"
+                                        type="object"
+                                        string="Generar Venta de Costos"
+                                        class="btn-primary"
+                                        invisible="cost_line_ids == False or final_sale_order_id"/>
+
                                 <button name="action_start_progress" string="Start Import" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
                                 <button name="action_finish_progress" string="Finish" type="object" class="btn-success" invisible="state != 'in_progress'"/>
 <!--                                <field name="state" widget="statusbar" statusbar_visible="draft,evaluating,in_progress,done"/>-->
@@ -45,11 +53,22 @@
                             </header>
 
                             <sheet>
+                                <div class="oe_button_box" name="button_box">
+                                    <!-- Aquí insertas tu botón -->
+
+                                    <button name="action_view_sale_orders"
+                                            type="object"
+                                            class="oe_stat_button"
+                                            icon="fa-shopping-cart" >
+                                        <field name="sale_order_count" widget="statinfo" string="Órdenes de Venta"/>
+                                    </button>
+                                </div>
                                 <group>
                                     <group>
                                         <field name="name" readonly="1"/>
                                         <field name="provider_id"/>
                                         <field name="purchase_condition"/>
+                                        <field name="declaration"/>
                                         <field name="country_origin_id"/>
                                         <field name="is_third_party_contract"/>
                                          <field name="state"/>
@@ -162,6 +181,9 @@
                                                 <field name="product_id" context="{'default_type': 'service'}"/>
                                                 <field name="amount"/>
                                                 <field name="distribution_type"/>
+                                                <field name="purchase_ids"
+                                                   domain="[('id', 'in', parent.purchase_order_ids)]"
+                                                   widget="many2many_tags"/>
                                                 <field name="is_cost_special"/>
                                             </tree>
                                         </field>

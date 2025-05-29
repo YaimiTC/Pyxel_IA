@@ -52,8 +52,8 @@ class SaleOrder(models.Model):
         importation = self.env['importation.process'].create({
             'provider_id': provider.id,
             'purchase_order_ids': [(6, 0, self.evaluation_apply_id.purchase_order_ids.ids)],
-            'sale_order_id': self.evaluation_apply_id.sale_order_id.id,
-            'final_sale_order_id': self.id,
+            'sale_order_id': self.id,
+            # 'final_sale_order_id': self.id, aqui cambie la logica para poder usar esta como resultado del proceso de terminacion de la importacion.
             'cost_line_ids': cost_lines,
             'country_origin_id': provider.country_id.id,
             'state': 'in_progress',
@@ -61,7 +61,7 @@ class SaleOrder(models.Model):
         })
 
         self.importation_process_id = importation.id
-        self.order_type = 'importation_process'
+        # self.order_type = 'importation_process'
 
         return {
             'type': 'ir.actions.act_window',
