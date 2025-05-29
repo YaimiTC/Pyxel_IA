@@ -15,7 +15,7 @@
                                     <div><field name="provider_id"/></div>
                                     <div><field name="country_origin_id"/></div>
                                     <div><field name="purchase_condition_number"/></div>
-
+                                    <div><strong>Days in the stage:</strong> <field name="days_in_stage"/></div>
                                 </div>
                                  <!-- Avatar del usuario que creó el registro -->
                                  <div class="o_kanban_avatar">
@@ -79,12 +79,12 @@
                                     <group>
                                         <field name="name" readonly="1"/>
                                         <field name="provider_id"/>
+                                        <field name="country_origin_id"/>
                                         <field name="purchase_condition"/>
                                         <field name="purchase_condition_number"/>
                                         <field name="declaration"/>
-                                        <field name="country_origin_id"/>
-                                        <field name="is_third_party_contract"/>
-                                         <field name="state"/>
+                                         <field name="is_third_party_contract"/>
+                                         <field name="state" readonly="1"/>
                                     </group>
                                     <group>
                                         <field name="estimated_start_date"/>
