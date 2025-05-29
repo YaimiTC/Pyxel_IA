@@ -7,9 +7,20 @@
             <field name="arch" type="xml">
                 <kanban default_group_by="stage_id" group_create="false">
                     <templates>
-                        <t t-name="kanban-box">
-                            <div class="oe_kanban_global_click">
-                                <field name="name"/>
+                         <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click o_kanban_record">
+                                 <!-- Resto de campos -->
+                                <div class="o_kanban_details">
+                                    <div><strong><field name="name"/></strong></div>
+                                    <div><field name="provider_id"/></div>
+                                    <div><field name="country_origin_id"/></div>
+                                    <div><field name="purchase_condition_number"/></div>
+
+                                </div>
+                                 <!-- Avatar del usuario que creó el registro -->
+                                 <div class="o_kanban_avatar">
+                                    <field name="create_uid" widget="many2one_avatar_user"/>
+                                </div>
                             </div>
                         </t>
                     </templates>
@@ -25,6 +36,7 @@
                         <field name="name"/>
                         <field name="provider_id"/>
                         <field name="purchase_condition"/>
+                        <field name="purchase_condition_number"/>
                         <field name="state"/>
                         <field name="estimated_start_date"/>
                         <field name="estimated_end_date"/>
@@ -68,6 +80,7 @@
                                         <field name="name" readonly="1"/>
                                         <field name="provider_id"/>
                                         <field name="purchase_condition"/>
+                                        <field name="purchase_condition_number"/>
                                         <field name="declaration"/>
                                         <field name="country_origin_id"/>
                                         <field name="is_third_party_contract"/>
