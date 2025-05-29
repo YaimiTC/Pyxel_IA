@@ -30,14 +30,14 @@ class ImportationProcess(models.Model):
     sale_order_id = fields.Many2one('sale.order', string='Original Quotation')
     final_sale_order_id = fields.Many2one('sale.order', string='Final Generated Offer', readonly=True)
 
-    provider_id = fields.Many2one('res.partner', string='Supplier')
+    provider_id = fields.Many2one('res.partner', string='Supplier', required=True)
 
-    country_origin_id = fields.Many2one('res.country', string='Country of Origin')
+    country_origin_id = fields.Many2one('res.country', string='Country of Origin', required=True)
     is_third_party_contract = fields.Boolean(string='Third-Party Contract')
     declaration = fields.Char(string='Goods Declaration')
 
-    estimated_start_date = fields.Date(string='Estimated Start Date')
-    estimated_end_date = fields.Date(string='Estimated End Date')
+    estimated_start_date = fields.Date(string='Estimated Start Date', required=True)
+    estimated_end_date = fields.Date(string='Estimated End Date', required=True)
     departure_date = fields.Date(string='Departure Date from Origin')
     declaration_date = fields.Date(string='Goods Declaration Date')
     documentation_sent_date = fields.Date(string='Documentation Sent Date')
@@ -91,6 +91,25 @@ class ImportationProcess(models.Model):
                 ('id', '=', rec.final_sale_order_id.id)
             ])
 
+    stage_enter_date = fields.Datetime(string="Stage date")
+    days_in_stage = fields.Integer(string="State days", compute='_compute_days_in_stage', store=True)
+
+    @api.depends('stage_enter_date')
+    def _compute_days_in_stage(self):
+        for record in self:
+            if record.stage_enter_date:
+                delta = fields.Datetime.now() - record.stage_enter_date
+                record.days_in_stage = delta.days
+            else:
+                record.days_in_stage = 0
+
+    @api.constrains('estimated_start_date', 'estimated_end_date')
+    def _check_date_range(self):
+        for record in self:
+            if record.estimated_start_date and record.estimated_end_date:
+                if record.estimated_end_date < record.estimated_start_date:
+                    raise ValidationError("The end date cannot be earlier than the start date.")
+
     def action_view_sale_orders(self):
         self.ensure_one()
         domain = ['|', ('id', '=', self.sale_order_id.id), ('id', '=', self.final_sale_order_id.id)]
@@ -113,7 +132,15 @@ class ImportationProcess(models.Model):
         if vals.get('name', 'New') == 'New':
             sequence = self.env['ir.sequence'].next_by_code('importation.process')
             vals['name'] = sequence or 'New'
+        if 'stage_id' in vals:
+            vals['stage_enter_date'] = fields.Datetime.now()
+
         return super().create(vals)
+
+    def write(self, vals):
+        if 'stage_id' in vals:
+            vals['stage_enter_date'] = fields.Datetime.now()
+        return super().write(vals)
 
     def action_start_progress(self):
         self.write({'state': 'in_progress'})
@@ -224,3 +251,4 @@ class ImportationStage(models.Model):
     description = fields.Char(string='Description')
     sequence = fields.Integer(required=True, default=1)
     fold = fields.Boolean('Folded in Kanban', default=False)
+
