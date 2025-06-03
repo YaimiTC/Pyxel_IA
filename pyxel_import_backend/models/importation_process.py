@@ -30,14 +30,14 @@ class ImportationProcess(models.Model):
     sale_order_id = fields.Many2one('sale.order', string='Original Quotation')
     final_sale_order_id = fields.Many2one('sale.order', string='Final Generated Offer', readonly=True)
 
-    provider_id = fields.Many2one('res.partner', string='Supplier')
+    provider_id = fields.Many2one('res.partner', string='Supplier', required=True)
 
-    country_origin_id = fields.Many2one('res.country', string='Country of Origin')
+    country_origin_id = fields.Many2one('res.country', string='Country of Origin', required=True)
     is_third_party_contract = fields.Boolean(string='Third-Party Contract')
-    declaration = fields.Text(string='Goods Declaration')
+    declaration = fields.Char(string='Goods Declaration')
 
-    estimated_start_date = fields.Date(string='Estimated Start Date')
-    estimated_end_date = fields.Date(string='Estimated End Date')
+    estimated_start_date = fields.Date(string='Estimated Start Date', required=True)
+    estimated_end_date = fields.Date(string='Estimated End Date', required=True)
     departure_date = fields.Date(string='Departure Date from Origin')
     declaration_date = fields.Date(string='Goods Declaration Date')
     documentation_sent_date = fields.Date(string='Documentation Sent Date')
@@ -81,6 +81,46 @@ class ImportationProcess(models.Model):
         'importation_id',
         string="Cargo Model"
     )
+    sale_order_count = fields.Integer(string='Sale Orders Count', compute='_compute_sale_order_count')
+
+    def _compute_sale_order_count(self):
+        for rec in self:
+            rec.sale_order_count = self.env['sale.order'].search_count([
+                '|',
+                ('id', '=', rec.sale_order_id.id),
+                ('id', '=', rec.final_sale_order_id.id)
+            ])
+
+    stage_enter_date = fields.Datetime(string="Stage date")
+    days_in_stage = fields.Integer(string="State days", compute='_compute_days_in_stage', store=True)
+
+    @api.depends('stage_enter_date')
+    def _compute_days_in_stage(self):
+        for record in self:
+            if record.stage_enter_date:
+                delta = fields.Datetime.now() - record.stage_enter_date
+                record.days_in_stage = delta.days
+            else:
+                record.days_in_stage = 0
+
+    @api.constrains('estimated_start_date', 'estimated_end_date')
+    def _check_date_range(self):
+        for record in self:
+            if record.estimated_start_date and record.estimated_end_date:
+                if record.estimated_end_date < record.estimated_start_date:
+                    raise ValidationError("The end date cannot be earlier than the start date.")
+
+    def action_view_sale_orders(self):
+        self.ensure_one()
+        domain = ['|', ('id', '=', self.sale_order_id.id), ('id', '=', self.final_sale_order_id.id)]
+        return {
+            'name': 'Órdenes de Venta',
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.order',
+            'view_mode': 'tree,form',
+            'domain': domain,
+            'context': {}
+        }
 
     @api.depends('cost_line_ids.amount')
     def _compute_total_cost(self):
@@ -92,7 +132,15 @@ class ImportationProcess(models.Model):
         if vals.get('name', 'New') == 'New':
             sequence = self.env['ir.sequence'].next_by_code('importation.process')
             vals['name'] = sequence or 'New'
+        if 'stage_id' in vals:
+            vals['stage_enter_date'] = fields.Datetime.now()
+
         return super().create(vals)
+
+    def write(self, vals):
+        if 'stage_id' in vals:
+            vals['stage_enter_date'] = fields.Datetime.now()
+        return super().write(vals)
 
     def action_start_progress(self):
         self.write({'state': 'in_progress'})
@@ -103,6 +151,64 @@ class ImportationProcess(models.Model):
     @api.model
     def _group_expand_stage_id(self, stages, domain, order):
         return self.env['importation.stage'].search([], order=order)
+
+    def action_create_cost_sale_order(self):
+        SaleOrder = self.env['sale.order']
+        SaleOrderLine = self.env['sale.order.line']
+
+        if not self.provider_id:
+            raise ValidationError("Debe estar definido el proveedor en el proceso de importación.")
+
+        product_amounts = {}
+
+        for cost_line in self.cost_line_ids:
+            total_value = 0.0
+
+            if not cost_line.purchase_ids:
+                continue  # si no hay órdenes asociadas, omitir
+
+            if cost_line.distribution_type == 'fixed':
+                total_value = cost_line.amount * len(cost_line.purchase_ids)
+
+            elif cost_line.distribution_type == 'percentage':
+                for purchase in cost_line.purchase_ids:
+                    total_value += purchase.amount_total * (cost_line.amount / 100.0)
+
+            product_id = cost_line.product_id.id
+
+            if product_id not in product_amounts:
+                product_amounts[product_id] = {
+                    'product': cost_line.product_id,
+                    'price_unit': 0.0,
+                    'name': cost_line.name or cost_line.product_id.name,
+                }
+
+            product_amounts[product_id]['price_unit'] += total_value
+
+        # Crear el sale.order con líneas acumuladas por producto
+        sale_order = SaleOrder.create({
+            'partner_id': self.provider_id.id,
+            'importation_process_id': self.id,
+            'origin': self.name,
+            'order_type': 'importation_process',
+            'order_line': [(0, 0, {
+                'product_id': val['product'].id,
+                'name': val['name'],
+                'product_uom_qty': 1.0,
+                'price_unit': val['price_unit'],
+                'product_uom': val['product'].uom_id.id,
+            }) for val in product_amounts.values()]
+        })
+
+        self.final_sale_order_id = sale_order.id
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.order',
+            'res_id': sale_order.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
 
 class ImportationCostLine(models.Model):
@@ -124,6 +230,8 @@ class ImportationCostLine(models.Model):
         ('percentage', 'Percentage on Order'),
     ], string='Distribution Type', required=True)
     currency_id = fields.Many2one('res.currency', related='importation_id.currency_id', readonly=True)
+    purchase_ids = fields.Many2many('purchase.order', string='Purchase Orders Applied',
+                                    domain="[('id', 'in', parent.purchase_order_ids)]")
 
     # Validate if it applies to divep (this would need to be identified in the line
     # to know it is considered for differentiation in the billing reconciliation report)
@@ -143,3 +251,4 @@ class ImportationStage(models.Model):
     description = fields.Char(string='Description')
     sequence = fields.Integer(required=True, default=1)
     fold = fields.Boolean('Folded in Kanban', default=False)
+

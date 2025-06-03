@@ -70,6 +70,9 @@
                                             <field name="product_id" context="{'default_type': 'service'}"/>
                                             <field name="amount"/>
                                             <field name="distribution_type"/>
+                                            <field name="purchase_ids"
+                                               domain="[('id', 'in', parent.purchase_order_ids)]"
+                                               widget="many2many_tags"/>
                                             <field name="is_cost_special"/>
                                         </tree>
                                     </field>
