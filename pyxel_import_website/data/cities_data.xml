@@ -1,0 +1,1200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <!-- res.city de Pinar del Rio-->
+
+        <record id="municipio_2101" model="res.city">
+            <field name="zipcode">24150</field>
+            <field name="name">Sandino</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2102" model="res.city">
+            <field name="zipcode">22200</field>
+            <field name="name">Mantua</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2103" model="res.city">
+            <field name="zipcode">22300</field>
+            <field name="name">Minas de Matahambre</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2104" model="res.city">
+            <field name="zipcode">22400</field>
+            <field name="name">Viñales</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2105" model="res.city">
+            <field name="zipcode">22600</field>
+            <field name="name">La Palma</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2106" model="res.city">
+            <field name="zipcode">22900</field>
+            <field name="name">Los Palacios</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2107" model="res.city">
+            <field name="zipcode">23000</field>
+            <field name="name">Consolación del Sur</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2108" model="res.city">
+            <field name="zipcode">20100</field>
+            <field name="name">Pinar del Río</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2109" model="res.city">
+            <field name="zipcode">23100</field>
+            <field name="name">San Luis</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2110" model="res.city">
+            <field name="zipcode">23200</field>
+            <field name="name">San Juan y Martínez</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2111" model="res.city">
+            <field name="zipcode">23300</field>
+            <field name="name">Guane</field>
+            <field name="state_id" ref="state_21"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+
+        <!-- res.citys de la Artemisa-->
+        <record id="municipio_2201" model="res.city">
+            <field name="zipcode">22600</field>
+            <field name="name">Bahía Honda</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2202" model="res.city">
+            <field name="zipcode">32100</field>
+            <field name="name">Mariel</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2203" model="res.city">
+            <field name="zipcode">32200</field>
+            <field name="name">Guanajay</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2204" model="res.city">
+            <field name="zipcode">32300</field>
+            <field name="name">Caimito</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2205" model="res.city">
+            <field name="zipcode">32400</field>
+            <field name="name">Bauta</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2206" model="res.city">
+            <field name="zipcode">32500</field>
+            <field name="name">San Antonio de los Baños</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2207" model="res.city">
+            <field name="zipcode">33600</field>
+            <field name="name">Güira de Melena</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2208" model="res.city">
+            <field name="zipcode">33700</field>
+            <field name="name">Alquízar</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2209" model="res.city">
+            <field name="zipcode">33800</field>
+            <field name="name">Artemisa</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2210" model="res.city">
+            <field name="zipcode">22700</field>
+            <field name="name">Candelaria</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2211" model="res.city">
+            <field name="zipcode">22800</field>
+            <field name="name">San Cristóbal</field>
+            <field name="state_id" ref="state_22"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+
+        <!-- res.citys de la Habana-->
+        <record id="municipio_2301" model="res.city">
+            <field name="zipcode">11300</field>
+            <field name="name">Playa</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2302" model="res.city">
+            <field name="zipcode">10400</field>
+            <field name="name">Plaza de la Revolución</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2303" model="res.city">
+            <field name="zipcode">10200</field>
+            <field name="name">Centro Habana</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2304" model="res.city">
+            <field name="zipcode">10100</field>
+            <field name="name">La Habana Vieja</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2305" model="res.city">
+            <field name="zipcode">11200</field>
+            <field name="name">Regla</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2306" model="res.city">
+            <field name="zipcode">12500</field>
+            <field name="name">La Habana del Este</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2307" model="res.city">
+            <field name="zipcode">11100</field>
+            <field name="name">Guanabacoa</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2308" model="res.city">
+            <field name="zipcode">11000</field>
+            <field name="name">San Miguel del Padrón</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2309" model="res.city">
+            <field name="zipcode">10700</field>
+            <field name="name">Diez de Octubre</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2310" model="res.city">
+            <field name="zipcode">10600</field>
+            <field name="name">Cerro</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2311" model="res.city">
+            <field name="zipcode">11500</field>
+            <field name="name">Marianao</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2312" model="res.city">
+            <field name="zipcode">17100</field>
+            <field name="name">La Lisa</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2313" model="res.city">
+            <field name="zipcode">10800</field>
+            <field name="name">Boyeros</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2314" model="res.city">
+            <field name="zipcode">10900</field>
+            <field name="name">Arroyo Naranjo</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2315" model="res.city">
+            <field name="zipcode">14000</field>
+            <field name="name">Cotorro</field>
+            <field name="state_id" ref="state_23"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.city de Mayabeque-->
+        <record id="municipio_2401" model="res.city">
+            <field name="zipcode">32600</field>
+            <field name="name">Bejucal</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2402" model="res.city">
+            <field name="zipcode">32700</field>
+            <field name="name">San José de las Lajas</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2403" model="res.city">
+            <field name="zipcode">32800</field>
+            <field name="name">Jaruco</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2404" model="res.city">
+            <field name="zipcode">32900</field>
+            <field name="name">Santa Cruz del Norte</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2405" model="res.city">
+            <field name="zipcode">33000</field>
+            <field name="name">Madruga</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2406" model="res.city">
+            <field name="zipcode">33100</field>
+            <field name="name">Nueva Paz</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2407" model="res.city">
+            <field name="zipcode">33200</field>
+            <field name="name">San Nicolás de Bari</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2408" model="res.city">
+            <field name="zipcode">33900</field>
+            <field name="name">Güines</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2409" model="res.city">
+            <field name="zipcode">33300</field>
+            <field name="name">Melena del Sur</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2410" model="res.city">
+            <field name="zipcode">33400</field>
+            <field name="name">Batabanó</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2411" model="res.city">
+            <field name="zipcode">33500</field>
+            <field name="name">Quivicán</field>
+            <field name="state_id" ref="state_24"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Matanzas-->
+        <record id="municipio_2501" model="res.city">
+            <field name="zipcode">40100</field>
+            <field name="name">Matanzas</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2502" model="res.city">
+            <field name="zipcode">42110</field>
+            <field name="name">Cárdenas</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2503" model="res.city">
+            <field name="zipcode">42300</field>
+            <field name="name">Martí</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2504" model="res.city">
+            <field name="zipcode">42400</field>
+            <field name="name">Colón</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2505" model="res.city">
+            <field name="zipcode">42500</field>
+            <field name="name">Perico</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2506" model="res.city">
+            <field name="zipcode">42600</field>
+            <field name="name">Jovellanos</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2507" model="res.city">
+            <field name="zipcode">42700</field>
+            <field name="name">Pedro Betancourt</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2508" model="res.city">
+            <field name="zipcode">42800</field>
+            <field name="name">Limonar</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2509" model="res.city">
+            <field name="zipcode">42900</field>
+            <field name="name">Unión de Reyes</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2510" model="res.city">
+            <field name="zipcode">43000</field>
+            <field name="name">Ciénaga de Zapata</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2511" model="res.city">
+            <field name="zipcode">43100</field>
+            <field name="name">Jagüey Grande</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2512" model="res.city">
+            <field name="zipcode">43200</field>
+            <field name="name">Calimete</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2513" model="res.city">
+            <field name="zipcode">43300</field>
+            <field name="name">Los Arabos</field>
+            <field name="state_id" ref="state_25"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.city de Villa Clara-->
+        <record id="municipio_2601" model="res.city">
+            <field name="zipcode">52100</field>
+            <field name="name">Corralillo</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2602" model="res.city">
+            <field name="zipcode">52200</field>
+            <field name="name">Quemado de Güines</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2603" model="res.city">
+            <field name="zipcode">53310</field>
+            <field name="name">Sagua la Grande</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2604" model="res.city">
+            <field name="zipcode">52400</field>
+            <field name="name">Encrucijada</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2605" model="res.city">
+            <field name="zipcode">52500</field>
+            <field name="name">Camajuaní</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2606" model="res.city">
+            <field name="zipcode">52610</field>
+            <field name="name">Caibarién</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2607" model="res.city">
+            <field name="zipcode">52700</field>
+            <field name="name">Remedios</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2608" model="res.city">
+            <field name="zipcode">52800</field>
+            <field name="name">Placetas</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2609" model="res.city">
+            <field name="zipcode">50100</field>
+            <field name="name">Santa Clara</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2610" model="res.city">
+            <field name="zipcode">52900</field>
+            <field name="name">Cifuentes</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2611" model="res.city">
+            <field name="zipcode">53100</field>
+            <field name="name">Santo Domingo</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2612" model="res.city">
+            <field name="zipcode">53100</field>
+            <field name="name">Ranchuelo</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2613" model="res.city">
+            <field name="zipcode">53200</field>
+            <field name="name">Manicaragua</field>
+            <field name="state_id" ref="state_26"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Cienfuegos-->
+        <record id="municipio_2701" model="res.city">
+            <field name="zipcode">57100</field>
+            <field name="name">Aguada de Pasajeros</field>
+            <field name="state_id" ref="state_27"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2702" model="res.city">
+            <field name="zipcode">57200</field>
+            <field name="name">Rodas</field>
+            <field name="state_id" ref="state_27"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2703" model="res.city">
+            <field name="zipcode">57300</field>
+            <field name="name">Palmira</field>
+            <field name="state_id" ref="state_27"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2704" model="res.city">
+            <field name="zipcode">57400</field>
+            <field name="name">Lajas</field>
+            <field name="state_id" ref="state_27"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2705" model="res.city">
+            <field name="zipcode">57500</field>
+            <field name="name">Cruces</field>
+            <field name="state_id" ref="state_27"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2706" model="res.city">
+            <field name="zipcode">57600</field>
+            <field name="name">Cumanayagua</field>
+            <field name="state_id" ref="state_27"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2707" model="res.city">
+            <field name="zipcode">55100</field>
+            <field name="name">Cienfuegos</field>
+            <field name="state_id" ref="state_27"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2708" model="res.city">
+            <field name="zipcode">57700</field>
+            <field name="name">Abreus</field>
+            <field name="state_id" ref="state_27"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Sancti Spiritus-->
+        <record id="municipio_2801" model="res.city">
+            <field name="zipcode">62100</field>
+            <field name="name">Yaguajay</field>
+            <field name="state_id" ref="state_28"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2802" model="res.city">
+            <field name="zipcode">62200</field>
+            <field name="name">Jatibonico</field>
+            <field name="state_id" ref="state_28"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2803" model="res.city">
+            <field name="zipcode">62300</field>
+            <field name="name">Taguasco</field>
+            <field name="state_id" ref="state_28"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2804" model="res.city">
+            <field name="zipcode">62410</field>
+            <field name="name">Cabaiguán</field>
+            <field name="state_id" ref="state_28"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2805" model="res.city">
+            <field name="zipcode">62500</field>
+            <field name="name">Fomento</field>
+            <field name="state_id" ref="state_28"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2806" model="res.city">
+            <field name="zipcode">62600</field>
+            <field name="name">Trinidad</field>
+            <field name="state_id" ref="state_28"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2807" model="res.city">
+            <field name="zipcode">60100</field>
+            <field name="name">Sancti Spíritus</field>
+            <field name="state_id" ref="state_28"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2808" model="res.city">
+            <field name="zipcode">62700</field>
+            <field name="name">La Sierpe</field>
+            <field name="state_id" ref="state_28"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Ciego de Avila-->
+        <record id="municipio_2901" model="res.city">
+            <field name="zipcode">67100</field>
+            <field name="name">Chambas</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2902" model="res.city">
+            <field name="zipcode">67210</field>
+            <field name="name">Morón</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2903" model="res.city">
+            <field name="zipcode">67300</field>
+            <field name="name">Bolivia</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2904" model="res.city">
+            <field name="zipcode">67400</field>
+            <field name="name">Primero de Enero</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2905" model="res.city">
+            <field name="zipcode">67500</field>
+            <field name="name">Ciro Redondo</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2906" model="res.city">
+            <field name="zipcode">67600</field>
+            <field name="name">Florencia</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2907" model="res.city">
+            <field name="zipcode">67700</field>
+            <field name="name">Majagua</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2908" model="res.city">
+            <field name="zipcode">65100</field>
+            <field name="name">Ciego de Ávila</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+        <record id="municipio_2909" model="res.city">
+            <field name="zipcode">67800</field>
+            <field name="name">Venezuela</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_2910" model="res.city">
+            <field name="zipcode">67900</field>
+            <field name="name">Baraguá</field>
+            <field name="state_id" ref="state_29"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Camagϋey-->
+        <record id="municipio_3001" model="res.city">
+            <field name="zipcode">72100</field>
+            <field name="name">Carlos Manuel de Céspedes</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3002" model="res.city">
+            <field name="zipcode">72200</field>
+            <field name="name">Esmeralda</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3003" model="res.city">
+            <field name="zipcode">72300</field>
+            <field name="name">Sierra de Cubitas</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3004" model="res.city">
+            <field name="zipcode">72400</field>
+            <field name="name">Minas</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3005" model="res.city">
+            <field name="zipcode">72510</field>
+            <field name="name">Nuevitas</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3006" model="res.city">
+            <field name="zipcode">72600</field>
+            <field name="name">Guáimaro</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3007" model="res.city">
+            <field name="zipcode">72700</field>
+            <field name="name">Sibanicú</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3008" model="res.city">
+            <field name="zipcode">70100</field>
+            <field name="name">Camagüey</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3009" model="res.city">
+            <field name="zipcode">72810</field>
+            <field name="name">Florida</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3010" model="res.city">
+            <field name="zipcode">72900</field>
+            <field name="name">Vertientes</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3011" model="res.city">
+            <field name="zipcode">73000</field>
+            <field name="name">Jimaguayú</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3012" model="res.city">
+            <field name="zipcode">73100</field>
+            <field name="name">Najasa</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3013" model="res.city">
+            <field name="zipcode">73200</field>
+            <field name="name">Santa Cruz del Sur</field>
+            <field name="state_id" ref="state_30"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de las Tunas-->
+        <record id="municipio_3101" model="res.city">
+            <field name="zipcode">77100</field>
+            <field name="name">Manatí</field>
+            <field name="state_id" ref="state_31"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3102" model="res.city">
+            <field name="zipcode">77200</field>
+            <field name="name">Puerto Padre</field>
+            <field name="state_id" ref="state_31"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3103" model="res.city">
+            <field name="zipcode">77300</field>
+            <field name="name">Jesús Menéndez</field>
+            <field name="state_id" ref="state_31"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3104" model="res.city">
+            <field name="zipcode">77400</field>
+            <field name="name">Majibacoa</field>
+            <field name="state_id" ref="state_31"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3105" model="res.city">
+            <field name="zipcode">75500</field>
+            <field name="name">Las Tunas</field>
+            <field name="state_id" ref="state_31"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3106" model="res.city">
+            <field name="zipcode">77500</field>
+            <field name="name">Jobabo</field>
+            <field name="state_id" ref="state_31"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3107" model="res.city">
+            <field name="zipcode">77600</field>
+            <field name="name">Colombia</field>
+            <field name="state_id" ref="state_31"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3108" model="res.city">
+            <field name="zipcode">77700</field>
+            <field name="name">Amancio</field>
+            <field name="state_id" ref="state_31"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Holguin-->
+        <record id="municipio_3201" model="res.city">
+            <field name="zipcode">82100</field>
+            <field name="name">Gibara</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3202" model="res.city">
+            <field name="zipcode">83300</field>
+            <field name="name">Rafael Freyre</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3203" model="res.city">
+            <field name="zipcode">82300</field>
+            <field name="name">Banes</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3204" model="res.city">
+            <field name="zipcode">82400</field>
+            <field name="name">Antilla</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3205" model="res.city">
+            <field name="zipcode">82500</field>
+            <field name="name">Báguanos</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3206" model="res.city">
+            <field name="zipcode">80100</field>
+            <field name="name">Holguín</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3207" model="res.city">
+            <field name="zipcode">82600</field>
+            <field name="name">Calixto García</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3208" model="res.city">
+            <field name="zipcode">57200</field>
+            <field name="name">Cacocum</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3209" model="res.city">
+            <field name="zipcode">82800</field>
+            <field name="name">Urbano Noris</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3210" model="res.city">
+            <field name="zipcode">82900</field>
+            <field name="name">Cueto</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3211" model="res.city">
+            <field name="zipcode">83000</field>
+            <field name="name">Mayarí</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3212" model="res.city">
+            <field name="zipcode">83100</field>
+            <field name="name">Frank País</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3213" model="res.city">
+            <field name="zipcode">83200</field>
+            <field name="name">Sagua de Tánamo</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3214" model="res.city">
+            <field name="zipcode">83310</field>
+            <field name="name">Moa</field>
+            <field name="state_id" ref="state_32"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Granma-->
+        <record id="municipio_3301" model="res.city">
+            <field name="zipcode">87100</field>
+            <field name="name">Río Cauto</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3302" model="res.city">
+            <field name="zipcode">87200</field>
+            <field name="name">Cauto Cristo</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3303" model="res.city">
+            <field name="zipcode">87300</field>
+            <field name="name">Jiguaní</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3304" model="res.city">
+            <field name="zipcode">85100</field>
+            <field name="name">Bayamo</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3305" model="res.city">
+            <field name="zipcode">87400</field>
+            <field name="name">Yara</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3306" model="res.city">
+            <field name="zipcode">87510</field>
+            <field name="name">Manzanillo</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3307" model="res.city">
+            <field name="zipcode">87600</field>
+            <field name="name">Campechuela</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3308" model="res.city">
+            <field name="zipcode">87700</field>
+            <field name="name">Media Luna</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3309" model="res.city">
+            <field name="zipcode">87800</field>
+            <field name="name">Niquero</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3310" model="res.city">
+            <field name="zipcode">87900</field>
+            <field name="name">Pilón</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3311" model="res.city">
+            <field name="zipcode">88000</field>
+            <field name="name">Bartolomé Masó</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3312" model="res.city">
+            <field name="zipcode">88100</field>
+            <field name="name">Buey Arriba</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3313" model="res.city">
+            <field name="zipcode">88200</field>
+            <field name="name">Guisa</field>
+            <field name="state_id" ref="state_33"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Santiago de Cuba-->
+        <record id="municipio_3401" model="res.city">
+            <field name="zipcode">92100</field>
+            <field name="name">Contramaestre</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3402" model="res.city">
+            <field name="zipcode">92200</field>
+            <field name="name">Mella</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3403" model="res.city">
+            <field name="zipcode">92300</field>
+            <field name="name">San Luis</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3404" model="res.city">
+            <field name="zipcode">92100</field>
+            <field name="name">Segundo Frente</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3405" model="res.city">
+            <field name="zipcode">92610</field>
+            <field name="name">Songo La Maya</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3406" model="res.city">
+            <field name="zipcode">90100</field>
+            <field name="name">Santiago de Cuba</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3407" model="res.city">
+            <field name="zipcode">92610</field>
+            <field name="name">Palma Soriano</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3408" model="res.city">
+            <field name="zipcode">92700</field>
+            <field name="name">Tercer Frente</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3409" model="res.city">
+            <field name="zipcode">92800</field>
+            <field name="name">Guama</field>
+            <field name="state_id" ref="state_34"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.citys de Guantanamo-->
+        <record id="municipio_3501" model="res.city">
+            <field name="zipcode">97100</field>
+            <field name="name">El Salvador</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3502" model="res.city">
+            <field name="zipcode">97700</field>
+            <field name="name">Manuel Tames</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3503" model="res.city">
+            <field name="zipcode">99420</field>
+            <field name="name">Yateras</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3504" model="res.city">
+            <field name="zipcode">97310</field>
+            <field name="name">Baracoa</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3505" model="res.city">
+            <field name="zipcode">99320</field>
+            <field name="name">Maisí</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3506" model="res.city">
+            <field name="zipcode">97500</field>
+            <field name="name">Imías</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3507" model="res.city">
+            <field name="zipcode">97600</field>
+            <field name="name">San Antonio del Sur</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3508" model="res.city">
+            <field name="zipcode">97800</field>
+            <field name="name">Caimanera</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3509" model="res.city">
+            <field name="zipcode">95100</field>
+            <field name="name">Guantánamo</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <record id="municipio_3510" model="res.city">
+            <field name="zipcode">97900</field>
+            <field name="name">Niceto Pérez</field>
+            <field name="state_id" ref="state_35"/>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+        <!-- res.city Especial Isla de la Juventud-->
+        <record id="municipio_4001" model="res.city">
+            <field name="zipcode">25100</field>
+            <field name="state_id" ref="state_40"/>
+            <field name="name">Isla de la Juventud</field>
+            <field name="country_id" ref="base.cu"/>
+        </record>
+
+    </data>
+</odoo>

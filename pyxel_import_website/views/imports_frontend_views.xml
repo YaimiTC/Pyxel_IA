@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="custom_imports_list_view" name="Search Imports">
+        <t t-call="website.layout">
+            <div class="container o_website_listing_layout">
+                <div class="oe_structure oe_new"/>
+                <section class="s_searchbar o_colored_level o_cc pt48 pb48">
+                    <div class="row">
+                        <ol class="o_portal_submenu breadcrumb mb-0 flex-grow-1 px-0">
+                            <li class="breadcrumb-item ms-1" data-oe-model="ir.ui.view" data-oe-id="438" data-oe-field="arch" data-oe-xpath="/t[1]/ol[1]/li[1]">
+                                <a href="/my/home" aria-label="Inicio" title="Inicio">
+                                    <i class="fa fa-home"/>
+                                </a>
+                            </li>
+                            <li id="portal_breadcrumbs_sale" class="breadcrumb-item active">
+                                Importaciones
+                            </li>
+                        </ol>
+                        <div class="col-lg-8 offset-lg-2">
+                            <div class="btn-toolbar">
+                                <form method="get" class="o_searchbar_form s_searchbar_input me-auto flex-grow-1" action="/model/imports_search">
+                                    <div role="search" class="input-group">
+                                        <input type="search" name="search" class="search-query form-control oe_search_box border-0 text-bg-light" placeholder="Buscar..." t-att-value="search" autocomplete="off"/>
+                                        <button type="submit" aria-label="Buscar" title="Buscar" class="btn oe_search_button btn-light">
+                                            <i class="oi oi-search"/>
+                                            <span t-if="search" class="oe_search_found">
+                                                <small>(<t t-out="search_count or 0"/> encontrado)</small>
+                                            </span>
+                                        </button>
+                                    </div>
+                                    <input name="order" type="hidden" class="o_search_order_by" t-att-value="order_by if order_by else 'x_name asc'"/>
+                                </form>
+                                <!--<t t-call="website_studio.listing_layout_switcher"/>-->
+                                <a href="/business-register?type=import" style="margin-left:20px" class="btn btn-secondary ml-5" data-bs-original-title="" title="">Registrar importación</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <div t-attf-class="row mx-n2 mt8 #{'o_website_grid' if layout_mode == 'grid' else 'o_website_list'}">
+                    <t t-if="records" t-call="portal.portal_table">
+                        <thead>
+                            <tr class="active">
+                                <th>Número</th>
+                                <th class="text-start">Proveedor</th>
+                                <th class="text-start">Cliente</th>
+                                <th class="text-start">BL</th>
+                                <th class="text-start">Estado</th>
+                            </tr>
+                        </thead>
+                        <t t-foreach="records" t-as="record">
+                            <tr>
+                                <td><a t-att-href="record_to_url(record)"><t t-out="record.display_name"/></a></td>
+                                <td class="text-start"><span t-field="record.x_studio_supplier"/></td>
+                                <td class="text-start"><span t-field="record.x_studio_client"/></td>
+                                <td class="text-start">
+                                    <span style="color:black; font-size:14px;line-height:normal;text-overflow: ellipsis;" t-esc="record.x_studio_bill_of_landing_number or record.display_name"/>
+                                </td>
+                                <td class="text-start"><span t-field="record.x_studio_stage_id"/></td>
+                            </tr>
+                        </t>
+                    </t>
+                </div>
+                <div class="oe_structure oe_new"/>
+            </div>
+        </t>
+    </template>
+</odoo>
