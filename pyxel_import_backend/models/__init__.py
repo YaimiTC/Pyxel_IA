@@ -8,4 +8,5 @@ from . import importation_process
 from . import sale_order
 from . import importation_load
 from . import importation_process
+from . import  account_move
 

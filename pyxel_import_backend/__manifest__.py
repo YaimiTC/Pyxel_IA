@@ -19,7 +19,8 @@
         'sale_management',
         'purchase',
         'stock',
-        'contacts'
+        'contacts',
+        'account',
 
     ],
     "data": [
@@ -30,6 +31,7 @@
         "views/product_template_views.xml",
         "views/crm_lead_views.xml",
         "views/view_importation_progress.xml",
+        "views/view_load_fill_wizard.xml",
         "views/view_importation_load.xml",
         "views/view_importation_stage.xml",
         "views/wizard_evaluate_providers_view.xml",
@@ -37,6 +39,7 @@
         "views/sale_order_views.xml",
         "views/purchase_order_view.xml",
         "views/view_importation_cost_wizard.xml",
+        "views/account_move_views.xml",
 
 
 

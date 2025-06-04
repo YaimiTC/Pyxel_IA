@@ -6,7 +6,7 @@ class ImportationLoad(models.Model):
     _name = 'importation.load'
     _description = 'Import Cargo or Container'
 
-    name = fields.Char(string='Container Number', required=True)
+    name = fields.Char(string='Container Number', required=True, size=11)
     importation_id = fields.Many2one('importation.process', string='Import', required=True)
     purchase_condition = fields.Selection(related='importation_id.purchase_condition', string='Purchase Condition',
                                           readonly=True)
@@ -51,7 +51,7 @@ class ImportationLoad(models.Model):
 
     # Información del Transportista
     pre_appointment_date = fields.Date(string='Date Prior to the Appointment')
-    appointment_date = fields.Date(string='Fecha de Cita')
+    appointment_date = fields.Date(string='Appointment Date')
     transport_company = fields.Char(string='Transport Company')
     province = fields.Char(string='Province')
     truck_plate = fields.Char(string='Truck')
@@ -131,8 +131,10 @@ class ImportationLoadLine(models.Model):
 
     cargo_id = fields.Many2one('importation.load', string='Load', required=True, ondelete='cascade')
     purchase_order_line_id = fields.Many2one('purchase.order.line', string='Purchase Line', required=True)
-    product_id = fields.Many2one(related='purchase_order_line_id.product_id', string='Product', store=True, readonly=True)
+    product_id = fields.Many2one(related='purchase_order_line_id.product_id', string='Product', store=True,
+                                 readonly=True)
     quantity = fields.Float(string='Allocated Amount', required=True)
+    price = fields.Float(string='Price')
 
     @api.constrains('quantity')
     def _check_quantity(self):
