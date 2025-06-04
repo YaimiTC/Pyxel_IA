@@ -1,3 +1,5 @@
+import datetime
+
 from odoo import models, fields, api, _
 
 
@@ -43,6 +45,7 @@ class SaleOrder(models.Model):
             'product_id': line.product_id.id,
             'name': line.name,
             'amount': line.amount,
+            'purchase_ids': [(6, 0, self.evaluation_apply_id.purchase_order_ids.ids)],
             'distribution_type': line.distribution_type,
             'is_cost_special': line.is_cost_special,
         }) for line in self.evaluation_apply_id.cost_line_temp_ids]
@@ -53,6 +56,8 @@ class SaleOrder(models.Model):
             'provider_id': provider.id,
             'purchase_order_ids': [(6, 0, self.evaluation_apply_id.purchase_order_ids.ids)],
             'sale_order_id': self.id,
+            'estimated_start_date': datetime.datetime.now(),
+            'estimated_end_date': datetime.datetime.now(),
             # 'final_sale_order_id': self.id, aqui cambie la logica para poder usar esta como resultado del proceso de terminacion de la importacion.
             'cost_line_ids': cost_lines,
             'country_origin_id': provider.country_id.id,
@@ -89,3 +94,8 @@ class SaleOrder(models.Model):
             'context': {'default_sale_order_id': self.id},
         }
 
+    def _prepare_invoice(self):
+        invoice_vals = super()._prepare_invoice()
+        if self.importation_process_id:
+            invoice_vals['importation_process_id'] = self.importation_process_id.id
+        return invoice_vals

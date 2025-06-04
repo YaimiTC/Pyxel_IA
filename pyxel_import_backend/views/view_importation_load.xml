@@ -21,44 +21,52 @@
         <field name="model">importation.load</field>
         <field name="arch" type="xml">
             <form string="Importation Load">
+                <header>
+                     <button name="%(action_x_container_fill_wizard)d"
+                        type="action"
+                        string="Line Fill"
+                        class="btn-secondary"/>
+                </header>
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="importation_id"/>
-                        <field name="purchase_condition" readonly="1"/>
-                        <field name="cargo_type"/>
-                        <field name="size"/>
-                        <field name="weight"/>
-                        <field name="volume"/>
-                        <field name="supplier_invoice_number"/>
-                    </group>
+                        <group  string="General information">
+                            <field name="name"/>
+                            <field name="importation_id"/>
+                            <field name="purchase_condition" readonly="1"/>
+                            <field name="cargo_type"/>
+                            <field name="size"/>
+                            <field name="weight"/>
+                            <field name="volume"/>
+                            <field name="supplier_invoice_number"/>
+                        </group>
 
-                    <group string="Container Status">
-                        <field name="arrival_date"/>
-                        <field name="release_date"/>
-                        <field name="extraction_date"/>
-                        <field name="return_date"/>
-                        <field name="state" readonly="1"/>
+                        <group string="Container Status">
+                            <field name="arrival_date"/>
+                            <field name="release_date"/>
+                            <field name="extraction_date"/>
+                            <field name="return_date"/>
+                            <field name="state" readonly="1"/>
+                        </group>
                     </group>
+                   <group>
+                        <group string="Transport">
+                            <field name="airline"/>
+                            <field name="transit_agency"/>
+                            <field name="pre_appointment_date"/>
+                            <field name="appointment_date"/>
+                            <field name="transport_company"/>
+                            <field name="province"/>
+                            <field name="truck_plate"/>
+                            <field name="destination"/>
+                            <field name="driver"/>
+                        </group>
 
-                    <group string="Transport">
-                        <field name="airline"/>
-                        <field name="transit_agency"/>
-                        <field name="pre_appointment_date"/>
-                        <field name="appointment_date"/>
-                        <field name="transport_company"/>
-                        <field name="province"/>
-                        <field name="truck_plate"/>
-                        <field name="destination"/>
-                        <field name="driver"/>
+                        <group string="Transshipment">
+                            <field name="is_transferred"/>
+                            <field name="is_transshipment"/>
+                            <field name="transshipment_type" invisible="is_transshipment == False"/>
+                        </group>
                     </group>
-
-                    <group string="Transshipment">
-                        <field name="is_transferred"/>
-                        <field name="is_transshipment"/>
-                        <field name="transshipment_type" invisible="is_transshipment == False"/>
-                    </group>
-
                     <notebook>
                         <page string="Product Lines">
                             <field name="cargo_line_ids">
