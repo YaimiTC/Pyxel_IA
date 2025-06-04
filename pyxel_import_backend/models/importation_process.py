@@ -83,6 +83,11 @@ class ImportationProcess(models.Model):
     )
     sale_order_count = fields.Integer(string='Sale Orders Count', compute='_compute_sale_order_count')
 
+    stage_enter_date = fields.Datetime(string="Stage date")
+    days_in_stage = fields.Integer(string="State days", compute='_compute_days_in_stage', store=True)
+
+    invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
+
     def _compute_sale_order_count(self):
         for rec in self:
             rec.sale_order_count = self.env['sale.order'].search_count([
@@ -91,8 +96,24 @@ class ImportationProcess(models.Model):
                 ('id', '=', rec.final_sale_order_id.id)
             ])
 
-    stage_enter_date = fields.Datetime(string="Stage date")
-    days_in_stage = fields.Integer(string="State days", compute='_compute_days_in_stage', store=True)
+    def _compute_invoice_count(self):
+        for record in self:
+            record.invoice_count = self.env['account.move'].search_count([
+                ('importation_process_id', '=', record.id)
+            ])
+
+    def action_view_related_invoices(self):
+        return {
+            'name': 'Invoices',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move',
+            'view_mode': 'tree,form',
+            'domain': [('importation_process_id', '=', self.id)],
+            'context': {
+                'default_importation_process_id': self.id,
+                'default_invoice_type': 'operative'
+            },
+        }
 
     @api.depends('stage_enter_date')
     def _compute_days_in_stage(self):
@@ -114,7 +135,7 @@ class ImportationProcess(models.Model):
         self.ensure_one()
         domain = ['|', ('id', '=', self.sale_order_id.id), ('id', '=', self.final_sale_order_id.id)]
         return {
-            'name': 'Órdenes de Venta',
+            'name': 'Purchase Orders',
             'type': 'ir.actions.act_window',
             'res_model': 'sale.order',
             'view_mode': 'tree,form',
@@ -187,7 +208,7 @@ class ImportationProcess(models.Model):
 
         # Crear el sale.order con líneas acumuladas por producto
         sale_order = SaleOrder.create({
-            'partner_id': self.provider_id.id,
+            'partner_id': self.sale_order_id.partner_id.id,
             'importation_process_id': self.id,
             'origin': self.name,
             'order_type': 'importation_process',

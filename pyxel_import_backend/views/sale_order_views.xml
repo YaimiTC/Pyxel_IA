@@ -20,7 +20,7 @@
                         type="object"
                         string="Start Importation"
                         class="btn-secondary"
-                        invisible="state != 'sale' or importation_process_id"/>
+                        invisible="order_type != 'evaluation_final' or importation_process_id"/>
             </xpath>
             <xpath expr="//div[@class='oe_button_box']" position="inside">
                 <button name="action_view_related_purchase_orders"
@@ -40,7 +40,7 @@
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="order_type" string="Order Type" readonly="1"/>
-                <field name="importation_process_id" string="Importation Process" readonly="1" invisible="order_type != 'importation_process'"/>
+                <field name="importation_process_id" string="Importation Process" readonly="1"/>
             </xpath>
         </field>
         </record>
