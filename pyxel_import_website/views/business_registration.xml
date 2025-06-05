@@ -594,42 +594,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <!-- <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="MIPYME" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="deliver_address">
-                                                                    <span class="s_website_form_label_content">Escritura Notarial
-                                                                       
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="escritura_notarial" type="text" class="form-control s_website_form_input" name="escritura_notarial" placeholder="Número de escritura notarial y fecha" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="TCP" data-visibility-comparator="selected"> 
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="deliver_address">
-                                                                    <span class="s_website_form_label_content">Número de Registro del Proyecto
-                                                                       
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="numero_de_registro" type="text" class="form-control s_website_form_input" name="numero_de_registro" placeholder="Número de registro del proyecto y fecha" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="Estatal" data-visibility-comparator="selected"> 
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="deliver_address">
-                                                                    <span class="s_website_form_label_content">Escritura Pública
-                                                                       
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="escritura_publica" type="text" class="form-control s_website_form_input" name="escritura_publica" placeholder="Número de escritura publica y fecha" />
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
                                                         <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="MYPIME" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
@@ -655,7 +619,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="Persona natural" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
+                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="PersonaNatural" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
                                                                     <span class="s_website_form_label_content">
@@ -671,7 +635,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="Sucursal extranjera" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
+                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="SucursalExtranjera" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
                                                                     <span class="s_website_form_label_content">
@@ -729,35 +693,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="TCP" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="1" data-max-file-size="6" data-fill-with="undefined" required=""/>
-                                                                    <div class="s_website_form_field_description small form-text text-muted" multiple="true">
-                                                                        -Proyecto de trabajo
-                                                                        <br/>
-                                                                        -Carnet de identidad
-                                                                        <br/>
-                                                                        -Carnet de la ONAT
-                                                                        <br/>
-                                                                        <br/>
-                                                                        -Certifico de no adeudo
-                                                                        <br/>
-                                                                        -Contrato Banco MLC y CUP
-                                                                                                                                                <!-- -Copia certificada de la resolución de
-                                                                        autorización
-                                                                        del Consejo de la Administración Municipal o del
-                                                                        Gobernador, según corresponda. -->
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                    
 
                                                         <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="Provider" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
