@@ -13,63 +13,77 @@ class WizardEvaluateProviders(models.TransientModel):
 
     def default_get(self, fields_list):
         res = super().default_get(fields_list)
-        if len(self.evaluation_line_ids) == 0:
-            active_id = self.env.context.get('default_sale_order_id')
-            print("Contexto:", self.env.context)
-            print("Active ID:", active_id)
+        active_id = self.env.context.get('default_sale_order_id')
 
-            if not active_id:
-                print("No active_id, returning empty res")
-                return res
-
-            sale_order = self.env['sale.order'].browse(active_id)
-            print("sales order:", sale_order.name)
-            lines = []
-            for line in sale_order.order_line:
-                if line.product_id.type in ('consu', 'product') and \
-                        line.product_id.qty_available < line.product_uom_qty:
-                    print(f"Valid product: {line.product_id.name}, ID: {line.product_id.id}")
-                    lines.append((0, 0, {
-                        'product_id': line.product_id.id,
-                        'quantity': line.product_uom_qty,
-                        'product_uom': line.product_uom.id,
-                    }))
-            print("Generated lines:", lines)
-            if not lines:
-                raise ValidationError("There are no products that require supplier evaluation..")
-            res.update({
-                'sale_order_id': sale_order.id,
-                'evaluation_line_ids': lines,
-            })
+        if not active_id:
             return res
+
+        sale_order = self.env['sale.order'].browse(active_id)
+        lines = []
+        for line in sale_order.order_line:
+            if line.product_id.type in ('consu', 'product') and \
+                    line.product_id.qty_available < line.product_uom_qty:
+                # Obtener el precio estimado desde el primer proveedor del producto
+                supplier_info = line.product_id.seller_ids[:1]
+                estimated_price = supplier_info.price if supplier_info else 0.0
+                lines.append((0, 0, {
+                    'product_id': line.product_id.id,
+                    'quantity': line.product_uom_qty,
+                    'product_uom': line.product_uom.id,
+                    'estimated_price':estimated_price
+                }))
+
+        if not lines:
+            raise ValidationError("There are no products that require supplier evaluation.")
+
+        res.update({
+            'sale_order_id': sale_order.id,
+            'evaluation_line_ids': lines,
+        })
+        return res
 
     def action_confirm(self):
         print("Starting action_confirm")
         print("sales order:", self.sale_order_id.name)
+
         existing_eval = self.env['purchase.provider.evaluation'].search([
             ('sale_order_id', '=', self.sale_order_id.id),
             ('state', 'in', ['apply']),
         ], limit=1)
+
         print("Existing evaluation:", existing_eval)
         if existing_eval:
             raise ValidationError('There is already an active evaluation for this quote.')
 
-        valid_lines = self.evaluation_line_ids.filtered(lambda l: l.product_id)
+        # 🔒 Asegura que todos los registros estén cargados correctamente
+        self.ensure_one()
+        self.evaluation_line_ids._compute_suppliers()
+
+        valid_lines = self.evaluation_line_ids.filtered(lambda l: isinstance(l, models.BaseModel) and l.product_id)
         print("Valid lines:", valid_lines)
+
         if not valid_lines:
             raise ValidationError("There are no valid lines to evaluate.")
 
-        evaluation = self.env['purchase.provider.evaluation'].create({
-            'state': 'evaluated',
-            'sale_order_id': self.sale_order_id.id,
-            'evaluation_line_ids': [(0, 0, {
+        evaluation_lines = []
+        for line in valid_lines:
+            price = line.estimated_price or 0.0
+            print(
+                f"Line for product {line.product_id.name}, supplier: {line.selected_supplier_id.name}, price: {price}")
+            evaluation_lines.append((0, 0, {
                 'product_id': line.product_id.id,
                 'product_uom': line.product_uom.id,
                 'product_uom_qty': line.quantity,
                 'suggested_supplier_id': line.selected_supplier_id.id,
-                'price_unit': line.estimated_price,
-            }) for line in valid_lines]
+                'price_unit': price,
+            }))
+
+        evaluation = self.env['purchase.provider.evaluation'].create({
+            'state': 'evaluated',
+            'sale_order_id': self.sale_order_id.id,
+            'evaluation_line_ids': evaluation_lines,
         })
+
         print("Evaluation created:", evaluation)
         evaluation.action_generate_purchase_orders()
         print("Purchase orders generated")
@@ -110,10 +124,10 @@ class WizardEvaluateProvidersLine(models.TransientModel):
             supplier_info = rec.product_id.seller_ids[:1]  # Solo el primer proveedor disponible
             if supplier_info:
                 rec.available_supplier_ids = supplier_info.partner_id
-                rec.estimated_price = supplier_info.price or 0.0
+                # rec.estimated_price = supplier_info.price or 0.0
             else:
                 rec.available_supplier_ids = False
-                rec.estimated_price = 0.0
+                # rec.estimated_price = 0.0
 
     @api.onchange('selected_supplier_id')
     def _onchange_selected_supplier_id(self):

@@ -72,8 +72,14 @@
                                             type="object"
                                             class="oe_stat_button"
                                             icon="fa-shopping-cart" >
-                                        <field name="sale_order_count" widget="statinfo" string="Órdenes de Venta"/>
+                                        <field name="sale_order_count" widget="statinfo" string="Sale Orders"/>
                                     </button>
+                                     <button name="action_view_related_invoices"
+                                        type="object"
+                                        class="oe_stat_button"
+                                        icon="fa-file-invoice-dollar">
+                                    <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                                </button>
                                 </div>
                                 <group>
                                     <group>
@@ -108,7 +114,7 @@
                                         </group>
                                     </page>
 
-                                    <page string="Load">
+                                    <page string="Importation Load">
                                         <field name="load_tracking_ids">
                                             <tree>
                                                 <field name="name"/>
@@ -123,7 +129,14 @@
                                                 <field name="state"/>
                                             </tree>
                                             <form>
+                                                 <header>
+                                                     <button name="%(action_x_container_fill_wizard)d"
+                                                        type="action"
+                                                        string="Line Fill"
+                                                        class="btn-secondary"/>
+                                                </header>
                                                 <sheet>
+
                                                   <group>
                                                     <field name="name"/>
                                                     <field name="importation_id"/>
@@ -190,8 +203,8 @@
                                     </page>
                                     <page string="Import costs">
                                        <field name="cost_line_ids">
-                                            <tree editable="bottom">
-                                                <field name="product_id" context="{'default_type': 'service'}"/>
+                                            <tree editable="top" create="true" edit="true">
+                                                <field name="product_id" context="{'default_detailed_type': 'service', 'default_taxes_id': [], 'default_supplier_taxes_id': []}"/>
                                                 <field name="amount"/>
                                                 <field name="distribution_type"/>
                                                 <field name="purchase_ids"
