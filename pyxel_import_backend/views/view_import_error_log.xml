@@ -1,0 +1,63 @@
+<odoo>
+         <record id="view_import_error_log_tree" model="ir.ui.view">
+            <field name="name">import.error.log.tree</field>
+            <field name="model">import.error.log</field>
+            <field name="arch" type="xml">
+                <tree string="Import Logs" create="false" edit="false">
+                    <field name="name"/>
+                    <field name="import_date"/>
+                </tree>
+            </field>
+        </record>
+     <record id="action_generate_error_report" model="ir.actions.server">
+            <field name="name">Unprocessed containers</field>
+            <field name="model_id" ref="model_import_error_log"/>
+            <field name="state">code</field>
+            <field name="code">
+                action = model.browse(context.get('active_id')).action_generate_error_report()
+            </field>
+        </record>
+
+        <record id="view_import_error_log_form" model="ir.ui.view">
+            <field name="name">import.error.log.form</field>
+            <field name="model">import.error.log</field>
+            <field name="arch" type="xml">
+                <form string="Log Detail" create="false" edit="false">
+                    <header>
+                       <button name="action_generate_error_report" string="Unprocessed containers" type="object" class="btn-primary"/>
+                    </header>
+                    <group>
+                        <field name="name"/>
+                        <field name="import_date"/>
+                        <field name="filename"/>
+                        <field name="import_file" filename="filename"/>
+                    </group>
+                    <field name="error_lines">
+                        <tree readonly="1">
+                            <field name="line_number"/>
+                            <field name="error_message"/>
+                            <field name="container_number"/>
+                            <field name="bl_number"/>
+                        </tree>
+                    </field>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="action_import_error_log" model="ir.actions.act_window">
+            <field name="name">Import Logs</field>
+            <field name="res_model">import.error.log</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_import_error_logs"
+              name="Error Logs"
+              parent="menu_import_manager_root"
+              action="action_import_error_log"
+              sequence="30"/>
+
+
+
+</odoo>
