@@ -19,6 +19,7 @@ class ImportationLoad(models.Model):
     size = fields.Char(string='Size')
     weight = fields.Float(string='Weight (Kg)')
     volume = fields.Float(string='Volume (m³)')
+    bulk = fields.Float(string='Bulk')
     supplier_invoice_number = fields.Char(string='Supplier Invoice Number')
 
     is_transferred = fields.Boolean(string='Transferred')
@@ -46,6 +47,7 @@ class ImportationLoad(models.Model):
     ], string='State', compute='_compute_state', store=True, readonly=True)
 
     # Información logística adicional
+    shipping_company = fields.Char(string='Shipping company')
     airline = fields.Char(string='Airline')
     transit_agency = fields.Char(string='Transitory')
 
@@ -60,6 +62,27 @@ class ImportationLoad(models.Model):
 
     # Líneas de producto asignadas a la carga (fracción de ordenes de compra)
     cargo_line_ids = fields.One2many('importation.load.line', 'cargo_id', string='Products transported')
+
+    currency_id = fields.Many2one(
+        'res.currency',
+        string='Currency',
+        compute='_compute_currency_id',
+        store=True,
+        readonly=False,
+    )
+
+    @api.depends('cargo_line_ids.purchase_order_line_id.order_id.currency_id')
+    def _compute_currency_id(self):
+        for record in self:
+            currencies = record.cargo_line_ids.mapped('purchase_order_line_id.order_id.currency_id')
+            record.currency_id = currencies[0] if currencies else False
+
+    purchase_order_ids = fields.Many2many('purchase.order', compute='_compute_purchase_orders', store=False)
+
+    @api.depends('importation_id')
+    def _compute_purchase_orders(self):
+        for rec in self:
+            rec.purchase_order_ids = rec.importation_id.purchase_order_ids
 
     @api.depends('arrival_date', 'release_date', 'extraction_date', 'return_date')
     def _compute_state(self):
@@ -111,6 +134,12 @@ class ImportationLoad(models.Model):
                 importation.stage_id = stage.id
 
     @api.model
+    def create(self, vals):
+        record = super().create(vals)
+        if 'state' in vals:
+            record.update_stage_importation()
+        return record
+
     def write(self, vals):
         res = super().write(vals)
         if 'state' in vals:
