@@ -2,6 +2,7 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
 STATE_SELECTION = [
+    ('new', 'New'),
     ('in_progress', 'Importation in Progress'),
     ('done', 'Completed'),
     ('cancelled', 'Cancelled'),
@@ -20,7 +21,7 @@ class ImportationProcess(models.Model):
     state = fields.Selection(
         STATE_SELECTION,
         string='State',
-        default='draft',
+        default='new',
         tracking=True,
     )
     purchase_order_ids = fields.Many2many('purchase.order', string='Purchase Orders')
@@ -46,10 +47,10 @@ class ImportationProcess(models.Model):
     airport = fields.Char(string='Airport')
 
     purchase_condition = fields.Selection([
-        ('fcl', 'Maritime Import with Full Container Load (FCL)'),
-        ('air', 'Air Import'),
-        ('local', 'Local Purchase'),
-        ('grouped', 'Grouped Cargo'),
+        ('FCL', 'FCL'),
+        ('AWB', 'AWB'),
+        ('LCL', 'LCL'),
+        ('DAP', 'DAP'),
     ], string='Purchase Condition')
 
     purchase_condition_number = fields.Char(string='Number/Reference by Condition')

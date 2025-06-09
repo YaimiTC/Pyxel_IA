@@ -15,7 +15,7 @@
                         string="Evaluate Supplier"
                         class="btn-secondary"
                         context="{'default_sale_order_id': active_id}"
-                        invisible="has_applicable_evaluations or order_type in ('evaluation_final', 'importation_process')"/>
+                        invisible="has_applicable_evaluations or order_type in ('evaluation_final', 'importation_process') or state in ['cancel']"/>
                 <button name="action_initial_process_importation"
                         type="object"
                         string="Start Importation"

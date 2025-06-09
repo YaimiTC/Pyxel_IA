@@ -33,25 +33,30 @@
                             <field name="name"/>
                             <field name="importation_id"/>
                             <field name="purchase_condition" readonly="1"/>
-                            <field name="cargo_type"/>
+                            <field name="cargo_type" invisible="purchase_condition not in ('FCL','LCL')"/>
                             <field name="size"/>
                             <field name="weight"/>
-                            <field name="volume"/>
+                            <field name="volume" invisible="purchase_condition == 'AWB'"/>
+                            <field name="bulk" invisible="purchase_condition == 'LCL'"/>
                             <field name="supplier_invoice_number"/>
                         </group>
 
                         <group string="Container Status">
-                            <field name="arrival_date"/>
-                            <field name="release_date"/>
-                            <field name="extraction_date"/>
-                            <field name="return_date"/>
+                            <field name="opening_date" invisible="purchase_condition not in ('FCL','LCL')"/>
+                            <field name="arrival_date" invisible="purchase_condition not in ('FCL','LCL')"/>
+                            <field name="release_date" invisible="purchase_condition not in ('FCL','LCL')"/>
+                            <field name="extraction_date" invisible="purchase_condition not in ('FCL','LCL')"/>
+                            <field name="return_date" invisible="purchase_condition == 'FCL'"/>
                             <field name="state" readonly="1"/>
+                            <field name="currency_id" readonly="1"/>
                         </group>
                     </group>
                    <group>
                         <group string="Transport">
-                            <field name="airline"/>
-                            <field name="transit_agency"/>
+
+                            <field name="shipping_company" invisible="purchase_condition == 'FCL'"/>
+                            <field name="airline" invisible="purchase_condition == 'AWB'"/>
+                            <field name="transit_agency" invisible="purchase_condition not in ('FCL','LCL')"/>
                             <field name="pre_appointment_date"/>
                             <field name="appointment_date"/>
                             <field name="transport_company"/>
@@ -69,9 +74,10 @@
                     </group>
                     <notebook>
                         <page string="Product Lines">
+                            <field name="purchase_order_ids" />
                             <field name="cargo_line_ids">
                                 <tree editable="bottom">
-                                    <field name="purchase_order_line_id"/>
+                                    <field name="purchase_order_line_id" domain="[('order_id', 'in', parent.purchase_order_ids)]"/>
                                     <field name="product_id" readonly="1"/>
                                     <field name="quantity"/>
                                 </tree>
