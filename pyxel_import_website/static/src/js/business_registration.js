@@ -46,26 +46,45 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         this._toggleFields();
         return def;
     },
-    async _reloadStates(ev) {
-        var states = await this.rpc("/get_form_states", {
-            country_id:   $("select[name='Country']").val()
-        })
-        $("#state").empty()
-        $.each(states, function(key,value) {
-            $("#state").append($("<option></option>").attr("value", key).text(value));
-        });
-        this._reloadCities(ev);
-    },
-     async _reloadCities(ev) {
-        var cities = await this.rpc("/get_form_cities", {
-            state_id:   $("select[name='State']").val()
-        })
-        $("#city").empty()
-        $.each(cities, function(key,value) {
-            $("#city").append($("<option></option>").attr("value", key).text(value));
+   async _reloadStates() {
+      
+        const $countrySel = $('select[name="Country"]:visible');
+        const country_id  = $countrySel.length ? $countrySel.val() : 56; // 56 → Cuba
+
+        const states = await this.rpc('/get_form_states', { country_id });
+
+       
+        $('#state, #state_provider').each(function () {
+            const $sel = $(this).empty();
+            $sel.append('<option value="">Provincia…</option>');
+            $.each(states, (id, name) => $sel.append(new Option(name, id)));
         });
 
+     
+        this._reloadCities();
     },
+    async _reloadCities(ev) {
+  
+        const map = {
+            state          : '#city',
+            state_provider : '#city_provider',
+        };
+
+        const stateSelectID = ev ? $(ev.target).attr('id') :
+                               $('select[name="State"]:visible').attr('id');
+
+        if (!stateSelectID) { return; }
+
+        const $stateSel = $('#' + stateSelectID);
+        const state_id  = $stateSel.val() || 0;
+
+        const cities = state_id ? await this.rpc('/get_form_cities', { state_id }) : {};
+
+        const $citySel = $(map[stateSelectID]).empty();
+        $citySel.append('<option value="">Municipio…</option>');
+        $.each(cities, (id, name) => $citySel.append(new Option(name, id)));
+    },
+
     _changeCountry:  function () {
         var selectStates = $("select[name='State']");
         var selectCountry = $("select[name='Country']");

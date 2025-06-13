@@ -418,7 +418,9 @@
                                                                     <span class="s_website_form_label_content">Código Mincex </span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required=""/>
+                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
+       title="Sólo letras y números"
+       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -428,7 +430,9 @@
                                                                     <span class="s_website_form_label_content">Código Mincex </span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required=""/>
+                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
+       title="Sólo letras y números"
+       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -530,7 +534,7 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="State" required="" id="state">
+                                                                    <select class="form-select s_website_form_input" style="" name="State" required="" id="state_provider">
                                                                         <option value="">Provincia...</option>
 
                                                                     </select>
@@ -566,7 +570,7 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="City" required="" id="city">
+                                                                    <select class="form-select s_website_form_input" style="" name="City" required="" id="city_provider">
                                                                         <option value="">Municipio...</option>
                                                                         <!--                                                                        <t t-foreach="states" t-as="s">-->
                                                                         <!--                                                                            <option t-att-value="s.id"-->
@@ -1242,7 +1246,9 @@
                                                                     </span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required=""/>
+                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
+       title="Sólo letras y números"
+       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>
