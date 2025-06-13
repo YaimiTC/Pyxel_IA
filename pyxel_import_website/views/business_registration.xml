@@ -252,7 +252,7 @@
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <select class="form-select s_website_form_input" style="" name="FGNE type" id="fgne_type">
-                                                                        <option value="MYPIME">MYPIME</option>
+                                                                        <option value="MIPYME">MIPYME</option>
                                                                         <option value="TCP">TCP</option>
                                                                         <option value="PersonaNatural">Persona Natural</option>
                                                                         <option value="SucursalExtranjera">Sucursal Extranjera</option>
@@ -271,7 +271,7 @@
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <select class="form-select s_website_form_input" style="" name="FGNE type" id="fgne_type">
-                                                                        <option value="MYPIME">MYPIME</option>
+                                                                        <option value="MIPYME">MIPYME</option>
                                                                         <option value="TCP">TCP</option>
                                                                         <option value="PersonaNatural">Persona Natural</option>
                                                                         <option value="SucursalExtranjera">Sucursal Extranjera</option>
@@ -354,8 +354,8 @@
                                                                             name="planilla_proveedor"
                                                                             id="planilla_proveedor"
                                                                             accept=".xlsx,.xls,.pdf,.docx,.doc"
-                                                                            data-max-files-number="1"
-                                                                            data-max-file-size="10"
+                                                                            data-max-files-number="20"
+                                                                            data-max-file-size="30"
                                                                             data-fill-with="undefined" 
                                                                             data-label=""
                                                                             />
@@ -393,8 +393,8 @@
                                                                             name="planilla_proveedor"
                                                                             id="planilla_proveedor"
                                                                             accept=".xlsx,.xls,.pdf,.docx,.doc"
-                                                                            data-max-files-number="1"
-                                                                            data-max-file-size="10"
+                                                                            data-max-files-number="20"
+                                                                            data-max-file-size="30"
                                                                             data-fill-with="undefined" 
                                                                             data-label=""
                                                                             />
@@ -446,6 +446,19 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+ 
+                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact2">
+                                                                    <span class="s_website_form_label_content">Teléfono
+                                                                    </span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="Address">
@@ -570,14 +583,17 @@
 
                                                         <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="TCP" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
+                                                                <div style="display: flex;flex-direction: column;width: 200px;">
+                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
+                                                                        <span class="s_website_form_label_content">
+                                                                            Documentación legal
+                                                                        </span>
+                                                                        <span class="s_website_form_mark">*</span>
+                                                                    </label>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="1" data-max-file-size="6" data-fill-with="undefined" data-label="" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-max-file-size="30" data-fill-with="undefined" data-label="" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                          -Certificado de Validación del Proyecto, emitido por la Dirección Municipal de Trabajo, para el ejercicio de la actividad por Cuenta Propia.
                                                                         <br/>
@@ -594,16 +610,19 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="MYPIME" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
+                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="MIPYME" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
+                                                                <div style="display: flex;flex-direction: column;width: 200px;">
+                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
+                                                                        <span class="s_website_form_label_content">
+                                                                            Documentación legal
+                                                                        </span>
+                                                                        <span class="s_website_form_mark">*</span>
+                                                                    </label>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="4" data-min-files-number="4" data-max-file-size="6" data-fill-with="undefined" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         -Escritura Notarial
                                                                         <br/>
@@ -621,14 +640,17 @@
                                                         </div>
                                                         <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="PersonaNatural" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
+                                                                <div style="display: flex;flex-direction: column;width: 200px;">
+                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
+                                                                        <span class="s_website_form_label_content">
+                                                                            Documentación legal
+                                                                        </span>
+                                                                        <span class="s_website_form_mark">*</span>
+                                                                    </label>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="4" data-min-files-number="4" data-max-file-size="6" data-fill-with="undefined" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         -Carnet de Identidad
                                                                     </div>
@@ -637,14 +659,17 @@
                                                         </div>
                                                         <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="SucursalExtranjera" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
+                                                                <div style="display: flex;flex-direction: column;width: 200px;">
+                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
+                                                                        <span class="s_website_form_label_content">
+                                                                            Documentación legal
+                                                                        </span>
+                                                                        <span class="s_website_form_mark">*</span>
+                                                                    </label>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="4" data-min-files-number="4" data-max-file-size="6" data-fill-with="undefined" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Licencia de la cámara de comercial
                                                                         <br/>
@@ -655,14 +680,17 @@
                                                         </div>
                                                         <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="Estatal" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
+                                                                <div style="display: flex;flex-direction: column;width: 200px;">
+                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
+                                                                        <span class="s_website_form_label_content">
+                                                                            Documentación legal
+                                                                        </span>
+                                                                        <span class="s_website_form_mark">*</span>
+                                                                    </label>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="4" data-min-files-number="4" data-max-file-size="6" data-fill-with="undefined" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Certifico legal
                                                                         <br/>
@@ -673,14 +701,17 @@
                                                         </div>
                                                         <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="Proveedor Extranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
+                                                                <div style="display: flex;flex-direction: column;width: 200px;">
+                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
+                                                                        <span class="s_website_form_label_content">
+                                                                            Documentación legal
+                                                                        </span>
+                                                                        <span class="s_website_form_mark">*</span>
+                                                                    </label>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="4" data-min-files-number="4" data-max-file-size="6" data-fill-with="undefined" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Escritura constituciona
                                                                         <br/>
@@ -697,14 +728,17 @@
 
                                                         <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="Provider" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
+                                                                <div style="display: flex;flex-direction: column;width: 200px;">
+                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
+                                                                        <span class="s_website_form_label_content">
+                                                                            Documentación legal
+                                                                        </span>
+                                                                        <span class="s_website_form_mark">*</span>
+                                                                    </label>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="8" data-min-files-number="1" data-max-file-size="6" data-fill-with="undefined" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         - Documento constitutivo de la firma o compañía
                                                                         <br/>
@@ -1107,7 +1141,7 @@
                                                                     <span class="s_website_form_label_content">Oferta Firmada</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input type="file" name="x_studio_oferta_firmada" id="x_studio_oferta_firmada" class="form-control s_website_form_input" accept=".pdf" data-max-files-number="1" data-min-files-number="1" data-max-file-size="80" data-fill-with="undefined"/>
+                                                                    <input type="file" name="x_studio_oferta_firmada" id="x_studio_oferta_firmada" class="form-control s_website_form_input" accept=".pdf" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1256,14 +1290,17 @@
                                                         </div>
                                                         <div data-name="Field" data-visibility-dependency="other_provider" data-visibility-condition="Yes" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="other_provider_legal_documentation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Documentación legal
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
+                                                                <div style="display: flex;flex-direction: column;width: 200px;">
+                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
+                                                                        <span class="s_website_form_label_content">
+                                                                            Documentación legal
+                                                                        </span>
+                                                                        <span class="s_website_form_mark">*</span>
+                                                                    </label>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="other_provider_legal_documentation" data-max-files-number="8" data-min-files-number="1" data-max-file-size="6" data-fill-with="undefined" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="other_provider_legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         - Documento constitutivo de la firma o compañía
                                                                         <br/>
@@ -1458,20 +1495,20 @@
                                         </div>
                                         <div class="col-lg-4 mt-4">
                                             <ul class="list-unstyled mb-0 ps-2">
-                                                <li>Fruxelimport</li>
+                                                <li>IMPORTADORA</li>
                                                 <li>
                                                     <i class="fa fa-map-marker fa-fw me-2"/>
-                                                    <span class="o_force_ltr">Calle Palmar S/N e/ Ave Independencia y
-                                                        Boyeros Rpto. Martí, Cerro.
+                                                    <span class="o_force_ltr">DIRECCION S/N e/ CALLE y
+                                                        CALLE , MUNICIPIO.
                                                     </span>
                                                 </li>
                                                 <li>
                                                     <i class="fa fa-phone fa-fw me-2"/>
-                                                    <span class="o_force_ltr">78374510/91</span>
+                                                    <span class="o_force_ltr">78374234</span>
                                                 </li>
                                                 <li>
                                                     <i class="fa fa-1x fa-fw fa-envelope me-2"/>
-                                                    <span>dir.export@frusel.gag.cu</span>
+                                                    <span>example@correo</span>
                                                 </li>
                                             </ul>
                                         </div>
