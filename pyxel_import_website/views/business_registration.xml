@@ -158,7 +158,7 @@
 
                                                     <div t-if="not crm_lead_exists and register_type != 'accreditation_business'" class="tab">
                                                         <t t-if="register_type == 'accreditation'">
-                                                             <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="selection">
+                                                            <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="selection">
                                                                 <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                     <label class="col-sm-auto s_website_form_label" style="width: 200px" for="acreditation">
                                                                     <span class="s_website_form_label_content">
@@ -239,10 +239,29 @@
                                                                 </div> <!-- / .s_website_form_field -->
                                                         </t>
                                                         <t else="">
+                                                        
 
                                                             <input type="radio" checked="" class="d-none s_website_form_input form-check-input" id="is_client" name="Register as" value="ClientNacional" data-fill-with="undefined"/>
 
                                                         </t>
+                                                        <div style="visibility:hidden" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px;padding-top: 0;font-size: 1px;padding-bottom: 0;" for="country">
+                                                                    <span class="s_website_form_label_content">País
+                                                                    </span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <select class="form-select s_website_form_input" style="padding: 0; font-size: 1px;" name="Country" id="country">
+                                                                        <option value="">País..</option>
+                                                                        <t t-foreach="countries" t-as="c">
+                                                                            <option t-att-value="c.id" t-att-selected="c.name == 'Cuba'">
+                                                                                <t t-esc="c.name"/>
+                                                                            </option>
+                                                                        </t>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                         <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="fgne_type">
@@ -273,7 +292,6 @@
                                                                     <select class="form-select s_website_form_input" style="" name="FGNE type" id="fgne_type">
                                                                         <option value="MIPYME">MIPYME</option>
                                                                         <option value="TCP">TCP</option>
-                                                                        <option value="PersonaNatural">Persona Natural</option>
                                                                         <option value="SucursalExtranjera">Sucursal Extranjera</option>
                                                                         <option value="Estatal">Estatal</option>
 
@@ -458,7 +476,7 @@
                                                                     </span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/>
+                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone" required=""/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -485,7 +503,7 @@
                                                                     <select class="form-select s_website_form_input" style="" name="Country" required="" id="country">
                                                                         <option value="">País..</option>
                                                                         <t t-foreach="countries" t-as="c">
-                                                                            <option t-att-value="c.id" t-att-selected="c.name == 'Cuba'">
+                                                                            <option t-att-value="c.id" >
                                                                                 <t t-esc="c.name"/>
                                                                             </option>
                                                                         </t>
@@ -493,6 +511,8 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        
+                                                        
                                                         <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientExtranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="country">
@@ -503,7 +523,7 @@
                                                                     <select class="form-select s_website_form_input" style="" name="Country" required="" id="country">
                                                                         <option value="">País..</option>
                                                                         <t t-foreach="countries" t-as="c">
-                                                                            <option t-att-value="c.id" t-att-selected="c.name == 'Cuba'">
+                                                                            <option t-att-value="c.id" >
                                                                                 <t t-esc="c.name"/>
                                                                             </option>
                                                                         </t>
@@ -584,6 +604,80 @@
                                                             </div>
                                                         </div>
 
+                                                        <!-- ──────────────── NUEVOS CAMPOS SEGÚN TIPO DE FGNE ──────────────── -->
+
+                                                        <!-- PYME  →  Escritura notarial -->
+                                                        <div data-name="Field"
+                                                            data-visibility-dependency="FGNE type"
+                                                            data-visibility-condition="MIPYME"
+                                                            data-visibility-comparator="selected"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width:200px"
+                                                                    for="escritura_notarial">
+                                                                    <span class="s_website_form_label_content">Escritura notarial</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <input id="escritura_notarial" name="escritura_notarial"
+                                                                        class="form-control s_website_form_input"
+                                                                        type="text" required=""
+                                                                        placeholder="Número de escritura notarial y fecha"
+                                                                        pattern="[A-Za-z0-9\s]+"
+                                                                        title="Sólo letras y números"
+                                                                        onkeypress="if(!/[A-Za-z0-9\s]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- TCP  →  Nº registro de proyecto -->
+                                                        <div data-name="Field"
+                                                            data-visibility-dependency="FGNE type"
+                                                            data-visibility-condition="TCP"
+                                                            data-visibility-comparator="selected"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width:200px"
+                                                                    for="registro_tcp">
+                                                                    <span class="s_website_form_label_content">Número de registro de proyecto</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <input id="registro_tcp" name="registro_tcp"
+                                                                        class="form-control s_website_form_input"
+                                                                        type="text" required=""
+                                                                        placeholder="Número del registro y fecha"
+                                                                        pattern="[A-Za-z0-9\s]+"
+                                                                        title="Sólo letras y números"
+                                                                        onkeypress="if(!/[A-Za-z0-9\s]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Estatal  →  Escritura pública -->
+                                                        <div data-name="Field"
+                                                            data-visibility-dependency="FGNE type"
+                                                            data-visibility-condition="Estatal"
+                                                            data-visibility-comparator="selected"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width:200px"
+                                                                    for="escritura_publica">
+                                                                    <span class="s_website_form_label_content">Escritura pública</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <input id="escritura_publica" name="escritura_publica"
+                                                                        class="form-control s_website_form_input"
+                                                                        type="text" required=""
+                                                                        placeholder="Número y fecha"
+                                                                        pattern="[A-Za-z0-9\s]+"
+                                                                        title="Sólo letras y números"
+                                                                        onkeypress="if(!/[A-Za-z0-9\s]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- ────────────────────────────────────────────────────────────────── -->
 
                                                         <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="TCP" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -594,7 +688,7 @@
                                                                         </span>
                                                                         <span class="s_website_form_mark">*</span>
                                                                     </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-max-file-size="30" data-fill-with="undefined" data-label="" required="" multiple="true"/>
@@ -623,7 +717,7 @@
                                                                         </span>
                                                                         <span class="s_website_form_mark">*</span>
                                                                     </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
@@ -651,7 +745,7 @@
                                                                         </span>
                                                                         <span class="s_website_form_mark">*</span>
                                                                     </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
@@ -670,7 +764,7 @@
                                                                         </span>
                                                                         <span class="s_website_form_mark">*</span>
                                                                     </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
@@ -691,7 +785,7 @@
                                                                         </span>
                                                                         <span class="s_website_form_mark">*</span>
                                                                     </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
@@ -712,12 +806,12 @@
                                                                         </span>
                                                                         <span class="s_website_form_mark">*</span>
                                                                     </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
-                                                                        Escritura constituciona
+                                                                        Escritura constitucional
                                                                         <br/>
                                                                         Registro mercantil
                                                                         <br/>
@@ -728,7 +822,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                    
+                                                        
 
                                                         <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="Provider" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -739,7 +833,7 @@
                                                                         </span>
                                                                         <span class="s_website_form_mark">*</span>
                                                                     </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
@@ -1303,7 +1397,7 @@
                                                                         </span>
                                                                         <span class="s_website_form_mark">*</span>
                                                                     </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno</span>
+                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="other_provider_legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
