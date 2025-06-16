@@ -798,7 +798,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="Proveedor Extranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
+                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <div style="display: flex;flex-direction: column;width: 200px;">
                                                                     <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
