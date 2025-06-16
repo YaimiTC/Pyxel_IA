@@ -85,7 +85,7 @@
                                                     <t t-if="registered_user">
                                                         <input id="contact1" type="hidden" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
 
-                                                        <input id="contact2" type="hidden" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/>
+                                                        <!-- <input id="contact2" type="hidden" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/> -->
 
                                                         <input id="contact3" type="hidden" class="form-control s_website_form_input" name="email_from" required="" data-fill-with="email"/>
 
@@ -314,14 +314,14 @@
                                                         </div>
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact4">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="company_business">
                                                                     <span class="s_website_form_label_content">Nombre
                                                                         del negocio
                                                                     </span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact4" type="text" class="form-control s_website_form_input" name="company" required="" data-fill-with="commercial_company_name"/>
+                                                                    <input id="company_business" type="text" class="form-control s_website_form_input" name="company_business" required="" data-fill-with="commercial_company_name"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -333,7 +333,7 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="nit" type="text" class="form-control s_website_form_input" name="nit" required="" pattern="\d{11}" maxlength="11" data-fill-with="commercial_company_name" oninput="this.value = this.value.replace(/\D/g, '')"/>
+                                                                    <input id="nit" type="text" class="form-control s_website_form_input" name="nit" required="" pattern="\d{11}" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')"/>
                                                                     <span id="nit-error" style="color:red; display:none;">El NIT debe contener exactamente 11 dígitos.</span>
                                                                 </div>
                                                             </div>
@@ -346,7 +346,7 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="nit" type="text" class="form-control s_website_form_input" name="nit" required="" pattern="\d{11}" maxlength="11" data-fill-with="commercial_company_name" oninput="this.value = this.value.replace(/\D/g, '')"/>
+                                                                    <input id="nit" type="text" class="form-control s_website_form_input" name="nit" required="" pattern="\d{11}" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')"/>
                                                                     <span id="nit-error" style="color:red; display:none;">El NIT debe contener exactamente 11 dígitos.</span>
                                                                 </div>
                                                             </div>
@@ -468,6 +468,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                        
  
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -476,7 +477,7 @@
                                                                     </span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone" required=""/>
+                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone" required="" maxlength="17"  oninput="this.value = this.value.replace(/\D/g, '')" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -865,7 +866,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_dnone">
+                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_dnone">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px">
                                                                     <span class="s_website_form_label_content"/>
@@ -874,7 +875,7 @@
                                                                     <input type="hidden" class="form-control s_website_form_input" name="email_to" value="info@yourcompany.example.com"/>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
 
                                                         <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_dnone">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
