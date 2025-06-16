@@ -977,7 +977,7 @@
                                                                                                             div.textContent = message;  
                                                                                                 
                                                                                                             var mailLink = document.createElement('a');
-                                                                                                            mailLink.href = 'mailto:comercial@fruxelimport.com';
+                                                                                                            mailLink.href = 'mailto:comercial@importadora.com';
                                                                                                             mailLink.textContent = 'contacte con nuestro equipo comercial.';
 
                                                                                                             div.appendChild(mailLink);
@@ -1129,7 +1129,7 @@
                                                                                                             div.textContent = message;  
                                                                                                 
                                                                                                             var mailLink = document.createElement('a');
-                                                                                                            mailLink.href = 'mailto:comercial@fruxelimport.com';
+                                                                                                            mailLink.href = 'mailto:comercial@importadora.com';
                                                                                                             mailLink.textContent = 'contacte con nuestro equipo comercial.';
 
                                                                                                             div.appendChild(mailLink);
