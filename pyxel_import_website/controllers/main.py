@@ -578,7 +578,7 @@ class ControllerTest(http.Controller):
     @http.route('/business-register', type='http', auth="public", website=True)
     def controller_register(self, **kw):
         if request.env.user.id == request.env.ref('base.public_user').id:
-            return request.redirect('/web/login?redirect=/business-register?type=import')
+            return request.redirect('/web/login?redirect=/business-register?type=accreditation')
 
         if kw.get('type') == 'accreditation':
             domain_ids = [request.env.user.partner_id.id]
