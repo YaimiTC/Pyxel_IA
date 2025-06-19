@@ -718,3 +718,23 @@ class PerfilProveedorController(http.Controller):
                     as_attachment=True
                 )
         return request.redirect('/web')
+
+class SolicitudController(http.Controller):
+
+    @http.route('/descargar/solicitud', type='http', auth='public')
+    def descargar_solicitud(self, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('solicitud.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return request.redirect('/web')
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.datas:
+                file_content = base64.b64decode(attachment.datas)
+                return http.send_file(
+                    io.BytesIO(file_content),
+                    filename=attachment.name or 'solicitud',
+                    as_attachment=True
+                )
+        return request.redirect('/web')

@@ -19,6 +19,15 @@
                                 Seleccione o cargue el adjunto que servirá como plantilla del perfil de proveedores para descarga.
                             </div>
                         </block>
+                        
+                         <block title="Planilla de la Solicitud">
+                            <setting>
+                                <field name="solicitud_attachment_id"/>
+                            </setting>
+                            <div class="o_setting_help text-muted mt8">
+                                Seleccione o cargue el adjunto que servirá como plantilla de la solicitud para descarga.
+                            </div>
+                        </block>
                     </app>
                 </xpath>
             </field>
