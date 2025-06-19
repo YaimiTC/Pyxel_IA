@@ -352,7 +352,7 @@
                                                             </div>
                                                         </div>
                                                         <div data-name="Field" 
-                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
                                                             data-type="binary"
                                                             data-visibility-dependency="Register as" 
                                                             data-visibility-condition="ProviderNacional" 
@@ -376,6 +376,7 @@
                                                                             data-max-file-size="30"
                                                                             data-fill-with="undefined" 
                                                                             data-label=""
+                                                                            required="" 
                                                                             />
                                                               
                                                                         <a href="/descargar/perfil_proveedor"
@@ -391,7 +392,7 @@
                                                             </div>
                                                         </div>
                                                         <div data-name="Field" 
-                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
                                                             data-type="binary"
                                                             data-visibility-dependency="Register as" 
                                                             data-visibility-condition="ProviderExtranjero" 
@@ -415,6 +416,7 @@
                                                                             data-max-file-size="30"
                                                                             data-fill-with="undefined" 
                                                                             data-label=""
+                                                                            required="" 
                                                                             />
                                                               
                                                                         <a href="/descargar/perfil_proveedor"
