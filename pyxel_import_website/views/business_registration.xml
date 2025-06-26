@@ -1079,7 +1079,7 @@
                                                                         <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="productOnure">
                                                                             <span class="s_website_form_label_content">Productos homologados por la ONURE
                                                                             </span>
-
+                                                                            <span class="s_website_form_mark">*</span>
                                                                         </label>
                                                                         <div class="col-sm" style="position: relative">
                                                                             <div class="input-group">
@@ -1234,7 +1234,7 @@
                                                                 style="display: none;">
                                                                 Debe seleccionar al menos un producto
                                                         </span>
-                                                        <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="binary">
+                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="oferta_firmada">
                                                                     <span class="s_website_form_label_content">Oferta Firmada</span>
@@ -1243,8 +1243,8 @@
                                                                     <input type="file" name="x_studio_oferta_firmada" id="x_studio_oferta_firmada" class="form-control s_website_form_input" accept=".pdf" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined"/>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        </div> -->
+                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                                 <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                     <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="x_studio_certifies_receipt_load">
                                                                         <span class="s_website_form_label_content">Tipo de
@@ -1262,8 +1262,8 @@
                                                                         </select>
                                                                     </div>
                                                                 </div>
-                                                        </div>
-                                                        <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        </div> -->
+                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="container_type">
                                                                     <span class="s_website_form_label_content">Tipo de
@@ -1277,7 +1277,7 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
 
                                                         <!-- <div data-name="Field" data-visibility-dependency="other_provider" data-visibility-condition="Yes" data-visibility-comparator="!selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_field_hidden_if d-none" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -1318,7 +1318,8 @@
                                                             </div>
                                                         </div> -->
                                                     </div>
-                                                    <div class="tab" t-if="register_type in ['import','accreditation_business']">
+                                                    <div class="tab" t-if="register_type in ['accreditation_business']">
+                                                    <!-- <div class="tab" t-if="register_type in ['import','accreditation_business']"> -->
                                                         <input type="checkbox" value="Yes" class="s_website_form_input form-check-input d-none" name="other_provider" id="other_provider" data-fill-with="undefined" t-att-checked="register_type == 'accreditation_business'"/>
 
                                                         <div data-visibility-dependency="other_provider" data-visibility-condition="Yes" data-visibility-comparator="selected" class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
@@ -1430,7 +1431,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="tab" t-if="register_type not in ['accreditation_business', 'accreditation']">
+                                                    <!-- <div class="tab" t-if="register_type not in ['accreditation_business', 'accreditation']">
                                                         <div data-name="Field" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom #{'d-none' if register_type == 'logistic' and registered_user else ''}" data-type="boolean">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-sm-auto s_website_form_label" style="width: 200px" for="need_logistic_operation">
@@ -1503,7 +1504,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                                                     <div style="float:right;">
                                                         <button type="button" class="btn btn-primary" id="prevBtn">
                                                             Anterior
@@ -1518,8 +1519,6 @@
                                                         <span id="s_website_form_result"></span>
 
                                                     </div>
-
-
                                                 </div>
                                             </form>
                                         </div>
