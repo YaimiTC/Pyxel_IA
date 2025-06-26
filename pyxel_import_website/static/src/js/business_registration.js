@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import publicWidget from '@web/legacy/js/public/public_widget'
+import publicWidget from '@web/legacy/js/public/public_widget';
 
 
 export const BusinessRegistrationForm = publicWidget.Widget.extend({
@@ -95,15 +95,20 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             selectStates.val(options[0].value).change();
         }else{}
     },
-    _checkPassword(ev) {
-        console.log('Pepe el animal');
-        var valid = false;
-        var x = document.getElementsByClassName("select2-selection__rendered");
-        for (let i = 0; i < x.length; i++) {
-            if (x[i].childElementCount > 0) { 
-                valid = true;
+    _checkProducts() {
+    // _checkProducts(ev) {
+        var valid = true;
+        var productRequired = document.getElementById("select2-productRequired-container");
+        var productOnure = document.getElementById("select2-productOnure-container");
+            if (productRequired.childElementCount === 0 && productOnure.childElementCount === 0) { 
+                valid = false;
             }
-        }
+        // var x = document.getElementsByClassName("js-example-basic-multiple");
+        // for (let i = 0; i < x.length; i++) {
+        //     if (x[i].childElementCount === 0) { 
+        //         valid = false;
+        //     }
+        // }
         
         
         var errorEnvolt = document.getElementById("error_envolt");
@@ -111,7 +116,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     
         
         if (errorEnvolt && productError) {
-            if (valid === true) {
+            if (valid) {
                 console.log('valido');
                 errorEnvolt.style.border = "none";
                 productError.style.display = "none";
@@ -122,14 +127,18 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                 productError.style.display = "block";
                 productError.style.margin = "10px 0px 10px";
     
-                if (ev) {
-                    ev.preventDefault();
-                    ev.stopImmediatePropagation();
-                }
-                return false;
+                // if (ev) {
+                //     ev.preventDefault();
+                //     ev.stopImmediatePropagation();
+                // }
             }
         }
-        
+        return valid;
+        },
+    _checkPassword(ev) {
+        console.log('Pepe el animal');
+        this._checkProducts();
+        // this._checkProducts(ev);
        
         if ($("#password").length > 0 && $("#confirm_password").length > 0) {
             if ($("#password").val() !== $("#confirm_password").val()) {
@@ -316,6 +325,9 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         console.log(y);
         console.log(y2);
         v=document.getElementsByClassName("")
+
+        valid = this._checkProducts();
+        // valid = this._checkProducts(ev);
 
         var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
         if (y2.length >=1){
