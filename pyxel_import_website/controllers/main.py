@@ -592,7 +592,7 @@ class ControllerTest(http.Controller):
     @http.route('/business-register', type='http', auth="public", website=True)
     def controller_register(self, **kw):
         if request.env.user.id == request.env.ref('base.public_user').id:
-            return request.redirect('/web/login?redirect=/business-register?type=import')
+            return request.redirect('/web/login?redirect=/business-register?type=accreditation')
 
         if kw.get('type') == 'accreditation':
             domain_ids = [request.env.user.partner_id.id]
@@ -729,6 +729,26 @@ class PerfilProveedorController(http.Controller):
                 return http.send_file(
                     io.BytesIO(file_content),
                     filename=attachment.name or 'plantilla_proveedor',
+                    as_attachment=True
+                )
+        return request.redirect('/web')
+
+class SolicitudController(http.Controller):
+
+    @http.route('/descargar/solicitud', type='http', auth='public')
+    def descargar_solicitud(self, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('solicitud.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return request.redirect('/web')
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.datas:
+                file_content = base64.b64decode(attachment.datas)
+                return http.send_file(
+                    io.BytesIO(file_content),
+                    filename=attachment.name or 'solicitud',
                     as_attachment=True
                 )
         return request.redirect('/web')

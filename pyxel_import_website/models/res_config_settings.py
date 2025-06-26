@@ -11,3 +11,11 @@ class ResConfigSettings(models.TransientModel):
         help="Adjunte aquí la plantilla del perfil de proveedores. "
              "Esta plantilla se utilizará en el formulario de acreditación."
     )
+
+    solicitud_attachment_id = fields.Many2one(
+        'ir.attachment',
+        string="Adjunto de la Plantilla",
+        config_parameter="solicitud.attachment_id",
+        help="Adjunte aquí la plantilla de la solicitud. "
+             "Esta plantilla se utilizará en el formulario de importación."
+    )
