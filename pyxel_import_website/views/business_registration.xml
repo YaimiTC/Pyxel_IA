@@ -1588,7 +1588,6 @@
             </t>
         </template>
 
-
         <record id="business_register_thanks" model="website.page">
             <field name="name">Gracias por elegirnos</field>
             <field name="type">qweb</field>
@@ -1616,7 +1615,7 @@
                                                     procesada.
                                                     </b> Nuestro equipo
                                                     comercial se pondrá en contacto con usted. Si
-                                                    tiene alguna duda presione el botón flotante de WhatsApp. Con gusto
+                                                    tiene alguna duda, contáctenos. Con gusto
                                                     le atenderemos.
                                                 </span>
                                                 <span t-if="register_type">Ya está acreditado o en proceso. Puede
@@ -1627,7 +1626,7 @@
                                                     </a> o <a style="font-color:#EE7D00" href="/business-register?type=accreditation_business">
                                                         acreditar un proveedor
                                                     </a>. Si
-                                                    tiene alguna duda presione el botón flotante de WhatsApp. Con gusto
+                                                    tiene alguna duda, contáctenos. Con gusto
                                                     le atenderemos.
                                                 </span>
                                             </h7>
@@ -1638,17 +1637,17 @@
                                                 <li>IMPORTADORA</li>
                                                 <li>
                                                     <i class="fa fa-map-marker fa-fw me-2"/>
-                                                    <span class="o_force_ltr">DIRECCION S/N e/ CALLE y
-                                                        CALLE , MUNICIPIO.
+                                                    <span class="o_force_ltr">Calle  S/N e/ Calle y
+                                                         Rpto. Ejemplo, Ejemplo.
                                                     </span>
                                                 </li>
                                                 <li>
                                                     <i class="fa fa-phone fa-fw me-2"/>
-                                                    <span class="o_force_ltr">78374234</span>
+                                                    <span class="o_force_ltr">78357575/78</span>
                                                 </li>
                                                 <li>
                                                     <i class="fa fa-1x fa-fw fa-envelope me-2"/>
-                                                    <span>example@correo</span>
+                                                    <span>correo@correo.com</span>
                                                 </li>
                                             </ul>
                                         </div>
@@ -1661,6 +1660,5 @@
                 </t>
             </field>
         </record>
-
     </data>
 </odoo>
