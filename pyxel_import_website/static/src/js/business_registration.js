@@ -16,6 +16,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         'click .register_business_button': '_checkPassword',
         'keyup .is-invalid': '_removeInvalid',
         'click .is-invalid': '_removeInvalid',
+        'change input[name="need_mincex_code"]': '_showHideNoMincexCodeDocumentation',
         'change select[name="FGNE type"]': '_showHideFichaCliente',
         'change select[name="Country"]': '_reloadStates',
         'change select[name="State"]': '_reloadCities',
@@ -46,6 +47,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         this._reloadStates();
         this._toggleFields();
         this._showHideFichaCliente();
+        this._showHideNoMincexCodeDocumentation();
         return def;
     },
    async _reloadStates() {
@@ -97,6 +99,17 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         } else {
             ficha_cliente_fgne_tcp?.classList.remove("d-none");
             ficha_cliente_estatal?.classList.add("d-none");
+        }
+    },
+    // En caso de no tener código de MINCEX se solicitan un conjunto de documentos legales
+    _showHideNoMincexCodeDocumentation:  function () {
+        var need_mincex_code = document.getElementById("need_mincex_code")
+        var no_mincex_code_documentation = document.querySelector("span[name='no_mincex_code_documentation']");
+        if (need_mincex_code?.checked) {
+            no_mincex_code_documentation?.classList.add("d-none");
+        }
+        else{
+            no_mincex_code_documentation?.classList.remove("d-none");
         }
     },
     _changeCountry:  function () {
