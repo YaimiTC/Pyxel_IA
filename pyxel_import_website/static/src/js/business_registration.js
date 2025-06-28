@@ -16,6 +16,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         'click .register_business_button': '_checkPassword',
         'keyup .is-invalid': '_removeInvalid',
         'click .is-invalid': '_removeInvalid',
+        'change select[name="FGNE type"]': '_showHideFichaCliente',
         'change select[name="Country"]': '_reloadStates',
         'change select[name="State"]': '_reloadCities',
         'change #hiddenTestInput': '_updateSessionProducts',
@@ -44,6 +45,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         this.showTab(this.currentTab);
         this._reloadStates();
         this._toggleFields();
+        this._showHideFichaCliente();
         return def;
     },
    async _reloadStates() {
@@ -84,7 +86,19 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         $citySel.append('<option value="">Municipio…</option>');
         $.each(cities, (id, name) => $citySel.append(new Option(name, id)));
     },
+    _showHideFichaCliente:  function () {
+        var ficha_cliente_fgne_tcp = document.querySelector('a[href="/descargar/ficha_cliente_fgne_tcp"]');
+        var ficha_cliente_estatal = document.querySelector('a[href="/descargar/ficha_cliente_estatal"]');
+        var fgne_type = document.querySelector('div[name="fgne_type_national_client"] select[name="FGNE type"]');
 
+        if (fgne_type?.value == 'Estatal') {
+            ficha_cliente_estatal?.classList.remove("d-none");
+            ficha_cliente_fgne_tcp?.classList.add("d-none");
+        } else {
+            ficha_cliente_fgne_tcp?.classList.remove("d-none");
+            ficha_cliente_estatal?.classList.add("d-none");
+        }
+    },
     _changeCountry:  function () {
         var selectStates = $("select[name='State']");
         var selectCountry = $("select[name='Country']");
@@ -100,7 +114,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         var valid = true;
         var productRequired = document.getElementById("select2-productRequired-container");
         var productOnure = document.getElementById("select2-productOnure-container");
-            if (productRequired.childElementCount === 0 && productOnure.childElementCount === 0) { 
+            if (productRequired?.childElementCount === 0 && productOnure?.childElementCount === 0) { 
                 valid = false;
             }
         // var x = document.getElementsByClassName("js-example-basic-multiple");

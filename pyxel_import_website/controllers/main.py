@@ -738,3 +738,63 @@ class SolicitudController(http.Controller):
                     as_attachment=True
                 )
         return request.redirect('/web')
+
+class FichaClienteEstatalController(http.Controller):
+
+    @http.route('/descargar/ficha_cliente_estatal', type='http', auth='public')
+    def descargar_ficha_cliente_estatal(self, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_estatal.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return request.redirect('/web')
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.datas:
+                file_content = base64.b64decode(attachment.datas)
+                return http.send_file(
+                    io.BytesIO(file_content),
+                    filename=attachment.name or 'ficha_cliente',
+                    as_attachment=True
+                )
+        return request.redirect('/web')
+
+class FichaClienteFGNEoTCPController(http.Controller):
+
+    @http.route('/descargar/ficha_cliente_fgne_tcp', type='http', auth='public')
+    def descargar_ficha_cliente_fgne_tcp(self, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_fgne_tcp.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return request.redirect('/web')
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.datas:
+                file_content = base64.b64decode(attachment.datas)
+                return http.send_file(
+                    io.BytesIO(file_content),
+                    filename=attachment.name or 'ficha_cliente',
+                    as_attachment=True
+                )
+        return request.redirect('/web')
+
+class SocioConNacionalidadCubanaController(http.Controller):
+
+    @http.route('/descargar/cuban_partner', type='http', auth='public')
+    def descargar_cuban_partner(self, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('cuban_partner.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return request.redirect('/web')
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.datas:
+                file_content = base64.b64decode(attachment.datas)
+                return http.send_file(
+                    io.BytesIO(file_content),
+                    filename=attachment.name or 'cuban_partner',
+                    as_attachment=True
+                )
+        return request.redirect('/web')
