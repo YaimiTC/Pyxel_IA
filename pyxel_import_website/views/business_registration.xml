@@ -307,7 +307,8 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact4" type="text" class="form-control s_website_form_input" name="company" required="" data-fill-with="commercial_company_name"/>
+                                                                    <input id="contact4" type="text" class="form-control s_website_form_input" name="company" required="" /> 
+                                                                    <!-- data-fill-with="commercial_company_name" -->
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -320,7 +321,8 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="company_business" type="text" class="form-control s_website_form_input" name="company_business" required="" data-fill-with="commercial_company_name"/>
+                                                                    <input id="company_business" type="text" class="form-control s_website_form_input" name="company_business" required="" /> 
+                                                                    <!-- data-fill-with="commercial_company_name" -->
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -621,7 +623,8 @@
                                                                     </span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone" required="" maxlength="17"  oninput="this.value = this.value.replace(/\D/g, '')" />
+                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone"  required="" maxlength="17"  oninput="this.value = this.value.replace(/\D/g, '')" />
+                                                                    <!-- data-fill-with="phone" -->
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -633,7 +636,8 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="address" type="text" class="form-control s_website_form_input" name="Address" required="" data-fill-with="commercial_company_name"/>
+                                                                    <input id="address" type="text" class="form-control s_website_form_input" name="Address" required=""/>
+                                                                     <!-- data-fill-with="commercial_company_name" -->
                                                                 </div>
                                                             </div>
                                                         </div>
