@@ -20,12 +20,39 @@
                             </div>
                         </block>
                         
-                         <block title="Planilla de la Solicitud">
+                         <block title="Planilla de Solicitud de Importación">
                             <setting>
                                 <field name="solicitud_attachment_id"/>
                             </setting>
                             <div class="o_setting_help text-muted mt8">
                                 Seleccione o cargue el adjunto que servirá como plantilla de la solicitud para descarga.
+                            </div>
+                        </block>
+                        
+                         <block title="Planilla de la Ficha de Cliente Estatal">
+                            <setting>
+                                <field name="ficha_cliente_estatal_attachment_id"/>
+                            </setting>
+                            <div class="o_setting_help text-muted mt8">
+                                Seleccione o cargue el adjunto que servirá como plantilla de la ficha de cliente estatal para descarga.
+                            </div>
+                        </block>
+                        
+                         <block title="Planilla de la Ficha de Cliente FGNE o TCP">
+                            <setting>
+                                <field name="ficha_cliente_fgne_tcp_attachment_id"/>
+                            </setting>
+                            <div class="o_setting_help text-muted mt8">
+                                Seleccione o cargue el adjunto que servirá como plantilla de la ficha de cliente FGNE o TCP para descarga.
+                            </div>
+                        </block>
+                        
+                         <block title="Planilla para Socio de Nacionalidad Cubana">
+                            <setting>
+                                <field name="cuban_partner_attachment_id"/>
+                            </setting>
+                            <div class="o_setting_help text-muted mt8">
+                                Seleccione o cargue el adjunto que servirá como plantilla de socio con nacionalidad cubana para descarga.
                             </div>
                         </block>
                     </app>

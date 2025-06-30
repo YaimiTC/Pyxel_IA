@@ -262,19 +262,18 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        <div name="fgne_type_national_client" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="fgne_type">
-                                                                    <span class="s_website_form_label_content">Tipo de
-                                                                        FGNE
-                                                                    </span>
+                                                                    <span class="s_website_form_label_content">Tipo</span>
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <select class="form-select s_website_form_input" style="" name="FGNE type" id="fgne_type">
-                                                                        <option value="MIPYME">MIPYME</option>
+                                                                        <option value="FGNE">FGNE (Mipymes, CNA, PDL)</option>
+                                                                        <!-- <option value="MIPYME">MIPYME</option> -->
                                                                         <option value="TCP">TCP</option>
-                                                                        <option value="PersonaNatural">Persona Natural</option>
-                                                                        <option value="SucursalExtranjera">Sucursal Extranjera</option>
+                                                                        <!-- <option value="PersonaNatural">Persona Natural</option>
+                                                                        <option value="SucursalExtranjera">Sucursal Extranjera</option> -->
                                                                         <option value="Estatal">Estatal</option>
 
                                                                     </select>
@@ -284,15 +283,15 @@
                                                          <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="fgne_type">
-                                                                    <span class="s_website_form_label_content">Tipo de
-                                                                        FGNE
+                                                                    <span class="s_website_form_label_content">Tipo
                                                                     </span>
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <select class="form-select s_website_form_input" style="" name="FGNE type" id="fgne_type">
-                                                                        <option value="MIPYME">MIPYME</option>
+                                                                        <option value="FGNE">FGNE (Mipymes, CNA, PDL)</option>
+                                                                        <!-- <option value="MIPYME">MIPYME</option> -->
                                                                         <option value="TCP">TCP</option>
-                                                                        <option value="SucursalExtranjera">Sucursal Extranjera</option>
+                                                                        <!-- <option value="SucursalExtranjera">Sucursal Extranjera</option> -->
                                                                         <option value="Estatal">Estatal</option>
 
                                                                     </select>
@@ -308,7 +307,8 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact4" type="text" class="form-control s_website_form_input" name="company" required="" data-fill-with="commercial_company_name"/>
+                                                                    <input id="contact4" type="text" class="form-control s_website_form_input" name="company" required="" /> 
+                                                                    <!-- data-fill-with="commercial_company_name" -->
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -321,7 +321,36 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="company_business" type="text" class="form-control s_website_form_input" name="company_business" required="" data-fill-with="commercial_company_name"/>
+                                                                    <input id="company_business" type="text" class="form-control s_website_form_input" name="company_business" required="" /> 
+                                                                    <!-- data-fill-with="commercial_company_name" -->
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="supplier_type">
+                                                                    <span class="s_website_form_label_content">Clasificación del Proveedor
+                                                                    </span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <select class="form-select s_website_form_input" style="" name="supplier_type" id="supplier_type">
+                                                                        <option value="Productor">Productor</option>
+                                                                        <option value="Comerciante">Comerciante</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="supplier_type">
+                                                                    <span class="s_website_form_label_content">Clasificación del Proveedor
+                                                                    </span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <select class="form-select s_website_form_input" style="" name="supplier_type" id="supplier_type">
+                                                                        <option value="Productor">Productor</option>
+                                                                        <option value="Comerciante">Comerciante</option>
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -353,6 +382,53 @@
                                                         </div>
                                                         <div data-name="Field" 
                                                             class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
+                                                            data-type="binary"
+                                                            data-visibility-dependency="Register as" 
+                                                            data-visibility-condition="ClientNacional" 
+                                                            data-visibility-comparator="selected"
+                                                            >
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px"
+                                                                    for="ficha_cliente">
+                                                                    <span class="s_website_form_label_content">Ficha de cliente</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm" style="position: relative;">
+                                                                    <div class="input-group">
+                                                                    
+                                                                        <input type="file"
+                                                                            class="form-control s_website_form_input"
+                                                                            name="ficha_cliente"
+                                                                            id="ficha_cliente"
+                                                                            accept=".xlsx,.xls,.pdf,.docx,.doc"
+                                                                            data-max-files-number="20"
+                                                                            data-max-file-size="30"
+                                                                            data-fill-with="undefined" 
+                                                                            data-label=""
+                                                                            />
+                                                                        <a href="/descargar/ficha_cliente_fgne_tcp"
+                                                                            target="_blank"
+                                                                            class="btn btn-primary add-btn"    
+                                                                        >
+                                                                            <span class="btn-text">Descargar Plantilla</span>
+                                                                        </a>
+                                                                        <a href="/descargar/ficha_cliente_estatal"
+                                                                            target="_blank"
+                                                                            class="btn btn-primary add-btn"    
+                                                                        >
+                                                                            <span class="btn-text">Descargar Plantilla</span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <div class="s_website_form_field_description small form-text text-muted">
+                                                                        Descargue la plantilla, llénela y súbala aquí.
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div data-name="Field" 
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom"
                                                             data-type="binary"
                                                             data-visibility-dependency="Register as" 
                                                             data-visibility-condition="ProviderNacional" 
@@ -444,10 +520,30 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected">
+
+                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="need_mincex_code">
+                                                                    <span class="s_website_form_label_content">Requiere
+                                                                        código MINCEX
+                                                                    </span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <div class="form-check">
+                                                                        <input type="checkbox" value="Yes" class="s_website_form_input form-check-input" name="need_mincex_code" id="need_mincex_code" data-fill-with="undefined" t-att-checked="True"/>
+                                                                    </div>
+                                                                    <div class="s_website_form_field_description small form-text text-muted">
+                                                                        Marcar si necesita el código MINCEX.
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field" data-visibility-dependency="need_mincex_code" data-visibility-condition="Yes" data-visibility-comparator="selected">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="x_studio_license_holder">
-                                                                    <span class="s_website_form_label_content">Código Mincex </span>
+                                                                    <span class="s_website_form_label_content">Código Mincex</span>
+                                                                    <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
@@ -456,6 +552,82 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        
+                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientExtranjero" data-visibility-comparator="selected" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="has_cuban_partner">
+                                                                    <span class="s_website_form_label_content">¿La Empresa tiene socio de nacionalidad cubana?
+                                                                    </span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <div class="form-check">
+                                                                        <input type="checkbox" value="Yes" class="s_website_form_input form-check-input" name="has_cuban_partner" id="has_cuban_partner" data-fill-with="undefined" />
+                                                                    </div>
+                                                                    <div class="s_website_form_field_description small form-text text-muted">
+                                                                        Marcar si la empresa tiene socio de nacionalidad cubana.
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="has_cuban_partner">
+                                                                    <span class="s_website_form_label_content">¿La Empresa tiene socio de nacionalidad cubana?
+                                                                    </span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <div class="form-check">
+                                                                        <input type="checkbox" value="Yes" class="s_website_form_input form-check-input" name="has_cuban_partner" id="has_cuban_partner" data-fill-with="undefined" />
+                                                                    </div>
+                                                                    <div class="s_website_form_field_description small form-text text-muted">
+                                                                        Marcar si la empresa tiene socio de nacionalidad cubana.
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div data-name="Field" 
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
+                                                            data-type="binary"
+                                                            data-visibility-dependency="has_cuban_partner" 
+                                                            data-visibility-condition="Yes" 
+                                                            data-visibility-comparator="selected"
+                                                            >
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px"
+                                                                    for="cuban_partner">
+                                                                    <span class="s_website_form_label_content">Plantilla de socio con nacionalidad cubana</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm" style="position: relative;">
+                                                                    <div class="input-group">
+                                                                    
+                                                                        <input type="file"
+                                                                            class="form-control s_website_form_input"
+                                                                            name="cuban_partner"
+                                                                            id="cuban_partner"
+                                                                            accept=".xlsx,.xls,.pdf,.docx,.doc"
+                                                                            data-max-files-number="20"
+                                                                            data-max-file-size="30"
+                                                                            data-fill-with="undefined" 
+                                                                            data-label=""
+                                                                            />
+                                                                        <a href="/descargar/cuban_partner"
+                                                                            target="_blank"
+                                                                            class="btn btn-primary add-btn"    
+                                                                        >
+                                                                            <span class="btn-text">Descargar Plantilla</span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <div class="s_website_form_field_description small form-text text-muted">
+                                                                        Descargue la plantilla, llénela y súbala aquí.
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
                                                         <!-- <script src="/fruxelimport/pyxel_fruxelimport_website/static/src/js/business_registration.js"></script> -->
 
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
@@ -472,14 +644,16 @@
                                                         </div>
                         
  
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
+                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact2">
                                                                     <span class="s_website_form_label_content">Teléfono
                                                                     </span>
+                                                                    <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone" required="" maxlength="17"  oninput="this.value = this.value.replace(/\D/g, '')" />
+                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone"  required="" maxlength="17"  oninput="this.value = this.value.replace(/\D/g, '')" />
+                                                                    <!-- data-fill-with="phone" -->
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -491,11 +665,35 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="address" type="text" class="form-control s_website_form_input" name="Address" required="" data-fill-with="commercial_company_name"/>
+                                                                    <input id="address" type="text" class="form-control s_website_form_input" name="Address" required=""/>
+                                                                     <!-- data-fill-with="commercial_company_name" -->
                                                                 </div>
                                                             </div>
                                                         </div>
-
+                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition ="ClientNacional" data-visibility-comparator="selected">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="dap">
+                                                                    <span class="s_website_form_label_content">DAP</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <input id="dap" type="text" class="form-control s_website_form_input" name="dap" required="" pattern="\d{4}" maxlength="4" oninput="this.value = this.value.replace(/\D/g, '')"/>
+                                                                    <span id="dap-error" style="color:red; display:none;">El DAP debe contener exactamente 4 dígitos.</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition ="ProviderNacional" data-visibility-comparator="selected">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="dap">
+                                                                    <span class="s_website_form_label_content">DAP</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <input id="dap" type="text" class="form-control s_website_form_input" name="dap" required="" pattern="\d{4}" maxlength="4" oninput="this.value = this.value.replace(/\D/g, '')"/>
+                                                                    <span id="dap-error" style="color:red; display:none;">El DAP debe contener exactamente 4 dígitos.</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                         <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="country">
@@ -612,7 +810,7 @@
                                                         <!-- PYME  →  Escritura notarial -->
                                                         <div data-name="Field"
                                                             data-visibility-dependency="FGNE type"
-                                                            data-visibility-condition="MIPYME"
+                                                            data-visibility-condition="FGNE"
                                                             data-visibility-comparator="selected"
                                                             class="s_website_form_field mb-3 col-12 s_website_form_custom">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -711,7 +909,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="MIPYME" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
+                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="FGNE" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <div style="display: flex;flex-direction: column;width: 200px;">
                                                                     <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
@@ -735,11 +933,13 @@
                                                                         <br/>
                                                                         -Certifico de no adeudo
                                                                         <br/>
+                                                                        -Aprobación de la solicitud de creación de Mipymes
+                                                                        <br/>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="PersonaNatural" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
+                                                        <!-- <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="PersonaNatural" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <div style="display: flex;flex-direction: column;width: 200px;">
                                                                     <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
@@ -757,8 +957,8 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="SucursalExtranjera" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
+                                                        </div> -->
+                                                        <!-- <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="SucursalExtranjera" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <div style="display: flex;flex-direction: column;width: 200px;">
                                                                     <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
@@ -778,7 +978,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
                                                         <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="Estatal" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <div style="display: flex;flex-direction: column;width: 200px;">
@@ -821,6 +1021,14 @@
                                                                         Aval Bancaria
                                                                         <br/>
                                                                         Planilla del perfil del proveedor
+                                                                        <span name="no_mincex_code_documentation">
+                                                                            <br/>
+                                                                            Tarjeta de presentación
+                                                                            <br/>
+                                                                            Carta timbrada u otro documento de la compañía extranjera que tenga su denominación, logo dirección y teléfono
+                                                                            <br/>
+                                                                            El certificado de documento constitutivo con no más de 6 meses de expedido
+                                                                        </span>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1587,7 +1795,6 @@
             </t>
         </template>
 
-
         <record id="business_register_thanks" model="website.page">
             <field name="name">Gracias por elegirnos</field>
             <field name="type">qweb</field>
@@ -1615,7 +1822,7 @@
                                                     procesada.
                                                     </b> Nuestro equipo
                                                     comercial se pondrá en contacto con usted. Si
-                                                    tiene alguna duda presione el botón flotante de WhatsApp. Con gusto
+                                                    tiene alguna duda, contáctenos. Con gusto
                                                     le atenderemos.
                                                 </span>
                                                 <span t-if="register_type">Ya está acreditado o en proceso. Puede
@@ -1626,7 +1833,7 @@
                                                     </a> o <a style="font-color:#EE7D00" href="/business-register?type=accreditation_business">
                                                         acreditar un proveedor
                                                     </a>. Si
-                                                    tiene alguna duda presione el botón flotante de WhatsApp. Con gusto
+                                                    tiene alguna duda, contáctenos. Con gusto
                                                     le atenderemos.
                                                 </span>
                                             </h7>
@@ -1637,17 +1844,17 @@
                                                 <li>IMPORTADORA</li>
                                                 <li>
                                                     <i class="fa fa-map-marker fa-fw me-2"/>
-                                                    <span class="o_force_ltr">DIRECCION S/N e/ CALLE y
-                                                        CALLE , MUNICIPIO.
+                                                    <span class="o_force_ltr">Calle  S/N e/ Calle y
+                                                         Rpto. Ejemplo, Ejemplo.
                                                     </span>
                                                 </li>
                                                 <li>
                                                     <i class="fa fa-phone fa-fw me-2"/>
-                                                    <span class="o_force_ltr">78374234</span>
+                                                    <span class="o_force_ltr">78357575/78</span>
                                                 </li>
                                                 <li>
                                                     <i class="fa fa-1x fa-fw fa-envelope me-2"/>
-                                                    <span>example@correo</span>
+                                                    <span>correo@correo.com</span>
                                                 </li>
                                             </ul>
                                         </div>
@@ -1660,6 +1867,5 @@
                 </t>
             </field>
         </record>
-
     </data>
 </odoo>
