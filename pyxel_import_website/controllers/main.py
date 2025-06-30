@@ -288,7 +288,21 @@ class WebsiteForm(WebsiteForm):
         if model_name == "crm.lead":
             id_crm = eval(res.response[0])
             product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if id.strip().isdigit()]
+            product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if id.strip().isdigit()]
+
             public_user = request.env.user
+            # Crear la Cotización a partir de la solicitud de importación
+            if tipo_registro == "import":
+                nomenclature_ids = request.env["product.product"].sudo().with_user(SUPERUSER_ID).search([('product_tmpl_id', 'in', product_nomenclature_ids)]).ids
+                onure_ids = request.env["product.product"].sudo().with_user(SUPERUSER_ID).search([('product_tmpl_id', 'in', product_onure_ids)]).ids
+                order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids] + [(0,0, {"product_id": product_id}) for product_id in onure_ids] 
+                order = request.env["sale.order"].sudo().with_user(SUPERUSER_ID).create(
+                    {
+                        "partner_id": public_user.sudo().partner_id.id,
+                        "order_line": order_line,
+                    }
+                )
+
             # if "uid" not in request.context:
             if not public_user.sudo().partner_id.parent_id:
                 partner = (
@@ -381,21 +395,21 @@ class WebsiteForm(WebsiteForm):
                         if id.strip().isdigit()
                     ]
 
-                    request.env['x_import'].sudo().create({
-                        'x_studio_form_note': kwargs.get('productRequired'),
-                        "x_studio_product_onure": [(6, 0, product_onure_ids)],
-                        # 'x_studio_producto_a_importar': [(6, 0, productos_ids)],
-                        'x_studio_supplier': import_supplier.id,
-                        'x_studio_origin_country': origin_country_id,
-                        'x_studio_client': studio_client,
-                        'x_studio_date_start': start_date,
-                        'x_studio_date_stop': end_date,
-                        # 'provider_purchase': kwargs.get('provider_purchase'),
-                        # 'user_name': request.env.user.name,
-                        # "company": kwargs.get("company"),
-                        # "company_email": kwargs.get("company_email"),
+                    # request.env['x_import'].sudo().create({
+                    #     'x_studio_form_note': kwargs.get('productRequired'),
+                    #     "x_studio_product_onure": [(6, 0, product_onure_ids)],
+                    #     # 'x_studio_producto_a_importar': [(6, 0, productos_ids)],
+                    #     'x_studio_supplier': import_supplier.id,
+                    #     'x_studio_origin_country': origin_country_id,
+                    #     'x_studio_client': studio_client,
+                    #     'x_studio_date_start': start_date,
+                    #     'x_studio_date_stop': end_date,
+                    #     # 'provider_purchase': kwargs.get('provider_purchase'),
+                    #     # 'user_name': request.env.user.name,
+                    #     # "company": kwargs.get("company"),
+                    #     # "company_email": kwargs.get("company_email"),
 
-                    })
+                    # })
 
             # public_user.sudo().partner_id.write({"parent_id":partner.sudo().id})
 
@@ -735,6 +749,66 @@ class SolicitudController(http.Controller):
                 return http.send_file(
                     io.BytesIO(file_content),
                     filename=attachment.name or 'solicitud',
+                    as_attachment=True
+                )
+        return request.redirect('/web')
+
+class FichaClienteEstatalController(http.Controller):
+
+    @http.route('/descargar/ficha_cliente_estatal', type='http', auth='public')
+    def descargar_ficha_cliente_estatal(self, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_estatal.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return request.redirect('/web')
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.datas:
+                file_content = base64.b64decode(attachment.datas)
+                return http.send_file(
+                    io.BytesIO(file_content),
+                    filename=attachment.name or 'ficha_cliente',
+                    as_attachment=True
+                )
+        return request.redirect('/web')
+
+class FichaClienteFGNEoTCPController(http.Controller):
+
+    @http.route('/descargar/ficha_cliente_fgne_tcp', type='http', auth='public')
+    def descargar_ficha_cliente_fgne_tcp(self, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_fgne_tcp.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return request.redirect('/web')
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.datas:
+                file_content = base64.b64decode(attachment.datas)
+                return http.send_file(
+                    io.BytesIO(file_content),
+                    filename=attachment.name or 'ficha_cliente',
+                    as_attachment=True
+                )
+        return request.redirect('/web')
+
+class SocioConNacionalidadCubanaController(http.Controller):
+
+    @http.route('/descargar/cuban_partner', type='http', auth='public')
+    def descargar_cuban_partner(self, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('cuban_partner.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return request.redirect('/web')
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.datas:
+                file_content = base64.b64decode(attachment.datas)
+                return http.send_file(
+                    io.BytesIO(file_content),
+                    filename=attachment.name or 'cuban_partner',
                     as_attachment=True
                 )
         return request.redirect('/web')
