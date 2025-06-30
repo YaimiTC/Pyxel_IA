@@ -24,6 +24,7 @@
 
     ],
     "data": [
+        'data/crm_stage_data.xml',
         'data/importation_sequence.xml',
         'data/importation_stage_data.xml',
         "security/ir.model.access.csv",
