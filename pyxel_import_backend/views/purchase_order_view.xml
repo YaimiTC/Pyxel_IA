@@ -21,6 +21,13 @@
       <xpath expr="//group" position="inside">
         <field name="evaluation_id" readonly="1"/>
       </xpath>
+       <xpath expr="//page[@name='purchase_delivery_invoice']" position="inside">
+            <group>
+                <field name="is_third_party_contract"/>
+                <field name="commercial_invoice" filename="commercial_invoice_filename"/>
+                <field name="signed_offer" filename="signed_offer_filename"/>
+            </group>
+        </xpath>
     </field>
   </record>
 </odoo>

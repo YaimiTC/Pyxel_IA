@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 class ImportationLoad(models.Model):
     _name = 'importation.load'
     _description = 'Import Cargo or Container'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Container Number', required=True, size=11)
     importation_id = fields.Many2one('importation.process', string='Import', required=True)
@@ -62,6 +63,7 @@ class ImportationLoad(models.Model):
 
     # Líneas de producto asignadas a la carga (fracción de ordenes de compra)
     cargo_line_ids = fields.One2many('importation.load.line', 'cargo_id', string='Products transported')
+    total_cargo_line = fields.Float(string='Amount of line',  compute='_compute_amount_by_lines')
 
     currency_id = fields.Many2one(
         'res.currency',
@@ -70,6 +72,14 @@ class ImportationLoad(models.Model):
         store=True,
         readonly=False,
     )
+
+    @api.depends('cargo_line_ids')
+    def _compute_total_cargo_line(self):
+        for rec in self:
+            total = 0.0
+            for line in rec.cargo_line_ids:
+                total += line.quantity * line.price
+            rec.total_cargo_line = total
 
     @api.depends('cargo_line_ids.purchase_order_line_id.order_id.currency_id')
     def _compute_currency_id(self):

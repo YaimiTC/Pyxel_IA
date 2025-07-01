@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- View average container form -->
+    <record id="view_average_container_form" model="ir.ui.view">
+        <field name="name">view.average.container.form</field>
+        <field name="model">average.container</field>
+        <field name="arch" type="xml">
+            <form string="Average Container">
+                <group>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="partner_id"/>
+                    <field name="type_of_load"/>
+                    <field name="purchase_condition"/>
+                    <field name="type_of_summary"/>
+                    <field name="format_of_report"/>
+                 </group>
+                <footer>
+                    <button name="action_get_report_average_container" type="object" string="Confirm" class="oe_highlight"/>
+                    <button special="cancel" string="Cancel" name="action_cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!--     Action average container -->
+    <record id="action_average_container" model="ir.actions.act_window">
+        <field name="name">Average</field>
+        <field name="res_model">average.container</field>
+        <field name="view_id" ref="view_average_container_form"/>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_view_types">list</field>
+    </record>
+
+
+
+
+
+</odoo>
