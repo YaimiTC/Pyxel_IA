@@ -35,8 +35,10 @@
                     <tree>
                         <field name="name"/>
                         <field name="provider_id"/>
+                        <field name="customer_id"/>
                         <field name="purchase_condition"/>
                         <field name="purchase_condition_number"/>
+                        <field name="is_third_party_contract"/>
                         <field name="state"/>
                         <field name="estimated_start_date"/>
                         <field name="estimated_end_date"/>
@@ -56,7 +58,7 @@
                                         type="object"
                                         string="Generar Venta de Costos"
                                         class="btn-primary"
-                                        invisible="cost_line_ids == False or final_sale_order_id"/>
+                                        invisible="not cost_line_ids or final_sale_order_id"/>
 
                                 <button name="action_start_progress" string="Start Import" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
                                 <button name="action_finish_progress" string="Finish" type="object" class="btn-success" invisible="state != 'in_progress'"/>
@@ -67,6 +69,7 @@
                             <sheet>
                                 <div class="oe_button_box" name="button_box">
                                     <!-- Aquí insertas tu botón -->
+
 
                                     <button name="action_view_sale_orders"
                                             type="object"
@@ -79,19 +82,33 @@
                                         class="oe_stat_button"
                                         icon="fa-file-invoice-dollar">
                                     <field name="invoice_count" widget="statinfo" string="Invoices"/>
-                                </button>
+                                     </button>
+                                    <button name="action_view_purchase_orders"
+                                            type="object"
+                                            class="oe_stat_button"
+                                            icon="fa-shopping-cart" >
+                                        <field name="purchase_order_count" widget="statinfo" string="Purchase Orders"/>
+                                    </button>
+                                    <button name="action_view_load_tracking"
+                                            type="object"
+                                            class="oe_stat_button"
+                                            icon="fa-shopping-cart" >
+                                        <field name="load_tracking_count" widget="statinfo" string="Importation Load"/>
+                                    </button>
+
                                 </div>
                                 <group>
                                     <group>
                                         <field name="name" readonly="1"/>
                                         <field name="provider_id"/>
+                                        <field name="customer_id"/>
+
                                         <field name="country_origin_id"/>
                                         <field name="purchase_condition"/>
                                         <field name="purchase_condition_number"/>
                                         <field name="declaration"/>
                                         <field name="port" invisible="purchase_condition not in ('FCL','LCL')"/>
                                         <field name="airport" invisible="purchase_condition != 'AWB'"/>
-                                        <field name="is_third_party_contract"/>
                                         <field name="state" readonly="1"/>
                                     </group>
                                     <group>
@@ -110,8 +127,7 @@
                                             <field name="origin_certificate" filename="origin_certificate_filename"/>
                                             <field name="export_certificate" filename="export_certificate_filename"/>
                                             <field name="quality_certificate" filename="quality_certificate_filename"/>
-                                            <field name="commercial_invoice" filename="commercial_invoice_filename"/>
-                                            <field name="signed_offer" filename="signed_offer_filename"/>
+
                                             <field name="documentation_file" filename="documentation_file_filename"/>
                                             <field name="packing_list" filename="packing_list_filename"/>
                                         </group>
@@ -222,6 +238,11 @@
                                     </page>
                                 </notebook>
                             </sheet>
+                            <div class="oe_chatter">
+                                <field name="message_follower_ids" widget="mail_followers"/>
+                                <field name="message_ids" widget="mail_thread"/>
+                                <field name="activity_ids" widget="mail_activity"/>
+                            </div>
                         </form>
                     </field>
                 </record>

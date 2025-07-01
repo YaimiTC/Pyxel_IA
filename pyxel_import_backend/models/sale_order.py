@@ -1,7 +1,7 @@
 import datetime
 
 from odoo import models, fields, api, _
-
+from odoo.exceptions import UserError
 
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -41,6 +41,13 @@ class SaleOrder(models.Model):
             )
 
     def action_initial_process_importation(self):
+        provider = self.evaluation_apply_id.purchase_order_ids[0].partner_id
+
+        # 🔒 Validación controlada del país de origen
+        if not provider.country_id:
+            raise UserError("El proveedor seleccionado no tiene definido un país de origen.\nPor favor, complete este"
+                            " dato antes de iniciar el proceso de importación.")
+
         cost_lines = [(0, 0, {
             'product_id': line.product_id.id,
             'name': line.name,
@@ -50,12 +57,13 @@ class SaleOrder(models.Model):
             'is_cost_special': line.is_cost_special,
         }) for line in self.evaluation_apply_id.cost_line_temp_ids]
 
-        provider = self.evaluation_apply_id.purchase_order_ids[0].partner_id
+
         # Create the importation process from the evaluation
         importation = self.env['importation.process'].create({
             'provider_id': provider.id,
             'purchase_order_ids': [(6, 0, self.evaluation_apply_id.purchase_order_ids.ids)],
             'sale_order_id': self.id,
+            'customer_id': self.partner_id.id,
             'estimated_start_date': datetime.datetime.now(),
             'estimated_end_date': datetime.datetime.now(),
             # 'final_sale_order_id': self.id, aqui cambie la logica para poder usar esta como resultado del proceso de terminacion de la importacion.
