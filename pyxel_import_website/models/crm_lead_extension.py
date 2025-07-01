@@ -3,7 +3,7 @@ from odoo import models, fields
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    x_studio_product_onure = fields.Many2many(
+    product_onure = fields.Many2many(
         comodel_name='product.product',  # Relación con el modelo de productos
         relation='crm_lead_product_rel',  # Nombre de la tabla relacional
         column1='crm_lead_id',  # Columna para crm.lead
@@ -12,10 +12,10 @@ class CrmLead(models.Model):
         help="Este campo permite seleccionar varios productos relacionados con el lead.",
     )
     
-    x_studio_oferta_firmada = fields.Binary(
+    oferta_firmada = fields.Binary(
     string="Oferta Firmada (PDF)",
     help="Sube la oferta firmada en formato PDF.",
 )
-    x_studio_oferta_firmada_filename = fields.Char(string="Nombre del Archivo")
+    oferta_firmada_filename = fields.Char(string="Nombre del Archivo")
 
     
