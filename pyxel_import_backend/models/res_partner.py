@@ -25,6 +25,15 @@ class ResPartner(models.Model):
     legal_activity_ids = fields.One2many('res.partner.legal.activity', 'partner_id', string="Activities")
     contract_import_ids = fields.One2many('res.partner.contract.import', 'partner_id', string="Contracts")
 
+    @api.constrains('vat')
+    def _check_vat_length(self):
+        for record in self: 
+            if record.vat:
+                if not record.vat.isdigit():
+                    raise ValidationError(_("The NIT must contain only digits."))
+                if len(record.vat) != 11: # Set your desired limit 
+                    raise ValidationError(_("The NIT must be exactly 11 digits long."))
+                    
     contact_type_id = fields.Many2one(
         'res.partner.contact.type',
         string='Type of contract',
