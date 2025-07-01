@@ -22,6 +22,12 @@ class ResPartner(models.Model):
     legal_activity_ids = fields.One2many('res.partner.legal.activity', 'partner_id', string="Activities")
     contract_import_ids = fields.One2many('res.partner.contract.import', 'partner_id', string="Contracts")
 
+    contact_type_id = fields.Many2one(
+        'res.partner.contact.type',
+        string='Type of contract',
+        help="Custom contact classification"
+    )
+
 
 class ResPartnerLegalActivity(models.Model):
     _name = 'res.partner.legal.activity'
@@ -61,3 +67,15 @@ class ResPartnerContractImport(models.Model):
         for record in self:
             record.active_contract = bool(
                 record.start_date and record.end_date and record.start_date <= today <= record.end_date)
+
+
+from odoo import models, fields
+
+
+class ResPartnerContactType(models.Model):
+    _name = 'res.partner.contact.type'
+    _description = 'Type of contact'
+
+    name = fields.Char(string='Type of name', required=True)
+    code = fields.Char(string='Code')  # opcional
+    description = fields.Text(string='Description')  # opcional
