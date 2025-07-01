@@ -24,6 +24,8 @@
 
     ],
     "data": [
+        'data/crm_stage_data.xml',
+        'data/res_partner_contact_type_data.xml',
         'data/importation_sequence.xml',
         'data/importation_stage_data.xml',
         "security/ir.model.access.csv",
@@ -41,8 +43,9 @@
         "views/view_importation_cost_wizard.xml",
         "views/account_move_views.xml",
         "views/wizard_import_tcm_view.xml",
-        "views/view_import_error_log.xml"
-
+        "views/view_import_error_log.xml",
+        "report/average_container_report_views.xml",
+        "report/average_container_summary_report_views.xml",
 
 
 

@@ -875,7 +875,7 @@
                                                                         <span class="s_website_form_label_content">Oferta Firmada</span>
                                                                     </label>
                                                                     <div class="col-sm">
-                                                                        <input type="file" name="x_studio_oferta_firmada" id="x_studio_oferta_firmada" class="form-control s_website_form_input" accept=".pdf" data-max-files-number="1" data-min-files-number="1" data-max-file-size="80" data-fill-with="undefined"/>
+                                                                        <input type="file" name="oferta_firmada" id="oferta_firmada" class="form-control s_website_form_input" accept=".pdf" data-max-files-number="1" data-min-files-number="1" data-max-file-size="80" data-fill-with="undefined"/>
                                                                     </div>
                                                                 </div>
                                                             </div>

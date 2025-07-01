@@ -40,12 +40,12 @@ def get_render_values(kw):
     providers = (
         request.env["res.partner"]
         .sudo()
-        .search([("x_studio_type_of_contact", "=", "Supplier")])
+        .search([("type_of_contact", "=", "Supplier")])
     )
     customers = (
         request.env["res.partner"]
         .sudo()
-        .search([("x_studio_type_of_contact", "=", "Customer")])
+        .search([("type_of_contact", "=", "Customer")])
     )
     register_type = kw.get("type", "accreditation")
     banner = operation_banner_img.get(register_type, operation_banner_img["accreditation"])
@@ -126,10 +126,10 @@ class WebsiteForm(WebsiteForm):
     )
     def business_register(self, **kw):
         render_values = get_render_values(kw)
-        x_studio_license_holder = kw.get('x_studio_license_holder')
-        if x_studio_license_holder:
+        license_holder = kw.get('license_holder')
+        if license_holder:
             request.env['res.partner'].create({
-                'x_studio_license_holder': x_studio_license_holder,
+                'license_holder': license_holder,
             })
         if render_values["registered_user"]:
             if render_values["register_type"] == "accreditation":
@@ -138,12 +138,12 @@ class WebsiteForm(WebsiteForm):
                 )
             if (
                     render_values["register_type"] == "import"
-                    and request.env.user.partner_id.x_studio_type_of_contact == "Supplier"
+                    and request.env.user.partner_id.type_of_contact == "Supplier"
             ):
                 customers = (
                     request.env["res.partner"]
                     .sudo()
-                    .search([("x_studio_type_of_contact", "=", "Customer")])
+                    .search([("type_of_contact", "=", "Customer")])
                 )
                 render_values["customers"] = customers
                 return request.render(
@@ -152,7 +152,7 @@ class WebsiteForm(WebsiteForm):
 
             # if(
             #     render_values["register_type"] == "import"
-            #     and request.env.user.partner_id.x_studio_type_of_contact == "Customer"
+            #     and request.env.user.partner_id.type_of_contact == "Customer"
             # ):
             #    productRequired = kw.get('productRequired')
 
@@ -246,7 +246,7 @@ class WebsiteForm(WebsiteForm):
                     
                 #agregar los campos de tipo pdf en el formulario...
                 file_fields = [
-                    'x_studio_oferta_firmada',
+                    'oferta_firmada',
                     'x_studio_bill_of_lading_bl',
                     'x_studio_x_comercial_invoice', 
                     'x_studio_package_list', 
@@ -313,7 +313,7 @@ class WebsiteForm(WebsiteForm):
                             "company_type": 'company',
                             # "phone": kwargs["phone"],
                             "email": kwargs["company_email"],
-                            "x_studio_type_of_contact": 'Supplier' if kwargs["Register as"] == 'Provider' else 'Customer',
+                            "type_of_contact": 'Supplier' if kwargs["Register as"] == 'Provider' else 'Customer',
                             "child_ids": [(4, public_user.sudo().partner_id.id)],
                              
                         }
@@ -322,7 +322,7 @@ class WebsiteForm(WebsiteForm):
             crm_lead = request.env["crm.lead"].with_user(SUPERUSER_ID).sudo().browse(id_crm["id"])
             crm_lead.sudo().write({
                     # "partner_id": partner.sudo().id,
-                    "x_studio_product_onure": [(6, 0, product_onure_ids)],
+                    "product_onure": [(6, 0, product_onure_ids)],
         
                     }),
                 
@@ -352,11 +352,11 @@ class WebsiteForm(WebsiteForm):
                     new_partner_supplier = request.env['res.partner'].sudo().create({
                         'name': kwargs.get('other_provider_name'),
                         "company_type": 'company',
-                        'x_studio_license_holder': kwargs.get('x_studio_license_holder'),
+                        'license_holder': kwargs.get('license_holder'),
                         'email': kwargs.get('other_provider_company_email'),
                         'street': kwargs.get('other_provider_address'),
                         'country_id': int(kwargs.get('other_provider_country')),
-                        'x_studio_type_of_contact': 'Supplier',
+                        'type_of_contact': 'Supplier',
 
                     })
 
@@ -397,7 +397,7 @@ class WebsiteForm(WebsiteForm):
 
                     # request.env['x_import'].sudo().create({
                     #     'x_studio_form_note': kwargs.get('productRequired'),
-                    #     "x_studio_product_onure": [(6, 0, product_onure_ids)],
+                    #     "product_onure": [(6, 0, product_onure_ids)],
                     #     # 'x_studio_producto_a_importar': [(6, 0, productos_ids)],
                     #     'x_studio_supplier': import_supplier.id,
                     #     'x_studio_origin_country': origin_country_id,
@@ -441,7 +441,7 @@ class WebsiteForm(WebsiteForm):
 
     # def _get_provider_search_domain(self, search):
     #     domain = [
-    #         ("x_studio_type_of_contact", "=", "Supplier"),
+    #         ("type_of_contact", "=", "Supplier"),
     #         ("is_fx_published", "=", True),
     #     ]
 
@@ -452,7 +452,7 @@ class WebsiteForm(WebsiteForm):
 
     # def _get_provider_catalog_search_domain(self, provider, search):
     #     # domain = [
-    #     #     ("x_studio_type_of_contact", "=", "Supplier")
+    #     #     ("type_of_contact", "=", "Supplier")
     #     # ]
     #     domain = [("type", "in", ["consu", "product"])]
     #     if search:
@@ -609,16 +609,23 @@ class ControllerTest(http.Controller):
             ], limit=1)
 
             if crm_lead_exists:
-                return request.redirect('/business-register-thanks')
+                contract_exists = request.env["crm.lead"].sudo().search([
+                    ("partner_id", "in", domain_ids), ("active_contract", "=", True)
+                ], limit=1)
+                
+                if contract_exists:
+                    return request.redirect('/my/home')
+                else:
+                    return request.redirect('/business-register-thanks')
 
         render_values = get_render_values(kw)
 
         partner = request.env.user.partner_id
 
         if partner.parent_id:
-            contact_type = partner.parent_id.x_studio_type_of_contact
+            contact_type = partner.parent_id.type_of_contact
         else:
-            contact_type = partner.x_studio_type_of_contact
+            contact_type = partner.type_of_contact
 
         if contact_type == "Supplier":
 
