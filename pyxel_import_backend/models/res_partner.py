@@ -7,15 +7,6 @@ from odoo.exceptions import ValidationError
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    type_of_contact = fields.Selection(
-        [
-            ("Supplier", "Supplier"),
-            ("Client", "Client"),
-        ],
-        default="Client",
-        string="Type Of Contact"
-    )
-
     import_mgmt_type = fields.Selection([
         ('pyme', 'SME'),
         ('extranjero', 'Foreign'),
@@ -25,7 +16,8 @@ class ResPartner(models.Model):
     legal_document = fields.Binary(string="Legal Document")
     legal_document_filename = fields.Char(string="Document Name")
 
-    count_imports = fields.Integer(string="Count Imports", compute="_compute_count_imports")
+    count_imports = fields.Integer(string="Count Imports")
+    # count_imports = fields.Integer(string="Count Imports", compute="_compute_count_imports")
     license_holder = fields.Char(string="Mincex")
     activity_number = fields.Char(string="Activity Number")
     hiring_number = fields.Char(string="Hiring Number")
@@ -33,17 +25,23 @@ class ResPartner(models.Model):
     legal_activity_ids = fields.One2many('res.partner.legal.activity', 'partner_id', string="Activities")
     contract_import_ids = fields.One2many('res.partner.contract.import', 'partner_id', string="Contracts")
 
+    contact_type_id = fields.Many2one(
+        'res.partner.contact.type',
+        string='Type of contract',
+        help="Custom contact classification"
+    )
 
-    @api.depends('type_of_contact')
-    def _compute_count_imports(self):
-        for record in self:
-            record['count_imports'] = 0
-            if record.type_of_contact == "Customer":
-                count = self.env['x_import'].search_count([("purchase_ids.client", "=", record.id)])
-                record['count_imports'] = count
-            elif record.type_of_contact == "Supplier":
-                count = self.env['x_import'].search_count([("supplier", "=", record.id)])
-                record['count_imports'] = count
+
+    # @api.depends('contact_type_id')
+    # def _compute_count_imports(self):
+    #     for record in self:
+    #         record['count_imports'] = 0
+    #         if record.contact_type_id == "Customer":
+    #             count = self.env['x_import'].search_count([("purchase_ids.client", "=", record.id)])
+    #             record['count_imports'] = count
+    #         elif record.contact_type_id == "Supplier":
+    #             count = self.env['x_import'].search_count([("supplier", "=", record.id)])
+    #             record['count_imports'] = count
 
 class ResPartnerLegalActivity(models.Model):
     _name = 'res.partner.legal.activity'
@@ -83,3 +81,15 @@ class ResPartnerContractImport(models.Model):
         for record in self:
             record.active_contract = bool(
                 record.start_date and record.end_date and record.start_date <= today <= record.end_date)
+
+
+from odoo import models, fields
+
+
+class ResPartnerContactType(models.Model):
+    _name = 'res.partner.contact.type'
+    _description = 'Type of contact'
+
+    name = fields.Char(string='Type of name', required=True)
+    code = fields.Char(string='Code')  # opcional
+    description = fields.Text(string='Description')  # opcional

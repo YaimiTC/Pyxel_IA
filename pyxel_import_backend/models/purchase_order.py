@@ -6,6 +6,13 @@ class PurchaseOrder(models.Model):
 
     sale_order_id = fields.Many2one('sale.order', string='Related Quotation')
     evaluation_id = fields.Many2one('purchase.provider.evaluation', string='Evaluation')
+    is_third_party_contract = fields.Boolean(string='Third-Party Contract')
+
+    commercial_invoice = fields.Binary(string='Commercial Invoice')
+    commercial_invoice_filename = fields.Char()
+
+    signed_offer = fields.Binary(string='Signed Offer')
+    signed_offer_filename = fields.Char()
 
     importation_id = fields.Many2one(
         'importation.process',

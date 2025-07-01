@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="view_partner_tree_import" model="ir.ui.view">
-        <field name="name">res.partner.import.tree.view</field>
+    <record id="view_partner_tree_inherit_contact_type" model="ir.ui.view">
+        <field name="name">res.partner.tree.inherit.contact.type</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='phone']" position="after">
-                <field name="type_of_contact" optional="show" />
+                <!-- <field name="contact_type_id" optional="show" /> -->
                 <field name="license_holder" optional="show" />
                 <field name="count_imports" optional="show"/>
+            </xpath>
+            
+            <xpath expr="//tree" position="inside">
+                <field name="contact_type_id"/>
             </xpath>
         </field>
     </record>
@@ -18,12 +22,6 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='lang']" position="after">
-                <field name="type_of_contact"/>
-                <!-- <field name="category_id" invisible="True"/> -->
-                <!-- <field name="main_products" invisible="type_of_contact!='Supplier'"/> -->
-            </xpath>
-
             <notebook position="inside">
                 <page string="Importation">
                     <group name="container_row_2">
@@ -33,8 +31,9 @@
                             <field name="license_holder" />
                         </group>
                         <group string="Initial Hiring">
-                            <field name="activity_number" />
-                            <field name="hiring_number" />
+                            <field name="contact_type_id"/>
+                            <field name="activity_number"/>
+                            <field name="hiring_number"/>
                         </group>
                     </group>
                     <group string="Activities">
@@ -129,10 +128,26 @@
             </p>
         </field>
     </record>
+    <record id="action_res_partner_contact_type" model="ir.actions.act_window">
+        <field name="name">Contacts type</field>
+        <field name="res_model">res.partner.contact.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create and manage custom types to categorize contacts based on your business.
+            </p>
+        </field>
+    </record>
 
     <!-- Submenu to access contracts -->
     <menuitem id="menu_contracts_import" name="Contracts"
-        parent="contacts.menu_contacts"
-        action="action_res_partner_contract_import"
-        sequence="20" />
+              parent="contacts.menu_contacts"
+              action="action_res_partner_contract_import"
+              sequence="20"/>
+
+    <menuitem id="menu_partner_contact_type"
+          name="Contacts type"
+          parent="contacts.menu_contacts"
+          action="action_res_partner_contact_type"
+          sequence="20"/>
 </odoo>
