@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="view_partner_tree_inherit_contact_type" model="ir.ui.view">
+        <field name="name">res.partner.tree.inherit.contact.type</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="contact_type_id"/>
+            </xpath>
+        </field>
+    </record>
+
     <record id="view_partner_form_import" model="ir.ui.view">
         <field name="name">res.partner.import.view</field>
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
+
             <notebook position="inside">
                 <page string="Importation">
                     <group name="container_row_2">
@@ -14,6 +26,7 @@
                             <field name="mincex_code"/>
                         </group>
                         <group string="Initial Hiring">
+                            <field name="contact_type_id"/>
                             <field name="activity_number"/>
                             <field name="hiring_number"/>
                         </group>
@@ -108,10 +121,26 @@
             </p>
         </field>
     </record>
+    <record id="action_res_partner_contact_type" model="ir.actions.act_window">
+        <field name="name">Contacts type</field>
+        <field name="res_model">res.partner.contact.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create and manage custom types to categorize contacts based on your business.
+            </p>
+        </field>
+    </record>
 
     <!-- Submenu to access contracts -->
     <menuitem id="menu_contracts_import" name="Contracts"
               parent="contacts.menu_contacts"
               action="action_res_partner_contract_import"
               sequence="20"/>
+
+    <menuitem id="menu_partner_contact_type"
+          name="Contacts type"
+          parent="contacts.menu_contacts"
+          action="action_res_partner_contact_type"
+          sequence="20"/>
 </odoo>

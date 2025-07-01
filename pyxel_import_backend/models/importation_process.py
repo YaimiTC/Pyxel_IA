@@ -12,6 +12,7 @@ STATE_SELECTION = [
 class ImportationProcess(models.Model):
     _name = 'importation.process'
     _description = 'Importation Process'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string='Reference', required=True, default='New')
     stage_id = fields.Many2one('importation.stage', string='Process Stage',
@@ -25,16 +26,17 @@ class ImportationProcess(models.Model):
         tracking=True,
     )
     purchase_order_ids = fields.Many2many('purchase.order', string='Purchase Orders')
+    purchase_order_count = fields.Integer(string='Purchase Order Count', compute='_compute_purchase_order_count')
     cost_line_ids = fields.One2many('importation.cost.line', 'importation_id', string='Additional Costs')
     total_cost = fields.Monetary(string='Total Cost', compute='_compute_total_cost')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
     sale_order_id = fields.Many2one('sale.order', string='Original Quotation')
     final_sale_order_id = fields.Many2one('sale.order', string='Final Generated Offer', readonly=True)
-
+    customer_id = fields.Many2one('res.partner', string='Customer', required=False)
     provider_id = fields.Many2one('res.partner', string='Supplier', required=True)
 
     country_origin_id = fields.Many2one('res.country', string='Country of Origin', required=True)
-    is_third_party_contract = fields.Boolean(string='Third-Party Contract')
+
     declaration = fields.Char(string='Goods Declaration')
 
     estimated_start_date = fields.Date(string='Estimated Start Date', required=True)
@@ -54,7 +56,11 @@ class ImportationProcess(models.Model):
     ], string='Purchase Condition')
 
     purchase_condition_number = fields.Char(string='Number/Reference by Condition')
-
+    is_third_party_contract = fields.Boolean(
+        string='Third-Party Contract',
+        compute='_compute_is_third_party_contract',
+        store=True
+    )
     # Attached documents
     origin_certificate = fields.Binary(string='Certificate of Origin')
     origin_certificate_filename = fields.Char()
@@ -64,12 +70,6 @@ class ImportationProcess(models.Model):
 
     quality_certificate = fields.Binary(string='Quality Certificate')
     quality_certificate_filename = fields.Char()
-
-    commercial_invoice = fields.Binary(string='Commercial Invoice')
-    commercial_invoice_filename = fields.Char()
-
-    signed_offer = fields.Binary(string='Signed Offer')
-    signed_offer_filename = fields.Char()
 
     documentation_file = fields.Binary(string='Documentation (FCL / AWB)')
     documentation_file_filename = fields.Char()
@@ -82,6 +82,8 @@ class ImportationProcess(models.Model):
         'importation_id',
         string="Cargo Model"
     )
+    load_tracking_count = fields.Integer(string='Load Tracking Count', compute='_compute_load_tracking_count')
+
     sale_order_count = fields.Integer(string='Sale Orders Count', compute='_compute_sale_order_count')
 
     stage_enter_date = fields.Datetime(string="Stage date")
@@ -136,9 +138,43 @@ class ImportationProcess(models.Model):
         self.ensure_one()
         domain = ['|', ('id', '=', self.sale_order_id.id), ('id', '=', self.final_sale_order_id.id)]
         return {
-            'name': 'Purchase Orders',
+            'name': 'Sales Orders',
             'type': 'ir.actions.act_window',
             'res_model': 'sale.order',
+            'view_mode': 'tree,form',
+            'domain': domain,
+            'context': {}
+        }
+
+    @api.depends('purchase_order_ids')
+    def _compute_purchase_order_count(self):
+        for rec in self:
+            rec.purchase_order_count = len(rec.purchase_order_ids)
+
+    def action_view_purchase_orders(self):
+        self.ensure_one()
+        domain = [('id', 'in', self.purchase_order_ids.ids)]
+        return {
+            'name': 'Purchase Orders',
+            'type': 'ir.actions.act_window',
+            'res_model': 'purchase.order',
+            'view_mode': 'tree,form',
+            'domain': domain,
+            'context': {}
+        }
+
+    @api.depends('load_tracking_ids')
+    def _compute_load_tracking_count(self):
+        for rec in self:
+            rec.load_tracking_count = len(rec.load_tracking_ids)
+
+    def action_view_load_tracking(self):
+        self.ensure_one()
+        domain = [('id', 'in', self.load_tracking_ids.ids)]
+        return {
+            'name': 'Load tracking',
+            'type': 'ir.actions.act_window',
+            'res_model': 'importation.load',
             'view_mode': 'tree,form',
             'domain': domain,
             'context': {}
@@ -231,6 +267,14 @@ class ImportationProcess(models.Model):
             'view_mode': 'form',
             'target': 'current',
         }
+
+    @api.depends('purchase_order_ids.is_third_party_contract')
+    def _compute_is_third_party_contract(self):
+        for rec in self:
+            if rec.purchase_order_ids:
+                rec.is_third_party_contract = all(po.is_third_party_contract for po in rec.purchase_order_ids)
+            else:
+                rec.is_third_party_contract = False  # O True, según lo que prefieras por defecto si no hay compras
 
 
 class ImportationCostLine(models.Model):
