@@ -16,6 +16,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         'click .register_business_button': '_checkPassword',
         'keyup .is-invalid': '_removeInvalid',
         'click .is-invalid': '_removeInvalid',
+        'change input[type="radio"][name="Register as"]': '_addPhoneValidation',
         'change input[name="need_mincex_code"]': '_showHideNoMincexCodeDocumentation',
         'change select[name="FGNE type"]': '_showHideFichaCliente',
         'change select[name="Country"]': '_reloadStates',
@@ -87,6 +88,36 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         const $citySel = $(map[stateSelectID]).empty();
         $citySel.append('<option value="">Municipio…</option>');
         $.each(cities, (id, name) => $citySel.append(new Option(name, id)));
+    },
+    _addPhoneValidation:  function () {
+        var nationalClient = document.getElementById('acreditationis_client_nacional');
+        var nationalProvider = document.getElementById('acreditationis_provider_nacional');
+        var phone = document.querySelector('input[name="phone"]');
+        var phoneError = document.getElementById("phone-error")
+
+        if(phoneError){
+            phoneError.style.display = "none";
+        }
+        
+        if(phone && (nationalClient?.checked || nationalProvider?.checked)){
+            if(phoneError)
+                phoneError.textContent = "El número ingresado no cumple con el formato esperado: +53 seguido de 8 dígitos.";
+            
+            phone.value = '+53'
+            phone.setAttribute("placeholder","+53XXXXXXXX")
+            phone.setAttribute("maxlength","11")
+            phone.setAttribute("title","El número de teléfono debe comenzar con +53 y tener 8 dígitos adicionales.")
+        }
+        else{
+            if(phoneError)
+                phoneError.textContent = 'El número ingresado no cumple con el formato esperado: debe comenzar con "+" y contener solo números.';
+
+            phone.value = ''
+            phone.setAttribute("maxlength", "18")
+            phone.removeAttribute("placeholder")
+            // phone.setAttribute("maxlength", "17")
+            phone.setAttribute("title","El número de teléfono debe comenzar con + y contener solo números.")
+        }
     },
     _showHideFichaCliente:  function () {
         var ficha_cliente_fgne_tcp = document.querySelector('a[href="/descargar/ficha_cliente_fgne_tcp"]');
@@ -335,11 +366,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             $label.text("No. BL/AWB/LCL");
         }
     },
-    
-    
-    
     validateForm: function() {
-
         const billOfLandingField = document.getElementById('x_studio_bill_of_landing_number');
         if (billOfLandingField && billOfLandingField.value === "") {
             billOfLandingField.value = "0";
@@ -355,7 +382,34 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
 
         valid = this._checkProducts();
         // valid = this._checkProducts(ev);
+        
+        var nationalClient = document.getElementById('acreditationis_client_nacional');
+        var nationalProvider = document.getElementById('acreditationis_provider_nacional');
+        var foreignClient = document.getElementById('acreditationis_client_extranjero');
+        var foreignProvider = document.getElementById('acreditationis_provider_extranjero');
 
+        var phone = document.querySelector('input[name="phone"]');
+        var phoneError = document.getElementById("phone-error")
+         if (phone && phoneError) {
+            // If there is no radio button selected or it is a national client/provider
+            if ((!nationalClient?.checked && !nationalProvider?.checked && !foreignClient?.checked && !foreignProvider?.checked) || (nationalClient?.checked || nationalProvider?.checked)) {
+                if(!/^\+53\d{8}$/.test(phone.value)){
+                    valid = false
+                    phoneError.style.display = "block";
+                    phoneError.style.margin = "10px 0px 10px";
+                } else {
+                    phoneError.style.display = "none";
+                }
+            } else {
+                if(!/^\+\d{1,17}$/.test(phone.value)){
+                    valid = false
+                    phoneError.style.display = "block";
+                    phoneError.style.margin = "10px 0px 10px";
+                } else {
+                    phoneError.style.display = "none";
+                }
+            }
+        }
         var testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
         if (y2.length >=1){
          for (i = 0; i < y2.length; i++) {
