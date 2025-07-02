@@ -258,7 +258,7 @@
                 </record>
 
 
-             <menuitem id="menu_importation_root" name="Imports" sequence="10"/>
+             <menuitem id="menu_importation_root" name="Imports" sequence="10" web_icon="pyxel_import_backend,static/src/imgs/menu_icon.png"/>
              <menuitem id="menu_importation_process" name="Imports" parent="menu_importation_root" >
                  <menuitem id="menu_importation_solicitud" sequence="1" name="Imports" action="action_importation_process"/>
              </menuitem>

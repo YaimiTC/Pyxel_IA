@@ -33,7 +33,8 @@
         'views/nomenclator.xml',
         'views/onure.xml',
         'views/imports_frontend_views.xml',
-        'views/res_config_setting_views.xml'
+        'views/res_config_setting_views.xml',
+        'views/portal_template_view.xml'
     ],
     'assets': {
         'web.assets_frontend': [
