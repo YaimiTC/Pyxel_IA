@@ -22,6 +22,7 @@
         'base_address_extended',
         'sale_management', 
         'purchase',
+        'pyxel_import_backend',
     ],
     "data": [
         'data/states_data.xml',
