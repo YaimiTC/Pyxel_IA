@@ -604,31 +604,31 @@ class ControllerTest(http.Controller):
         if request.env.user.id == request.env.ref('base.public_user').id:
             return request.redirect('/web/login?redirect=/business-register?type=accreditation')
 
-        if kw.get('type') == 'accreditation':
-            domain_ids = [request.env.user.partner_id.id]
+        domain_ids = [request.env.user.partner_id.id]
 
-        if kw.get('type') == 'accreditation':
+        if request.env.user.partner_id.parent_id:
+            domain_ids.append(request.env.user.partner_id.parent_id.id)
 
-            domain_ids = [request.env.user.partner_id.id]
-
-            if request.env.user.partner_id.parent_id:
-                domain_ids.append(request.env.user.partner_id.parent_id.id)
-
-            crm_lead_exists = request.env["crm.lead"].sudo().search([
-                ("partner_id", "in", domain_ids)
+        crm_lead_exists = request.env["crm.lead"].sudo().search([
+            ("partner_id", "in", domain_ids)
+        ], limit=1)
+        contract_exists = False
+        if crm_lead_exists:
+            contract_exists = request.env["crm.lead"].sudo().search([
+                ("partner_id", "in", domain_ids), ("active_contract", "=", True)
             ], limit=1)
 
-            if crm_lead_exists:
-                contract_exists = request.env["crm.lead"].sudo().search([
-                    ("partner_id", "in", domain_ids), ("active_contract", "=", True)
-                ], limit=1)
-                
-                if contract_exists:
-                    return request.redirect('/my/home')
-                else:
-                    return request.redirect('/business-register-thanks')
+        if kw.get('type') == 'accreditation' and crm_lead_exists:
+            if contract_exists:
+                return request.redirect('/my/home')
+            else:
+                return request.redirect('/business-register-thanks')
+                    
 
         render_values = get_render_values(kw)
+        if kw.get('type') == 'import' and not contract_exists:
+            return request.render('pyxel_import_website.waiting_for_active_contract')
+            
 
         partner = request.env.user.partner_id
 

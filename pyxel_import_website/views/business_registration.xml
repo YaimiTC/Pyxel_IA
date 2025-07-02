@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <template id="waiting_for_active_contract" name="Waiting for active contract">
+            <t t-call="website.layout">
+                <div class="alert alert-info text-center " role="alert">
+                    <!-- <h1>Atención:</h1>
+                    <h3> -->
+                    <h1 style="font-size: 4.5rem; color: black;">Atención:</h1>
+                    <h3 style="color: black;">
+                        El acceso a nuestros servicios solo está permitido a clientes acreditados y con un contrato activo.
+                    </h3>
+                    <br/>
+                    <p>Si aún no lo ha hecho, por favor inicie su proceso de
+                        <a href="/business-register?type=accreditation">
+                            <span class="badge badge-success">Acreditación</span>
+                        </a>.
+                    </p>
+                </div>
+                <div id="o_shared_blocks" class="oe_unremovable" data-oe-id="562" data-oe-xpath="/data/xpath/div" data-oe-model="ir.ui.view" data-oe-field="arch"></div>
+            </t>
+        </template>
+    
         <template id="business_registration" name="Business registration">
             <t t-call="website.layout">
                 <t t-set="logged_partner" t-value="request.env['website.visitor']._get_visitor_from_request().partner_id"/>
                 <t t-set="business_registration_form_values" t-value="{
                 'email_to': res_company.email,
-                'name': request.params.get('name', ''),
+                'name': request.params.get('name', ''),     
                 'phone': request.params.get('phone', ''),
                 'email_from': request.params.get('email_from', ''),
                 'company': request.params.get('company', ''),
@@ -14,17 +34,14 @@
             }"/>
                 <span class="hidden" data-for="business_registration_form" t-att-data-values="business_registration_form_values"/>
                 <div id="wrap" class="oe_structure oe_empty">
-
                     <div class="col-lg-7 col-xl-6 me-lg-auto">
                         <img class="operation_banner_img" t-att-src="'/pyxel_import_website/static/src/img/%s'%banner"/>
 
                     </div>
-
                     <section class="s_text_block  pb40 o_colored_level " data-snippet="s_text_block">
                         <div class="container s_allow_columns" string="margin-top:28px">
                             <div class="row">
                                 <div class="col-lg-10 mt-4 mt-lg-0">
-
                                     <section class="s_website_form" data-vcss="001" data-snippet="s_website_form">
                                         <div class="container">
                                             <form id="business_registration_form" action="/website/form/" method="post" enctype="multipart/form-data" class="o_mark_required" data-mark="*" data-model_name="crm.lead" data-success-mode="redirect" data-success-page="/business-register-thanks" data-pre-fill="true">
@@ -156,7 +173,7 @@
 
                                                     </div> -->
 
-                                                    <div t-if="not crm_lead_exists and register_type != 'accreditation_business'" class="tab">
+                                                    <div t-if="not crm_lead_exists and register_type not in ['accreditation_business', 'import']" class="tab">
                                                         <t t-if="register_type == 'accreditation'">
                                                             <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="selection">
                                                                 <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -280,7 +297,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                         <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="fgne_type">
                                                                     <span class="s_website_form_label_content">Tipo
@@ -454,7 +471,7 @@
                                                                             data-label=""
                                                                             required="" 
                                                                             />
-                                                              
+                                                            
                                                                         <a href="/descargar/perfil_proveedor"
                                                                         target="_blank"
                                                                         class="btn btn-primary add-btn">
@@ -494,7 +511,7 @@
                                                                             data-label=""
                                                                             required="" 
                                                                             />
-                                                              
+                                                            
                                                                         <a href="/descargar/perfil_proveedor"
                                                                         target="_blank"
                                                                         class="btn btn-primary add-btn">
@@ -515,8 +532,8 @@
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
-       title="Sólo letras y números"
-       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                            title="Sólo letras y números"
+                                                                            onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -547,8 +564,8 @@
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
-       title="Sólo letras y números"
-       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                            title="Sólo letras y números"
+                                                            onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -642,8 +659,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                        
- 
+
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact2">
@@ -655,11 +671,11 @@
                                                                     <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" value="+53" placeholder="+53XXXXXXXX" required="" maxlength="11" title="El número de teléfono debe comenzar con +53 y tener 8 dígitos adicionales."  oninput="this.value = this.value.replace(/[^\d+]/g, '')" />
                                                                     <!-- data-fill-with="phone" -->
                                                                     <span id="phone-error" 
-                                                                            class="text-danger" 
-                                                                            style="display: none;">
-                                                                            El número ingresado no cumple con el formato esperado: +53 seguido de 8 dígitos.
-                                                                    </span>
-                                                                </div>
+                                                                        class="text-danger" 
+                                                                        style="display: none;">
+                                                                        El número ingresado no cumple con el formato esperado: +53 seguido de 8 dígitos.
+                                                                </span>
+                                                            </div>
                                                             </div>
                                                         </div>
 
@@ -672,7 +688,7 @@
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <input id="address" type="text" class="form-control s_website_form_input" name="Address" required=""/>
-                                                                     <!-- data-fill-with="commercial_company_name" -->
+                                                                    <!-- data-fill-with="commercial_company_name" -->
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -900,7 +916,7 @@
                                                                 <div class="col-sm">
                                                                     <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-max-file-size="30" data-fill-with="undefined" data-label="" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
-                                                                         -Certificado de Validación del Proyecto, emitido por la Dirección Municipal de Trabajo, para el ejercicio de la actividad por Cuenta Propia.
+                                                                        -Certificado de Validación del Proyecto, emitido por la Dirección Municipal de Trabajo, para el ejercicio de la actividad por Cuenta Propia.
                                                                         <br/>
                                                                         -Certifico de no adeudo con el organismo fiscal emitido en no menos de seis meses
                                                                         <br/>
@@ -1214,10 +1230,8 @@
                                                                                         });
                                                                                     }); -->
                                                                                     
-                                                                                    var alimentosDeImportacion = <t t-raw="alimentos_de_importacion"/>
-    ;
-                                                                                    var selectedProducts = <t t-raw="productos_seleccionados_ids" />
-    ;
+                                                                                    var alimentosDeImportacion = <t t-raw="alimentos_de_importacion"/>;
+                                                                                    var selectedProducts = <t t-raw="productos_seleccionados_ids" />;
                                                                             
 
                                                                                     // Función para cargar las opciones en el select
@@ -1366,11 +1380,8 @@
                                                                                         });
                                                                                     }); -->
                                                                                     
-                                                                                    var electronicos_de_importacion =                                                                            <t t-raw="electronicos_de_importacion"/>
-    ;
-                                                                                    var ElectronicSelectedProducts = <t t-raw="electronic_selected_ids" />
-    ;
-                                                                            
+                                                                                    var electronicos_de_importacion = <t t-raw="electronicos_de_importacion"/>;
+                                                                                    var ElectronicSelectedProducts = <t t-raw="electronic_selected_ids" />;
 
                                                                                     // Función para cargar las opciones en el select
                                                                                     function loadSelect2Options(products,ElectronicSelectedProducts) {
@@ -1474,7 +1485,7 @@
                                                                             data-label=""
                                                                             required="" 
                                                                             />
-                                                              
+                                                            
                                                                         <a href="/descargar/solicitud"
                                                                         target="_blank"
                                                                         class="btn btn-primary add-btn">
@@ -1596,8 +1607,8 @@
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
-                                                                                title="Sólo letras y números"
-                                                                                onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                            title="Sólo letras y números"
+                                                                            onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1769,8 +1780,7 @@
                                                         <a href="#" id="button-submit" role="button" class="btn btn-primary s_website_form_send register_business_button d-none">
                                                             Solicitar servicio
                                                         </a>
-                                                        <span id="s_website_form_result"></span>
-
+                                                        <span id="s_website_form_result" />
                                                     </div>
                                                 </div>
                                             </form>
