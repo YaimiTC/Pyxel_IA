@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="portal_my_home_inherit" inherit_id="portal.portal_my_home">
+    <template id="portal_my_home_inherit" inherit_id="portal.portal_my_home" priority="1000">
         <xpath expr="//div[@id='portal_alert_category']" position="attributes">
             <attribute name="style">display: none;</attribute>
         </xpath>
@@ -87,9 +87,9 @@
     <record id="project.portal_my_home" model="ir.ui.view">
         <field name="active">False</field>
     </record>
-    <record id="knowledge.portal_my_home_knowledge" model="ir.ui.view">
-        <field name="active">False</field>
-    </record>
+<!--    <record id="knowledge.portal_my_home_knowledge" model="ir.ui.view">-->
+<!--        <field name="active">False</field>-->
+<!--    </record>-->
 
     <!-- Comentadas. Nuevo Flujo -->
 
