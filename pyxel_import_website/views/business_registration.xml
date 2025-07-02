@@ -1536,7 +1536,7 @@
                                                                 <div class="col-sm">
                                                                     <select class="form-select s_website_form_input" style="" name="provider_purchase" id="provider_purchase">
 
-                                                                        <t t-foreach="providers.filtered(lambda a: a.x_studio_type_of_contact == 'Supplier')" t-as="p">
+                                                                        <t t-foreach="providers.filtered(lambda a: a.contact_type_id.type_of_contact == 'Supplier')" t-as="p">
                                                                             <option t-att-value="p.id">
                                                                                 <t t-esc="p.name"/>
                                                                             </option>
@@ -1590,8 +1590,8 @@
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
-       title="Sólo letras y números"
-       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                                title="Sólo letras y números"
+                                                                                onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>

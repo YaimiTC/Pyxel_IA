@@ -36,7 +36,8 @@ class ResPartner(models.Model):
                     
     contact_type_id = fields.Many2one(
         'res.partner.contact.type',
-        string='Type of contract',
+        string='Type of contact',
+        required=True,
         help="Custom contact classification"
     )
 
@@ -102,3 +103,13 @@ class ResPartnerContactType(models.Model):
     name = fields.Char(string='Type of name', required=True)
     code = fields.Char(string='Code')  # opcional
     description = fields.Text(string='Description')  # opcional
+
+    type_of_contact = fields.Selection(
+        [
+            ("Supplier", "Supplier"),
+            ("Client", "Client"),
+        ],
+        required=True,
+        default="Client",
+        string="Type Of Contact"
+    )
