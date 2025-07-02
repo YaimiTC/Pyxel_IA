@@ -652,11 +652,17 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone"  required="" maxlength="17"  oninput="this.value = this.value.replace(/\D/g, '')" />
+                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" value="+53" placeholder="+53XXXXXXXX" required="" maxlength="11" title="El número de teléfono debe comenzar con +53 y tener 8 dígitos adicionales."  oninput="this.value = this.value.replace(/[^\d+]/g, '')" />
                                                                     <!-- data-fill-with="phone" -->
+                                                                    <span id="phone-error" 
+                                                                            class="text-danger" 
+                                                                            style="display: none;">
+                                                                            El número ingresado no cumple con el formato esperado: +53 seguido de 8 dígitos.
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
+
 
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
