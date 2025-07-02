@@ -6,13 +6,9 @@
         <field name="inherit_id" ref="base.view_partner_tree" />
         <field name="arch" type="xml">
             <xpath expr="//field[@name='phone']" position="after">
-                <!-- <field name="contact_type_id" optional="show" /> -->
+                <field name="contact_type_id" optional="show" />
                 <field name="license_holder" optional="show" />
                 <field name="count_imports" optional="show"/>
-            </xpath>
-            
-            <xpath expr="//tree" position="inside">
-                <field name="contact_type_id"/>
             </xpath>
         </field>
     </record>

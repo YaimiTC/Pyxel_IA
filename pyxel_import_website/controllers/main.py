@@ -40,12 +40,12 @@ def get_render_values(kw):
     providers = (
         request.env["res.partner"]
         .sudo()
-        .search([("type_of_contact", "=", "Supplier")])
+        .search([("contact_type_id.type_of_contact", "=", "Supplier")])
     )
     customers = (
         request.env["res.partner"]
         .sudo()
-        .search([("type_of_contact", "=", "Customer")])
+        .search([("contact_type_id.type_of_contact", "=", "Customer")])
     )
     register_type = kw.get("type", "accreditation")
     banner = operation_banner_img.get(register_type, operation_banner_img["accreditation"])
@@ -128,7 +128,7 @@ class WebsiteForm(WebsiteForm):
         render_values = get_render_values(kw)
         license_holder = kw.get('license_holder')
         if license_holder:
-            request.env['res.partner'].create({
+            request.env['res.partner'].sudo().create({
                 'license_holder': license_holder,
             })
         if render_values["registered_user"]:
@@ -138,12 +138,12 @@ class WebsiteForm(WebsiteForm):
                 )
             if (
                     render_values["register_type"] == "import"
-                    and request.env.user.partner_id.type_of_contact == "Supplier"
+                    and request.env.user.partner_id.contact_type_id.type_of_contact == "Supplier"
             ):
                 customers = (
                     request.env["res.partner"]
                     .sudo()
-                    .search([("type_of_contact", "=", "Customer")])
+                    .search([("contact_type_id.type_of_contact", "=", "Customer")])
                 )
                 render_values["customers"] = customers
                 return request.render(
@@ -152,7 +152,7 @@ class WebsiteForm(WebsiteForm):
 
             # if(
             #     render_values["register_type"] == "import"
-            #     and request.env.user.partner_id.type_of_contact == "Customer"
+            #     and request.env.user.partner_id.contact_type_id.type_of_contact == "Customer"
             # ):
             #    productRequired = kw.get('productRequired')
 
@@ -284,7 +284,18 @@ class WebsiteForm(WebsiteForm):
                 }
                 purchase_order = request.env["purchase.order"].sudo().create(purchase_order_vals)
                 _logger.info("Orden de compra creada con ID: %s", purchase_order.id)
-                
+
+        if kwargs["Register as"] == 'ClientNacional':
+            contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_client').id
+        elif kwargs["Register as"] == 'ClientExtranjero':
+            contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_foreign_client').id
+        elif kwargs["Register as"] == 'ProviderNacional':
+            contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_supplier').id
+        elif kwargs["Register as"] == 'ProviderExtranjero':
+            contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_foreign_supplier').id
+        else:
+            contact_type_id = False
+
         if model_name == "crm.lead":
             id_crm = eval(res.response[0])
             product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if id.strip().isdigit()]
@@ -293,10 +304,10 @@ class WebsiteForm(WebsiteForm):
             public_user = request.env.user
             # Crear la Cotización a partir de la solicitud de importación
             if tipo_registro == "import":
-                nomenclature_ids = request.env["product.product"].sudo().with_user(SUPERUSER_ID).search([('product_tmpl_id', 'in', product_nomenclature_ids)]).ids
-                onure_ids = request.env["product.product"].sudo().with_user(SUPERUSER_ID).search([('product_tmpl_id', 'in', product_onure_ids)]).ids
+                nomenclature_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_nomenclature_ids)]).ids
+                onure_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_onure_ids)]).ids
                 order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids] + [(0,0, {"product_id": product_id}) for product_id in onure_ids] 
-                order = request.env["sale.order"].sudo().with_user(SUPERUSER_ID).create(
+                order = request.env["sale.order"].sudo().create(
                     {
                         "partner_id": public_user.sudo().partner_id.id,
                         "order_line": order_line,
@@ -306,20 +317,20 @@ class WebsiteForm(WebsiteForm):
             # if "uid" not in request.context:
             if not public_user.sudo().partner_id.parent_id:
                 partner = (
-                    request.env["res.partner"].sudo().with_user(SUPERUSER_ID)
+                    request.env["res.partner"].sudo()
                     .create(
                         {
                             "name": kwargs["company"],
                             "company_type": 'company',
                             # "phone": kwargs["phone"],
                             "email": kwargs["company_email"],
-                            "type_of_contact": 'Supplier' if kwargs["Register as"] == 'Provider' else 'Customer',
+                            "contact_type_id": contact_type_id,
                             "child_ids": [(4, public_user.sudo().partner_id.id)],
                              
                         }
                     )
                 )
-            crm_lead = request.env["crm.lead"].with_user(SUPERUSER_ID).sudo().browse(id_crm["id"])
+            crm_lead = request.env["crm.lead"].sudo().browse(id_crm["id"])
             crm_lead.sudo().write({
                     # "partner_id": partner.sudo().id,
                     "product_onure": [(6, 0, product_onure_ids)],
@@ -356,8 +367,7 @@ class WebsiteForm(WebsiteForm):
                         'email': kwargs.get('other_provider_company_email'),
                         'street': kwargs.get('other_provider_address'),
                         'country_id': int(kwargs.get('other_provider_country')),
-                        'type_of_contact': 'Supplier',
-
+                        'contact_type_id': self.env.ref('pyxel_import_backend.res_partner_contact_type_supplier').id,
                     })
 
                 supplier_id = None
@@ -623,9 +633,9 @@ class ControllerTest(http.Controller):
         partner = request.env.user.partner_id
 
         if partner.parent_id:
-            contact_type = partner.parent_id.type_of_contact
+            contact_type = partner.parent_id.contact_type_id.type_of_contact
         else:
-            contact_type = partner.type_of_contact
+            contact_type = partner.contact_type_id.type_of_contact
 
         if contact_type == "Supplier":
 
