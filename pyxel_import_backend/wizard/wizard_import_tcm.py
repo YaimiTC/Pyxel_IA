@@ -1,7 +1,6 @@
 import base64
 from datetime import datetime, timedelta
 
-import openpyxl as openpyxl
 import pandas as pd
 import unicodedata
 from odoo import models, fields, api, _
