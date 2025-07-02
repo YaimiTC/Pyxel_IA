@@ -614,7 +614,7 @@ class ControllerTest(http.Controller):
         ], limit=1)
         contract_exists = False
         if crm_lead_exists:
-            contract_exists = request.env["crm.lead"].sudo().search([
+            contract_exists = request.env["res.partner.contract.import"].sudo().search([
                 ("partner_id", "in", domain_ids), ("active_contract", "=", True)
             ], limit=1)
 
