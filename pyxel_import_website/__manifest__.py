@@ -15,12 +15,12 @@
     "description": """""",
     "depends": [
         'base',
-        'web', 
-        'website', 
+        'web',
+        'website',
         'website_sale',
         'website_crm',
         'base_address_extended',
-        'sale_management', 
+        'sale_management',
         'purchase',
         'pyxel_import_backend',
     ],
@@ -38,6 +38,8 @@
     ],
     'assets': {
         'web.assets_frontend': [
+            'pyxel_import_website/static/src/components/**/*.js',
+            'pyxel_import_website/static/src/components/**/*.xml',
             # 'website_sale/static/src/**/*',
 
             'pyxel_import_website/static/src/js/business_registration.js',

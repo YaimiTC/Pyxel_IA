@@ -1,0 +1,43 @@
+<templates xml:space="preserve">
+    <t t-name="childcare_management.MainTemplate">
+        <div class="table-container">
+            <!-- Aqui tiene que insertarse el filtro generico generado en cada compoennte que me cree la tabla  -->
+            <t t-slot="filters"/>
+            <!-- Tabla -->
+            <div class="table-responsive" t-if='!state.isMobile'>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <t t-foreach="props.columns" t-as="col" t-key='col.name'>
+                                <th t-att-class="col.isSortable ? 'cursor-pointer' : ''"
+                                    t-on-click="col.isSortable ? () => handleSort(col.name) : () => null">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <t t-esc="col.header"/>
+                                        <t t-if="col.isSortable and state.sortedColumn === col.name">
+                                            <i class="fa text-primary-custom" 
+                                            t-att-class="state.sortDirection === 'asc' ? 'fa-sort-up' : 'fa-sort-down'"/>
+                                        </t>
+                                    </div>
+                                </th>
+                            </t>
+                        </tr>
+                    </thead>
+                    <TableBody rows="paginatedData" columns="props.columns"/>
+                </table>
+            </div>
+            <div class="table-responsive" t-if='state.isMobile'>
+                <TableBodyMobile rows="paginatedData" columns="props.columns"/>
+            </div>
+            <!-- Paginación -->
+            <t t-if='paginatedData and paginatedData.length > 0'>
+                <TablePagination
+                    currentPage="state.currentPage"
+                    totalPages="totalPages"
+                    pageSize="state.pageSize"
+                    onPageChange.bind="handlePageChange"
+                    onPageSizeChange.bind="handlePageSizeChange"
+                />
+            </t>
+        </div>
+    </t>
+</templates>
