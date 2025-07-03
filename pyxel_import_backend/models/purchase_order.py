@@ -1,4 +1,6 @@
 from odoo import models, fields, api
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class PurchaseOrder(models.Model):
@@ -63,7 +65,7 @@ class PurchaseOrderLine(models.Model):
     quantity_available = fields.Float(
         string='Available Quantity for Containers',
         compute='_compute_quantity_available',
-        store=False
+        store=True
     )
     container_fix_ids = fields.One2many(
         comodel_name='importation.load.line',
@@ -74,10 +76,9 @@ class PurchaseOrderLine(models.Model):
     @api.depends('product_uom_qty', 'container_fix_ids')
     def _compute_quantity_available(self):
         for record in self:
-            records = self.env['importation.load.line'].search([
-                ('purchase_order_line_id', '=', record.id),
-                ('cargo_id', 'in', record.container_fix_ids.ids)
-            ])
-            record.quantity_available = record.product_uom_qty - sum(
-                r.quantity for r in records
-            )
+            _logger.info("Lineas de contendores")
+            for line in record.container_fix_ids:
+                _logger.info("line.order: %s", line)
+
+            total_assigned = sum(record.container_fix_ids.mapped('quantity'))
+            record.quantity_available = record.product_uom_qty - total_assigned

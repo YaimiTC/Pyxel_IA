@@ -134,7 +134,7 @@
                                     </page>
 
                                     <page string="Importation Load">
-                                        <field name="load_tracking_ids">
+                                        <field name="load_tracking_ids" context="{'default_importation_id': active_id}">
                                             <tree>
                                                 <field name="name"/>
                                                 <field name="cargo_type"/>
@@ -172,7 +172,7 @@
                                                     <field name="arrival_date" invisible="purchase_condition not in ('FCL','LCL')"/>
                                                     <field name="release_date" invisible="purchase_condition not in ('FCL','LCL')"/>
                                                     <field name="extraction_date" invisible="purchase_condition not in ('FCL','LCL')"/>
-                                                    <field name="return_date" invisible="purchase_condition == 'FCL'"/>
+                                                    <field name="return_date" invisible="purchase_condition == 'AWB'"/>
                                                     <field name="state" readonly="1"/>
                                                     <field name="currency_id" readonly="1"/>
                                                   </group>

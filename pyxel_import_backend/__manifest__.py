@@ -46,6 +46,7 @@
         "views/view_import_error_log.xml",
         "report/average_container_report_views.xml",
         "report/average_container_summary_report_views.xml",
+        "views/importation_load_line_views.xml",
 
 
 
