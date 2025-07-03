@@ -46,7 +46,7 @@
                             <field name="arrival_date" invisible="purchase_condition not in ('FCL','LCL')"/>
                             <field name="release_date" invisible="purchase_condition not in ('FCL','LCL')"/>
                             <field name="extraction_date" invisible="purchase_condition not in ('FCL','LCL')"/>
-                            <field name="return_date" invisible="purchase_condition == 'FCL'"/>
+                            <field name="return_date" invisible="purchase_condition == 'AWB'"/>
                             <field name="state" readonly="1"/>
                             <field name="currency_id" readonly="1"/>
                         </group>
@@ -75,7 +75,7 @@
                     <notebook>
                         <page string="Product Lines">
                             <field name="purchase_order_ids" />
-                            <field name="cargo_line_ids">
+                            <field name="cargo_line_ids" context="{'default_cargo_id': active_id}">
                                 <tree editable="bottom">
                                     <field name="purchase_order_line_id" domain="[('order_id', 'in', parent.purchase_order_ids)]"/>
                                     <field name="product_id" readonly="1"/>
@@ -116,6 +116,8 @@
                 }
             </field>
     </record>
+
+
 
     <menuitem id="menu_importation_load" name="Loads" parent="menu_importation_process" sequence="2" action="action_importation_load"/>
 </odoo>
