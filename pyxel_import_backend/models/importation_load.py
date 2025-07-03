@@ -17,7 +17,13 @@ class ImportationLoad(models.Model):
         ('reefer', 'Refrigerated'),
     ], string='Load Type', required=True)
 
-    size = fields.Char(string='Size')
+    size = fields.Selection(
+        selection=[
+            ('20', '20 pies'),
+            ('40', '40 pies'),
+        ],
+        string='Size'
+    )
     weight = fields.Float(string='Weight (Kg)')
     volume = fields.Float(string='Volume (m³)')
     bulk = fields.Float(string='Bulk')
@@ -163,6 +169,24 @@ class ImportationLoad(models.Model):
             if not record.name or len(record.name) != 11 or not record.name.isalnum():
                 raise ValidationError("The container number must have exactly 11 alphanumeric characters.")
 
+    @api.constrains('name', 'importation_id')
+    def _check_unique_container_per_import(self):
+        for record in self:
+            if not record.name or not record.importation_id:
+                continue
+
+            # Busca contenedores con el mismo nombre dentro de la misma importación, excluyéndose a sí mismo
+            duplicate = self.search([
+                ('name', '=', record.name),
+                ('importation_id', '=', record.importation_id.id),
+                ('id', '!=', record.id)
+            ], limit=1)
+
+            if duplicate:
+                raise ValidationError(
+                    f"A container with the name '{record.name}' already exists in this import."
+                )
+
 
 class ImportationLoadLine(models.Model):
     _name = 'importation.load.line'
@@ -175,8 +199,46 @@ class ImportationLoadLine(models.Model):
     quantity = fields.Float(string='Allocated Amount', required=True)
     price = fields.Float(string='Price')
 
-    @api.constrains('quantity')
+    @api.constrains('quantity', 'purchase_order_line_id')
     def _check_quantity(self):
         for line in self:
-            if line.quantity > line.purchase_order_line_id.product_qty:
-                raise ValidationError("The allocated quantity exceeds the quantity available in the purchase line.")
+            # Sumar las demás líneas, excluyendo la actual (si ya está creada)
+            other_lines = line.purchase_order_line_id.container_fix_ids.filtered(lambda l: l.id != line.id)
+            total_assigned = sum(other_lines.mapped('quantity')) + line.quantity
+
+            if total_assigned > line.purchase_order_line_id.product_uom_qty:
+                raise ValidationError("The total allocated quantity exceeds the quantity in the purchase line.")
+
+    @api.onchange('quantity')
+    def _onchange_quantity(self):
+        for line in self:
+            po_line = line.purchase_order_line_id
+            if not po_line:
+                continue
+            if line.quantity <= 0:
+                raise ValidationError("You cannot assign an amount less than or equal to zero.")
+
+            def _get_id_safe(rec):
+                return rec._origin.id if rec._origin else rec.id
+
+            current_line_id = _get_id_safe(line)
+
+            other_lines = po_line.container_fix_ids.filtered(
+                lambda l: _get_id_safe(l) != current_line_id
+            )
+
+            total_assigned = sum(other_lines.mapped('quantity'))
+            available = po_line.product_uom_qty - total_assigned
+
+            if line.quantity > available:
+                line.quantity = available
+                raise ValidationError(f"The quantity exceeds the available quantity ({available}). It has been automatically adjusted.")
+
+    @api.constrains('quantity')
+    def _check_quantity_not_zero(self):
+        for line in self:
+            if line.quantity <= 0:
+                raise ValidationError("The amount allocated must be greater than zero.")
+
+
+
