@@ -8,6 +8,7 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from werkzeug.exceptions import NotFound
+from werkzeug.urls import url_encode
 
 from odoo import SUPERUSER_ID
 from odoo import fields, tools
@@ -599,6 +600,25 @@ class ControllerTest(http.Controller):
 
         return {'status': 'success', 'message': 'Sesión de electrónicos actualizada correctamente'}
         
+    @http.route('/business-register-thanks', type='http', auth="public", website=True)
+    def business_register_thanks(self, **kw):
+        crm_lead_exists = request.env["crm.lead"].sudo().search([
+            ("partner_id", "in", [request.env.user.partner_id.id])
+        ], limit=1)
+        crm_stage = ''
+
+        if crm_lead_exists: 
+            potential_client_or_supplier = request.env.ref('pyxel_import_backend.potential_client_or_supplier')
+            in_process_of_approval = request.env.ref('pyxel_import_backend.in_process_of_approval')
+
+            if potential_client_or_supplier and potential_client_or_supplier.id == crm_lead_exists.stage_id.id:
+                crm_stage = potential_client_or_supplier.name
+
+            elif in_process_of_approval and in_process_of_approval.id == crm_lead_exists.stage_id.id:
+                crm_stage = in_process_of_approval.name
+
+        return request.render('pyxel_import_website.business_register_thanks', {"crm_stage": crm_stage})
+
     @http.route('/business-register', type='http', auth="public", website=True)
     def controller_register(self, **kw):
         if request.env.user.id == request.env.ref('base.public_user').id:
