@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pyxel_import_website.ImportationsTableTemplate" owl="1">
+    <div class="container mt-3">
+      <div class="d-flex align-items-center gap-2 mb-3 text-secondary">
+        <a href="/my/home" class="text-decoration-none text-primary-custom d-flex align-items-center">
+        <i class="fa fa-home"></i>
+        </a>
+          <span class="mx-1">/</span>
+          <span class="fw-bold text-black">Importaciones</span>
+      </div>
+
+
+        <GenericTable
+                columns="columns"
+                rows="state.filteredData"
+                initialPageSize="10"
+                class="table-striped"
+        >
+        <t t-set-slot="filters">
+          <div class="mb-4">
+            <div class="input-group" style="max-width: 400px;">
+              <span class="input-group-text text-primary-custom bg-white" style="border-right: none;">
+                <i class="fa fa-search"></i>
+              </span>
+                <input
+                        type="text"
+                        class="form-control px-0"
+                        placeholder="Buscar..."
+                        t-model="state.filters.global"
+                        t-on-input="(ev) => updateFilter('global', ev.target.value)"
+                        style="border-left: none;"
+                />
+            </div>
+          </div>
+        </t>
+      </GenericTable>
+    </div>
+  </t>
+</templates>

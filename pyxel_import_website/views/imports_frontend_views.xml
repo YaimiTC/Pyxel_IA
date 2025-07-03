@@ -64,4 +64,10 @@
             </div>
         </t>
     </template>
+
+    <template id="importations_list" name="Imports">
+            <t t-call="website.layout">
+                <owl-component name="pyxel_import_website.ImportationsTable" />
+            </t>
+    </template>
 </odoo>
