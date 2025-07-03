@@ -1872,6 +1872,11 @@
                                                     <i class="fa fa-1x fa-fw fa-envelope me-2"/>
                                                     <span>correo@correo.com</span>
                                                 </li>
+                                                <t t-if="crm_stage">
+                                                    <li>
+                                                        <span><t t-out="crm_stage"/></span>
+                                                    </li>
+                                                </t>
                                             </ul>
                                         </div>
                                     </div>
