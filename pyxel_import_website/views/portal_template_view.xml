@@ -116,37 +116,6 @@
             </td>
         </xpath>
     </template>
-    <!--
-        <template id="portal_my_orders_inherit" inherit_id="sale.portal_my_orders">
-            <xpath expr="//t[@t-foreach='orders']/tr" position="attributes">
-                <attribute name="class">
-                    <t t-if="not order.quotation_invoiced">bg-info</t>
-                </attribute>
-            </xpath>
-            <xpath expr="//t[@t-foreach='orders']/tr" position="inside">
-                <td class="text-end">
-                    <t t-if="order.supplier_id.id == user.partner_id.id and not order.quotation_invoiced">
-                        <a t-attf-href="/to_invoice/#{order.id}" class="btn btn-primary">Facturar</a>
-                    </t>
-                </td>
-            </xpath>
-        </template>
-
-        <template id="portal_my_invoices_inherit" inherit_id="account.portal_my_invoices">
-            <xpath expr="//t[@t-foreach='invoices']/tr" position="attributes">
-                <attribute name="class">
-                    <t t-if="invoice.payment_state == 'not_paid'">bg-info</t>
-                </attribute>
-            </xpath>
-            <xpath expr="//t[@t-foreach='invoices']/tr" position="inside">
-                <td class="text-end">
-                    <t t-if="invoice.partner_id.id == user.partner_id.id and invoice.payment_state == 'not_paid'">
-                        <a t-attf-href="/to_import/#{invoice.id}" class="btn btn-primary">Confirmar Pago</a>
-                    </t>
-                </td>
-            </xpath>
-        </template>
-    -->
 
     <template id="marketplace_user_needed">
         <t t-call="website.layout">
