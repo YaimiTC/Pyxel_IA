@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="res_config_settings_view_form_inherit_x_model" model="ir.ui.view">
+            <field name="name">res.config.settings.view.form.inherit.x_model</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="90"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <app data-string="Imports" id="pyxel_fruxelimport_email_excel" string="Imports"
+                         name="pyxel_fruxelimport_email_excel"
+                         web_icon="pyxel_fruxelimport_email_excel,static/description/config_icon.png">
+                        <block title="From Configuration" id="custom_model_setting">
+                            <setting>
+                                <field name="email_from"/>
+                            </setting>
+                            <!--                            <setting string="Subject">-->
+                            <!--                                <div class="content-group">-->
+                            <!--                                    <div class="mt16">-->
+                            <!--                                        <label for="email_subject" class="o_light_label" string="Email Subject"/>-->
+                            <!--                                        <field name="email_subject" class="oe_inline col-4 col-lg-2 me-1 text-center"/>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+                            <!--                            </setting>-->
+                        </block>
+                         <block title="Planilla de Perfil de Proveedores">
+                            <setting>
+                                <field name="perfil_attachment_id"/>
+                            </setting>
+                            <div class="o_setting_help text-muted mt8">
+                                Seleccione o cargue el adjunto que servirá como plantilla del perfil de proveedores para descarga.
+                            </div>
+                        </block>
+                        <block title="TCM Email Notification Settings">
+                            <setting>
+                                <field name="notification_emails"/>
+                            </setting>
+                            <setting>
+                                <field name="outgoing_mail_server_id"/>
+                            </setting>
+                        </block>
+                        <block title="Contracts Email Notification Settings">
+                            <setting>
+                                <field name="salespersons_emails"/>
+                            </setting>
+                            <setting>
+                                <field name="days_until_expiration"/>
+                            </setting>
+                            <setting>
+                                <field name="contract_outgoing_mail_server_id"/>
+                            </setting>
+                        </block>
+                        <block title="Containers Email Notification Settings">
+                            <setting>
+                                <field name="containers_salespersons_emails"/>
+                            </setting>
+                            <setting>
+                                <field name="containers_outgoing_mail_server_id"/>
+                            </setting>
+                        </block>
+                    </app>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
