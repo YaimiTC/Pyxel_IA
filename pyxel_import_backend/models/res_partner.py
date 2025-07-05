@@ -37,7 +37,6 @@ class ResPartner(models.Model):
     contact_type_id = fields.Many2one(
         'res.partner.contact.type',
         string='Type of contact',
-        required=True,
         help="Custom contact classification"
     )
 
