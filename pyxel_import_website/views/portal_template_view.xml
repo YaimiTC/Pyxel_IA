@@ -37,7 +37,7 @@
 
     <template id="portal_side_content_inherit" inherit_id="portal.side_content">
         <xpath expr="//div[@class='o_portal_my_details']" position="inside">
-            <t t-if="contract_status != 'False'">
+            <t t-if="contract_status != False">
                 <div>
                     <span t-esc="contract_status"/>
                 </div>
