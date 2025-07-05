@@ -1,73 +1,427 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <template id="custom_imports_list_view" name="Search Imports">
+    <template id="importations_list" name="Imports">
         <t t-call="website.layout">
-            <div class="container o_website_listing_layout">
-                <div class="oe_structure oe_new"/>
-                <section class="s_searchbar o_colored_level o_cc pt48 pb48">
-                    <div class="row">
-                        <ol class="o_portal_submenu breadcrumb mb-0 flex-grow-1 px-0">
-                            <li class="breadcrumb-item ms-1" data-oe-model="ir.ui.view" data-oe-id="438" data-oe-field="arch" data-oe-xpath="/t[1]/ol[1]/li[1]">
-                                <a href="/my/home" aria-label="Inicio" title="Inicio">
-                                    <i class="fa fa-home"/>
-                                </a>
-                            </li>
-                            <li id="portal_breadcrumbs_sale" class="breadcrumb-item active">
-                                Importaciones
-                            </li>
-                        </ol>
-                        <div class="col-lg-8 offset-lg-2">
-                            <div class="btn-toolbar">
-                                <form method="get" class="o_searchbar_form s_searchbar_input me-auto flex-grow-1" action="/model/imports_search">
-                                    <div role="search" class="input-group">
-                                        <input type="search" name="search" class="search-query form-control oe_search_box border-0 text-bg-light" placeholder="Buscar..." t-att-value="search" autocomplete="off"/>
-                                        <button type="submit" aria-label="Buscar" title="Buscar" class="btn oe_search_button btn-light">
-                                            <i class="oi oi-search"/>
-                                            <span t-if="search" class="oe_search_found">
-                                                <small>(<t t-out="search_count or 0"/> encontrado)</small>
-                                            </span>
-                                        </button>
-                                    </div>
-                                    <input name="order" type="hidden" class="o_search_order_by" t-att-value="order_by if order_by else 'x_name asc'"/>
-                                </form>
-                                <!--<t t-call="website_studio.listing_layout_switcher"/>-->
-                                <a href="/business-register?type=import" style="margin-left:20px" class="btn btn-secondary ml-5" data-bs-original-title="" title="">Registrar importación</a>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <div t-attf-class="row mx-n2 mt8 #{'o_website_grid' if layout_mode == 'grid' else 'o_website_list'}">
-                    <t t-if="records" t-call="portal.portal_table">
-                        <thead>
-                            <tr class="active">
-                                <th>Número</th>
-                                <th class="text-start">Proveedor</th>
-                                <th class="text-start">Cliente</th>
-                                <th class="text-start">BL</th>
-                                <th class="text-start">Estado</th>
-                            </tr>
-                        </thead>
-                        <t t-foreach="records" t-as="record">
-                            <tr>
-                                <td><a t-att-href="record_to_url(record)"><t t-out="record.display_name"/></a></td>
-                                <td class="text-start"><span t-field="record.x_studio_supplier"/></td>
-                                <td class="text-start"><span t-field="record.x_studio_client"/></td>
-                                <td class="text-start">
-                                    <span style="color:black; font-size:14px;line-height:normal;text-overflow: ellipsis;" t-esc="record.x_studio_bill_of_landing_number or record.display_name"/>
-                                </td>
-                                <td class="text-start"><span t-field="record.x_studio_stage_id"/></td>
-                            </tr>
-                        </t>
-                    </t>
-                </div>
-                <div class="oe_structure oe_new"/>
-            </div>
+            <owl-component name="pyxel_import_website.ImportationsTable"/>
         </t>
     </template>
 
-    <template id="importations_list" name="Imports">
-            <t t-call="website.layout">
-                <owl-component name="pyxel_import_website.ImportationsTable" />
-            </t>
+    <template id="importation_view" name="import record">
+        <t t-call="website.layout">
+            <div id="o_website_record_page wrap">
+                <div class="container">
+                    <ol t-if="listing" class="breadcrumb p-0 my-2">
+                        <li class="breadcrumb-item o_not_editable">
+                            <a href="/my/home">
+                                <i class="fa fa-home"/>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item o_not_editable">
+                            <a t-att-href="listing['href']">
+                                <span t-out="listing['name']"/>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active">
+                            <span t-field="record.display_name"/>
+                        </li>
+                    </ol>
+                    <div class="d-flex flex-row my-4 flex-wrap align-items-top justify-content-between">
+                        <div class="col-lg-4 col-sm-4" style="">
+                            <div class="d-flex justify-content-start align-items-left gap-0 mb-1">
+                                <img class="o_portal_contact_img rounded o_object_fit_cover"
+                                     t-att-src="image_data_uri(record.provider_id.avatar_128)" alt="Contact"
+                                     width="70"/>
+                                <div class="d-flex flex-column justify-content-center">
+                                    <h4 class="mb-0" t-out="record.provider_id.name"/>
+                                    <p class="mb-0 text-muted" t-out="record.provider_id.company_name"/>
+                                </div>
+                            </div>
+                            <div class="card-text d-flex flex-column flex-grow-1">
+                                <div class="o_inner_group grid col-lg-12">
+                                    <div>
+                                        <span>BL:</span>
+                                        <span t-esc="record.purchase_condition_number or record.display_name"/>
+                                    </div>
+                                    <div>
+                                        <span>Proveedor:</span>
+                                        <span t-field="record.provider_id"/>
+                                    </div>
+                                    <div>
+                                        <span>Origen:</span>
+                                        <span t-field="record.country_origin_id"/>
+                                    </div>
+                                    <div>
+                                        <span>Estado:</span>
+                                        <span t-field="record.stage_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8 mt-lg-8 col-sm-8">
+                            <div id="informations">
+                                <!--<div class="row">-->
+                                <div class="mb-3 mt-3 col-12 o_field_statusbar">
+                                    <div class="o_statusbar_status" role="radiogroup">
+                                        <t t-set="stage" t-value="record.stage_id.id"/>
+                                        <button t-att-disabled="stage == 9" type="button"
+                                                t-attf-class="btn boton_secondary_import o_arrow_button o_first #{'o_arrow_button_current' if stage == 9 else ''}"
+                                                t-esc="'DEVOLUCION DEL CONTENEDOR'"/>
+                                        <button t-att-disabled="stage == 8" type="button"
+                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 8 else ''}"
+                                                t-if="stage != 2" t-esc="'EN ALMACÉN CLIENTE'"/>
+                                        <button type="button" t-att-disabled="stage == 6"
+                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 6 else ''}"
+                                                t-esc="'LISTO PARA EXTRAER'"/>
+                                        <button type="button" t-att-disabled="stage == 5"
+                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 5 else ''}  "
+                                                t-esc="'TRÁMITES EN DESTINO'"/>
+                                        <button type="button" t-att-disabled="stage == 2"
+                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 2 else ''}"
+                                                t-if="stage == 2" t-esc="'EN TRANSITO A PUERTO DE DESTINO'"/>
+                                        <button type="button"
+                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 7 else ''}"
+                                                t-att-disabled="stage == 7" t-esc="'TRAMITES EN ORIGEN'"/>
+                                        <button type="button"
+                                                t-attf-class="btn boton_secondary_import o_arrow_button o_last o_arrow_button_current #{'o_arrow_button_current' if stage == 1 else ''}"
+                                                t-att-disabled="stage == 1" t-esc="'SOLICITUD'"/>
+                                    </div>
+                                </div>
+                                <!--</div>    -->
+                                <t t-set="containers" t-value="[i for i in record.load_tracking_ids]"/>
+                                <div class="row" id="po_date">
+                                    <div class="mb-3 col-12">
+                                        <strong>
+                                            <h4>Datos de la operación</h4>
+                                        </strong>
+                                        <a t-att-href="'/update_files/%s' % record.id">Adicionar información</a>
+                                        <!--<span t-field="order.date_order" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>-->
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <!--  <strong class="d-block mb-1">Desde:</strong> -->
+                                        <address t-field="record.provider_id"
+                                                 t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/>
+
+                                        <div t-att-class="'d-inline' if record.estimated_start_date else 'd-none'">
+                                            <strong>Fecha de inicio de operación:</strong>
+                                            <span class="ms-1" t-field="record.estimated_start_date"
+                                                  t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                        </div>
+
+                                        <div t-att-class="'d-inline' if record.port else 'd-none'"
+                                             style="margin-left: 10px;">
+                                            <strong>Puerto de Origen:</strong>
+                                            <span class="ms-1" t-field="record.port"/>
+                                        </div>
+
+                                        <div t-att-class="'d-inline' if containers else 'd-none'"
+                                             style="margin-left: 10px;">
+                                            <strong>Naviera:</strong>
+                                            <t t-set="shipping_company" t-value="'---'"/>
+                                            <t t-foreach="containers" t-as="container">
+                                                <t t-if="container.shipping_company">
+                                                    <t t-set="shipping_company"
+                                                       t-value="container.shipping_company"/>
+                                                    <t t-break=""/>
+                                                </t>
+                                            </t>
+                                            <span class="ms-1" t-esc="shipping_company"/>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- <t t-set="containers" t-value="[i for i in record.load_tracking_ids]"/> -->
+
+                                <div t-if="not containers" class="row" t-cache="false">
+                                    <div class="col">
+                                        <strong class="d-block mb-1">Ordenes de compra:
+                                            <t t-esc="len(record.purchase_order_ids)"/>
+                                        </strong>
+                                    </div>
+
+
+                                    <t t-foreach="record.purchase_order_ids" t-as="purchase">
+                                        <section id="details" style="page-break-inside: auto;" class="mt10">
+
+                                            <div class="table-responsive">
+                                                <table class="table table-sm" id="container_table">
+                                                    <thead class="bg-100">
+                                                        <tr>
+                                                            <th class="text-start">Producto</th>
+                                                            <th class="text-end">Cantidad</th>
+                                                            <th class="text-end">Precio</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="purchase_tbody">
+
+                                                        <t t-set="current_subtotal" t-value="0"/>
+
+                                                        <t t-foreach="purchase.sudo().order_line" t-as="line">
+
+                                                            <t t-set="current_subtotal"
+                                                               t-value="current_subtotal + line.price_subtotal"/>
+
+                                                            <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic text-break' if line.display_type == 'line_note' else ''">
+                                                                <t t-if="not line.display_type">
+
+                                                                    <td id="product_name">
+                                                                        <t t-if="line.sudo().product_id.image_1024">
+                                                                            <img t-att-src="image_data_uri(resize_to_48(line.sudo().product_id.image_1024))"
+                                                                                 alt="Product"
+                                                                                 class="d-none d-lg-inline"/>
+                                                                        </t>
+
+                                                                        <span t-field="line.name"/>
+                                                                    </td>
+                                                                    <td class="text-end">
+                                                                        <div id="quote_qty">
+                                                                            <span t-field="line.product_qty"/>
+                                                                            <span t-field="line.product_uom"
+                                                                                  groups="uom.group_uom"/>
+                                                                        </div>
+                                                                    </td>
+
+                                                                    <td t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+                                                                        <div t-field="line.price_subtotal"
+                                                                             class="text-end"/>
+                                                                    </td>
+
+                                                                </t>
+                                                                <t t-if="line.display_type == 'line_section'">
+                                                                    <td colspan="99">
+                                                                        <span t-field="line.name"/>
+                                                                    </td>
+                                                                    <t t-set="current_section" t-value="line"/>
+                                                                    <t t-set="current_subtotal" t-value="0"/>
+                                                                </t>
+                                                                <t t-if="line.display_type == 'line_note'">
+                                                                    <td colspan="99">
+                                                                        <span t-field="line.name"/>
+                                                                    </td>
+                                                                </t>
+                                                            </tr>
+
+                                                            <t t-if="current_section and (line_last or order.order_line[line_index+1].display_type == 'line_section')">
+                                                                <tr class="is-subtotal text-end">
+                                                                    <td colspan="99">
+                                                                        <strong class="mr16">Subtotal</strong>
+                                                                        <span t-esc="current_subtotal"
+                                                                              t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: order.currency_id}"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!--<div id="total" t-if="order.state in ['purchase', 'done']" class="row"-->
+                                            <!--     name="total" style="page-break-inside: avoid;">-->
+                                            <!--    <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ms-auto">-->
+                                            <!--        <t t-call="purchase.purchase_order_portal_content_totals_table"/>-->
+                                            <!--    </div>-->
+                                            <!--</div>-->
+                                        </section>
+                                    </t>
+
+
+                                </div>
+
+
+                                <div t-if="containers" class="row" t-cache="false">
+                                    <div class="col">
+                                        <strong class="d-block mb-1">Cantidad de contenedores:
+                                            <t t-esc="len(containers)"/>
+                                        </strong>
+                                    </div>
+
+
+                                    <!-- Nueva fila con las fechas -->
+                                    <div class="row">
+                                        <div class="col">
+                                            <strong class="d-block mb-1">Fecha de Arribo:
+                                                <t t-set="arrival_date" t-value="'Por arribar'"/>
+                                                <t t-foreach="containers" t-as="container">
+                                                    <t t-if="container.arrival_date">
+                                                        <t t-set="arrival_date"
+                                                           t-value="container.arrival_date"/>
+                                                        <t t-break=""/>
+                                                    </t>
+                                                </t>
+                                                <t t-esc="arrival_date"/>
+                                            </strong>
+                                        </div>
+                                        <div class="col">
+                                            <strong class="d-block mb-1">Fecha de Extracción:
+                                                <t t-set="extraction_date" t-value="'Por extraer'"/>
+                                                <t t-foreach="containers" t-as="container">
+                                                    <t t-if="container.extraction_date">
+                                                        <t t-set="extraction_date"
+                                                           t-value="container.extraction_date"/>
+                                                        <t t-break=""/>
+                                                    </t>
+                                                </t>
+                                                <t t-esc="extraction_date"/>
+                                            </strong>
+                                        </div>
+                                        <div class="col">
+                                            <strong class="d-block mb-1">Fecha de Devolución:
+                                                <t t-set="return_date" t-value="'Por devolver'"/>
+                                                <t t-foreach="containers" t-as="container">
+                                                    <t t-if="container.return_date">
+                                                        <t t-set="return_date"
+                                                           t-value="container.return_date"/>
+                                                        <t t-break=""/>
+                                                    </t>
+                                                </t>
+                                                <t t-esc="return_date"/>
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    <t t-foreach="containers" t-as="container">
+                                        <section t-cache="False" id="details" style="page-break-inside: auto;"
+                                                 class="mt10">
+                                            <div class="row mb-2">
+                                                <t t-set="type_load_label"
+                                                   t-value="{'refrigerated':'Refigerada','grouped':'Agrupada','dry':'Seca'}"/>
+                                                <div class="col-lg-4 mt-lg-4 col-sm-8">
+                                                    <span>
+                                                        <h7 style="font-weight: bold;">Contenedor:</h7>
+                                                        <t t-esc="container.name"/>
+                                                    </span>
+                                                    <br/>
+                                                    <span>
+                                                        <h7 style="font-weight: bold;">Arribo:</h7>
+                                                        <t t-esc="container.arrival_date"/>
+                                                    </span>
+                                                </div>
+                                                <div class="col-lg-4 mt-lg-4 col-sm-8">
+                                                    <span>
+                                                        <h7 style="font-weight: bold;">Peso (kg):</h7>
+                                                        <t t-esc="container.weight"/>
+                                                    </span>
+                                                    <br/>
+
+                                                    <span>
+                                                        <h7 style="font-weight: bold;">Tamaño (pies):</h7>
+                                                        <t t-esc="container.size"/>
+                                                    </span>
+                                                </div>
+                                                <div class="col-lg-4 mt-lg-4 col-sm-8">
+                                                    <span>
+                                                        <h7 style="font-weight: bold;">Tipo de carga:</h7>
+                                                        <t t-esc="type_load_label[container.cargo_type]"/>
+                                                    </span>
+                                                    <br/>
+
+                                                    <span>
+                                                        <h7 style="font-weight: bold;">Importe:</h7>
+                                                        <t t-esc="container.total_cargo_line"/>
+                                                        <t t-esc="container.currency_id.name"/>
+                                                    </span>
+                                                </div>
+
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-sm" id="container_table">
+                                                    <thead class="bg-100">
+                                                        <tr>
+                                                            <th class="text-start">Producto</th>
+                                                            <th class="text-end">Cantidad</th>
+                                                            <th class="text-end">Precio</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="purchase_tbody">
+
+                                                        <t t-set="current_subtotal" t-value="0"/>
+                                                        <t t-foreach="container.purchase_order_ids"
+                                                           t-as="purchase_order">
+                                                            <t t-foreach="purchase_order.order_line" t-as="line">
+
+                                                                <t t-set="current_subtotal"
+                                                                   t-value="current_subtotal + line.price_subtotal"/>
+
+                                                                <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic text-break' if line.display_type == 'line_note' else ''">
+                                                                    <t t-if="not line.display_type">
+
+                                                                        <td id="product_name">
+                                                                            <t t-if="line.sudo().product_id.image_1024">
+                                                                                <img t-att-src="image_data_uri(resize_to_48(line.sudo().product_id.image_1024))"
+                                                                                     alt="Product"
+                                                                                     class="d-none d-lg-inline"/>
+                                                                            </t>
+
+                                                                            <span t-field="line.name"/>
+                                                                        </td>
+                                                                        <td class="text-end">
+                                                                            <div id="quote_qty">
+                                                                                <span t-field="line.product_qty"/>
+                                                                                <span t-field="line.product_uom"
+                                                                                      groups="uom.group_uom"/>
+                                                                            </div>
+                                                                        </td>
+
+                                                                        <td t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+                                                                            <div t-field="line.price_subtotal"
+                                                                                 class="text-end"/>
+                                                                        </td>
+
+                                                                    </t>
+                                                                    <t t-if="line.display_type == 'line_section'">
+                                                                        <td colspan="99">
+                                                                            <span t-field="line.name"/>
+                                                                        </td>
+                                                                        <t t-set="current_section" t-value="line"/>
+                                                                        <t t-set="current_subtotal" t-value="0"/>
+                                                                    </t>
+                                                                    <t t-if="line.display_type == 'line_note'">
+                                                                        <td colspan="99">
+                                                                            <span t-field="line.name"/>
+                                                                        </td>
+                                                                    </t>
+                                                                </tr>
+
+                                                                <t t-if="current_section and (line_last or order.order_line[line_index+1].display_type == 'line_section')">
+                                                                    <tr class="is-subtotal text-end">
+                                                                        <td colspan="99">
+                                                                            <strong class="mr16">Subtotal</strong>
+                                                                            <span t-esc="current_subtotal"
+                                                                                  t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: order.currency_id}"/>
+                                                                        </td>
+                                                                    </tr>
+                                                                </t>
+                                                            </t>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
+                                            <!--<div id="total" t-if="order.state in ['purchase', 'done']" class="row"-->
+                                            <!--     name="total" style="page-break-inside: avoid;">-->
+                                            <!--    <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ms-auto">-->
+                                            <!--        <t t-call="purchase.purchase_order_portal_content_totals_table"/>-->
+                                            <!--    </div>-->
+                                            <!--</div>-->
+                                        </section>
+                                    </t>
+
+                                    <div id="a">
+                                        <h4>Comuníquese con nosotros</h4>
+                                        <t t-call="portal.message_thread">
+                                            <t t-set="object" t-value="record"/>
+                                        </t>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+
+                    </div>
+                </div>
+            </div>
+        </t>
     </template>
 </odoo>
