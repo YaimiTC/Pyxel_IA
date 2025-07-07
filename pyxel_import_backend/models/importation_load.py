@@ -69,7 +69,7 @@ class ImportationLoad(models.Model):
 
     # Líneas de producto asignadas a la carga (fracción de ordenes de compra)
     cargo_line_ids = fields.One2many('importation.load.line', 'cargo_id', string='Products transported')
-    total_cargo_line = fields.Float(string='Amount of line',  compute='_compute_amount_by_lines')
+    total_cargo_line = fields.Float(string='Amount of line',  compute='_compute_total_cargo_line')
 
     currency_id = fields.Many2one(
         'res.currency',

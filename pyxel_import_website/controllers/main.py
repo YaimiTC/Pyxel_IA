@@ -23,7 +23,6 @@ from odoo.tools import lazy
 
 _logger = logging.getLogger(__name__)
 
-
 operation_banner_img = {
     "logistic": "banner_logistica_3.svg",
     "import": "banner_importaciones_2.svg",
@@ -32,7 +31,6 @@ operation_banner_img = {
 }
 SPG = 20  # Proveedores Per Page
 SPR = 4  # Proveedores Per Row
-
 
 
 def get_render_values(kw):
@@ -55,14 +53,16 @@ def get_render_values(kw):
     register_type = kw.get("type", "accreditation")
     banner = operation_banner_img.get(register_type, operation_banner_img["accreditation"])
     productos_de_importacion = request.env['product.template'].sudo().search([('de_importacion', '=', True)])
-    alimentos_de_importacion = request.env['product.template'].sudo().search([('product_type', '=', 'alimento'),('de_importacion', '=', True)])
-    electronicos_de_importacion = request.env['product.template'].sudo().search([('product_type', '=', 'electronico'),('de_importacion', '=', True)])
-    
+    alimentos_de_importacion = request.env['product.template'].sudo().search(
+        [('product_type', '=', 'alimento'), ('de_importacion', '=', True)])
+    electronicos_de_importacion = request.env['product.template'].sudo().search(
+        [('product_type', '=', 'electronico'), ('de_importacion', '=', True)])
+
     product_selected = request.session.get('product_selected', [])
     electronic_selected = request.session.get('electronic_selected', [])
     alimentos_de_importacion_data = [{'id': product.id, 'name': product.name} for product in alimentos_de_importacion]
-    electronicos_de_importacion_data = [{'id': product.id, 'name': product.name} for product in electronicos_de_importacion]
-
+    electronicos_de_importacion_data = [{'id': product.id, 'name': product.name} for product in
+                                        electronicos_de_importacion]
 
     render_values = {
         "countries": country.get_website_sale_countries(),
@@ -76,9 +76,9 @@ def get_render_values(kw):
         "registered_user": False,
         "productos_de_importacion": productos_de_importacion,
         "alimentos_de_importacion": alimentos_de_importacion,
-        "electronicos_de_importacion":electronicos_de_importacion,
-        "productos_seleccionados_ids":product_selected,
-        "electronic_selected_ids":electronic_selected,
+        "electronicos_de_importacion": electronicos_de_importacion,
+        "productos_seleccionados_ids": product_selected,
+        "electronic_selected_ids": electronic_selected,
         # "electronicos_de_importacion": electronicos_de_importacion,
         'alimentos_de_importacion': json.dumps(alimentos_de_importacion_data),
         'electronicos_de_importacion': json.dumps(electronicos_de_importacion_data),
@@ -96,6 +96,12 @@ def get_render_values(kw):
         render_values["registered_user"] = True
 
     return render_values
+
+
+def loged_in(self):
+    user = request.env.user
+    if user._is_public():
+        return request.redirect("/web/login")
 
 
 class WebsiteForm(WebsiteForm):
@@ -156,6 +162,7 @@ class WebsiteForm(WebsiteForm):
         website=True,
     )
     def business_register(self, **kw):
+        loged_in()
         render_values = get_render_values(kw)
         license_holder = kw.get('license_holder')
         if license_holder:
@@ -218,26 +225,26 @@ class WebsiteForm(WebsiteForm):
                 id_import = eval(res.response[0])
                 import_rec = request.env["x_import"].sudo().browse(id_import["id"])
                 supplier = request.env.user.sudo().partner_id.id
-                
+
                 def process_file(field_name):
                     _logger.info("Procesando campo: %s", field_name)
                     file_storage = kwargs.get(f'{field_name}[0][0]', False)
                     _logger.info("Tipo de file_storage para %s: %s", field_name, type(file_storage))
-                    
+
                     if file_storage:
                         if hasattr(file_storage, 'filename'):
                             _logger.info("Nombre del archivo: %s", file_storage.filename)
                             filename = file_storage.filename
                         else:
                             filename = f'documento_{field_name}.pdf'
-                            
+
                         if hasattr(file_storage, 'seek') and callable(file_storage.seek):
                             try:
                                 file_storage.seek(0)
                                 _logger.info("Archivo rebobinado correctamente")
                             except Exception as e:
                                 _logger.error("Error al rebobinar: %s", str(e))
-                    
+
                         try:
                             if hasattr(file_storage, 'read') and callable(file_storage.read):
                                 file_content = file_storage.read()
@@ -252,11 +259,12 @@ class WebsiteForm(WebsiteForm):
                         _logger.warning("No se encontró el objeto file_storage para %s", field_name)
                         file_content = b''
                         filename = f'documento_{field_name}.pdf'
-                    
-                    if file_content == b'' and hasattr(request, 'httprequest') and hasattr(request.httprequest, 'files'):
+
+                    if file_content == b'' and hasattr(request, 'httprequest') and hasattr(request.httprequest,
+                                                                                           'files'):
                         _logger.info("Intentando método alternativo para %s...", field_name)
                         file_found = False
-                        
+
                         for key in request.httprequest.files:
                             _logger.info("Revisando clave: %s", key)
                             if field_name.replace('x_studio_', '') in key:
@@ -269,15 +277,16 @@ class WebsiteForm(WebsiteForm):
                                         file_content = alt_content
                                         if hasattr(alt_file, 'filename'):
                                             filename = alt_file.filename
-                                        _logger.info("Contenido obtenido por método alternativo: %s bytes", len(file_content))
+                                        _logger.info("Contenido obtenido por método alternativo: %s bytes",
+                                                     len(file_content))
                                         file_found = True
                                         break
                                 except Exception as e:
                                     _logger.error("Error en método alternativo: %s", str(e))
-                        
+
                         if not file_found:
                             _logger.warning("No se encontró un archivo válido para %s", field_name)
-                    
+
                     if file_content and len(file_content) > 0:
                         file_data_base64 = base64.b64encode(file_content)
                         _logger.info("Datos codificados en base64 para %s: %s bytes", field_name, len(file_data_base64))
@@ -288,24 +297,24 @@ class WebsiteForm(WebsiteForm):
                     else:
                         _logger.warning("No hay datos para codificar en base64 para %s", field_name)
                         return {}
-                    
-                #agregar los campos de tipo pdf en el formulario...
+
+                # agregar los campos de tipo pdf en el formulario...
                 file_fields = [
                     'oferta_firmada',
                     'x_studio_bill_of_lading_bl',
-                    'x_studio_x_comercial_invoice', 
-                    'x_studio_package_list', 
-                    'x_studio_export_certify', 
-                    'x_studio_quality_certify', 
+                    'x_studio_x_comercial_invoice',
+                    'x_studio_package_list',
+                    'x_studio_export_certify',
+                    'x_studio_quality_certify',
                     'x_studio_certificate_of_origin_co'
                 ]
-                
+
                 values = {
                     "x_studio_origin_country": eval(kwargs.get("Id de país", "None")),
                     "x_studio_certifies_receipt_load": kwargs.get("Tipo de envío de la carga", None),
                     "x_studio_bill_of_landing_number": kwargs.get("x_studio_bill_of_landing_number", ""),
                     "x_studio_supplier": supplier,
-                    
+
                 }
 
                 for field in file_fields:
@@ -313,18 +322,18 @@ class WebsiteForm(WebsiteForm):
                     values.update(file_values)
 
                 import_rec.write(values)
-                
+
                 if "Cliente nuevo" not in kwargs and model_name == "x_import":
                     cliente = request.env["res.partner"].sudo().browse(int(kwargs["customer_id"]))
                     import_rec.write({'x_studio_form_note': (
-                                                            import_rec.x_studio_form_note or '') + "Cliente: " + cliente.name + "\nNIT: " + (
-                                                            cliente.vat or '')})
-                    
-                #CREACIÓN DE LA ORDEN DE COMPRA ASOCIACIÓN AL LA IMPORTACION (x_import)
+                                                                    import_rec.x_studio_form_note or '') + "Cliente: " + cliente.name + "\nNIT: " + (
+                                                                    cliente.vat or '')})
+
+                # CREACIÓN DE LA ORDEN DE COMPRA ASOCIACIÓN AL LA IMPORTACION (x_import)
                 purchase_order_vals = {
-                    "x_studio_client": int(kwargs["customer_id"]),  
-                    "partner_id": supplier,                            
-                    "x_studio_import_id": import_rec.id,               
+                    "x_studio_client": int(kwargs["customer_id"]),
+                    "partner_id": supplier,
+                    "x_studio_import_id": import_rec.id,
                     "receipt_status": "pending",
                 }
                 purchase_order = request.env["purchase.order"].sudo().create(purchase_order_vals)
@@ -343,8 +352,10 @@ class WebsiteForm(WebsiteForm):
 
         if model_name == "crm.lead":
             id_crm = eval(res.response[0])
-            product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if id.strip().isdigit()]
-            product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if id.strip().isdigit()]
+            product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if
+                                 id.strip().isdigit()]
+            product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if
+                                        id.strip().isdigit()]
 
             public_user = request.env.user
             # Crear la Cotización a partir de la solicitud de importación
@@ -431,7 +442,8 @@ class WebsiteForm(WebsiteForm):
                 pass
             else:
 
-                product_ids_str = kwargs.get('productRequired') if kwargs.get('productRequired') else kwargs.get('productOnure')
+                product_ids_str = kwargs.get('productRequired') if kwargs.get('productRequired') else kwargs.get(
+                    'productOnure')
                 product_ids_list = product_ids_str.split(
                     ',')  # divide la cadena en una lista de strings usando la coma como delimitador porque al ser un campo many2many toma la coma entre los elementos y da
 
@@ -482,7 +494,6 @@ class WebsiteForm(WebsiteForm):
                     "customer_id") else request.env.user.partner_id.parent_id.id
 
                 if studio_client:
-
                     product_onure_ids = [
                         int(id.strip())
                         for id in kwargs.get("productOnure", "").split(",")
@@ -509,11 +520,10 @@ class WebsiteForm(WebsiteForm):
 
         # bandera
         # public_user.partner_id.sudo().write({"has_accredited_company": True})
-        
-        
-        request.session['product_selected'] =[]
-        
-        request.session['electronic_selected'] =[]
+
+        request.session['product_selected'] = []
+
+        request.session['electronic_selected'] = []
 
         return res
 
@@ -598,8 +608,8 @@ class WebsiteForm(WebsiteForm):
     #     )
     #     return (fuzzy_search_term, len(search_result), search_result)
 
-class ControllerTest(http.Controller):
 
+class ControllerTest(http.Controller):
 
     @http.route('/business-register/update_session_products', type='json', auth='user')
     def actualizar_sesion(self, selected_products, action=None):
@@ -615,7 +625,7 @@ class ControllerTest(http.Controller):
             selected_products = [
                 int(p) for p in selected_products if isinstance(p, (int, str)) and str(p).isdigit()
             ]
-    
+
         # Obtén la lista de productos previamente seleccionados de la sesión
         previous_products = request.session.get('product_selected', [])
 
@@ -632,7 +642,7 @@ class ControllerTest(http.Controller):
             updated_products = list(set(previous_products + selected_products))
 
         elif action == "remove":
-    
+
             updated_products = [p for p in previous_products if p not in selected_products]
         else:
             return {'status': 'error', 'message': f'Acción no válida: {action}'}
@@ -642,7 +652,6 @@ class ControllerTest(http.Controller):
         request.session.modified = True
 
         return {'status': 'success', 'message': 'Sesión actualizada correctamente'}
-
 
     @http.route('/business-register/update_session_electronics', type='json', auth='user')
     def actualizar_sesion_electronicos(self, selected_electronics, action=None):
@@ -682,7 +691,7 @@ class ControllerTest(http.Controller):
         request.session.modified = True
 
         return {'status': 'success', 'message': 'Sesión de electrónicos actualizada correctamente'}
-        
+
     @http.route('/business-register-thanks', type='http', auth="public", website=True)
     def business_register_thanks(self, **kw):
         crm_lead_exists = request.env["crm.lead"].sudo().search([
@@ -726,12 +735,10 @@ class ControllerTest(http.Controller):
                 return request.redirect('/my/home')
             else:
                 return request.redirect('/business-register-thanks')
-                    
 
         render_values = get_render_values(kw)
         if kw.get('type') == 'import' and not contract_exists:
             return request.render('pyxel_import_website.waiting_for_active_contract')
-            
 
         partner = request.env.user.partner_id
 
@@ -751,6 +758,7 @@ class ProductSearchController(http.Controller):
 
     @http.route(['/nomenclador', '/nomenclador/page/<int:page>'], type='http', auth='public', website=True)
     def nomenclador_view(self, search=None, page=1, **kwargs):
+        loged_in()
         """Renderiza la vista con el buscador y los resultados paginados."""
         alimentos_de_importacion = request.env['product.template'].sudo().search(
             [('product_type', '=', 'alimento'), ('de_importacion', '=', True)])
@@ -759,27 +767,26 @@ class ProductSearchController(http.Controller):
         domain += filters
 
         from_view = kwargs.get('from', None)
-   
+
         total_products = request.env['product.template'].sudo().search_count(domain)
 
         base_url = "/nomenclador"
-              
+
         url_args = {}
         if from_view:
             url_args['from'] = from_view
         if search:
             url_args['search'] = search
-       
+
         pager = request.website.pager(
             url=base_url,
-            url_args=url_args,  
+            url_args=url_args,
             total=total_products,
             page=page,
             step=10,  # 10 productos por página
-            scope=3 
+            scope=3
         )
 
- 
         products = request.env['product.template'].sudo().search(domain, limit=10, offset=(page - 1) * 10)
 
         return request.render('pyxel_import_website.nomenclador_template', {
@@ -792,47 +799,48 @@ class ProductSearchController(http.Controller):
 
     @http.route(['/onure', '/onure/page/<int:page>'], type='http', auth='public', website=True)
     def onure_view(self, search=None, page=1, **kwargs):
+        loged_in()
         """Renderiza la vista con el buscador y los resultados paginados."""
-        electronicos_de_importacion = request.env['product.template'].sudo().search([('product_type', '=', 'electronico'),('de_importacion', '=', True)])
+        electronicos_de_importacion = request.env['product.template'].sudo().search(
+            [('product_type', '=', 'electronico'), ('de_importacion', '=', True)])
 
-        
         # Filtros para búsqueda
         filters = [('product_type', '=', 'electronico')]
         domain = [('name', 'ilike', search)] if search else []
         domain += filters
 
         from_view = kwargs.get('from', None)
-   
+
         total_products = request.env['product.template'].sudo().search_count(domain)
 
         base_url = "/onure"
-              
+
         url_args = {}
         if from_view:
             url_args['from'] = from_view
         if search:
             url_args['search'] = search
-       
+
         pager = request.website.pager(
             url=base_url,
-            url_args=url_args,  
+            url_args=url_args,
             total=total_products,
             page=page,
             step=10,  # 10 productos por página
-            scope=3 
+            scope=3
         )
 
- 
         products = request.env['product.template'].sudo().search(domain, limit=10, offset=(page - 1) * 10)
 
         return request.render('pyxel_import_website.onure_template', {
             'products': products,
             'search': search,
             'from_view': from_view,
-            "electronicos_de_importacion":electronicos_de_importacion,
+            "electronicos_de_importacion": electronicos_de_importacion,
             'pager': pager,
         })
-  
+
+
 class PerfilProveedorController(http.Controller):
 
     @http.route('/descargar/perfil_proveedor', type='http', auth='public')
@@ -852,6 +860,7 @@ class PerfilProveedorController(http.Controller):
                     as_attachment=True
                 )
         return request.redirect('/web')
+
 
 class SolicitudController(http.Controller):
 
@@ -873,6 +882,7 @@ class SolicitudController(http.Controller):
                 )
         return request.redirect('/web')
 
+
 class FichaClienteEstatalController(http.Controller):
 
     @http.route('/descargar/ficha_cliente_estatal', type='http', auth='public')
@@ -893,6 +903,7 @@ class FichaClienteEstatalController(http.Controller):
                 )
         return request.redirect('/web')
 
+
 class FichaClienteFGNEoTCPController(http.Controller):
 
     @http.route('/descargar/ficha_cliente_fgne_tcp', type='http', auth='public')
@@ -912,6 +923,7 @@ class FichaClienteFGNEoTCPController(http.Controller):
                     as_attachment=True
                 )
         return request.redirect('/web')
+
 
 class SocioConNacionalidadCubanaController(http.Controller):
 

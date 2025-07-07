@@ -35,20 +35,18 @@ class ResPartner(models.Model):
 
     @api.constrains('vat')
     def _check_vat_length(self):
-        for record in self: 
+        for record in self:
             if record.vat:
                 if not record.vat.isdigit():
                     raise ValidationError(_("The NIT must contain only digits."))
                 if len(record.vat) != 11:
                     raise ValidationError(_("The NIT must be exactly 11 digits long."))
-                    
+
     contact_type_id = fields.Many2one(
         'res.partner.contact.type',
         string='Type of contact',
-        required=True,
         help="Custom contact classification"
     )
-
 
     # @api.depends('contact_type_id')
     # def _compute_count_imports(self):
@@ -60,6 +58,7 @@ class ResPartner(models.Model):
     #         elif record.contact_type_id == "Supplier":
     #             count = self.env['x_import'].search_count([("supplier", "=", record.id)])
     #             record['count_imports'] = count
+
 
 class ResPartnerLegalActivity(models.Model):
     _name = 'res.partner.legal.activity'
@@ -101,9 +100,6 @@ class ResPartnerContractImport(models.Model):
                 record.start_date and record.end_date and record.start_date <= today <= record.end_date)
 
 
-from odoo import models, fields
-
-
 class ResPartnerContactType(models.Model):
     _name = 'res.partner.contact.type'
     _description = 'Type of contact'
@@ -120,8 +116,6 @@ class ResPartnerContactType(models.Model):
             ("Supplier", "Supplier"),
             ("Client", "Client"),
         ],
-        required=True,
-        default="Client",
         string="Type Of Contact"
     )
 
