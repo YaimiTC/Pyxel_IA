@@ -98,7 +98,7 @@ def get_render_values(kw):
     return render_values
 
 
-def loged_in(self):
+def loged_in():
     user = request.env.user
     if user._is_public():
         return request.redirect("/web/login")
@@ -351,12 +351,6 @@ class WebsiteForm(WebsiteForm):
         contact_type_id = int(kwargs.get("contact_type", False))
 
         if model_name == "crm.lead":
-            id_crm = eval(res.response[0])
-            product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if
-                                 id.strip().isdigit()]
-            product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if
-                                        id.strip().isdigit()]
-
             public_user = request.env.user
             # Crear la Cotización a partir de la solicitud de importación
             if tipo_registro == "accreditation": 
@@ -418,19 +412,40 @@ class WebsiteForm(WebsiteForm):
                         'mimetype': file.mimetype,
                     })
             elif tipo_registro == "import":
+                id_crm = eval(res.response[0])
+                product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if
+                        id.strip().isdigit()]
+                product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if
+                                            id.strip().isdigit()]
                 nomenclature_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_nomenclature_ids)]).ids
                 onure_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_onure_ids)]).ids
                 order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids] + [(0,0, {"product_id": product_id}) for product_id in onure_ids] 
                 order = request.env["sale.order"].sudo().create(
                     {
-                        "partner_id": public_user.sudo().partner_id.id,
+                        "partner_id": public_user.sudo().partner_id.parent_id.id,
                         "order_line": order_line,
                     }
                 )
+                file_keys = []
+                if kwargs.get('solicitud[0][0]'):
+                    file_keys.append('solicitud[0][0]')
 
-            crm_lead = request.env["crm.lead"].sudo().browse(id_crm["id"])
+                for file_key in file_keys:
+                    file = kwargs.get(file_key, {})
+                    # for file in request.httprequest.files.getlist(file_key):
+                    file.seek(0)  # Rebobinar al inicio del archivo, xq sino el file.read() devuelve b'', o sea que está vacío
+                    request.env['ir.attachment'].sudo().create({
+                        "name": file.filename,
+                        "datas": base64.b64encode(file.read()),
+                        "res_model": "sale.order",
+                        "res_id": order.id,
+                        'type': 'binary',
+                        'mimetype': file.mimetype,
+                    })
+
+                crm_lead = request.env["crm.lead"].sudo().browse(id_crm["id"])
                     # "partner_id": partner.sudo().id,
-            crm_lead.sudo().write({"product_onure": [(6, 0, product_onure_ids)]})
+                crm_lead.sudo().write({"product_onure": [(6, 0, onure_ids)]})
                 
                 # partner.write({"child_ids": [(4, public_user.sudo().partner_id.id)]})
                 # public_user.sudo().partner_id.write({"parent_id":partner.sudo().id})
@@ -528,7 +543,6 @@ class WebsiteForm(WebsiteForm):
         return res
 
     def _handle_website_form(self, model_name, **kwargs):
-
         res = super(WebsiteForm, self)._handle_website_form(model_name, **kwargs)
         # id_crm = eval(res)
         # crm_lead = request.env['crm.lead'].browse(id_crm['id'])
@@ -747,11 +761,11 @@ class ControllerTest(http.Controller):
         else:
             contact_type = partner.contact_type_id.type_of_contact
 
-        if contact_type == "Supplier":
+        # if contact_type == "Supplier":
 
-            return request.render('pyxel_import_website.import_registration', render_values)
-        else:
-            return request.render('pyxel_import_website.business_registration', render_values)
+        #     return request.render('pyxel_import_website.import_registration', render_values)
+        # else:
+        return request.render('pyxel_import_website.business_registration', render_values)
 
 
 class ProductSearchController(http.Controller):
