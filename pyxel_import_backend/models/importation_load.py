@@ -1,6 +1,5 @@
 import datetime
-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -49,7 +48,7 @@ class ImportationLoad(models.Model):
     days_in_tcm = fields.Integer(string="Days in TCM",  compute='_compute_days_in_tcm')
     days_extracted = fields.Integer(string="Days extracted",  compute='_compute_days_extracted')
 
-    @api.depends('arrival_date', 'extraction_date')
+    # @api.depends('arrival_date', 'extraction_date')
     def _compute_days_in_tcm(self):
         today = datetime.date.today()
         for rec in self:
@@ -59,7 +58,7 @@ class ImportationLoad(models.Model):
             else:
                 rec.days_in_tcm = 0
 
-    @api.depends('extraction_date', 'return_date')
+    # @api.depends('extraction_date', 'return_date')
     def _compute_days_extracted(self):
         today = datetime.date.today()
         for rec in self:
@@ -128,16 +127,21 @@ class ImportationLoad(models.Model):
     @api.depends('arrival_date', 'release_date', 'extraction_date', 'return_date')
     def _compute_state(self):
         for record in self:
+            prev_state = record.state
             if record.return_date:
                 record.state = 'returned'
             elif record.extraction_date:
                 record.state = 'to_return'
             elif record.release_date:
-                record.state = 'to_extract'
-            elif record.arrival_date:
                 record.state = 'ready_extract'
+            elif record.arrival_date:
+                record.state = 'to_extract'
             else:
                 record.state = 'to_arrive'
+
+        # # Si cambió el valor del estado, lo sincronizas
+        # if record.state != prev_state:
+        #     record.update_stage_importation()
 
     def update_stage_importation(self):
         for record in self:
@@ -146,33 +150,42 @@ class ImportationLoad(models.Model):
                 continue
 
             priority_states = [
-                ('To arrive', 'EN TRANSITO A PUERTO DE DESTINO'),
-                ('To extract', 'TRÁMITES EN DESTINO'),
-                ('Ready to extract', 'LISTO PARA EXTRAER'),
-                ('To return', 'EN ALMACÉN CLIENTE'),
-                ('Returned', 'DEVOLUCION DEL CONTENEDOR'),
+                ('to_arrive', 'EN TRANSITO A PUERTO DE DESTINO'),
+                ('to_extract', 'TRÁMITES EN DESTINO'),
+                ('ready_extract', 'LISTO PARA EXTRAER'),
+                ('to_return', 'EN ALMACÉN CLIENTE'),
+                ('returned', 'DEVOLUCION DEL CONTENEDOR'),
             ]
 
-            states = importation.container_ids.mapped('state')
-            states = list(filter(None, states))
-            unique_states = list(set(states))
+            # Obtener estados de los contenedores relacionados
+            states = list(set(filter(None, importation.load_tracking_ids.mapped('state'))))
+            has_opening_date = any(importation.load_tracking_ids.mapped('opening_date'))
 
-            stage = None
-            if unique_states:
-                if len(unique_states) == 1:
-                    unique_state = unique_states[0]
-                    for state, stage in priority_states:
-                        if unique_state == state:
-                            stage = self.env['importation.stage'].search([('name', '=', stage)], limit=1)
+            # Si está en etapa inicial y no hay contenedores abiertos, no avanzar
+            if not has_opening_date and importation.stage_id.name in ('SOLICITUD', 'TRÁMITES EN ORIGEN'):
+                continue
+
+            # Determinar la etapa correspondiente según las prioridades
+            stage_record = None
+
+            if states:
+                # Si hay un solo estado
+                if len(states) == 1:
+                    single_state = states[0]
+                    for internal_state, stage_name in priority_states:
+                        if single_state == internal_state:
+                            stage_record = self.env['importation.stage'].search([('name', '=', stage_name)], limit=1)
                             break
                 else:
-                    for state, stage in priority_states:
-                        if state in unique_states:
-                            stage = self.env['importation.stage'].search([('name', '=', stage)], limit=1)
+                    # Múltiples estados, aplicar prioridad
+                    for internal_state, stage_name in priority_states:
+                        if internal_state in states:
+                            stage_record = self.env['importation.stage'].search([('name', '=', stage_name)], limit=1)
                             break
 
-            if stage:
-                importation.stage_id = stage.id
+            # Solo actualizar si se encontró una nueva etapa diferente
+            if stage_record and importation.stage_id.id != stage_record.id:
+                importation.stage_id = stage_record.id
 
     @api.model
     def create(self, vals):
@@ -183,8 +196,9 @@ class ImportationLoad(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
-        if 'state' in vals:
+        if any(f in vals for f in ['arrival_date', 'release_date', 'extraction_date', 'return_date']):
             for record in self:
+                record._compute_state()  # Forzar el recompute en memoria
                 record.update_stage_importation()
         return res
 
@@ -265,5 +279,31 @@ class ImportationLoadLine(models.Model):
             if line.quantity <= 0:
                 raise ValidationError("The amount allocated must be greater than zero.")
 
+    @api.constrains('opening_date', 'arrival_date', 'release_date', 'extraction_date', 'return_date')
+    def _check_dates_order(self):
+        for record in self:
+            dates = [
+                (_("Opening Date"), record.opening_date),
+                (_("Arrival Date"), record.arrival_date),
+                (_("Release Date"), record.release_date),
+                (_("Extraction Date"), record.extraction_date),
+                (_("Return Date"), record.return_date),
+            ]
 
+            previous_label = None
+            previous_date = None
 
+            for label, date in dates:
+                if date and previous_date and date < previous_date:
+                    raise ValidationError(
+                        _("The date '%(current)s' (%(current_date)s) cannot be earlier than '%(previous)s' (%( "
+                          "previous_date)s).") % {
+                            'current': label,
+                            'current_date': date,
+                            'previous': previous_label,
+                            'previous_date': previous_date,
+                        }
+                    )
+                if date:
+                    previous_label = label
+                    previous_date = date
