@@ -150,6 +150,8 @@
                                                 <field name="release_date"/>
                                                 <field name="return_date"/>
                                                 <field name="extraction_date"/>
+                                                <field name="days_in_tcm"/>
+                                                <field name="days_extracted"/>
                                                 <field name="state"/>
                                             </tree>
                                             <form>
@@ -170,6 +172,7 @@
                                                     <field name="volume" invisible="purchase_condition == 'AWB'"/>
                                                     <field name="bulk" invisible="purchase_condition == 'LCL'"/>
                                                     <field name="supplier_invoice_number"/>
+
                                                 </group>
 
                                                   <group string="Container Status">
@@ -180,6 +183,8 @@
                                                     <field name="return_date" invisible="purchase_condition == 'AWB'"/>
                                                     <field name="state" readonly="1"/>
                                                     <field name="currency_id" readonly="1"/>
+                                                    <field name="days_in_tcm" readonly="1"/>
+                                                    <field name="days_extracted" readonly="1"/>
                                                   </group>
 
                                                   <group string="Transport">
