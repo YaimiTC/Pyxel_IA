@@ -878,6 +878,7 @@
                                                                 Debe seleccionar al menos un producto
                                                         </span>
                                                         <div data-name="Field" 
+                                                            name="solicitud"
                                                             class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
                                                             data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -888,8 +889,7 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm" style="position: relative;">
-                                                                    <div class="input-group">
-                                                                    
+                                                                    <div name="solicitud_input_group" class="input-group">
                                                                         <input type="file"
                                                                             class="form-control s_website_form_input"
                                                                             name="solicitud"
@@ -911,6 +911,7 @@
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Descargue la plantilla, llénela y súbala aquí.
                                                                     </div>
+                                                                    <span id="solicitud_error" style="color:red; display:none;">El documento adjuntado debe ser del mismo tipo que el archivo descargado.</span>
                                                                 </div>
                                                             </div>
                                                         </div>

@@ -18,6 +18,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         'change input[name="parent_company_name"]': '_onchangeParentCompanyName',
         'change input[name="legal_documentation"]': '_onchangeFile',
         'change input[name="ficha_cliente"]': '_onchangeFile',
+        'change input[name="solicitud"]': '_onchangeFile',
         'change select[name="contact_type"]': '_onchangeContactType',
         'change input[name="need_mincex_code"]': '_showHideNoMincexCodeDocumentation',
         'change input[name="has_cuban_partner"]': '_showHideCubanPartner',
