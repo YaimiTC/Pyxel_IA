@@ -751,8 +751,13 @@ class ControllerTest(http.Controller):
                 return request.redirect('/business-register-thanks')
 
         render_values = get_render_values(kw)
-        if kw.get('type') == 'import' and not contract_exists:
-            return request.render('pyxel_import_website.waiting_for_active_contract')
+        if kw.get('type') == 'import':
+            # Si no se ha realizado el formulario de acreditación
+            if not crm_lead_exists:
+                return request.render('pyxel_import_website.waiting_for_active_contract')
+            # Si realizó el formulario de acreditación pero no está acreditado
+            if not contract_exists:
+                return request.redirect('/business-register-thanks')
 
         partner = request.env.user.partner_id
 
