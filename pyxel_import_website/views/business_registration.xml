@@ -153,8 +153,8 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="supplier_type" id="supplier_type">
-                                                                        <option>Clasificación...</option>
+                                                                    <select class="form-select s_website_form_input" style="" name="supplier_type" required="" id="supplier_type">
+                                                                        <option value="">Clasificación...</option>
                                                                         <option value="Productor">Productor</option>
                                                                         <option value="Comerciante">Comerciante</option>
                                                                     </select>
