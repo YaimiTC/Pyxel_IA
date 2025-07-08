@@ -97,7 +97,8 @@ class SaleOrder(models.Model):
         for order in self:
             providers = self.env['purchase.order'].search([('sale_order_id', '=', order.id)])
             order.purchase_order_count = len(providers)
-            order.provider_names = ', '.join(sorted(set(providers)))
+            providers_names = providers.mapped('partner_id.name')
+            order.provider_names = ', '.join(sorted(set(providers_names)))
 
     def _compute_purchase_evaluation_count(self):
         for order in self:
