@@ -5,7 +5,7 @@
             <field name="name">importation.process.kanban</field>
             <field name="model">importation.process</field>
             <field name="arch" type="xml">
-                <kanban default_group_by="stage_id" group_create="false">
+                <kanban default_group_by="stage_id" group_create="false"  group_order="sequence">
                     <templates>
                          <t t-name="kanban-box">
                             <div class="oe_kanban_global_click o_kanban_record">
@@ -68,7 +68,7 @@
                                 <button name="action_start_progress" string="Start Import" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
                                 <button name="action_finish_progress" string="Finish" type="object" class="btn-success" invisible="state != 'in_progress'"/>
 <!--                                <field name="state" widget="statusbar" statusbar_visible="draft,evaluating,in_progress,done"/>-->
-                                <field name="stage_id" widget="statusbar" options="{'clickable': True}" domain="[]"/>
+                                    <field name="stage_id" widget="statusbar" options="{'clickable': True}" domain="[]" context="{}"/>
                             </header>
 
                             <sheet>
