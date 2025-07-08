@@ -18,13 +18,30 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form" />
         <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_address_format')]" position="after">
+                <field name="dap" invisible="contact_type_id not in (1, 3)"/>
+            </xpath>
+
             <notebook position="inside">
                 <page string="Importation">
                     <group name="container_row_2">
                         <group string="Legal Information">
-                            <field name="import_mgmt_type" />
+                            <!-- Si es Cliente o Proveedor -->
+                            <field name="management_type_id" invisible="contact_type_id not in (1, 3)" />
+                            <!-- Si es Mipyme,CNA,PDL -->
+                            <label for="deed_number" string="Notarial Deed" style="font-weight:bold;" invisible="management_type_id not in (1, 6, 7)" />
+                            <!-- Si es TCP  -->
+                            <label for="deed_number" string="Project Registration Number" style="font-weight:bold;" invisible="management_type_id != 2"/>
+                            <!-- Si es Estatal -->
+                            <label for="deed_number" string="Public Deed" style="font-weight:bold;" invisible="management_type_id != 5"/>
+                            <!-- Si es Persona Natural, Sucursal Extranjera -->
+                            <div class="d-flex" invisible="management_type_id in (3, 4, False)">
+                                <field name="deed_number" nolabel="1" />
+                                <field name="deed_date" nolabel="1" class="ps-4" />
+                                <!-- <field name="deed_date"  nolabel="1" placeholder="Date"/> -->
+                            </div>
                             <field name="legal_document" filename="legal_document_filename" />
-                            <field name="license_holder" />
+                            <field name="license_holder" invisible="contact_type_id in (1, 3)"/>
                         </group>
                         <group string="Initial Hiring">
                             <field name="contact_type_id"/>
@@ -124,13 +141,26 @@
             </p>
         </field>
     </record>
+
     <record id="action_res_partner_contact_type" model="ir.actions.act_window">
-        <field name="name">Contacts type</field>
+        <field name="name">Contact Types</field>
         <field name="res_model">res.partner.contact.type</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create and manage custom types to categorize contacts based on your business.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_res_partner_management_type" model="ir.actions.act_window">
+        <field name="name">Management Types</field>
+        <field name="res_model">res.partner.management.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create and manage different types of business management associated with clients/suppliers.
+                <!-- Crea y gestiona los diferentes tipos de gestión empresarial asociados a los clientes/proveedores. -->
             </p>
         </field>
     </record>
@@ -142,8 +172,14 @@
               sequence="20"/>
 
     <menuitem id="menu_partner_contact_type"
-          name="Contacts type"
+          name="Contact Types"
           parent="contacts.menu_contacts"
           action="action_res_partner_contact_type"
           sequence="20"/>
+
+    <menuitem id="menu_partner_management_type"
+          name="Management Types"
+          parent="contacts.menu_contacts"
+          action="action_res_partner_management_type"
+          sequence="21"/>
 </odoo>

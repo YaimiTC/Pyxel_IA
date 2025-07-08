@@ -1,0 +1,13 @@
+<odoo>
+    <data>
+        <record id="res_partner_category_businessman" model="res.partner.category">
+            <field name="name">Businessman</field>
+            <field name="color" eval="2"/>
+        </record>
+
+        <record id="res_partner_category_producer" model="res.partner.category">
+            <field name="name">Producer</field>
+            <field name="color" eval="3"/>
+        </record>
+    </data>
+</odoo>
