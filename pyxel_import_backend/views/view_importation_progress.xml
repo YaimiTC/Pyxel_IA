@@ -33,13 +33,18 @@
                 <field name="model">importation.process</field>
                 <field name="arch" type="xml">
                     <tree>
+                        <field name="create_uid"/>
                         <field name="name"/>
                         <field name="provider_id"/>
                         <field name="customer_id"/>
                         <field name="purchase_condition"/>
                         <field name="purchase_condition_number"/>
                         <field name="is_third_party_contract"/>
-                        <field name="state"/>
+                        <field name="purchase_order_count"/>
+                        <field name="sale_order_count"/>
+                        <field name="invoice_count"/>
+                        <field name="load_tracking_count"/>
+                        <field name="stage_id"/>
                         <field name="estimated_start_date"/>
                         <field name="estimated_end_date"/>
                     </tree>
@@ -145,6 +150,8 @@
                                                 <field name="release_date"/>
                                                 <field name="return_date"/>
                                                 <field name="extraction_date"/>
+                                                <field name="days_in_tcm"/>
+                                                <field name="days_extracted"/>
                                                 <field name="state"/>
                                             </tree>
                                             <form>
@@ -165,6 +172,7 @@
                                                     <field name="volume" invisible="purchase_condition == 'AWB'"/>
                                                     <field name="bulk" invisible="purchase_condition == 'LCL'"/>
                                                     <field name="supplier_invoice_number"/>
+
                                                 </group>
 
                                                   <group string="Container Status">
@@ -175,6 +183,8 @@
                                                     <field name="return_date" invisible="purchase_condition == 'AWB'"/>
                                                     <field name="state" readonly="1"/>
                                                     <field name="currency_id" readonly="1"/>
+                                                    <field name="days_in_tcm" readonly="1"/>
+                                                    <field name="days_extracted" readonly="1"/>
                                                   </group>
 
                                                   <group string="Transport">
