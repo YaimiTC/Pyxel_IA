@@ -1,3 +1,5 @@
+import datetime
+
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -43,6 +45,29 @@ class ImportationLoad(models.Model):
     release_date = fields.Date(string='Release Date')
     extraction_date = fields.Date(string='Extraction Date')
     return_date = fields.Date(string='Return Date')
+
+    days_in_tcm = fields.Integer(string="Days in TCM",  compute='_compute_days_in_tcm')
+    days_extracted = fields.Integer(string="Days extracted",  compute='_compute_days_extracted')
+
+    @api.depends('arrival_date', 'extraction_date')
+    def _compute_days_in_tcm(self):
+        today = datetime.date.today()
+        for rec in self:
+            if rec.arrival_date:
+                end_date = rec.extraction_date or today
+                rec.days_in_tcm = (end_date - rec.arrival_date).days
+            else:
+                rec.days_in_tcm = 0
+
+    @api.depends('extraction_date', 'return_date')
+    def _compute_days_extracted(self):
+        today = datetime.date.today()
+        for rec in self:
+            if rec.extraction_date:
+                end_date = rec.return_date or today
+                rec.days_extracted = (end_date - rec.extraction_date).days
+            else:
+                rec.days_extracted = 0
 
     # Estado automático
     state = fields.Selection([
