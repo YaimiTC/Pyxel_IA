@@ -9,6 +9,7 @@
     "author": "Pyxel Solutions",
     'contributors': [
         'Leonardo García Barreras <leonardogbarreras99@gmail.com>',
+        'Sandy Comas Becerra <sandytechboy00@gmail.com>',
     ],
     "license": "LGPL-3",
     "website": "https://pyxelsolution.com",
@@ -22,6 +23,7 @@
         'base_address_extended',
         'sale_management',
         'purchase',
+        'project',
         'pyxel_import_backend',
     ],
     "data": [
