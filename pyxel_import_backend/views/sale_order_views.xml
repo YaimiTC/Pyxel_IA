@@ -53,6 +53,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="order_type" string="Order Type"/>
+                <field name="provider_names" string="Providers"/>
+                <field name="invoice_names" string="Invoices"/>
+                <field name="is_third_party_contract" string="Is third party contract"/>
             </xpath>
         </field>
     </record>

@@ -3,10 +3,13 @@ import datetime
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
+
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
     purchase_order_count = fields.Integer(string="Purchase Orders", compute='_compute_purchase_order_count')
+    provider_names = fields.Char(string="Providers", compute="_compute_purchase_order_count", store=True)
+    invoice_names = fields.Char(string='Invoices', compute='_compute_invoice_names')
 
     purchase_provider_evaluation_ids = fields.One2many('purchase.provider.evaluation', 'sale_order_id')
 
@@ -31,6 +34,12 @@ class SaleOrder(models.Model):
         string='Importation Process',
         readonly=True,
         help='Importation process generated from this evaluation.'
+    )
+    is_third_party_contract = fields.Boolean(
+        string='Third-Party Contract',
+        related='importation_process_id.is_third_party_contract',
+        store=True,
+        readonly=False  # Solo si quieres permitir editar desde el sale.order
     )
 
     @api.depends('purchase_provider_evaluation_ids.has_evaluations_to_apply')
@@ -86,11 +95,19 @@ class SaleOrder(models.Model):
 
     def _compute_purchase_order_count(self):
         for order in self:
-            order.purchase_order_count = self.env['purchase.order'].search_count([('sale_order_id', '=', order.id)])
+            providers = self.env['purchase.order'].search([('sale_order_id', '=', order.id)])
+            order.purchase_order_count = len(providers)
+            order.provider_names = ', '.join(sorted(set(providers)))
 
     def _compute_purchase_evaluation_count(self):
         for order in self:
             order.purchase_evaluation_count = self.env['purchase.provider.evaluation'].search_count([('sale_order_id', '=', order.id)])
+
+    @api.depends('invoice_ids.name')
+    def _compute_invoice_names(self):
+        for order in self:
+            invoice_names = order.invoice_ids.mapped('name')
+            order.invoice_names = ', '.join(invoice_names)
 
     def action_view_related_purchase_orders(self):
         return {
