@@ -506,7 +506,7 @@ msgstr ""
 #. module: pyxel_import_website
 #: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
 msgid ""
-"<span class=\"s_website_form_label_content\">Codigo\n"
+"<span class=\"s_website_form_label_content\">Código\n"
 "                                                                        Mincex\n"
 "                                                                    </span>"
 msgstr ""
@@ -783,7 +783,7 @@ msgstr ""
 #. module: pyxel_import_website
 #: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
 msgid ""
-"<span class=\"s_website_form_label_content\">Solicitud</span>\n"
+"<span class=\"s_website_form_label_content\">Solicitud de oferta de compra</span>\n"
 "                                                                    <span class=\"s_website_form_mark\">*</span>"
 msgstr ""
 

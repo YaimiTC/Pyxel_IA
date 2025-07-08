@@ -104,7 +104,7 @@ class ResPartnerContactType(models.Model):
     _name = 'res.partner.contact.type'
     _description = 'Type of contact'
 
-    name = fields.Char(string='Type of name', required=True)
+    name = fields.Char(string='Name', required=True)
     code = fields.Char(string='Code')  # opcional
     description = fields.Text(string='Description')  # opcional
 

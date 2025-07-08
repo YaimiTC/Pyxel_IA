@@ -30,14 +30,10 @@
                             <field name="management_type_id" invisible="contact_type_id not in (1, 3)" />
                             <!-- Si es Mipyme,CNA,PDL -->
                             <label for="deed_number" string="Notarial Deed" style="font-weight:bold;" invisible="management_type_id not in (1, 6, 7)" />
-                            <!-- <label for="deed_number" string="Notarial Deed" style="font-weight:bold;" invisible="management_type_id not in ('out_invoice', 'out_refund', 'out_receipt')"/> -->
-                            <!-- <label for="deed_number" string="Escritura notarial" style="font-weight:bold;" invisible="management_type_id not in ('out_invoice', 'out_refund', 'out_receipt')"/> -->
                             <!-- Si es TCP  -->
                             <label for="deed_number" string="Project Registration Number" style="font-weight:bold;" invisible="management_type_id != 2"/>
-                            <!-- <label for="deed_number" string="Número de registro de proyecto" style="font-weight:bold;" invisible="management_type_id not in ('out_invoice', 'out_refund', 'out_receipt')"/> -->
                             <!-- Si es Estatal -->
                             <label for="deed_number" string="Public Deed" style="font-weight:bold;" invisible="management_type_id != 5"/>
-                            <!-- <label for="deed_number" string="Escritura pública" style="font-weight:bold;" invisible="management_type_id not in ('out_invoice', 'out_refund', 'out_receipt')"/> -->
                             <!-- Si es Persona Natural, Sucursal Extranjera -->
                             <div class="d-flex" invisible="management_type_id in (3, 4, False)">
                                 <field name="deed_number" nolabel="1" />
