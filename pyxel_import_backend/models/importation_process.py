@@ -312,6 +312,7 @@ class ImportationCostLine(models.Model):
 class ImportationStage(models.Model):
     _name = 'importation.stage'
     _description = 'Importation Process Stages'
+    _order = 'sequence, id'
 
     name = fields.Char(string='Name', required=True)
     description = fields.Char(string='Description')
