@@ -106,7 +106,10 @@
                                     <group>
                                         <field name="name" readonly="1"/>
                                         <field name="provider_id"/>
+                                        <field name="contract_reference_supplier"/>
+
                                         <field name="customer_id"/>
+                                        <field name="contract_reference_customer"/>
 
                                         <field name="country_origin_id"/>
                                         <field name="purchase_condition"/>

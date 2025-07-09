@@ -91,6 +91,16 @@ class ImportationProcess(models.Model):
 
     invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
 
+    contract_reference_customer = fields.Char(
+        string='Customer Contract Reference',
+        help='Reference of the contract between the customer and the importer'
+    )
+
+    contract_reference_supplier = fields.Char(
+        string='Supplier Contract Reference',
+        help='Reference of the contract between the supplier and the importer'
+    )
+
     def _compute_sale_order_count(self):
         for rec in self:
             rec.sale_order_count = self.env['sale.order'].search_count([
