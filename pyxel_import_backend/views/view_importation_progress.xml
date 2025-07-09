@@ -39,12 +39,14 @@
                         <field name="customer_id"/>
                         <field name="purchase_condition"/>
                         <field name="purchase_condition_number"/>
+                        <field name="declaration"/>
                         <field name="is_third_party_contract"/>
                         <field name="purchase_order_count"/>
                         <field name="sale_order_count"/>
                         <field name="invoice_count"/>
                         <field name="load_tracking_count"/>
                         <field name="stage_id"/>
+                        <field name="country_origin_id"/>
                         <field name="estimated_start_date"/>
                         <field name="estimated_end_date"/>
                     </tree>
