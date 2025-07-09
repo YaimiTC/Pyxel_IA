@@ -53,7 +53,7 @@ class ImportationProcess(models.Model):
         ('AWB', 'AWB'),
         ('LCL', 'LCL'),
         ('DAP', 'DAP'),
-    ], string='Purchase Condition')
+    ], string='Purchase Condition', default='FCL')
 
     purchase_condition_number = fields.Char(string='Number/Reference by Condition')
     is_third_party_contract = fields.Boolean(

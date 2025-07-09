@@ -101,7 +101,7 @@ class ImportWizard(models.TransientModel):
                 # Si hay datos válidos, se actualiza
                 if vals_update:
                     _logger.info("[IMPORT] Actualizando contenedor %s con %s", container_number, vals_update)
-                    container.write(vals_update)
+                    container.with_context(skip_date_check=True).write(vals_update)
 
                 # Si hay columnas con error, se registra
                 if error_columns:
