@@ -191,6 +191,7 @@
                                                                         <a href="/descargar/ficha_cliente_fgne_tcp"
                                                                             id="ficha_cliente_fgne_tcp"
                                                                             target="_blank"
+                                                                            download="download"
                                                                             class="btn btn-primary add-btn"    
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
@@ -198,6 +199,7 @@
                                                                         <a href="/descargar/ficha_cliente_estatal"
                                                                             id="ficha_cliente_estatal"
                                                                             target="_blank"
+                                                                            download="download"
                                                                             class="btn btn-primary add-btn"    
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
@@ -239,6 +241,7 @@
                                                                         <a href="/descargar/perfil_proveedor"
                                                                             target="_blank"
                                                                             id="perfil_proveedor"
+                                                                            download="download"
                                                                             class="btn btn-primary add-btn">
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
@@ -339,7 +342,8 @@
                                                                         <a href="/descargar/cuban_partner"
                                                                             id="cuban_partner"
                                                                             target="_blank"
-                                                                            class="btn btn-primary add-btn"    
+                                                                            class="btn btn-primary add-btn"
+                                                                            download="download"
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
@@ -904,6 +908,8 @@
                                                             
                                                                         <a href="/descargar/solicitud"
                                                                         target="_blank"
+                                                                        id="solicitud"
+                                                                        download="download"
                                                                         class="btn btn-primary add-btn">
                                                                             <span class="btn-text">Descargar Solicitud</span>
                                                                         </a>
