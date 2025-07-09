@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 17.0-20250611\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-07 22:25+0000\n"
-"PO-Revision-Date: 2025-07-07 22:25+0000\n"
+"POT-Creation-Date: 2025-07-09 15:33+0000\n"
+"PO-Revision-Date: 2025-07-09 15:33+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -205,7 +205,7 @@ msgstr "Añadir costes adicionales"
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_importation_cost_wizard_line
 msgid "Additional Cost Line (wizard)"
-msgstr ""
+msgstr "Línea de costo adicional (wizard)"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__cost_line_ids
@@ -216,7 +216,7 @@ msgstr "Costes adicionales"
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_importation_cost_line
 msgid "Additional Import Cost Line"
-msgstr ""
+msgstr "Línea de costo adicional de importación"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__average_container__type_of_load__grouped
@@ -282,8 +282,10 @@ msgstr ""
 msgid "Archivo de Importación"
 msgstr ""
 
-#. module: pyxel_import_backend
+#. odoo-python
+#: code:addons/pyxel_import_backend/models/importation_load.py:0
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__arrival_date
+#, python-format
 msgid "Arrival Date"
 msgstr "Fecha de llegada"
 
@@ -322,12 +324,12 @@ msgstr "Contenedor promedio"
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_report_pyxel_fruxelimport_average_container_report_template
 msgid "Average Container Report"
-msgstr ""
+msgstr "Informe de contenedor promedio"
 
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_report_pyxel_fruxelimport_container_summary_report_template
 msgid "Average Container Summary Report"
-msgstr ""
+msgstr "Informe de resumen de contenedores promedio"
 
 #. module: pyxel_import_backend
 #: model:ir.actions.report,name:pyxel_import_backend.report_average_container_summary
@@ -425,7 +427,7 @@ msgstr "Nombre del archivo de factura comercial"
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_res_partner_legal_activity
 msgid "Company Activity"
-msgstr ""
+msgstr "Actividad de la empresa"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__importation_process__state__done
@@ -439,7 +441,7 @@ msgstr ""
 
 #. module: pyxel_import_backend
 #: model:ir.actions.server,name:pyxel_import_backend.action_open_importation_wizard
-msgid "Conciliacion"
+msgid "Conciliación"
 msgstr ""
 
 #. module: pyxel_import_backend
@@ -563,8 +565,8 @@ msgid ""
 "Create and manage custom types to categorize contacts based on your "
 "business."
 msgstr ""
-"Cree y administre tipos personalizados para categorizar los contactos según su "
-"negocio."
+"Cree y administre tipos personalizados para categorizar los contactos según "
+"su negocio."
 
 #. module: pyxel_import_backend
 #: model_terms:ir.actions.act_window,help:pyxel_import_backend.action_res_partner_management_type
@@ -645,6 +647,11 @@ msgstr "Clasificación de contactos personalizada"
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__customer_id
 msgid "Customer"
 msgstr "Cliente"
+
+#. module: pyxel_import_backend
+#: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__contract_reference_customer
+msgid "Customer Contract Reference"
+msgstr "Referencia del contrato del cliente"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_res_partner__dap
@@ -871,7 +878,8 @@ msgstr "Evaluaciones"
 #: code:addons/pyxel_import_backend/models/purchase_provider_evaluation.py:0
 #, python-format
 msgid "Evaluations can only be deleted in Draft or Cancelled state."
-msgstr "Las evaluaciones sólo se pueden eliminar en estado Borrador o Cancelado."
+msgstr ""
+"Las evaluaciones sólo se pueden eliminar en estado Borrador o Cancelado."
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__export_certificate
@@ -884,7 +892,10 @@ msgid "Export Certificate Filename"
 msgstr "Nombre del archivo del certificado de exportación"
 
 #. module: pyxel_import_backend
+#. odoo-python
+#: code:addons/pyxel_import_backend/models/importation_load.py:0
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__extraction_date
+#, python-format
 msgid "Extraction Date"
 msgstr "Fecha de extracción"
 
@@ -1138,7 +1149,7 @@ msgstr "Datos del contenedor de importación"
 #. module: pyxel_import_backend
 #: model:ir.actions.act_window,name:pyxel_import_backend.action_importation_load_line
 msgid "Import Load Lines"
-msgstr ""
+msgstr "Líneas de carga de importación"
 
 #. module: pyxel_import_backend
 #: model:ir.actions.act_window,name:pyxel_import_backend.action_import_error_log
@@ -1149,12 +1160,12 @@ msgstr ""
 #. module: pyxel_import_backend
 #: model:ir.ui.menu,name:pyxel_import_backend.menu_import_manager_root
 msgid "Import Management"
-msgstr ""
+msgstr "Gestión de Importaciones"
 
 #. module: pyxel_import_backend
 #: model:ir.ui.menu,name:pyxel_import_backend.menu_importation_config_root
 msgid "Import Settings"
-msgstr ""
+msgstr "Ajustes de Importación"
 
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_import_wizard
@@ -1164,20 +1175,20 @@ msgstr ""
 #. module: pyxel_import_backend
 #: model:ir.ui.menu,name:pyxel_import_backend.menu_import_wizard
 msgid "Import container data"
-msgstr ""
+msgstr "Datos del contenedor de importación"
 
 #. module: pyxel_import_backend
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_importation_process_form
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_purchase_provider_evaluation_form
 msgid "Import costs"
-msgstr ""
+msgstr "Costos de importación"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_account_bank_statement_line__importation_process_id
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_account_move__importation_process_id
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_account_payment__importation_process_id
 msgid "Import process"
-msgstr ""
+msgstr "Proceso de importación"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__average_container__purchase_condition__(b/l)
@@ -1274,27 +1285,29 @@ msgstr "Código interno"
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_report_pyxel_fruxelimport_invoice_logistics_template
 msgid "Invoice Consolidator Logistic Report"
-msgstr ""
+msgstr "Informe logístico del consolidador de facturas"
 
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_report_pyxel_fruxelimport_invoice_consolidator_report_template
 msgid "Invoice Consolidator Report"
-msgstr ""
+msgstr "Informe del consolidador de facturas"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__invoice_count
 msgid "Invoice Count"
-msgstr ""
+msgstr "Cantidad de facturas"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_account_bank_statement_line__invoice_type
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_account_move__invoice_type
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_account_payment__invoice_type
 msgid "Invoice type"
-msgstr ""
+msgstr "Tipo de factura"
 
 #. module: pyxel_import_backend
+#: model:ir.model.fields,field_description:pyxel_import_backend.field_sale_order__invoice_names
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_importation_process_form
+#: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_order_tree_inherit_order_type
 msgid "Invoices"
 msgstr "Facturas"
 
@@ -1310,6 +1323,11 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: pyxel_import_backend
+#: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_order_tree_inherit_order_type
+msgid "Is third party contract"
+msgstr "¿Es un contrato de terceros?"
+
+#. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_account_move
 msgid "Journal Entry"
 msgstr "Asiento contable"
@@ -1317,7 +1335,7 @@ msgstr "Asiento contable"
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__importation_process__purchase_condition__lcl
 msgid "LCL"
-msgstr ""
+msgstr "LCL"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_average_container__write_uid
@@ -1417,7 +1435,7 @@ msgstr "Líneas de carga"
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__load_tracking_count
 msgid "Load Tracking Count"
-msgstr ""
+msgstr "Recuento de seguimiento de carga"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__cargo_type
@@ -1517,6 +1535,7 @@ msgstr ""
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_stage__name
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_purchase_provider_evaluation_cost_line__name
+#: model:ir.model.fields,field_description:pyxel_import_backend.field_res_partner_contact_type__name
 msgid "Name"
 msgstr "Nombre"
 
@@ -1528,7 +1547,7 @@ msgstr "Nacional"
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_res_partner_contact_type__nationality_type
 msgid "Nationality Type"
-msgstr ""
+msgstr "Tipo de nacionalidad"
 
 #. module: pyxel_import_backend
 #. odoo-javascript
@@ -1663,14 +1682,17 @@ msgid "Offer Evaluation"
 msgstr "Evaluación de la oferta"
 
 #. module: pyxel_import_backend
+#. odoo-python
+#: code:addons/pyxel_import_backend/models/importation_load.py:0
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__opening_date
+#, python-format
 msgid "Opening Date"
 msgstr "Fecha de apertura"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__account_move__invoice_type__operative
 msgid "Operative"
-msgstr ""
+msgstr "Operatoria"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_sale_order__opportunity_id
@@ -1682,12 +1704,12 @@ msgstr "Oportunidad"
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_order_form_inherit_evaluar_proveedor
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_order_tree_inherit_order_type
 msgid "Order Type"
-msgstr ""
+msgstr "Tipo de orden"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__purchase_provider_evaluation__state__po_created
 msgid "Orders Generated"
-msgstr ""
+msgstr "Órdenes generadas"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__sale_order__order_type__ordinary
@@ -1697,12 +1719,12 @@ msgstr "Ordinario"
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__origin_certificate_filename
 msgid "Origin Certificate Filename"
-msgstr ""
+msgstr "Nombre del archivo del certificado de origen"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__sale_order_id
 msgid "Original Quotation"
-msgstr ""
+msgstr "Cotización original"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__average_container__format_of_report__pdf
@@ -1712,17 +1734,17 @@ msgstr ""
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__packing_list
 msgid "Packing List"
-msgstr ""
+msgstr "Lista de embalaje"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__packing_list_filename
 msgid "Packing List Filename"
-msgstr ""
+msgstr "Nombre del archivo de la lista de empaque"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_res_partner_contract_import__parent_contract_id
 msgid "Parent Contract"
-msgstr ""
+msgstr "Contrato padre"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__purchase_provider_evaluation_cost_line__distribution_type__percentage
@@ -1732,7 +1754,7 @@ msgstr "Porcentaje"
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__importation_cost_line__distribution_type__percentage
 msgid "Percentage on Order"
-msgstr ""
+msgstr "Porcentaje sobre el pedido"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__importation_cost_wizard_line__distribution_type__percentage
@@ -1742,7 +1764,7 @@ msgstr ""
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__port
 msgid "Port"
-msgstr ""
+msgstr "Puerto"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load_line__price
@@ -1752,7 +1774,7 @@ msgstr "Precio"
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__stage_id
 msgid "Process Stage"
-msgstr ""
+msgstr "Etapa del proceso"
 
 #. module: pyxel_import_backend
 #: model:res.partner.category,name:pyxel_import_backend.res_partner_category_producer
@@ -1771,23 +1793,23 @@ msgstr "Producto"
 #: model:ir.actions.act_window,name:pyxel_import_backend.action_product_documents
 #: model:ir.ui.menu,name:pyxel_import_backend.menu_product_documents
 msgid "Product Documents"
-msgstr ""
+msgstr "Documentos del producto"
 
 #. module: pyxel_import_backend
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_importation_load_form
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_importation_process_form
 msgid "Product Lines"
-msgstr ""
+msgstr "Líneas de productos"
 
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_importation_load_line
 msgid "Product within Import Cargo"
-msgstr ""
+msgstr "Producto dentro de la Carga de Importación"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__cargo_line_ids
 msgid "Products transported"
-msgstr ""
+msgstr "Productos transportados"
 
 #. module: pyxel_import_backend
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_partner_form_import
@@ -1800,9 +1822,15 @@ msgid "Promedio"
 msgstr ""
 
 #. module: pyxel_import_backend
+#: model:ir.model.fields,field_description:pyxel_import_backend.field_sale_order__provider_names
+#: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_order_tree_inherit_order_type
+msgid "Providers"
+msgstr "Proveedores"
+
+#. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__province
 msgid "Province"
-msgstr ""
+msgstr "Provincia"
 
 #. module: pyxel_import_backend
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_partner_form_import
@@ -1915,6 +1943,16 @@ msgid "Reference"
 msgstr "Referencia"
 
 #. module: pyxel_import_backend
+#: model:ir.model.fields,help:pyxel_import_backend.field_importation_process__contract_reference_customer
+msgid "Reference of the contract between the customer and the importer"
+msgstr "Referencia del contrato entre el cliente y el importador"
+
+#. module: pyxel_import_backend
+#: model:ir.model.fields,help:pyxel_import_backend.field_importation_process__contract_reference_supplier
+msgid "Reference of the contract between the supplier and the importer"
+msgstr "Referencia del contrato entre el proveedor y el importador"
+
+#. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__average_container__type_of_load__refrigerated
 msgid "Refrigerada"
 msgstr ""
@@ -1930,7 +1968,10 @@ msgid "Related Quotation"
 msgstr "Cita relacionada"
 
 #. module: pyxel_import_backend
+#. odoo-python
+#: code:addons/pyxel_import_backend/models/importation_load.py:0
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__release_date
+#, python-format
 msgid "Release Date"
 msgstr "Fecha de lanzamiento"
 
@@ -1958,7 +1999,10 @@ msgid "Responsible User"
 msgstr ""
 
 #. module: pyxel_import_backend
+#. odoo-python
+#: code:addons/pyxel_import_backend/models/importation_load.py:0
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__return_date
+#, python-format
 msgid "Return Date"
 msgstr "Fecha de devolución"
 
@@ -2097,7 +2141,7 @@ msgstr "Estado"
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__days_in_stage
 msgid "State days"
-msgstr ""
+msgstr "Días en el estado"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,help:pyxel_import_backend.field_importation_load__activity_state
@@ -2123,6 +2167,11 @@ msgstr "Proveedor sugerido"
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__res_partner_contact_type__type_of_contact__supplier
 msgid "Supplier"
 msgstr "Proveedor"
+
+#. module: pyxel_import_backend
+#: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__contract_reference_supplier
+msgid "Supplier Contract Reference"
+msgstr "Referencia del contrato del proveedor"
 
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_purchase_provider_evaluation
@@ -2185,6 +2234,17 @@ msgstr "El NIT debe contener únicamente dígitos."
 
 #. module: pyxel_import_backend
 #. odoo-python
+#: code:addons/pyxel_import_backend/models/importation_load.py:0
+#, python-format
+msgid ""
+"The date '%(current)s' (%(current_date)s) cannot be earlier than "
+"'%(previous)s' (%(previous_date)s)."
+msgstr ""
+"La fecha '%(current)s' (%(current_date)s) no puede ser anterior a "
+"'%(previous)s' (%(previous_date)s)."
+
+#. module: pyxel_import_backend
+#. odoo-python
 #: code:addons/pyxel_import_backend/models/res_partner.py:0
 #, python-format
 msgid "The end date cannot be earlier than the start date."
@@ -2198,6 +2258,7 @@ msgstr "Aún no hay reseñas."
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__is_third_party_contract
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_purchase_order__is_third_party_contract
+#: model:ir.model.fields,field_description:pyxel_import_backend.field_sale_order__is_third_party_contract
 msgid "Third-Party Contract"
 msgstr "Contrato de terceros"
 
@@ -2253,7 +2314,7 @@ msgstr "Costo total"
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__is_transshipment
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_importation_process_form
 msgid "Transfer"
-msgstr ""
+msgstr "Transbordo"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__is_transferred
@@ -2312,11 +2373,6 @@ msgid "Type of contact"
 msgstr "Tipo de contacto"
 
 #. module: pyxel_import_backend
-#: model:ir.model.fields,field_description:pyxel_import_backend.field_res_partner_contact_type__name
-msgid "Name"
-msgstr "Nombre"
-
-#. module: pyxel_import_backend
 #: model:ir.model.fields,help:pyxel_import_backend.field_importation_load__activity_exception_decoration
 #: model:ir.model.fields,help:pyxel_import_backend.field_importation_process__activity_exception_decoration
 msgid "Type of the exception activity on record."
@@ -2330,12 +2386,12 @@ msgstr "Tipos de gestión"
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_purchase_provider_evaluation_line__product_uom
 msgid "Unit of Measure"
-msgstr ""
+msgstr "Unidad de medida"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_wizard_evaluate_providers_line__product_uom
 msgid "Unit of measurement"
-msgstr ""
+msgstr "Unidad de medida"
 
 #. module: pyxel_import_backend
 #: model:ir.actions.server,name:pyxel_import_backend.action_generate_error_report
@@ -2379,12 +2435,12 @@ msgstr ""
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_importation_cost_wizard
 msgid "Wizard to add additional costs from evaluation"
-msgstr ""
+msgstr "Wizard para agregar costos adicionales a partir de la evaluación"
 
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_importation_load_fill_wizard
 msgid "Wizard to fill container lines"
-msgstr ""
+msgstr "Wizard para llenar líneas de contenedores"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__average_container__format_of_report__xls

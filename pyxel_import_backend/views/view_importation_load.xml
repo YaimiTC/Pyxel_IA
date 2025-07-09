@@ -106,14 +106,14 @@
     </record>
 
     <record id="action_open_importation_wizard" model="ir.actions.server">
-            <field name="name">Conciliacion</field>
+            <field name="name">Conciliación</field>
             <field name="model_id" ref="model_importation_load"/>
             <field name="binding_model_id" ref="model_importation_load"/>
             <field name="state">code</field>
             <field name="code">
                 action = {
                     'type': 'ir.actions.act_window',
-                    'name': 'Conciliacion',
+                    'name': 'Conciliación',
                     'res_model': 'average.container',
                     'view_mode': 'form',
                     'target': 'new',
