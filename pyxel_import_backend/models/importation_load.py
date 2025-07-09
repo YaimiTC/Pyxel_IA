@@ -189,10 +189,11 @@ class ImportationLoad(models.Model):
 
     @api.model
     def create(self, vals):
-        record = super().create(vals)
-        if 'state' in vals:
-            record.update_stage_importation()
-        return record
+        res = super().create(vals)
+        if any(f in vals for f in ['arrival_date', 'release_date', 'extraction_date', 'return_date']):
+            res._compute_state()  # Forzar el recompute en memoria para los nuevos registros
+            res.update_stage_importation()  # Actualizar la etapa de la importación
+        return res
 
     def write(self, vals):
         res = super().write(vals)
