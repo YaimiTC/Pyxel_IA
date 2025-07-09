@@ -493,7 +493,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             otherClientCheckbox.addEventListener("change", updateButtonsBasedOnCheckbox);
         }
         // Actualizar los indicadores de progreso
-        this.fixStepIndicator(n);
+        // this.fixStepIndicator(n);
     },
     clickPrev:function() {  
         var n = -1;
@@ -702,23 +702,23 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
 
         return valid; // return the valid status
     },
-    fixStepIndicator: function(n) {
-        // This function removes the "active" class of all steps...
-        var i, x = document.getElementsByClassName("step");
-        for (i = 0; i < x.length; i++) {
-            x[i].className = x[i].className.replace(" in-progress", "");
-            x[i].className = x[i].className.replace("complete", "");
-            if (i <= n){
-                x[i].className += " complete";
-            }
-             if (i > n){
-                x[i].className = x[i].className.replace("complete", "");
-                x[i].className = x[i].className.replace("finish", "");
-            }
-        }
-        //... and adds the "active" class to the current step:
-        x[n].className += " in-progress";
-    },
+    // fixStepIndicator: function(n) {
+    //     // This function removes the "active" class of all steps...
+    //     var i, x = document.getElementsByClassName("step");
+    //     for (i = 0; i < x.length; i++) {
+    //         x[i].className = x[i].className.replace(" in-progress", "");
+    //         x[i].className = x[i].className.replace("complete", "");
+    //         if (i <= n){
+    //             x[i].className += " complete";
+    //         }
+    //          if (i > n){
+    //             x[i].className = x[i].className.replace("complete", "");
+    //             x[i].className = x[i].className.replace("finish", "");
+    //         }
+    //     }
+    //     //... and adds the "active" class to the current step:
+    //     x[n].className += " in-progress";
+    // },
     async _updateSessionProducts(ev) {
         const $select = $('#productRequired');
         const selectedValues = $select.val()
