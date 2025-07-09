@@ -47,8 +47,8 @@
                                         <div class="container">
                                             <form id="business_registration_form" action="/website/form/" method="post" enctype="multipart/form-data" class="o_mark_required" data-mark="*" data-model_name="crm.lead" data-success-mode="redirect" data-success-page="/business-register-thanks" data-pre-fill="true">
                                                 <input id="register_type" type="hidden" name="register_type" class="form-control s_website_form_input" t-att-value="register_type"/>
-                                                <div class="s_website_form_rows s_col_no_bgcolor o_wizard">
-                                                    <div class="wizard-progress" style="margin-bottom:50px">
+                                                <div class="s_website_form_rows s_col_no_bgcolor">
+                                                    <!-- <div class="wizard-progress" style="margin-bottom:50px">
                                                         <div t-if="not crm_lead_exists and register_type != 'accreditation_business'" class="step" style="line-height: 10px;">
                                                             <zz class="step_label">
                                                                 Acreditación
@@ -73,7 +73,7 @@
                                                             </zz>
                                                             <div class="node"></div>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
 
                                                     <t t-if="registered_user">
                                                         <input id="contact1" type="hidden" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
@@ -191,6 +191,7 @@
                                                                         <a href="/descargar/ficha_cliente_fgne_tcp"
                                                                             id="ficha_cliente_fgne_tcp"
                                                                             target="_blank"
+                                                                            download="download"
                                                                             class="btn btn-primary add-btn"    
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
@@ -198,6 +199,7 @@
                                                                         <a href="/descargar/ficha_cliente_estatal"
                                                                             id="ficha_cliente_estatal"
                                                                             target="_blank"
+                                                                            download="download"
                                                                             class="btn btn-primary add-btn"    
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
@@ -239,6 +241,7 @@
                                                                         <a href="/descargar/perfil_proveedor"
                                                                             target="_blank"
                                                                             id="perfil_proveedor"
+                                                                            download="download"
                                                                             class="btn btn-primary add-btn">
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
@@ -339,7 +342,8 @@
                                                                         <a href="/descargar/cuban_partner"
                                                                             id="cuban_partner"
                                                                             target="_blank"
-                                                                            class="btn btn-primary add-btn"    
+                                                                            class="btn btn-primary add-btn"
+                                                                            download="download"
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
@@ -904,6 +908,8 @@
                                                             
                                                                         <a href="/descargar/solicitud"
                                                                         target="_blank"
+                                                                        id="solicitud"
+                                                                        download="download"
                                                                         class="btn btn-primary add-btn">
                                                                             <span class="btn-text">Descargar Solicitud</span>
                                                                         </a>
