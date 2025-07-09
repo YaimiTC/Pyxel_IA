@@ -8,7 +8,8 @@ class WizardEvaluateProviders(models.TransientModel):
     _name = 'wizard.evaluate.providers'
 
     sale_order_id = fields.Many2one('sale.order', required=True)
-    apply_supplier_id = fields.Many2one('res.partner', string="Supplier to apply")
+    apply_supplier_id = fields.Many2one('res.partner', string="Supplier to apply",
+                                        domain="[('contact_type_id.code', '=', 'proveedor_extranjero')]")
     evaluation_line_ids = fields.One2many('wizard.evaluate.providers.line', 'wizard_id')
 
     def default_get(self, fields_list):
@@ -115,7 +116,8 @@ class WizardEvaluateProvidersLine(models.TransientModel):
     available_supplier_ids = fields.Many2one(
         'res.partner', string='Available providers', compute='_compute_suppliers'
     )
-    selected_supplier_id = fields.Many2one('res.partner', string='Selected supplier')
+    selected_supplier_id = fields.Many2one('res.partner', string='Selected supplier',
+                                           domain="[('contact_type_id.code', '=', 'proveedor_extranjero')]")
     estimated_price = fields.Float(string='Estimated price')
 
     @api.depends('product_id')

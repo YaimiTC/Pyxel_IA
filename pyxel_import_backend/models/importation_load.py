@@ -16,7 +16,7 @@ class ImportationLoad(models.Model):
     cargo_type = fields.Selection([
         ('dry', 'Dry'),
         ('reefer', 'Refrigerated'),
-    ], string='Load Type', required=True)
+    ], string='Load Type')
 
     size = fields.Selection(
         selection=[
@@ -281,6 +281,10 @@ class ImportationLoadLine(models.Model):
 
     @api.constrains('opening_date', 'arrival_date', 'release_date', 'extraction_date', 'return_date')
     def _check_dates_order(self):
+        # Evitar la validación si se pasa un contexto explícito
+        if self.env.context.get('skip_date_order_check'):
+            return
+
         for record in self:
             dates = [
                 (_("Opening Date"), record.opening_date),
@@ -296,8 +300,7 @@ class ImportationLoadLine(models.Model):
             for label, date in dates:
                 if date and previous_date and date < previous_date:
                     raise ValidationError(
-                        _("The date '%(current)s' (%(current_date)s) cannot be earlier than '%(previous)s' (%( "
-                          "previous_date)s).") % {
+                        _("The date '%(current)s' (%(current_date)s) cannot be earlier than '%(previous)s' (%(previous_date)s).") % {
                             'current': label,
                             'current_date': date,
                             'previous': previous_label,
