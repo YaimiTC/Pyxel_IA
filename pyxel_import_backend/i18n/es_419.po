@@ -282,6 +282,7 @@ msgstr ""
 msgid "Archivo de Importación"
 msgstr ""
 
+#. module: pyxel_import_backend
 #. odoo-python
 #: code:addons/pyxel_import_backend/models/importation_load.py:0
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__arrival_date
