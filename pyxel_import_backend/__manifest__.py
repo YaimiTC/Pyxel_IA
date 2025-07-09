@@ -30,7 +30,6 @@
         'data/res_partner_contact_type_data.xml',
         'data/importation_sequence.xml',
         'data/importation_stage_data.xml',
-        'data/ir_model_data.xml',
         "security/ir.model.access.csv",
         "views/res_partner_view.xml",
         "views/product_template_views.xml",
