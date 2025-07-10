@@ -1,5 +1,6 @@
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api,_
+from odoo.exceptions import ValidationError, UserError
+
 
 STATE_SELECTION = [
     ('new', 'New'),
@@ -197,17 +198,32 @@ class ImportationProcess(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('name', 'New') == 'New':
-            sequence = self.env['ir.sequence'].next_by_code('importation.process')
-            vals['name'] = sequence or 'New'
-        if 'stage_id' in vals:
-            vals['stage_enter_date'] = fields.Datetime.now()
+        stage = self.env['importation.stage'].browse(vals.get('stage_id'))
+        importation = self.env['importation.process'].browse(vals.get('importation_id'))
+
+        if stage.name != 'SOLICITUD':
+            if not (vals.get('contract_reference_customer') and vals.get('contract_reference_supplier')):
+                raise UserError(_(
+                    "No puede crear una carga en una etapa distinta a 'Solicitud' sin definir las referencias "
+                    "de contrato del cliente y del proveedor."
+                ))
 
         return super().create(vals)
 
     def write(self, vals):
         if 'stage_id' in vals:
-            vals['stage_enter_date'] = fields.Datetime.now()
+            for record in self:
+                # Si se intenta cambiar la etapa y la actual es "Solicitud"
+                if record.stage_id.name == 'SOLICITUD':
+                    importation = record
+                    if not (
+                            (importation.contract_reference_customer and importation.contract_reference_supplier) or
+                            (vals.get('contract_reference_customer') and vals.get('contract_reference_supplier'))
+                    ):
+                        raise UserError(_(
+                            "No puede cambiar la etapa desde 'Solicitud' si no están definidas las referencias de "
+                            "contrato del cliente y del proveedor."
+                        ))
         return super().write(vals)
 
     def action_start_progress(self):
