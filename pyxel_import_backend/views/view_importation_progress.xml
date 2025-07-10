@@ -67,8 +67,8 @@
                                         class="btn-primary"
                                         invisible="not cost_line_ids or final_sale_order_id"/>
 
-                                <button name="action_start_progress" string="Start Import" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
-                                <button name="action_finish_progress" string="Finish" type="object" class="btn-success" invisible="state != 'in_progress'"/>
+                                   <button name="action_start_progress" string="Start Import" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
+<!--                                <button name="action_finish_progress" string="Finish" type="object" class="btn-success" invisible="state != 'in_progress'"/>-->
 <!--                                <field name="state" widget="statusbar" statusbar_visible="draft,evaluating,in_progress,done"/>-->
                                     <field name="stage_id" widget="statusbar" options="{'clickable': True}" domain="[]" context="{}"/>
                             </header>
