@@ -1,13 +1,15 @@
 from odoo import models, fields, api, _
 from collections import defaultdict
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError,UserError
 import logging
+
 _logger = logging.getLogger(__name__)
 
 
 class PurchaseProviderEvaluation(models.Model):
     _name = 'purchase.provider.evaluation'
     _description = 'Supplier Evaluation'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char(string="Reference", required=True, default='/')
     sale_order_id = fields.Many2one('sale.order', string='Quotation')
@@ -17,7 +19,8 @@ class PurchaseProviderEvaluation(models.Model):
     purchase_order_ids = fields.One2many(
         'purchase.order',
         'evaluation_id',
-        string='Purchase Orders'
+        string='Purchase Orders',
+        tracking = True
     )
 
     has_evaluations_to_apply = fields.Boolean(
@@ -32,7 +35,7 @@ class PurchaseProviderEvaluation(models.Model):
         ('cancelled', 'Cancelled'),
         ('apply', 'Applied'),
         ('evaluating_offer', 'Offer Evaluation'),
-    ], default='draft', string='State')
+    ], default='draft', string='State', tracking=True)
 
     purchase_order_count = fields.Integer(string="Number of Orders", compute='_compute_purchase_order_count',
                                           store=True)
@@ -238,6 +241,44 @@ class PurchaseProviderEvaluation(models.Model):
             'view_mode': 'form',
             'res_id': final_so.id,
             'target': 'current',
+        }
+
+    def action_send_all_rfq_emails(self):
+        self.ensure_one()
+
+        template = self.env.ref('purchase.email_template_edi_purchase', raise_if_not_found=False)
+        if not template:
+            raise UserError(_("No se encontró la plantilla de correo para órdenes de compra."))
+
+        pos_to_send = self.purchase_order_ids.filtered(lambda po: po.state in ('draft', 'sent'))
+        if not pos_to_send:
+            raise UserError(_("No hay órdenes de compra en estado borrador o enviadas para enviar."))
+
+        total_sent = 0
+        for po in pos_to_send:
+            try:
+                template.send_mail(po.id, force_send=True)
+                po.write({'state': 'sent'})  # Marcar como enviada
+                total_sent += 1
+            except Exception as e:
+                po.message_post(body=_("Error al enviar correo: %s") % str(e))
+
+        # Publicar mensaje en el chatter de la evaluación
+        self.message_post(
+            body=_("Se enviaron %s RFQs a proveedores desde la evaluación.") % total_sent,
+            message_type="comment",
+            subtype_xmlid="mail.mt_note"
+        )
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Éxito'),
+                'message': _('Se enviaron correctamente %s RFQs.') % total_sent,
+                'type': 'success',
+                'sticky': False,
+            }
         }
 
 
