@@ -18,7 +18,7 @@ class ImportationProcess(models.Model):
     stage_id = fields.Many2one('importation.stage', string='Process Stage',
                                default=lambda self: self.env['importation.stage'].search([], limit=1),
                                group_expand='_group_expand_stage_id',
-                               ondelete='restrict')
+                               ondelete='restrict', tracking=True)
     state = fields.Selection(
         STATE_SELECTION,
         string='State',
