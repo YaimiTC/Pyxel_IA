@@ -1,4 +1,5 @@
 import datetime
+import re
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
@@ -125,3 +126,21 @@ class SaleOrder(models.Model):
         if self.importation_process_id:
             invoice_vals['importation_process_id'] = self.importation_process_id.id
         return invoice_vals
+
+
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+
+    clean_description = fields.Char(
+        string='Clean Description',
+        compute='_compute_clean_description',
+        store=False
+    )
+
+    @api.depends('name')
+    def _compute_clean_description(self):
+        for line in self:
+            if line.name:
+                line.clean_description = re.sub(r'^\[[^\]]+\]\s*', '', line.name)
+            else:
+                line.clean_description = ''
