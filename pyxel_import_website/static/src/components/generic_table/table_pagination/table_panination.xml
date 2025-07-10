@@ -1,0 +1,75 @@
+<templates xml:space="preserve">
+    <t t-name="childcare_management.TablePaginationTemplate">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-3">
+            <!-- Navegación (arriba en móvil) -->
+            <div class="d-flex gap-1 align-items-center order-md-2">
+                <button 
+                    class="btn btn-sm btn-outline-secondary"
+                    t-att-disabled="props.currentPage === 0"
+                    t-on-click="() => props.onPageChange(0)"
+                >
+                    <i class="fa fa-angle-double-left"/>
+                </button>
+                
+                <button 
+                    class="btn btn-sm btn-outline-secondary"
+                    t-att-disabled="props.currentPage === 0"
+                    t-on-click="() => props.onPageChange(props.currentPage - 1)"
+                >
+                    <i class="fa fa-angle-left"/>
+                </button>
+                
+                <div class="d-flex flex-wrap gap-1 justify-content-center">
+                    <t t-foreach="visiblePages" t-as="page" t-key='page'>
+                        <button 
+                            class="btn btn-sm btn-pagination"
+                            t-att-class="{
+                                'btn-primary': page === props.currentPage,
+                                'btn-outline-secondary': page !== props.currentPage
+                            }"
+                            t-on-click="() => props.onPageChange(page)"
+                            t-esc="page + 1"
+                        />
+                    </t>
+                </div>
+                
+                <button 
+                    class="btn btn-sm btn-outline-secondary"
+                    t-att-disabled="props.currentPage >= props.totalPages - 1"
+                    t-on-click="() => props.onPageChange(props.currentPage + 1)"
+                >
+                    <i class="fa fa-angle-right"/>
+                </button>
+                
+                <button 
+                    class="btn btn-sm btn-outline-secondary"
+                    t-att-disabled="props.currentPage >= props.totalPages - 1"
+                    t-on-click="() => props.onPageChange(props.totalPages - 1)"
+                >
+                    <i class="fa fa-angle-double-right"/>
+                </button>
+            </div>
+
+            <!-- Selector y contador (abajo en móvil) -->
+            <div class="d-flex flex-column flex-md-row align-items-center gap-2 order-md-1">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-nowrap">Rows per pages:</span>
+                    <select 
+                        class="form-select form-select-sm" 
+                        style="width: 80px;"
+                        t-att-value="props.pageSize"
+                        t-on-change="onChangePageSize"
+                    >
+                        <t t-foreach="pageOptions" t-as="option" t-key='option'>
+                            <option t-att-value="option" t-esc="option"/>
+                        </t>
+                    </select>
+                </div>
+                
+                <span class="text-muted text-nowrap">
+                    Page <t t-esc="props.currentPage + 1"/> of <t t-esc="props.totalPages"/>
+                </span>
+            </div>
+        </div>
+    </t>
+</templates>

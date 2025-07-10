@@ -1,0 +1,34 @@
+<templates xml:space="preserve">
+    <t t-name="childcare_management.TableBodyTemplate">
+        <tbody>
+            <!-- Verificar si hay filas para mostrar -->
+            <t t-if="props.rows and props.rows.length > 0">
+                <t t-foreach="props.rows" t-as="row" t-key="row.id">
+                    <tr>
+                        <t t-foreach="props.columns" t-as="col" t-key="col.name">
+                            <td>
+                                <t t-if="col.cell">
+                                    <!-- Se pasa el valor y la fila completa -->
+                                    <t t-raw="col.cell(row[col.name], row)"/>
+                                </t>
+                                <t t-else="">
+                                    <t t-raw="row[col.name]"/>
+                                </t>
+                            </td>
+                        </t>
+                    </tr>
+                </t>
+            </t>
+            <!-- Mensaje cuando no hay registros -->
+            <t t-else="">
+                <tr>
+                    <td t-att-colspan="props.columns.length" class="text-center py-4">
+                        <div class="text-lg text-gray-500 font-medium">
+                            No records found
+                        </div>
+                    </td>
+                </tr>
+            </t>
+        </tbody>
+    </t>
+</templates>

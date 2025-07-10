@@ -1,43 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <template id="waiting_for_active_contract" name="Waiting for active contract">
+            <t t-call="website.layout">
+                <div class="alert alert-info text-center " role="alert">
+                    <!-- <h1>Atención:</h1>
+                    <h3> -->
+                    <h1 style="font-size: 4.5rem; color: black;">Atención:</h1>
+                    <h3 style="color: black;">
+                        El acceso a nuestros servicios solo está permitido a clientes acreditados y con un contrato activo.
+                    </h3>
+                    <br/>
+                    <p>Si aún no lo ha hecho, por favor inicie su proceso de
+                        <a href="/business-register?type=accreditation">
+                            <span class="badge badge-success">Acreditación</span>
+                        </a>.
+                    </p>
+                </div>
+                <div id="o_shared_blocks" class="oe_unremovable" data-oe-id="562" data-oe-xpath="/data/xpath/div" data-oe-model="ir.ui.view" data-oe-field="arch"></div>
+            </t>
+        </template>
+    
         <template id="business_registration" name="Business registration">
             <t t-call="website.layout">
                 <t t-set="logged_partner" t-value="request.env['website.visitor']._get_visitor_from_request().partner_id"/>
                 <t t-set="business_registration_form_values" t-value="{
                 'email_to': res_company.email,
-                'name': request.params.get('name', ''),
+                'name': request.params.get('name', ''),     
                 'phone': request.params.get('phone', ''),
+                'partner_id': request.params.get('partner_id', ''),
                 'email_from': request.params.get('email_from', ''),
                 'company': request.params.get('company', ''),
                 'subject': request.params.get('subject', ''),
             }"/>
                 <span class="hidden" data-for="business_registration_form" t-att-data-values="business_registration_form_values"/>
                 <div id="wrap" class="oe_structure oe_empty">
-
                     <div class="col-lg-7 col-xl-6 me-lg-auto">
                         <img class="operation_banner_img" t-att-src="'/pyxel_import_website/static/src/img/%s'%banner"/>
 
                     </div>
-
                     <section class="s_text_block  pb40 o_colored_level " data-snippet="s_text_block">
                         <div class="container s_allow_columns" string="margin-top:28px">
                             <div class="row">
                                 <div class="col-lg-10 mt-4 mt-lg-0">
-
                                     <section class="s_website_form" data-vcss="001" data-snippet="s_website_form">
                                         <div class="container">
                                             <form id="business_registration_form" action="/website/form/" method="post" enctype="multipart/form-data" class="o_mark_required" data-mark="*" data-model_name="crm.lead" data-success-mode="redirect" data-success-page="/business-register-thanks" data-pre-fill="true">
                                                 <input id="register_type" type="hidden" name="register_type" class="form-control s_website_form_input" t-att-value="register_type"/>
-                                                <div class="s_website_form_rows s_col_no_bgcolor o_wizard">
-
-                                                    <div class="wizard-progress" style="margin-bottom:50px">
-
-                                                        <!-- <div t-if="not registered_user" class="step in-progress" style="line-height: 10px;">
-                                                            <zz class="step_label">Registro
-                                                            </zz>
-                                                            <div class="node"></div>
-                                                        </div> -->
+                                                <div class="s_website_form_rows s_col_no_bgcolor">
+                                                    <!-- <div class="wizard-progress" style="margin-bottom:50px">
                                                         <div t-if="not crm_lead_exists and register_type != 'accreditation_business'" class="step" style="line-height: 10px;">
                                                             <zz class="step_label">
                                                                 Acreditación
@@ -62,199 +73,27 @@
                                                             </zz>
                                                             <div class="node"></div>
                                                         </div>
-                                                    </div>
-
-                                                    <t t-set="_steps_in_deg" t-value="1 / 2 * 360"/>
-                                                    <!--                                                    <div>-->
-                                                    <!--                                                        <div class="o_wizard_circle_progress progress d-md-none position-relative rounded-circle ms-3 bg-transparent"-->
-                                                    <!-- t-attf-style="&#45;&#45;rightProgress:{{'180' if _steps_in_deg >= 180 else _steps_in_deg}}deg; &#45;&#45;leftProgress:{{_steps_in_deg-180 if _steps_in_deg >= 180 else 0}}deg;">-->
-                                                    <!--                                                            <span class="o_wizard_circle_progress_left position-absolute start-0 top-0 z-index-1 overflow-hidden w-50 h-100 ">-->
-                                                    <!--                                                                <span class="progress-bar position-absolute start-100 top-0 w-100 h-100 border border-5 border-start-0 border-primary bg-transparent"/>-->
-                                                    <!--                                                            </span>-->
-                                                    <!--                                                            <span class="o_wizard_circle_progress_right position-absolute top-0 end-0 z-index-1 overflow-hidden w-50 h-100">-->
-                                                    <!--                                                                <span class="progress-bar position-absolute top-0 end-100 w-100 h-100 border border-5 border-end-0 border-primary bg-transparent"/>-->
-                                                    <!--                                                            </span>-->
-                                                    <!--                                                            <p class="mx-auto fw-bold step_counter">-->
-                                                    <!--                                                                <t t-out="1"/>-->
-                                                    <!--                                                                de-->
-                                                    <!--                                                                <t t-out="2"/>-->
-                                                    <!--                                                            </p>-->
-                                                    <!--                                                        </div>-->
-
-                                                    <!--                                                    </div>-->
-                                                    <t t-if="registered_user">
-                                                        <input id="contact1" type="hidden" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
-
-                                                        <!-- <input id="contact2" type="hidden" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/> -->
-
-                                                        <input id="contact3" type="hidden" class="form-control s_website_form_input" name="email_from" required="" data-fill-with="email"/>
-
-                                                    </t>
-
-                                                    <!-- <div t-if="not registered_user" class="tab">
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact1">
-                                                                    <span class="s_website_form_label_content">Nombre
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="contact1" type="text" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact2">
-                                                                    <span class="s_website_form_label_content">Teléfono
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" data-fill-with="phone"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact3">
-                                                                    <span class="s_website_form_label_content">Email
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="contact3" type="email" class="form-control s_website_form_input" name="email_from" required="" data-fill-with="email"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="char" data-name="Field">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="password">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Contraseña
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="password" type="password" class="form-control s_website_form_input" name="password" required="" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="password" data-name="Field">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="confirm_password">
-                                                                    <span class="s_website_form_label_content">Confirme
-                                                                        contraseña
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="confirm_password" type="password" class="form-control s_website_form_input" name="confirm_password" required="" />
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
                                                     </div> -->
 
-                                                    <div t-if="not crm_lead_exists and register_type != 'accreditation_business'" class="tab">
+                                                    <t t-if="registered_user">
+                                                        <input id="contact1" type="hidden" class="form-control s_website_form_input" name="name" required="" data-fill-with="name"/>
+                                                        <input id="contact3" type="hidden" class="form-control s_website_form_input" name="email_from" required="" data-fill-with="email"/>
+                                                        <input id="partner_id" type="hidden" class="form-control s_website_form_input" name="partner_id" required="" t-att-value="partner_id"/>
+                                                    </t>
+                                                    
+                                                    <div t-if="not crm_lead_exists and register_type not in ['accreditation_business', 'import']" class="tab">
                                                         <t t-if="register_type == 'accreditation'">
-                                                            <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="selection">
-                                                                <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="acreditation">
-                                                                    <span class="s_website_form_label_content">
-                                                                        Registrarse como:
-                                                                    </span>
-                                                                    </label>
-                                                                    <div class="col-sm">
-                                                                    <!-- Aquí solo queda un div.row para las 4 opciones -->
-                                                                    <div class="row s_col_no_resize s_col_no_bgcolor s_website_form_multiple"
-                                                                        data-name="Register as" data-display="horizontal">
-
-                                                                        <!-- Opción 1: Cliente Nacional -->
-                                                                        <div class="radio col-12 col-lg-2 col-md-6">
-                                                                        <div class="form-check">
-                                                                            <!-- Solo un radio "checked" en todo el grupo -->
-                                                                            <input type="radio"
-                                                                                checked="checked"
-                                                                                data-oe-sanitize="false" 
-                                                                                class="s_website_form_input form-check-input"
-                                                                                id="acreditationis_client_nacional"
-                                                                                name="Register as"
-                                                                                value="ClientNacional" />
-                                                                            <label class="form-check-label s_website_form_check_label"
-                                                                                for="acreditationis_client_nacional">
-                                                                            Cliente
-                                                                            </label>
-                                                                        </div>
-                                                                        </div>
-
-                                                                        <!-- Opción 2: Cliente Extranjero -->
-                                                                        <div class="radio col-12 col-lg-3 col-md-6">
-                                                                        <div class="form-check">
-                                                                            <input type="radio"
-                                                                                class="s_website_form_input form-check-input"
-                                                                                id="acreditationis_client_extranjero"
-                                                                                name="Register as"
-                                                                                value="ClientExtranjero" />
-                                                                            <label class="form-check-label s_website_form_check_label"
-                                                                                for="acreditationis_client_extranjero">
-                                                                            Cliente Extranjero
-                                                                            </label>
-                                                                        </div>
-                                                                        </div>
-
-                                                                        <!-- Opción 3: Proveedor Nacional -->
-                                                                        <div class="radio col-12 col-lg-2 col-md-6">
-                                                                        <div class="form-check">
-                                                                            <input type="radio"
-                                                                                class="s_website_form_input form-check-input"
-                                                                                id="acreditationis_provider_nacional"
-                                                                                name="Register as"
-                                                                                value="ProviderNacional" />
-                                                                            <label class="form-check-label s_website_form_check_label"
-                                                                                for="acreditationis_provider_nacional">
-                                                                            Proveedor
-                                                                            </label>
-                                                                        </div>
-                                                                        </div>
-
-                                                                        <!-- Opción 4: Proveedor Extranjero -->
-                                                                        <div class="radio col-12 col-lg-3 col-md-6">
-                                                                        <div class="form-check">
-                                                                            <input type="radio"
-                                                                                class="s_website_form_input form-check-input"
-                                                                                id="acreditationis_provider_extranjero"
-                                                                                name="Register as"
-                                                                                value="ProviderExtranjero" />
-                                                                            <label class="form-check-label s_website_form_check_label"
-                                                                                for="acreditationis_provider_extranjero">
-                                                                            Proveedor Extranjero
-                                                                            </label>
-                                                                        </div>
-                                                                        </div>
-
-                                                                    </div> <!-- / .row s_website_form_multiple -->
-                                                                    </div> <!-- / .col-sm -->
-                                                                </div> <!-- / .row s_col_no_resize -->
-                                                                </div> <!-- / .s_website_form_field -->
-                                                        </t>
-                                                        <t else="">
-                                                        
-
-                                                            <input type="radio" checked="" class="d-none s_website_form_input form-check-input" id="is_client" name="Register as" value="ClientNacional" data-fill-with="undefined"/>
-
-                                                        </t>
-                                                        <div style="visibility:hidden" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px;padding-top: 0;font-size: 1px;padding-bottom: 0;" for="country">
-                                                                    <span class="s_website_form_label_content">País
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_type">
+                                                                    <span class="s_website_form_label_content">Registrarse como:
                                                                     </span>
+                                                                    <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="padding: 0; font-size: 1px;" name="Country" id="country">
-                                                                        <option value="">País..</option>
-                                                                        <t t-foreach="countries" t-as="c">
-                                                                            <option t-att-value="c.id" t-att-selected="c.name == 'Cuba'">
+                                                                    <select class="form-select s_website_form_input" style="" name="contact_type" required="" id="contact_type">
+                                                                        <t t-foreach="contact_types" t-as="c">
+                                                                            <option t-att-value="c.id" t-att-selected="c.id == 1"> <!-- 1 => Cliente Nacional -->
                                                                                 <t t-esc="c.name"/>
                                                                             </option>
                                                                         </t>
@@ -262,130 +101,72 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div name="fgne_type_national_client" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        </t>
+                                                        <t else="">
+                                                        <!-- TODO: Cambiar esto  -->
+                                                            <input type="radio" checked="" class="d-none s_website_form_input form-check-input" id="is_client" name="Register as" value="ClientNacional" data-fill-with="undefined"/>
+                                                        </t>
+                                                        <div name="fgne_type" data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="fgne_type">
                                                                     <span class="s_website_form_label_content">Tipo</span>
+                                                                    <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="FGNE type" id="fgne_type">
-                                                                        <option value="FGNE">FGNE (Mipymes, CNA, PDL)</option>
-                                                                        <!-- <option value="MIPYME">MIPYME</option> -->
-                                                                        <option value="TCP">TCP</option>
-                                                                        <!-- <option value="PersonaNatural">Persona Natural</option>
-                                                                        <option value="SucursalExtranjera">Sucursal Extranjera</option> -->
-                                                                        <option value="Estatal">Estatal</option>
-
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                         <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="fgne_type">
-                                                                    <span class="s_website_form_label_content">Tipo
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="FGNE type" id="fgne_type">
-                                                                        <option value="FGNE">FGNE (Mipymes, CNA, PDL)</option>
-                                                                        <!-- <option value="MIPYME">MIPYME</option> -->
-                                                                        <option value="TCP">TCP</option>
-                                                                        <!-- <option value="SucursalExtranjera">Sucursal Extranjera</option> -->
-                                                                        <option value="Estatal">Estatal</option>
-
+                                                                    <select class="form-select s_website_form_input" style="" name="fgne_type" id="fgne_type" required="">
+                                                                        <option value="">Tipos de Gestión Empresarial...</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact4">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="partner_name">
                                                                     <span class="s_website_form_label_content">Nombre
-                                                                        y apellido del contacto
+                                                                        y apellidos del contacto
                                                                     </span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact4" type="text" class="form-control s_website_form_input" name="company" required="" /> 
-                                                                    <!-- data-fill-with="commercial_company_name" -->
+                                                                    <input id="partner_name" type="text" class="form-control s_website_form_input" name="partner_name" required="" /> 
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="company_business">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="parent_company_name">
                                                                     <span class="s_website_form_label_content">Nombre
                                                                         del negocio
                                                                     </span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="company_business" type="text" class="form-control s_website_form_input" name="company_business" required="" /> 
-                                                                    <!-- data-fill-with="commercial_company_name" -->
+                                                                    <input id="parent_company_name" type="text" class="form-control s_website_form_input" name="parent_company_name" required="" /> 
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        <div name="supplier_type" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="supplier_type">
                                                                     <span class="s_website_form_label_content">Clasificación del Proveedor
                                                                     </span>
+                                                                    <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="supplier_type" id="supplier_type">
+                                                                    <select class="form-select s_website_form_input" style="" name="supplier_type" required="" id="supplier_type">
+                                                                        <option value="">Clasificación...</option>
                                                                         <option value="Productor">Productor</option>
                                                                         <option value="Comerciante">Comerciante</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="supplier_type">
-                                                                    <span class="s_website_form_label_content">Clasificación del Proveedor
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="supplier_type" id="supplier_type">
-                                                                        <option value="Productor">Productor</option>
-                                                                        <option value="Comerciante">Comerciante</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition ="ClientNacional" data-visibility-comparator="selected">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="nit">
-                                                                    <span class="s_website_form_label_content">NIT/CI
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="nit" type="text" class="form-control s_website_form_input" name="nit" required="" pattern="\d{11}" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')"/>
-                                                                    <span id="nit-error" style="color:red; display:none;">El NIT debe contener exactamente 11 dígitos.</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition ="ProviderNacional" data-visibility-comparator="selected">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="nit">
-                                                                    <span class="s_website_form_label_content">NIT/CI
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="nit" type="text" class="form-control s_website_form_input" name="nit" required="" pattern="\d{11}" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')"/>
-                                                                    <span id="nit-error" style="color:red; display:none;">El NIT debe contener exactamente 11 dígitos.</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" 
+
+                                                        <div 
+                                                            data-name="Field"
+                                                            name="ficha_cliente"
                                                             class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
                                                             data-type="binary"
-                                                            data-visibility-dependency="Register as" 
-                                                            data-visibility-condition="ClientNacional" 
-                                                            data-visibility-comparator="selected"
                                                             >
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label"
@@ -395,8 +176,7 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm" style="position: relative;">
-                                                                    <div class="input-group">
-                                                                    
+                                                                    <div name="ficha_cliente_input_group" class="input-group">
                                                                         <input type="file"
                                                                             class="form-control s_website_form_input"
                                                                             name="ficha_cliente"
@@ -406,15 +186,20 @@
                                                                             data-max-file-size="30"
                                                                             data-fill-with="undefined" 
                                                                             data-label=""
+                                                                             required=""
                                                                             />
                                                                         <a href="/descargar/ficha_cliente_fgne_tcp"
+                                                                            id="ficha_cliente_fgne_tcp"
                                                                             target="_blank"
+                                                                            download="download"
                                                                             class="btn btn-primary add-btn"    
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
                                                                         <a href="/descargar/ficha_cliente_estatal"
+                                                                            id="ficha_cliente_estatal"
                                                                             target="_blank"
+                                                                            download="download"
                                                                             class="btn btn-primary add-btn"    
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
@@ -423,16 +208,15 @@
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Descargue la plantilla, llénela y súbala aquí.
                                                                     </div>
+                                                                    <span id="ficha_cliente_error" style="color:red; display:none;">El documento adjuntado debe ser del mismo tipo que el archivo descargado.</span>
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <div data-name="Field" 
+                                                            name="perfil_proveedor"
                                                             class="s_website_form_field mb-3 col-12 s_website_form_custom"
-                                                            data-type="binary"
-                                                            data-visibility-dependency="Register as" 
-                                                            data-visibility-condition="ProviderNacional" 
-                                                            data-visibility-comparator="selected">
+                                                            data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label"
                                                                     style="width: 200px"
@@ -441,8 +225,7 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm" style="position: relative;">
-                                                                    <div class="input-group">
-                                                                    
+                                                                    <div name="planilla_proveedor_input_group" class="input-group">
                                                                         <input type="file"
                                                                             class="form-control s_website_form_input"
                                                                             name="planilla_proveedor"
@@ -454,83 +237,45 @@
                                                                             data-label=""
                                                                             required="" 
                                                                             />
-                                                              
+                                                            
                                                                         <a href="/descargar/perfil_proveedor"
-                                                                        target="_blank"
-                                                                        class="btn btn-primary add-btn">
+                                                                            target="_blank"
+                                                                            id="perfil_proveedor"
+                                                                            download="download"
+                                                                            class="btn btn-primary add-btn">
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
                                                                     </div>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Descargue la plantilla, llénela y súbala aquí.
                                                                     </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" 
-                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
-                                                            data-type="binary"
-                                                            data-visibility-dependency="Register as" 
-                                                            data-visibility-condition="ProviderExtranjero" 
-                                                            data-visibility-comparator="selected">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label"
-                                                                    style="width: 200px"
-                                                                    for="planilla_proveedor">
-                                                                    <span class="s_website_form_label_content">Perfil Proveedor</span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm" style="position: relative;">
-                                                                    <div class="input-group">
-                                                                    
-                                                                        <input type="file"
-                                                                            class="form-control s_website_form_input"
-                                                                            name="planilla_proveedor"
-                                                                            id="planilla_proveedor"
-                                                                            accept=".xlsx,.xls,.pdf,.docx,.doc"
-                                                                            data-max-files-number="20"
-                                                                            data-max-file-size="30"
-                                                                            data-fill-with="undefined" 
-                                                                            data-label=""
-                                                                            required="" 
-                                                                            />
-                                                              
-                                                                        <a href="/descargar/perfil_proveedor"
-                                                                        target="_blank"
-                                                                        class="btn btn-primary add-btn">
-                                                                            <span class="btn-text">Descargar Plantilla</span>
-                                                                        </a>
-                                                                    </div>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        Descargue la plantilla, llénela y súbala aquí.
-                                                                    </div>
+                                                                    <span id="planilla_proveedor_error" style="color:red; display:none;">El documento adjuntado debe ser del mismo tipo que el archivo descargado.</span>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientExtranjero" data-visibility-comparator="selected">
+                                                        <div name="nit" class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" >
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="x_studio_license_holder">
-                                                                    <span class="s_website_form_label_content">Código Mincex </span>
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="nit">
+                                                                    <span class="s_website_form_label_content">NIT/CI
+                                                                    </span>
+                                                                    <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
-       title="Sólo letras y números"
-       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                    <input id="nit" type="text" class="form-control s_website_form_input" name="nit" required="" pattern="\d{11}" maxlength="11" oninput="this.value = this.value.replace(/\D/g, '')"/>
+                                                                    <span id="nit-error" style="color:red; display:none;">El NIT debe contener exactamente 11 dígitos.</span>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
+                                                        <div name="need_mincex_code" data-name="Field" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-sm-auto s_website_form_label" style="width: 200px" for="need_mincex_code">
-                                                                    <span class="s_website_form_label_content">Requiere
-                                                                        código MINCEX
-                                                                    </span>
+                                                                    <span class="s_website_form_label_content">¿Requiere código MINCEX?</span>
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <div class="form-check">
-                                                                        <input type="checkbox" value="Yes" class="s_website_form_input form-check-input" name="need_mincex_code" id="need_mincex_code" data-fill-with="undefined" t-att-checked="True"/>
+                                                                        <input type="checkbox" value="true" class="s_website_form_input form-check-input" name="need_mincex_code" id="need_mincex_code"/>
                                                                     </div>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Marcar si necesita el código MINCEX.
@@ -539,21 +284,21 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field" data-visibility-dependency="need_mincex_code" data-visibility-condition="Yes" data-visibility-comparator="selected">
+                                                        <div name="license_holder" class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="char" data-name="Field" >
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="x_studio_license_holder">
-                                                                    <span class="s_website_form_label_content">Código Mincex</span>
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="license_holder">
+                                                                    <span class="s_website_form_label_content">Código MINCEX</span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
-       title="Sólo letras y números"
-       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                    <input id="license_holder" type="text" class="form-control s_website_form_input" name="license_holder" required="" pattern="[A-Za-z0-9]+"
+                                                                        title="Sólo letras y números"
+                                                                        onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientExtranjero" data-visibility-comparator="selected" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
+                                                        <div name="has_cuban_partner" data-name="Field" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-sm-auto s_website_form_label" style="width: 200px" for="has_cuban_partner">
                                                                     <span class="s_website_form_label_content">¿La Empresa tiene socio de nacionalidad cubana?
@@ -561,24 +306,7 @@
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <div class="form-check">
-                                                                        <input type="checkbox" value="Yes" class="s_website_form_input form-check-input" name="has_cuban_partner" id="has_cuban_partner" data-fill-with="undefined" />
-                                                                    </div>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        Marcar si la empresa tiene socio de nacionalidad cubana.
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" t-attf-class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="has_cuban_partner">
-                                                                    <span class="s_website_form_label_content">¿La Empresa tiene socio de nacionalidad cubana?
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" value="Yes" class="s_website_form_input form-check-input" name="has_cuban_partner" id="has_cuban_partner" data-fill-with="undefined" />
+                                                                        <input type="checkbox" value="Yes" class="s_website_form_input form-check-input" name="has_cuban_partner" id="has_cuban_partner" />
                                                                     </div>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Marcar si la empresa tiene socio de nacionalidad cubana.
@@ -588,22 +316,19 @@
                                                         </div>
 
                                                         <div data-name="Field" 
+                                                            name="cuban_partner"
                                                             class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
                                                             data-type="binary"
-                                                            data-visibility-dependency="has_cuban_partner" 
-                                                            data-visibility-condition="Yes" 
-                                                            data-visibility-comparator="selected"
                                                             >
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label"
                                                                     style="width: 200px"
                                                                     for="cuban_partner">
-                                                                    <span class="s_website_form_label_content">Plantilla de socio con nacionalidad cubana</span>
+                                                                    <span class="s_website_form_label_content">Plantilla de socio de nacionalidad cubana</span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm" style="position: relative;">
-                                                                    <div class="input-group">
-                                                                    
+                                                                    <div name="cuban_partner_input_group" class="input-group">
                                                                         <input type="file"
                                                                             class="form-control s_website_form_input"
                                                                             name="cuban_partner"
@@ -615,8 +340,10 @@
                                                                             data-label=""
                                                                             />
                                                                         <a href="/descargar/cuban_partner"
+                                                                            id="cuban_partner"
                                                                             target="_blank"
-                                                                            class="btn btn-primary add-btn"    
+                                                                            class="btn btn-primary add-btn"
+                                                                            download="download"
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
@@ -624,26 +351,24 @@
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Descargue la plantilla, llénela y súbala aquí.
                                                                     </div>
+                                                                    <span id="cuban_partner_error" style="color:red; display:none;">El documento adjuntado debe ser del mismo tipo que el archivo descargado.</span>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <!-- <script src="/fruxelimport/pyxel_fruxelimport_website/static/src/js/business_registration.js"></script> -->
-
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="company_email">
-                                                                    <span class="s_website_form_label_content">Email
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="parent_company_email">
+                                                                    <span class="s_website_form_label_content">Correo electrónico
                                                                     </span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="company_email" type="email" class="form-control s_website_form_input" name="company_email" required="" />
+                                                                    <input id="parent_company_email" type="email" class="form-control s_website_form_input" name="parent_company_email" required="" />
                                                                 </div>
                                                             </div>
                                                         </div>
-                        
- 
+
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact2">
@@ -652,25 +377,23 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone"  required="" maxlength="17"  oninput="this.value = this.value.replace(/\D/g, '')" />
-                                                                    <!-- data-fill-with="phone" -->
+                                                                    <input id="contact2" type="tel" class="form-control s_website_form_input" name="phone" required="" maxlength="18" title="El número de teléfono debe comenzar con + y tener hasta 17 dígitos adicionales."  oninput="this.value = this.value.replace(/[^\d+]/g, '')" />
                                                                 </div>
                                                             </div>
                                                         </div>
 
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="Address">
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="address">
                                                                     <span class="s_website_form_label_content">Dirección</span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="address" type="text" class="form-control s_website_form_input" name="Address" required=""/>
-                                                                     <!-- data-fill-with="commercial_company_name" -->
+                                                                    <input id="address" type="text" class="form-control s_website_form_input" name="address" required=""/>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition ="ClientNacional" data-visibility-comparator="selected">
+                                                        <div name="dap" class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="dap">
                                                                     <span class="s_website_form_label_content">DAP</span>
@@ -682,26 +405,16 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field" data-visibility-dependency="Register as" data-visibility-condition ="ProviderNacional" data-visibility-comparator="selected">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="dap">
-                                                                    <span class="s_website_form_label_content">DAP</span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="dap" type="text" class="form-control s_website_form_input" name="dap" required="" pattern="\d{4}" maxlength="4" oninput="this.value = this.value.replace(/\D/g, '')"/>
-                                                                    <span id="dap-error" style="color:red; display:none;">El DAP debe contener exactamente 4 dígitos.</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+
+                                                        <div name="country" data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="country">
                                                                     <span class="s_website_form_label_content">País
                                                                     </span>
+                                                                    <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="Country" required="" id="country">
+                                                                    <select class="form-select s_website_form_input" style="" name="country" required="" id="country">
                                                                         <option value="">País..</option>
                                                                         <t t-foreach="countries" t-as="c">
                                                                             <option t-att-value="c.id" >
@@ -713,26 +426,7 @@
                                                             </div>
                                                         </div>
                                                         
-                                                        
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientExtranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="country">
-                                                                    <span class="s_website_form_label_content">País
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="Country" required="" id="country">
-                                                                        <option value="">País..</option>
-                                                                        <t t-foreach="countries" t-as="c">
-                                                                            <option t-att-value="c.id" >
-                                                                                <t t-esc="c.name"/>
-                                                                            </option>
-                                                                        </t>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        <div name="state" data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="state">
                                                                     <span class="s_website_form_label_content">Provincia
@@ -740,29 +434,14 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="State" required="" id="state">
+                                                                    <select class="form-select s_website_form_input" style="" name="state" required="" id="state">
                                                                         <option value="">Provincia...</option>
-
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="state">
-                                                                    <span class="s_website_form_label_content">Provincia
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="State" required="" id="state_provider">
-                                                                        <option value="">Provincia...</option>
 
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ClientNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
+                                                        <div name="city" data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
                                                                     <span class="s_website_form_label_content">Municipio
@@ -770,117 +449,47 @@
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="City" required="" id="city">
+                                                                    <select class="form-select s_website_form_input" style="" name="city" required="" id="city">
                                                                         <option value="">Municipio...</option>
-                                                                        <!--                                                                        <t t-foreach="states" t-as="s">-->
-                                                                        <!--                                                                            <option t-att-value="s.id"-->
-                                                                        <!-- t-att-country-id="s.country_id.id"-->
-                                                                        <!--                                                                                   >-->
-                                                                        <!--                                                                                <t t-esc="s.name"/>-->
-                                                                        <!--                                                                            </option>-->
-                                                                        <!--                                                                        </t>-->
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderNacional" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
-                                                                    <span class="s_website_form_label_content">Municipio
-                                                                    </span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="City" required="" id="city_provider">
-                                                                        <option value="">Municipio...</option>
-                                                                        <!--                                                                        <t t-foreach="states" t-as="s">-->
-                                                                        <!--                                                                            <option t-att-value="s.id"-->
-                                                                        <!-- t-att-country-id="s.country_id.id"-->
-                                                                        <!--                                                                                   >-->
-                                                                        <!--                                                                                <t t-esc="s.name"/>-->
-                                                                        <!--                                                                            </option>-->
-                                                                        <!--                                                                        </t>-->
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <!-- ──────────────── NUEVOS CAMPOS SEGÚN TIPO DE FGNE ──────────────── -->
-
-                                                        <!-- PYME  →  Escritura notarial -->
                                                         <div data-name="Field"
-                                                            data-visibility-dependency="FGNE type"
-                                                            data-visibility-condition="FGNE"
-                                                            data-visibility-comparator="selected"
+                                                            name="deed_input"
                                                             class="s_website_form_field mb-3 col-12 s_website_form_custom">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width:200px"
-                                                                    for="escritura_notarial">
-                                                                    <span class="s_website_form_label_content">Escritura notarial</span>
+                                                                    for="deed_input_number">
+                                                                    <span class="s_website_form_label_content" id="deed_for_mipyme_cna_pdl">Escritura notarial</span>
+                                                                    <span class="s_website_form_label_content" id="deed_for_tcp">Número de registro de proyecto</span>
+                                                                    <span class="s_website_form_label_content" id="deed_for_state">Escritura pública</span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
-                                                                <div class="col-sm">
-                                                                    <input id="escritura_notarial" name="escritura_notarial"
-                                                                        class="form-control s_website_form_input"
-                                                                        type="text" required=""
-                                                                        placeholder="Número de escritura notarial y fecha"
-                                                                        pattern="[A-Za-z0-9\s]+"
-                                                                        title="Sólo letras y números"
-                                                                        onkeypress="if(!/[A-Za-z0-9\s]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                <div class="col-sm" style="position: relative;">
+                                                                    <div class="input-group">
+                                                                         <div class="col-md-10">
+                                                                            <input id="deed_input_number" name="deed_input_number"
+                                                                                class="form-control s_website_form_input"
+                                                                                type="text" required=""
+                                                                                pattern="\d+"
+                                                                                title="Sólo números"
+                                                                                onkeypress="if(!/\d/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                        </div>
+                                                                        <div class="col-md-2 ps-2">
+                                                                            <input id="deed_input_date" name="deed_input_date"
+                                                                                class="form-control s_website_form_input"
+                                                                                type="date" required=""
+                                                                                max="9999-12-31"
+                                                                                />
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
 
-                                                        <!-- TCP  →  Nº registro de proyecto -->
-                                                        <div data-name="Field"
-                                                            data-visibility-dependency="FGNE type"
-                                                            data-visibility-condition="TCP"
-                                                            data-visibility-comparator="selected"
-                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width:200px"
-                                                                    for="registro_tcp">
-                                                                    <span class="s_website_form_label_content">Número de registro de proyecto</span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="registro_tcp" name="registro_tcp"
-                                                                        class="form-control s_website_form_input"
-                                                                        type="text" required=""
-                                                                        placeholder="Número del registro y fecha"
-                                                                        pattern="[A-Za-z0-9\s]+"
-                                                                        title="Sólo letras y números"
-                                                                        onkeypress="if(!/[A-Za-z0-9\s]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- Estatal  →  Escritura pública -->
-                                                        <div data-name="Field"
-                                                            data-visibility-dependency="FGNE type"
-                                                            data-visibility-condition="Estatal"
-                                                            data-visibility-comparator="selected"
-                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width:200px"
-                                                                    for="escritura_publica">
-                                                                    <span class="s_website_form_label_content">Escritura pública</span>
-                                                                    <span class="s_website_form_mark">*</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input id="escritura_publica" name="escritura_publica"
-                                                                        class="form-control s_website_form_input"
-                                                                        type="text" required=""
-                                                                        placeholder="Número y fecha"
-                                                                        pattern="[A-Za-z0-9\s]+"
-                                                                        title="Sólo letras y números"
-                                                                        onkeypress="if(!/[A-Za-z0-9\s]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- ────────────────────────────────────────────────────────────────── -->
-
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="TCP" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
+                                                        <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required" data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <div style="display: flex;flex-direction: column;width: 200px;">
                                                                     <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
@@ -892,200 +501,96 @@
                                                                     <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-max-file-size="30" data-fill-with="undefined" data-label="" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="legal_documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-max-file-size="30" data-fill-with="undefined" data-label="" required="" multiple="true"/>
+                                                                    <span id="legal_documentation_error" style="color:red; display:none;">Los documentos adjuntados deben ser pdf.</span>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
-                                                                         -Certificado de Validación del Proyecto, emitido por la Dirección Municipal de Trabajo, para el ejercicio de la actividad por Cuenta Propia.
-                                                                        <br/>
-                                                                        -Certifico de no adeudo con el organismo fiscal emitido en no menos de seis meses
-                                                                        <br/>
-                                                                        -Contrato suscrito con el banco para la apertura de cuenta corriente en MLC.
-                                                                        <br/>
-                                                                        -Contrato suscrito con el banco para la apertura de cuenta corriente en CUP
-                                                                                                                                                <!-- -Certificado de validación del proyecto, emitido
-                                                                        por
-                                                                        la Dirección Municipal del Trabajo, para el
-                                                                        ejercicio del Trabajo por Cuenta Propia. -->
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="FGNE" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <div style="display: flex;flex-direction: column;width: 200px;">
-                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                        <span class="s_website_form_label_content">
-                                                                            Documentación legal
-                                                                        </span>
-                                                                        <span class="s_website_form_mark">*</span>
-                                                                    </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
-                                                                </div>
-                                                                <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        -Escritura Notarial
-                                                                        <br/>
-                                                                        -Registro Mercantil
-                                                                        <br/>
-                                                                        -Carnet de la ONAT
-                                                                        <br/>
-                                                                        -Contrato Banco MLC y CUP
-                                                                        <br/>
-                                                                        -Certifico de no adeudo
-                                                                        <br/>
-                                                                        -Aprobación de la solicitud de creación de Mipymes
-                                                                        <br/>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <!-- <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="PersonaNatural" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <div style="display: flex;flex-direction: column;width: 200px;">
-                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                        <span class="s_website_form_label_content">
-                                                                            Documentación legal
-                                                                        </span>
-                                                                        <span class="s_website_form_mark">*</span>
-                                                                    </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
-                                                                </div>
-                                                                <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        -Carnet de Identidad
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
-                                                        <!-- <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="SucursalExtranjera" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <div style="display: flex;flex-direction: column;width: 200px;">
-                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                        <span class="s_website_form_label_content">
-                                                                            Documentación legal
-                                                                        </span>
-                                                                        <span class="s_website_form_mark">*</span>
-                                                                    </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
-                                                                </div>
-                                                                <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        Licencia de la cámara de comercial
-                                                                        <br/>
-                                                                        Carnet de ACORE o PALCO
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
-                                                        <div data-name="Field" data-visibility-dependency="FGNE type" data-visibility-condition="Estatal" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <div style="display: flex;flex-direction: column;width: 200px;">
-                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                        <span class="s_website_form_label_content">
-                                                                            Documentación legal
-                                                                        </span>
-                                                                        <span class="s_website_form_mark">*</span>
-                                                                    </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
-                                                                </div>
-                                                                <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        Certifico legal
-                                                                        <br/>
-                                                                        Plan de inversiones
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="ProviderExtranjero" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <div style="display: flex;flex-direction: column;width: 200px;">
-                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                        <span class="s_website_form_label_content">
-                                                                            Documentación legal
-                                                                        </span>
-                                                                        <span class="s_website_form_mark">*</span>
-                                                                    </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
-                                                                </div>
-                                                                <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        Escritura constitucional
-                                                                        <br/>
-                                                                        Registro mercantil
-                                                                        <br/>
-                                                                        Aval Bancaria
-                                                                        <br/>
-                                                                        Planilla del perfil del proveedor
-                                                                        <span name="no_mincex_code_documentation">
+                                                                        <div name="legal_documentation_tcp">
+                                                                            -Proyecto de trabajo
                                                                             <br/>
-                                                                            Tarjeta de presentación
+                                                                            -Carnet de identidad
                                                                             <br/>
-                                                                            Carta timbrada u otro documento de la compañía extranjera que tenga su denominación, logo dirección y teléfono
+                                                                            -Carnet de la ONAT
                                                                             <br/>
-                                                                            El certificado de documento constitutivo con no más de 6 meses de expedido
-                                                                        </span>
+                                                                            -Contrato Banco MLC y CUP
+                                                                            <br/>
+                                                                            -Certifico de no adeudo
+                                                                            <br/>
+                                                                        </div>
+                                                                        <div name="legal_documentation_mipyme">
+                                                                            -Escritura notarial
+                                                                            <br/>
+                                                                            -Registro Mercantil
+                                                                            <br/>
+                                                                            -Carnet de la ONAT
+                                                                            <br/>
+                                                                            -Contrato Banco MLC y CUP
+                                                                            <br/>
+                                                                            -Certifico de no adeudo
+                                                                            <br/>
+                                                                            -Aprobación de la solicitud de creación de Mipymes
+                                                                            <br/>
+                                                                        </div>
+                                                                        <div name="legal_documentation_natural_person">
+                                                                            -Carnet de identidad
+                                                                            <br/>
+                                                                        </div>
+                                                                        <div name="legal_documentation_natural_foreign_branch">
+                                                                            -Licencia de la cámara de comercial
+                                                                            <br/>
+                                                                            -Carnet de ACORE o PALCO
+                                                                            <br/>
+                                                                        </div>
+                                                                        <div name="legal_documentation_natural_state">
+                                                                            -Certifico legal
+                                                                            <br/>
+                                                                            -Plan de inversiones
+                                                                            <br/>
+                                                                        </div>
+                                                                        <div name="legal_documentation_pdl">
+                                                                            -Escritura notarial
+                                                                            <br/>
+                                                                            -Registro Mercantil
+                                                                            <br/>
+                                                                            -Carnet de la ONAT
+                                                                            <br/>
+                                                                            -Contrato Banco MLC y CUP
+                                                                            <br/>
+                                                                            -Certifico de no adeudo
+                                                                            <br/>
+                                                                        </div>
+                                                                        <div name="legal_documentation_cna">
+                                                                            -Escritura notarial
+                                                                            <br/>
+                                                                            -Registro Mercantil
+                                                                            <br/>
+                                                                            -Carnet de la ONAT
+                                                                            <br/>
+                                                                            -Contrato Banco MLC y CUP
+                                                                            <br/>
+                                                                            -Certifico de no adeudo
+                                                                            <br/>
+                                                                            -Aprobación de la solicitud de creación de Mipymes
+                                                                            <br/>
+                                                                        </div>
+                                                                        <div name="legal_documentation_foreign_contact_type">
+                                                                            -Escritura constitucional
+                                                                            <br/>
+                                                                            -Registro mercantil
+                                                                            <br/>
+                                                                            -Aval Bancaria
+                                                                            <br/>
+                                                                            <div name="no_mincex_code_documentation">
+                                                                                -Tarjeta de presentación
+                                                                                <br/>
+                                                                                -Carta timbrada u otro documento de la compañía extranjera que tenga su denominación, logo, dirección y teléfono
+                                                                                <br/>
+                                                                                -El certificado de documento constitutivo con no más de 6 meses de expedido
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        
-
-                                                        <div data-name="Field" data-visibility-dependency="Register as" data-visibility-condition="Provider" data-visibility-comparator="selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required s_website_form_field_hidden_if d-none" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <div style="display: flex;flex-direction: column;width: 200px;">
-                                                                    <label class="col-sm-auto s_website_form_label" style="width: 200px" for="legal_documentation">
-                                                                        <span class="s_website_form_label_content">
-                                                                            Documentación legal
-                                                                        </span>
-                                                                        <span class="s_website_form_mark">*</span>
-                                                                    </label>
-                                                                    <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
-                                                                </div>
-                                                                <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        - Documento constitutivo de la firma o compañía
-                                                                        <br/>
-                                                                        - Documento que acredite la existencia legal de
-                                                                        la firma o compañía.
-                                                                        <br/>
-                                                                        - Certificación del Registro Mercantil o
-                                                                        Registro Público.
-                                                                        <br/>
-                                                                        - Certificación de inscripción en el Registro de
-                                                                        Contribuyente
-                                                                        <br/>
-                                                                        - Licencia de la Cámara de Comercio de Cuba.
-                                                                        <br/>
-                                                                        - Carta timbrada a nombre de su compañía con la
-                                                                        intención de negocios.
-                                                                        <br/>
-                                                                        - Carnet de ACOREC o permiso de trabajo en Cuba,
-                                                                        del representante de la compañía en el país,
-                                                                        según corresponda.
-                                                                        <br/>
-                                                                        - Perfil del cliente
-
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_dnone">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px">
-                                                                    <span class="s_website_form_label_content"/>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input type="hidden" class="form-control s_website_form_input" name="email_to" value="info@yourcompany.example.com"/>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
 
                                                         <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_dnone">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -1099,38 +604,6 @@
                                                         </div>
                                                     </div>
                                                     <div class="tab" t-if="register_type in ['import']">
-                                                        
-                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="selection">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="acreditation">
-                                                                    <span class="s_website_form_label_content">
-                                                                            Seleccione el tipo de producto:
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <div class="row s_col_no_resize s_col_no_bgcolor s_website_form_multiple" data-name="type_product" data-display="horizontal">
-                                                                        <div class="radio col-12 col-lg-4 col-md-6">
-                                                                            <div class="form-check">
-                                                                                <input type="radio" class="s_website_form_input form-check-input" id="is_alimento" name="type_product" value="Alimentos" checked="True"/>
-                                                                                <label class="form-check-label s_website_form_check_label" for="is_alimento">
-                                                                                        Alimentos
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="radio col-12 col-lg-4 col-md-6">
-                                                                            <div class="form-check">
-                                                                                <input type="radio" class="s_website_form_input form-check-input" id="is_electronico" name="type_product" value="Electronicos"/>
-                                                                                <label class="form-check-label s_website_form_check_label" for="is_electronico">
-                                                                                        Electrónicos
-                                                                                </label>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
-                                                        <!-- <input id="prevBtn" type="hidden" value="1"/>
-                                                        <input id="nit" type="hidden" value="1"/> -->
                                                         <div id="error_envolt" class="error_envolt" style = "border-radius: 10px; margin">
                                                             <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom s_website_form_required" data-type="many2many" data-name="Field">
                                                                 <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -1197,21 +670,8 @@
                                                                                         },
 
                                                                                     });
-
-                                                                                    
-                                                                                                                                                            <!-- $('.js-example-basic-multiple').on('change', function() {
-                                                                                        $('.select2-container-default .select2-selection-multiple .select2-selection__choice').css({
-                                                                                            'width': '110px', // Fijar ancho
-                                                                                            'text-overflow': 'ellipsis', // Texto con puntos suspensivos si es largo
-                                                                                            'overflow': 'hidden', // Ocultar texto que se desborde
-                                                                                            'white-space': 'nowrap' // Evitar que el texto se divida
-                                                                                        });
-                                                                                    }); -->
-                                                                                    
-                                                                                    var alimentosDeImportacion = <t t-raw="alimentos_de_importacion"/>
-    ;
-                                                                                    var selectedProducts = <t t-raw="productos_seleccionados_ids" />
-    ;
+                                                                                    var alimentosDeImportacion = <t t-raw="alimentos_de_importacion"/>;
+                                                                                    var selectedProducts = <t t-raw="productos_seleccionados_ids" />;
                                                                             
 
                                                                                     // Función para cargar las opciones en el select
@@ -1350,21 +810,8 @@
                                                                 
                                                                                     });
 
-                                                                                    
-                                                                                                                                                                <!-- $('.js-example-basic-multiple').on('change', function() {
-                                                                                        $('.select2-container-default .select2-selection-multiple .select2-selection__choice').css({
-                                                                                            'width': '110px', // Fijar ancho
-                                                                                            'text-overflow': 'ellipsis', // Texto con puntos suspensivos si es largo
-                                                                                            'overflow': 'hidden', // Ocultar texto que se desborde
-                                                                                            'white-space': 'nowrap' // Evitar que el texto se divida
-                                                                                        });
-                                                                                    }); -->
-                                                                                    
-                                                                                    var electronicos_de_importacion =                                                                            <t t-raw="electronicos_de_importacion"/>
-    ;
-                                                                                    var ElectronicSelectedProducts = <t t-raw="electronic_selected_ids" />
-    ;
-                                                                            
+                                                                                    var electronicos_de_importacion = <t t-raw="electronicos_de_importacion"/>;
+                                                                                    var ElectronicSelectedProducts = <t t-raw="electronic_selected_ids" />;
 
                                                                                     // Función para cargar las opciones en el select
                                                                                     function loadSelect2Options(products,ElectronicSelectedProducts) {
@@ -1381,10 +828,7 @@
                                                                                     }
                                                                                 
                                                                                     loadSelect2Options(electronicos_de_importacion,ElectronicSelectedProducts); 
-                                                                                            
-
                                                                                     console.log("Sincronización de productos lista");
-
 
                                                                                     // Aplicar los estilos del select2 cuando se abre/cierra
                                                                                     $('.js-example-basic-multiple').on('select2:open', function() {
@@ -1396,17 +840,12 @@
                                                                                     });
 
                                                                                     $('#productOnure').on('select2:select', function() {
-                                                                                        
-                                                                                            $('#hiddenTestInputElectronic').trigger("change");
-                                                                                        
-                                                                                            })
-                                                                                    ;
-                                                                                        $('#productOnure').on('select2:unselect', function() {
-                                                                                        
-                                                                                            $('#hiddenTestInputElectronic').trigger("change");
-                                                                                        
-                                                                                            })
-                                                                                    ;
+                                                                                        $('#hiddenTestInputElectronic').trigger("change");
+                                                                                    });
+                                                                                    
+                                                                                    $('#productOnure').on('select2:unselect', function() {
+                                                                                        $('#hiddenTestInputElectronic').trigger("change");
+                                                                                    });
 
                                                                                     console.log("Select dinámico cargado exitosamente");
 
@@ -1420,7 +859,6 @@
                                                                                     });
                                                                                     $('.select2-search').css({
                                                                                         'padding': '0',
-                                                                                    
                                                                                     });
                                                                                     $('.js-example-basic-multiple').on('select2:open', function() {
                                                                                             $('.select2-selection').addClass('custom-select-focus');
@@ -1431,8 +869,7 @@
                                                                                     });
                                                                             
                                                                                     console.log("JS OK 200")
-                                                                                })
-                                                                            ;
+                                                                                });
                                                                             </script>
                                                                         </div>
                                                                     </div>
@@ -1445,18 +882,18 @@
                                                                 Debe seleccionar al menos un producto
                                                         </span>
                                                         <div data-name="Field" 
+                                                            name="solicitud"
                                                             class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
                                                             data-type="binary">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label"
                                                                     style="width: 200px"
                                                                     for="solicitud">
-                                                                    <span class="s_website_form_label_content">Solicitud</span>
+                                                                    <span class="s_website_form_label_content">Solicitud de oferta de compra</span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm" style="position: relative;">
-                                                                    <div class="input-group">
-                                                                    
+                                                                    <div name="solicitud_input_group" class="input-group">
                                                                         <input type="file"
                                                                             class="form-control s_website_form_input"
                                                                             name="solicitud"
@@ -1468,9 +905,11 @@
                                                                             data-label=""
                                                                             required="" 
                                                                             />
-                                                              
+                                                            
                                                                         <a href="/descargar/solicitud"
                                                                         target="_blank"
+                                                                        id="solicitud"
+                                                                        download="download"
                                                                         class="btn btn-primary add-btn">
                                                                             <span class="btn-text">Descargar Solicitud</span>
                                                                         </a>
@@ -1478,92 +917,10 @@
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         Descargue la plantilla, llénela y súbala aquí.
                                                                     </div>
+                                                                    <span id="solicitud_error" style="color:red; display:none;">El documento adjuntado debe ser del mismo tipo que el archivo descargado.</span>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="binary">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="oferta_firmada">
-                                                                    <span class="s_website_form_label_content">Oferta Firmada</span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <input type="file" name="oferta_firmada" id="oferta_firmada" class="form-control s_website_form_input" accept=".pdf" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined"/>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
-                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
-                                                                <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                    <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="x_studio_certifies_receipt_load">
-                                                                        <span class="s_website_form_label_content">Tipo de
-                                                                            envío de la carga
-                                                                        </span>
-                                                                        <span class="s_website_form_mark">*</span>
-                                                                    </label>
-                                                                    <div class="col-sm">
-                                                                        <select class="form-select s_website_form_input" style="" name="Tipo de envío de la carga" required="" id="x_studio_certifies_receipt_load">
-                                                                            <option value="" disabled="disabled" selected="selected">Seleccione el tipo de envío</option>
-                                                                            <option value="(B/L)">Importación marítima con contenedor lleno (FCL)</option>
-                                                                            <option value="(AWB)">Importación vía aérea (AWB)</option>
-                                                                            <option value="(DAP)">Compra en plaza (DAP)</option>
-                                                                            <option value="(GL)">Carga agrupada (LCL)</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                        </div> -->
-                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="many2one">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="container_type">
-                                                                    <span class="s_website_form_label_content">Tipo de
-                                                                        contenedor
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="container_type" id="container_type">
-                                                                        <option value="20">20 pies</option>
-                                                                        <option value="40">40 pies</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
-
-                                                        <!-- <div data-name="Field" data-visibility-dependency="other_provider" data-visibility-condition="Yes" data-visibility-comparator="!selected" class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_field_hidden_if d-none" data-type="many2one">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="provider_purchase">
-                                                                    <span class="s_website_form_label_content">Proveedor
-                                                                        acreditado
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <select class="form-select s_website_form_input" style="" name="provider_purchase" id="provider_purchase">
-
-                                                                        <t t-foreach="providers.filtered(lambda a: a.x_studio_type_of_contact == 'Supplier')" t-as="p">
-                                                                            <option t-att-value="p.id">
-                                                                                <t t-esc="p.name"/>
-                                                                            </option>
-                                                                        </t>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
-                                                        <!-- <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="boolean">
-                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-sm-auto s_website_form_label" style="width: 200px" for="other_provider">
-                                                                    <span class="s_website_form_label_content">Acreditar
-                                                                        nuevo
-                                                                        proveedor
-                                                                    </span>
-                                                                </label>
-                                                                <div class="col-sm">
-                                                                    <div class="form-check">
-                                                                        <input type="checkbox" value="Yes" class="s_website_form_input form-check-input" name="other_provider" id="other_provider" data-fill-with="undefined"/>
-                                                                    </div>
-                                                                    <div class="s_website_form_field_description small form-text text-muted">
-                                                                        Marque si desea acreditar un proveedor que no
-                                                                        aparezca en la lista.
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div> -->
                                                     </div>
                                                     <div class="tab" t-if="register_type in ['accreditation_business']">
                                                     <!-- <div class="tab" t-if="register_type in ['import','accreditation_business']"> -->
@@ -1583,15 +940,15 @@
                                                         </div>
                                                         <div data-visibility-dependency="other_provider" data-visibility-condition="Yes" data-visibility-comparator="selected" class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom" data-type="char" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
-                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="x_studio_license_holder">
-                                                                    <span class="s_website_form_label_content">Codigo
+                                                                <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="license_holder">
+                                                                    <span class="s_website_form_label_content">Código
                                                                         Mincex
                                                                     </span>
                                                                 </label>
                                                                 <div class="col-sm">
-                                                                    <input id="x_studio_license_holder" type="text" class="form-control s_website_form_input" name="x_studio_license_holder" required="" pattern="[A-Za-z0-9]+"
-       title="Sólo letras y números"
-       onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
+                                                                    <input id="license_holder" type="text" class="form-control s_website_form_input" name="license_holder" required="" pattern="[A-Za-z0-9]+"
+                                                                            title="Sólo letras y números"
+                                                                            onkeypress="if (!/[A-Za-z0-9]/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1599,7 +956,7 @@
                                                         <div data-visibility-dependency="other_provider" data-visibility-condition="Yes" data-visibility-comparator="selected" class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="other_provider_company_email">
-                                                                    <span class="s_website_form_label_content">Email
+                                                                    <span class="s_website_form_label_content">Correo electrónico
                                                                     </span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
@@ -1649,7 +1006,7 @@
                                                                     <span style="font-size: 12px; color: #797b7e;width: 150px;">Los documentos a subir en este formulario deben ser en formato PDF y no exceder los 6 MB cada uno.</span>
                                                                 </div>
                                                                 <div class="col-sm">
-                                                                    <input type="file" class="form-control s_website_form_input" name="Legal documentation" accept=".pdf" id="other_provider_legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
+                                                                    <input type="file" class="form-control s_website_form_input" name="legal_documentation" accept=".pdf" id="other_provider_legal_documentation" data-max-files-number="20" data-min-files-number="1" data-max-file-size="30" data-fill-with="undefined" required="" multiple="true"/>
                                                                     <div class="s_website_form_field_description small form-text text-muted">
                                                                         - Documento constitutivo de la firma o compañía
                                                                         <br/>
@@ -1763,31 +1120,13 @@
                                                         <a href="#" id="button-submit" role="button" class="btn btn-primary s_website_form_send register_business_button d-none">
                                                             Solicitar servicio
                                                         </a>
-                                                        <span id="s_website_form_result"></span>
-
+                                                        <span id="s_website_form_result" />
                                                     </div>
                                                 </div>
                                             </form>
                                         </div>
                                     </section>
                                 </div>
-                                <!--                                <div class="col-lg-4 mt-4 mt-lg-0">-->
-                                <!--                                    <ul class="list-unstyled mb-0 ps-2">-->
-                                <!--                                        <li>My Company</li>-->
-                                <!--                                        <li>-->
-                                <!--                                            <i class="fa fa-map-marker fa-fw me-2"/>-->
-                                <!--                                            <span class="o_force_ltr">3575 Fake Buena Vista Avenue</span>-->
-                                <!--                                        </li>-->
-                                <!--                                        <li>-->
-                                <!--                                            <i class="fa fa-phone fa-fw me-2"/>-->
-                                <!--                                            <span class="o_force_ltr">+1 (650) 555-0111</span>-->
-                                <!--                                        </li>-->
-                                <!--                                        <li>-->
-                                <!--                                            <i class="fa fa-1x fa-fw fa-envelope me-2"/>-->
-                                <!--                                            <span>info@yourcompany.example.com</span>-->
-                                <!--                                        </li>-->
-                                <!--                                    </ul>-->
-                                <!--                                </div>-->
                             </div>
                         </div>
                     </section>
@@ -1856,6 +1195,11 @@
                                                     <i class="fa fa-1x fa-fw fa-envelope me-2"/>
                                                     <span>correo@correo.com</span>
                                                 </li>
+                                                <t t-if="crm_stage">
+                                                    <li>
+                                                        <span><t t-out="crm_stage"/></span>
+                                                    </li>
+                                                </t>
                                             </ul>
                                         </div>
                                     </div>

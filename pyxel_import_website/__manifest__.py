@@ -9,22 +9,26 @@
     "author": "Pyxel Solutions",
     'contributors': [
         'Leonardo García Barreras <leonardogbarreras99@gmail.com>',
+        'Sandy Comas Becerra <sandytechboy00@gmail.com>',
     ],
     "license": "LGPL-3",
     "website": "https://pyxelsolution.com",
     "description": """""",
     "depends": [
         'base',
-        'web', 
-        'website', 
+        'web',
+        'website',
         'website_sale',
         'website_crm',
         'base_address_extended',
-        'sale_management', 
+        'sale_management',
         'purchase',
+        'project',
+        'pyxel_import_backend',
     ],
     "data": [
         'data/states_data.xml',
+        'data/ir_model_data.xml',
         'data/cities_data.xml',
         'views/business_registration.xml',
         'views/import_registration.xml',
@@ -32,10 +36,13 @@
         'views/nomenclator.xml',
         'views/onure.xml',
         'views/imports_frontend_views.xml',
-        'views/res_config_setting_views.xml'
+        'views/res_config_setting_views.xml',
+        'views/portal_template_view.xml'
     ],
     'assets': {
         'web.assets_frontend': [
+            'pyxel_import_website/static/src/components/**/*.js',
+            'pyxel_import_website/static/src/components/**/*.xml',
             # 'website_sale/static/src/**/*',
 
             'pyxel_import_website/static/src/js/business_registration.js',

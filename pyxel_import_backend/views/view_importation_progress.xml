@@ -5,7 +5,7 @@
             <field name="name">importation.process.kanban</field>
             <field name="model">importation.process</field>
             <field name="arch" type="xml">
-                <kanban default_group_by="stage_id" group_create="false">
+                <kanban default_group_by="stage_id" group_create="false"  group_order="sequence">
                     <templates>
                          <t t-name="kanban-box">
                             <div class="oe_kanban_global_click o_kanban_record">
@@ -33,13 +33,20 @@
                 <field name="model">importation.process</field>
                 <field name="arch" type="xml">
                     <tree>
+                        <field name="create_uid"/>
                         <field name="name"/>
                         <field name="provider_id"/>
                         <field name="customer_id"/>
                         <field name="purchase_condition"/>
                         <field name="purchase_condition_number"/>
+                        <field name="declaration"/>
                         <field name="is_third_party_contract"/>
-                        <field name="state"/>
+                        <field name="purchase_order_count"/>
+                        <field name="sale_order_count"/>
+                        <field name="invoice_count"/>
+                        <field name="load_tracking_count"/>
+                        <field name="stage_id"/>
+                        <field name="country_origin_id"/>
                         <field name="estimated_start_date"/>
                         <field name="estimated_end_date"/>
                     </tree>
@@ -63,7 +70,7 @@
                                 <button name="action_start_progress" string="Start Import" type="object" class="btn-primary" invisible="state != 'evaluating'"/>
                                 <button name="action_finish_progress" string="Finish" type="object" class="btn-success" invisible="state != 'in_progress'"/>
 <!--                                <field name="state" widget="statusbar" statusbar_visible="draft,evaluating,in_progress,done"/>-->
-                                <field name="stage_id" widget="statusbar" options="{'clickable': True}" domain="[]"/>
+                                    <field name="stage_id" widget="statusbar" options="{'clickable': True}" domain="[]" context="{}"/>
                             </header>
 
                             <sheet>
@@ -101,7 +108,10 @@
                                     <group>
                                         <field name="name" readonly="1"/>
                                         <field name="provider_id"/>
+                                        <field name="contract_reference_supplier"/>
+
                                         <field name="customer_id"/>
+                                        <field name="contract_reference_customer"/>
 
                                         <field name="country_origin_id"/>
                                         <field name="purchase_condition"/>
@@ -134,7 +144,7 @@
                                     </page>
 
                                     <page string="Importation Load">
-                                        <field name="load_tracking_ids">
+                                        <field name="load_tracking_ids" context="{'default_importation_id': active_id}">
                                             <tree>
                                                 <field name="name"/>
                                                 <field name="cargo_type"/>
@@ -145,6 +155,8 @@
                                                 <field name="release_date"/>
                                                 <field name="return_date"/>
                                                 <field name="extraction_date"/>
+                                                <field name="days_in_tcm"/>
+                                                <field name="days_extracted"/>
                                                 <field name="state"/>
                                             </tree>
                                             <form>
@@ -165,6 +177,7 @@
                                                     <field name="volume" invisible="purchase_condition == 'AWB'"/>
                                                     <field name="bulk" invisible="purchase_condition == 'LCL'"/>
                                                     <field name="supplier_invoice_number"/>
+
                                                 </group>
 
                                                   <group string="Container Status">
@@ -172,9 +185,11 @@
                                                     <field name="arrival_date" invisible="purchase_condition not in ('FCL','LCL')"/>
                                                     <field name="release_date" invisible="purchase_condition not in ('FCL','LCL')"/>
                                                     <field name="extraction_date" invisible="purchase_condition not in ('FCL','LCL')"/>
-                                                    <field name="return_date" invisible="purchase_condition == 'FCL'"/>
+                                                    <field name="return_date" invisible="purchase_condition == 'AWB'"/>
                                                     <field name="state" readonly="1"/>
                                                     <field name="currency_id" readonly="1"/>
+                                                    <field name="days_in_tcm" readonly="1"/>
+                                                    <field name="days_extracted" readonly="1"/>
                                                   </group>
 
                                                   <group string="Transport">
@@ -258,7 +273,7 @@
                 </record>
 
 
-             <menuitem id="menu_importation_root" name="Imports" sequence="10"/>
+             <menuitem id="menu_importation_root" name="Imports" sequence="10" web_icon="pyxel_import_backend,static/src/imgs/menu_icon.png"/>
              <menuitem id="menu_importation_process" name="Imports" parent="menu_importation_root" >
                  <menuitem id="menu_importation_solicitud" sequence="1" name="Imports" action="action_importation_process"/>
              </menuitem>

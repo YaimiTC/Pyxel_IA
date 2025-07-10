@@ -10,9 +10,6 @@ class Partner(models.Model):
     is_fx_published = fields.Boolean(string="Published")
     profile_banner = fields.Binary(string="Profile Banner", copy=False)
 
-    x_studio_license_holder = fields.Char(string="Mincex")
-    x_studio_type_of_contact = fields.Selection([('Supplier', 'Supplier'), ('Customer', 'Customer')])
-
     # x_studio_note = fields.Text(string="Product Required")
     # x_name = fields.Text(string="Name Product Required")
 

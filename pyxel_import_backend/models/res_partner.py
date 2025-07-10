@@ -7,17 +7,16 @@ from odoo.exceptions import ValidationError
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    import_mgmt_type = fields.Selection([
-        ('pyme', 'SME'),
-        ('extranjero', 'Foreign'),
-        ('otra', 'Other'),
-    ], string="Non-State Management Type")
+    management_type_id = fields.Many2one('res.partner.management.type', string="Type of Management")
 
     legal_document = fields.Binary(string="Legal Document")
     legal_document_filename = fields.Char(string="Document Name")
 
     count_imports = fields.Integer(string="Count Imports")
+    deed_number = fields.Integer()
+    deed_date = fields.Date()
     # count_imports = fields.Integer(string="Count Imports", compute="_compute_count_imports")
+    dap = fields.Char(string="DAP", help="Dos dígitos para provincia y dos para el municipio documento de la ONEI.")
     license_holder = fields.Char(string="Mincex")
     activity_number = fields.Char(string="Activity Number")
     hiring_number = fields.Char(string="Hiring Number")
@@ -25,21 +24,29 @@ class ResPartner(models.Model):
     legal_activity_ids = fields.One2many('res.partner.legal.activity', 'partner_id', string="Activities")
     contract_import_ids = fields.One2many('res.partner.contract.import', 'partner_id', string="Contracts")
 
+    @api.constrains('dap')
+    def _check_dap_length(self):
+        for record in self: 
+            if record.dap:
+                if not record.dap.isdigit():
+                    raise ValidationError(_("The DAP must contain only digits."))
+                if len(record.dap) != 4:
+                    raise ValidationError(_("The DAP must be exactly 4 digits long."))
+
     @api.constrains('vat')
     def _check_vat_length(self):
-        for record in self: 
+        for record in self:
             if record.vat:
                 if not record.vat.isdigit():
                     raise ValidationError(_("The NIT must contain only digits."))
-                if len(record.vat) != 11: # Set your desired limit 
+                if len(record.vat) != 11:
                     raise ValidationError(_("The NIT must be exactly 11 digits long."))
-                    
+
     contact_type_id = fields.Many2one(
         'res.partner.contact.type',
-        string='Type of contract',
+        string='Type of contact',
         help="Custom contact classification"
     )
-
 
     # @api.depends('contact_type_id')
     # def _compute_count_imports(self):
@@ -51,6 +58,7 @@ class ResPartner(models.Model):
     #         elif record.contact_type_id == "Supplier":
     #             count = self.env['x_import'].search_count([("supplier", "=", record.id)])
     #             record['count_imports'] = count
+
 
 class ResPartnerLegalActivity(models.Model):
     _name = 'res.partner.legal.activity'
@@ -92,13 +100,39 @@ class ResPartnerContractImport(models.Model):
                 record.start_date and record.end_date and record.start_date <= today <= record.end_date)
 
 
-from odoo import models, fields
-
-
 class ResPartnerContactType(models.Model):
     _name = 'res.partner.contact.type'
     _description = 'Type of contact'
 
-    name = fields.Char(string='Type of name', required=True)
+    name = fields.Char(string='Name', required=True)
     code = fields.Char(string='Code')  # opcional
+    description = fields.Text(string='Description')  # opcional
+
+    management_type_ids = fields.Many2many('res.partner.management.type', 'res_partner_contact_type_management_type_rel',
+                                            'contact_type_id', 'management_type_id', string="Types of Management")
+
+    type_of_contact = fields.Selection(
+        [
+            ("Supplier", "Supplier"),
+            ("Client", "Client"),
+        ],
+        string="Type Of Contact"
+    )
+
+    nationality_type = fields.Selection(
+        selection=[
+            ('national', 'National'),
+            ('foreign', 'Foreign')
+            # ('foreign', 'Extranjero')
+        ],
+        required=True,
+        string='Nationality Type',
+        default='national'
+    )
+
+class ResPartnerManagementType(models.Model):
+    _name = 'res.partner.management.type'
+    _description = 'Type of Management'
+
+    name = fields.Char(string='Type of Management', required=True)
     description = fields.Text(string='Description')  # opcional

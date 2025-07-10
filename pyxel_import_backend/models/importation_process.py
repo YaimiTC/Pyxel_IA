@@ -53,7 +53,7 @@ class ImportationProcess(models.Model):
         ('AWB', 'AWB'),
         ('LCL', 'LCL'),
         ('DAP', 'DAP'),
-    ], string='Purchase Condition')
+    ], string='Purchase Condition', default='FCL')
 
     purchase_condition_number = fields.Char(string='Number/Reference by Condition')
     is_third_party_contract = fields.Boolean(
@@ -90,6 +90,16 @@ class ImportationProcess(models.Model):
     days_in_stage = fields.Integer(string="State days", compute='_compute_days_in_stage', store=True)
 
     invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
+
+    contract_reference_customer = fields.Char(
+        string='Customer Contract Reference',
+        help='Reference of the contract between the customer and the importer'
+    )
+
+    contract_reference_supplier = fields.Char(
+        string='Supplier Contract Reference',
+        help='Reference of the contract between the supplier and the importer'
+    )
 
     def _compute_sale_order_count(self):
         for rec in self:
@@ -312,6 +322,7 @@ class ImportationCostLine(models.Model):
 class ImportationStage(models.Model):
     _name = 'importation.stage'
     _description = 'Importation Process Stages'
+    _order = 'sequence, id'
 
     name = fields.Char(string='Name', required=True)
     description = fields.Char(string='Description')
