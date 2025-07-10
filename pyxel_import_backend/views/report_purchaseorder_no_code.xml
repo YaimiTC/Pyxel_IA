@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <template id="report_purchasequotation_document_no_code" inherit_id="purchase.report_purchasequotation_document">
+
+    !-- Reemplazo del producto normal -->
+    <xpath expr="//td[@id='product']" position="replace">
+      <td id="product">
+        <span t-esc="order_line.product_id.name"/>
+        <br t-if="order_line.name and order_line.name != order_line.product_id.name"/>
+        <span t-if="order_line.name and order_line.name != order_line.product_id.name"
+              t-esc="order_line.name"/>
+      </td>
+    </xpath>
+
+    <!-- Reemplazo para líneas tipo sección o nota -->
+    <xpath expr="//td[@id='section']" position="replace">
+      <td colspan="99" id="section">
+        <span t-if="order_line.product_id" t-esc="order_line.product_id.name"/>
+        <span t-else="" t-esc="order_line.name"/>
+      </td>
+    </xpath>
+
+  </template>
+</odoo>
