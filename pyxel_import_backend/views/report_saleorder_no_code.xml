@@ -2,12 +2,14 @@
 <odoo>
   <template id="report_saleorder_document_no_code" inherit_id="sale.report_saleorder_document">
 
-    <!-- Reemplaza la descripción para quitar el [default_code] -->
+   <!-- Reemplazo del campo de descripción para quitar el código -->
     <xpath expr="//td[@name='td_name']" position="replace">
       <td name="td_name">
         <span t-esc="line.product_id.name"/>
         <br t-if="line.name and line.name != line.product_id.name"/>
-        <span t-if="line.name and line.name != line.product_id.name" t-esc="line.name"/>
+        <!-- Elimina el código [XXXX] al inicio si está presente -->
+        <span t-if="line.name and line.name != line.product_id.name"
+              t-esc="re.sub(r'^\[[^\]]+\]\s*', '', line.name)"/>
       </td>
     </xpath>
 
