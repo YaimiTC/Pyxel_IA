@@ -15,6 +15,13 @@
         </field>
     </record>
 
+    <record id="action_send_all_rfq_emails" model="ir.actions.server">
+        <field name="name">Send RFQs</field>
+        <field name="model_id" ref="model_purchase_provider_evaluation"/>
+        <field name="state">code</field>
+        <field name="code">record.action_send_all_rfq_emails()</field>
+    </record>
+
     <record id="view_purchase_provider_evaluation_form" model="ir.ui.view">
             <field name="name">purchase.provider.evaluation.form</field>
             <field name="model">purchase.provider.evaluation</field>
@@ -32,6 +39,12 @@
                                 type="object"
                                 string="Generate Offer"
                                 class="btn-secondary" invisible="purchase_order_count == 0 or not cost_line_temp_ids or final_sale_order_id or (purchase_order_count > 0 and not has_evaluations_to_apply)"/>
+
+                        <button name="action_send_all_rfq_emails"
+                            type="object"
+                            string="Send All RFQs"
+                            class="btn-primary"
+                            invisible="purchase_order_count == 0 "/>
 
                     </header>
 
@@ -79,6 +92,11 @@
                             </page>
                         </notebook>
                     </sheet>
+                     <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                    </div>
                 </form>
             </field>
         </record>
@@ -104,6 +122,7 @@
             </p>
 
         </field>
+
     </record>
 
 
