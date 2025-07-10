@@ -2,24 +2,14 @@
 
 import json
 import logging
-import io
 import base64
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-from werkzeug.exceptions import NotFound
-from werkzeug.urls import url_encode
-from odoo import SUPERUSER_ID
-from odoo import fields, tools
 from odoo import http
-from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website.controllers.form import WebsiteForm
-from odoo.addons.website.controllers.main import QueryURL
-from odoo.addons.website_sale.controllers.main import TableCompute
 from odoo.exceptions import ValidationError
-from odoo.http import request, Response
-from odoo.osv import expression
-from odoo.tools import lazy
+from odoo.http import Stream, request, Response
 
 _logger = logging.getLogger(__name__)
 
@@ -859,12 +849,13 @@ class ProductSearchController(http.Controller):
             'pager': pager,
         })
 
+class DownloadFileController(http.Controller):
 
-class PerfilProveedorController(http.Controller):
-
-    @http.route('/descargar/perfil_proveedor', type='http', auth='public')
-    def descargar_perfil_proveedor(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('perfil_proveedor.attachment_id')
+    @http.route('/descargar/<string:file_name>', type='http', auth='public')
+    def download_file(self,file_name, **kw):
+        if file_name not in ['solicitud', 'ficha_cliente_estatal', 'ficha_cliente_fgne_tcp','perfil_proveedor', 'cuban_partner']:
+            return request.redirect('/web')
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param(f'{file_name}.attachment_id')
         if attachment_id_str:
             try:
                 attachment_id = int(attachment_id_str)
@@ -872,94 +863,5 @@ class PerfilProveedorController(http.Controller):
                 return request.redirect('/web')
             attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
             if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'plantilla_proveedor',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class SolicitudController(http.Controller):
-
-    @http.route('/descargar/solicitud', type='http', auth='public')
-    def descargar_solicitud(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('solicitud.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'solicitud',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class FichaClienteEstatalController(http.Controller):
-
-    @http.route('/descargar/ficha_cliente_estatal', type='http', auth='public')
-    def descargar_ficha_cliente_estatal(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_estatal.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'ficha_cliente',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class FichaClienteFGNEoTCPController(http.Controller):
-
-    @http.route('/descargar/ficha_cliente_fgne_tcp', type='http', auth='public')
-    def descargar_ficha_cliente_fgne_tcp(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_fgne_tcp.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'ficha_cliente',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class SocioConNacionalidadCubanaController(http.Controller):
-
-    @http.route('/descargar/cuban_partner', type='http', auth='public')
-    def descargar_cuban_partner(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('cuban_partner.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'cuban_partner',
-                    as_attachment=True
-                )
+                return Stream.from_attachment(attachment).get_response(as_attachment=True)
         return request.redirect('/web')

@@ -33,6 +33,9 @@
                 'company': request.params.get('company', ''),
                 'subject': request.params.get('subject', ''),
             }"/>
+            <head>
+            <meta http-equiv="Cache-control" content="no-cache" />
+</head>
                 <span class="hidden" data-for="business_registration_form" t-att-data-values="business_registration_form_values"/>
                 <div id="wrap" class="oe_structure oe_empty">
                     <div class="col-lg-7 col-xl-6 me-lg-auto">
@@ -191,7 +194,6 @@
                                                                         <a href="/descargar/ficha_cliente_fgne_tcp"
                                                                             id="ficha_cliente_fgne_tcp"
                                                                             target="_blank"
-                                                                            download="download"
                                                                             class="btn btn-primary add-btn"    
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
@@ -199,7 +201,6 @@
                                                                         <a href="/descargar/ficha_cliente_estatal"
                                                                             id="ficha_cliente_estatal"
                                                                             target="_blank"
-                                                                            download="download"
                                                                             class="btn btn-primary add-btn"    
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
@@ -241,7 +242,6 @@
                                                                         <a href="/descargar/perfil_proveedor"
                                                                             target="_blank"
                                                                             id="perfil_proveedor"
-                                                                            download="download"
                                                                             class="btn btn-primary add-btn">
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
@@ -343,7 +343,6 @@
                                                                             id="cuban_partner"
                                                                             target="_blank"
                                                                             class="btn btn-primary add-btn"
-                                                                            download="download"
                                                                         >
                                                                             <span class="btn-text">Descargar Plantilla</span>
                                                                         </a>
@@ -906,10 +905,10 @@
                                                                             required="" 
                                                                             />
                                                             
-                                                                        <a href="/descargar/solicitud"
-                                                                        target="_blank"
+                                                                        <a 
                                                                         id="solicitud"
-                                                                        download="download"
+                                                                        href="/descargar/solicitud"
+                                                                        target="_blank"
                                                                         class="btn btn-primary add-btn">
                                                                             <span class="btn-text">Descargar Solicitud</span>
                                                                         </a>
