@@ -755,6 +755,9 @@ class ControllerTest(http.Controller):
             # Si no se ha realizado el formulario de acreditación
             if not crm_lead_exists:
                 return request.render('pyxel_import_website.waiting_for_active_contract')
+            # Si no es Cliente nacional no se puede acreditar
+            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact != "Client" and request.env.user.partner_id.parent_id.contact_type_id.nationality_type != 'national':
+                return request.render('pyxel_import_website.you_are_not_a_national_client', {'contact_type': request.env.user.partner_id.parent_id.contact_type_id.name})
             # Si realizó el formulario de acreditación pero no está acreditado
             if not contract_exists:
                 return request.redirect('/business-register-thanks')

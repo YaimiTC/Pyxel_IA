@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <template id="you_are_not_a_national_client" name="You are not a National Client">
+            <t t-call="website.layout">
+                <div class="alert alert-danger text-center " role="alert">
+                    <h1 style="font-size: 4.5rem; color: black;">Atención:</h1>
+                    <h3 style="color: black;">
+                        Usted está registrado como "<t t-out="contact_type"/>" por lo que no puede solicitar una importación.
+                    </h3>
+                    <h3 style="color: black;">
+                        Esta acción solo está disponible para clientes nacionales.
+                    </h3>
+                    <br/>
+                    <h4>Verifique su perfil o comuníquese con la importadora.
+                    </h4>
+                </div>
+            </t>
+        </template>
+
         <template id="waiting_for_active_contract" name="Waiting for active contract">
             <t t-call="website.layout">
                 <div class="alert alert-info text-center " role="alert">
@@ -11,11 +28,11 @@
                         El acceso a nuestros servicios solo está permitido a clientes acreditados y con un contrato activo.
                     </h3>
                     <br/>
-                    <p>Si aún no lo ha hecho, por favor inicie su proceso de
+                    <h4>Si aún no lo ha hecho, por favor inicie su proceso de
                         <a href="/business-register?type=accreditation">
                             <span class="badge badge-success">Acreditación</span>
                         </a>.
-                    </p>
+                    </h4>
                 </div>
                 <div id="o_shared_blocks" class="oe_unremovable" data-oe-id="562" data-oe-xpath="/data/xpath/div" data-oe-model="ir.ui.view" data-oe-field="arch"></div>
             </t>
