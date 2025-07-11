@@ -2,24 +2,14 @@
 
 import json
 import logging
-import io
 import base64
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-from werkzeug.exceptions import NotFound
-from werkzeug.urls import url_encode
-from odoo import SUPERUSER_ID
-from odoo import fields, tools
 from odoo import http
-from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website.controllers.form import WebsiteForm
-from odoo.addons.website.controllers.main import QueryURL
-from odoo.addons.website_sale.controllers.main import TableCompute
 from odoo.exceptions import ValidationError
-from odoo.http import request, Response
-from odoo.osv import expression
-from odoo.tools import lazy
+from odoo.http import Stream, request, Response
 
 _logger = logging.getLogger(__name__)
 
@@ -351,12 +341,11 @@ class WebsiteForm(WebsiteForm):
         contact_type_id = int(kwargs.get("contact_type", False))
 
         if model_name == "crm.lead":
-            public_user = request.env.user
+            public_user = request.env.user.sudo()
             # Crear la Cotización a partir de la solicitud de importación
             if tipo_registro == "accreditation": 
-                # if public_user.sudo().partner_id.parent_id:
+                # if public_user.partner_id.parent_id:
                 #     raise ValidationError('Usted ya se ha acreditado, para volver a acreditarse debe hacerlo con un usuario nuevo que no esté acreditado')
-                public_user.sudo().partner_id.write({"name": kwargs["partner_name"]})
                 partner_data = {
                             "name": kwargs.get("parent_company_name"),
                             "vat": kwargs.get("nit", False),
@@ -372,7 +361,6 @@ class WebsiteForm(WebsiteForm):
                             "deed_number": int(kwargs.get("deed_input_number", False)),
                             "deed_date": kwargs.get("deed_input_date"),
                             "contact_type_id": contact_type_id,
-                            "child_ids": [(4, public_user.sudo().partner_id.id)],
                         }
                 if kwargs.get("supplier_type"):
                     if kwargs.get("supplier_type") == 'Productor':
@@ -388,7 +376,8 @@ class WebsiteForm(WebsiteForm):
                     partner_data['city_id'] = city_id
 
                 partner = request.env["res.partner"].sudo().create(partner_data)
-                
+                public_user.partner_id.write({"name": kwargs["partner_name"], "parent_id": partner.id})
+
                 # 1. Filtrar las claves que empiezan con 'files'
                 file_keys = [key for key in kwargs.keys() if key.startswith('legal_documentation')]
 
@@ -422,7 +411,7 @@ class WebsiteForm(WebsiteForm):
                 order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids] + [(0,0, {"product_id": product_id}) for product_id in onure_ids] 
                 order = request.env["sale.order"].sudo().create(
                     {
-                        "partner_id": public_user.sudo().partner_id.parent_id.id,
+                        "partner_id": public_user.partner_id.parent_id.id,
                         "order_line": order_line,
                     }
                 )
@@ -447,8 +436,8 @@ class WebsiteForm(WebsiteForm):
                     # "partner_id": partner.sudo().id,
                 crm_lead.sudo().write({"product_onure": [(6, 0, onure_ids)]})
                 
-                # partner.write({"child_ids": [(4, public_user.sudo().partner_id.id)]})
-                # public_user.sudo().partner_id.write({"parent_id":partner.sudo().id})
+                # partner.write({"child_ids": [(4, public_user.partner_id.id)]})
+                # public_user.partner_id.write({"parent_id":partner.sudo().id})
 
         if kwargs.get('productRequired') or kwargs.get('productOnure'):
             # Evitar doble creación si el formulario ya es de 'x_import'
@@ -531,7 +520,7 @@ class WebsiteForm(WebsiteForm):
 
                     # })
 
-            # public_user.sudo().partner_id.write({"parent_id":partner.sudo().id})
+            # public_user.partner_id.write({"parent_id":partner.sudo().id})
 
         # bandera
         # public_user.partner_id.sudo().write({"has_accredited_company": True})
@@ -714,8 +703,8 @@ class ControllerTest(http.Controller):
         crm_stage = ''
 
         if crm_lead_exists: 
-            potential_client_or_supplier = request.env.ref('crm.stage_lead1')
-            in_process_of_approval = request.env.ref('crm.stage_lead2')
+            potential_client_or_supplier = request.env.ref('crm.stage_lead1').sudo()
+            in_process_of_approval = request.env.ref('crm.stage_lead2').sudo()
 
             if potential_client_or_supplier and potential_client_or_supplier.id == crm_lead_exists.stage_id.id:
                 crm_stage = potential_client_or_supplier.name
@@ -862,12 +851,13 @@ class ProductSearchController(http.Controller):
             'pager': pager,
         })
 
+class DownloadFileController(http.Controller):
 
-class PerfilProveedorController(http.Controller):
-
-    @http.route('/descargar/perfil_proveedor', type='http', auth='public')
-    def descargar_perfil_proveedor(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('perfil_proveedor.attachment_id')
+    @http.route('/descargar/<string:file_name>', type='http', auth='public')
+    def download_file(self,file_name, **kw):
+        if file_name not in ['solicitud', 'ficha_cliente_estatal', 'ficha_cliente_fgne_tcp','perfil_proveedor', 'cuban_partner']:
+            return request.redirect('/web')
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param(f'{file_name}.attachment_id')
         if attachment_id_str:
             try:
                 attachment_id = int(attachment_id_str)
@@ -875,94 +865,5 @@ class PerfilProveedorController(http.Controller):
                 return request.redirect('/web')
             attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
             if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'plantilla_proveedor',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class SolicitudController(http.Controller):
-
-    @http.route('/descargar/solicitud', type='http', auth='public')
-    def descargar_solicitud(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('solicitud.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'solicitud',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class FichaClienteEstatalController(http.Controller):
-
-    @http.route('/descargar/ficha_cliente_estatal', type='http', auth='public')
-    def descargar_ficha_cliente_estatal(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_estatal.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'ficha_cliente',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class FichaClienteFGNEoTCPController(http.Controller):
-
-    @http.route('/descargar/ficha_cliente_fgne_tcp', type='http', auth='public')
-    def descargar_ficha_cliente_fgne_tcp(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_fgne_tcp.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'ficha_cliente',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class SocioConNacionalidadCubanaController(http.Controller):
-
-    @http.route('/descargar/cuban_partner', type='http', auth='public')
-    def descargar_cuban_partner(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('cuban_partner.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'cuban_partner',
-                    as_attachment=True
-                )
+                return Stream.from_attachment(attachment).get_response(as_attachment=True)
         return request.redirect('/web')
