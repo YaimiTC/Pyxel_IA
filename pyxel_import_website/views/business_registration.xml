@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <template id="you_are_not_a_national_client" name="You are not a National Client">
+        <template id="you_are_not_a_national_client" name="No eres Cliente nacional">
+        <!-- <template id="you_are_not_a_national_client" name="You are not a National Client"> -->
             <t t-call="website.layout">
                 <div class="alert alert-danger text-center " role="alert">
                     <h1 style="font-size: 4.5rem; color: black;">Atención:</h1>
@@ -18,7 +19,8 @@
             </t>
         </template>
 
-        <template id="waiting_for_active_contract" name="Waiting for active contract">
+        <template id="waiting_for_active_contract" name="Esperando por un contrato activo">
+        <!-- <template id="waiting_for_active_contract" name="Waiting for active contract"> -->
             <t t-call="website.layout">
                 <div class="alert alert-info text-center " role="alert">
                     <!-- <h1>Atención:</h1>
