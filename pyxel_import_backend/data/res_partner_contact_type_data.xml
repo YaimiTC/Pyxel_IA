@@ -1,8 +1,8 @@
 <odoo>
     <data>
         <record id="res_partner_contact_type_client" model="res.partner.contact.type">
-            <field name="name">Cliente</field>
-            <field name="code">cliente</field>
+            <field name="name">Cliente nacional</field>
+            <field name="code">cliente_nacional</field>
             <field name="type_of_contact">Client</field>
             <field name="nationality_type">national</field>
             <field name="management_type_ids" eval="[Command.set([
@@ -24,8 +24,8 @@
         </record>
 
         <record id="res_partner_contact_type_supplier" model="res.partner.contact.type">
-            <field name="name">Proveedor</field>
-            <field name="code">proveedor</field>
+            <field name="name">Proveedor nacional</field>
+            <field name="code">proveedor_nacional</field>
             <field name="type_of_contact">Supplier</field>
             <field name="nationality_type">national</field>
             <field name="management_type_ids" eval="[Command.set([

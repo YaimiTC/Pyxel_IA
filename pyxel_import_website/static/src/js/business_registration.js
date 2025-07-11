@@ -106,11 +106,11 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     },
     // Si es nacional se muestra el element
     _showWhenNational:  function (elementName) {
-        this._showWhen(['Cliente', 'Proveedor'], elementName)
+        this._showWhen(['Cliente nacional', 'Proveedor nacional'], elementName)
     },
     // Si es proveedor se muestra el element
     _showWhenProvider:  function (elementName) {
-        this._showWhen(['Proveedor', 'Proveedor extranjero'], elementName)
+        this._showWhen(['Proveedor nacional', 'Proveedor extranjero'], elementName)
     },
     // Si es extranjero se muestra el element
     _showWhenForeign:  function (elementName) {
@@ -123,7 +123,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         var ficha_cliente_input = document.querySelector('div[name="ficha_cliente"] input');
 
         // TODO: Si es cliente nacional se muestra el ficha_cliente
-        if (this.contact_type == 'Cliente') {
+        if (this.contact_type == 'Cliente nacional') {
             ficha_cliente?.classList.remove("d-none");
             ficha_cliente_input?.setAttribute("required", "");
             if(ficha_cliente_input)
@@ -321,29 +321,32 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     },
     async _validateFileType(inputFileId) {
         const fileInput = document.getElementById(inputFileId);
-        
-        if(fileInput.files[0]){
-            const file_type = fileInput.files[0].type
-            const errorElement = document.getElementById(`${inputFileId}_error`);
-            // const fileDelete = document.querySelector(`div[name='${ev.target.name}_input_group'] .o_file_delete`);
+
+        if(fileInput.files?.length > 0){
             let valid = true
-            if(fileInput.id !='legal_documentation'){
-                const fileDownloadLink = document.querySelector(`div[name='${inputFileId}_input_group'] a:not(d-none)`)
-                valid = await this.rpc('/check_file_type', { config_param: fileDownloadLink.id, file_type});
-            }
-            else
-                valid = file_type == 'application/pdf'
-            if(errorElement){
-                if(valid){
-                    errorElement.style.display = "none";
-                    fileInput?.classList?.add('is-valid');
-                    fileInput?.classList?.remove('is-invalid');
-                } else {
-                    errorElement.style.display = "block";
-                    errorElement.style.margin = "10px 0px 10px";
-                    fileInput?.classList?.add('is-invalid');
-                    fileInput?.classList?.remove('is-valid');
-                    // fileDelete.click() 
+            for (const file of fileInput.files) {
+                const file_type = file.type
+                const errorElement = document.getElementById(`${inputFileId}_error`);
+                // const fileDelete = document.querySelector(`div[name='${ev.target.name}_input_group'] .o_file_delete`);
+                if(fileInput.id !='legal_documentation'){
+                    const fileDownloadLink = document.querySelector(`div[name='${inputFileId}_input_group'] a:not(d-none)`)
+                    valid = await this.rpc('/check_file_type', { config_param: fileDownloadLink.id, file_type});
+                }
+                else
+                    valid = file_type == 'application/pdf'
+                if(errorElement){
+                    if(valid){
+                        errorElement.style.display = "none";
+                        fileInput?.classList?.add('is-valid');
+                        fileInput?.classList?.remove('is-invalid');
+                    } else {
+                        errorElement.style.display = "block";
+                        errorElement.style.margin = "10px 0px 10px";
+                        fileInput?.classList?.add('is-invalid');
+                        fileInput?.classList?.remove('is-valid');
+                        return false
+                        // fileDelete.click() 
+                    }
                 }
             }
             return valid
@@ -612,12 +615,8 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         textAreas = tabs[this.currentTab].getElementsByTagName("textarea");
 
         valid = this._checkProducts();
-        // for(const inputFileId of ['ficha_cliente']){
-        //     this._validateFileType(inputFileId)
-        //     console.log('valid2',valid2)
-        // }
-        // if(!valid2)
-        //     valid = false
+        if(!this._validateFileType('legal_documentation'))
+            valid = false
 
         const nationalClient = document.getElementById('acreditationis_client_nacional');
         const nationalProvider = document.getElementById('acreditationis_provider_nacional');
@@ -652,7 +651,6 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                 // If a field is empty...
                 const array= ["productOnure","productRequired","x_studio_bill_of_landing_number","x_studio_certificate_of_origin_co","x_studio_bill_of_lading_bl","x_comercial_invoice","x_package_list","x_export_certify","x_quality_certify"];
                 const valueToCheck = inputs[i].id;
-                
                 if (array.indexOf(valueToCheck) === -1 &&
                     ((inputs[i].value == "" && inputs[i].disabled == false) || 
                     (inputs[i].type == 'email' && inputs[i].disabled == false && !testEmail.test(inputs[i].value)) || 
@@ -687,14 +685,14 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                 } 
                 else {
                     nitField.classList.remove("is-invalid");
-                    // errorSpan.style.display = 'none';
+                    errorSpan.style.display = 'none';
                 }
             }
         }
         // If the valid status is true, mark the step as finished and valid:
-        if (valid) {
-            document.getElementsByClassName("step")[this.currentTab].className += " finish complete";
-        }
+        // if (valid) {
+        //     document.getElementsByClassName("step")[this.currentTab].className += " finish complete";
+        // }
         if (ev && !valid) {
             ev.preventDefault();
             ev.stopImmediatePropagation();
