@@ -75,7 +75,7 @@ class ImportationLoad(models.Model):
         ('to_extract', 'To extract'),
         ('to_return', 'To return'),
         ('returned', 'Returned'),
-    ], string='State', compute='_compute_state', store=True, readonly=True)
+    ], string='State', compute='_compute_state', store=True, readonly=True, tracking=True)
 
     # Información logística adicional
     shipping_company = fields.Char(string='Shipping company')

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_saleorder_document_no_code" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//td[@name='td_name']/span[1]" position="replace">
+            <span t-field="line.product_id.name"/>
+            <br t-if="line.clean_description and line.clean_description != line.product_id.name"/>
+            <span t-if="line.clean_description and line.clean_description != line.product_id.name"
+                  t-field="line.clean_description"/>
+        </xpath>
+    </template>
+</odoo>
+
