@@ -106,11 +106,11 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     },
     // Si es nacional se muestra el element
     _showWhenNational:  function (elementName) {
-        this._showWhen(['Cliente', 'Proveedor'], elementName)
+        this._showWhen(['Cliente nacional', 'Proveedor nacional'], elementName)
     },
     // Si es proveedor se muestra el element
     _showWhenProvider:  function (elementName) {
-        this._showWhen(['Proveedor', 'Proveedor extranjero'], elementName)
+        this._showWhen(['Proveedor nacional', 'Proveedor extranjero'], elementName)
     },
     // Si es extranjero se muestra el element
     _showWhenForeign:  function (elementName) {
@@ -123,7 +123,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         var ficha_cliente_input = document.querySelector('div[name="ficha_cliente"] input');
 
         // TODO: Si es cliente nacional se muestra el ficha_cliente
-        if (this.contact_type == 'Cliente') {
+        if (this.contact_type == 'Cliente nacional') {
             ficha_cliente?.classList.remove("d-none");
             ficha_cliente_input?.setAttribute("required", "");
             if(ficha_cliente_input)
