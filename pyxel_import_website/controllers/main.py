@@ -341,12 +341,11 @@ class WebsiteForm(WebsiteForm):
         contact_type_id = int(kwargs.get("contact_type", False))
 
         if model_name == "crm.lead":
-            public_user = request.env.user
+            public_user = request.env.user.sudo()
             # Crear la Cotización a partir de la solicitud de importación
             if tipo_registro == "accreditation": 
-                # if public_user.sudo().partner_id.parent_id:
+                # if public_user.partner_id.parent_id:
                 #     raise ValidationError('Usted ya se ha acreditado, para volver a acreditarse debe hacerlo con un usuario nuevo que no esté acreditado')
-                public_user.sudo().partner_id.write({"name": kwargs["partner_name"]})
                 partner_data = {
                             "name": kwargs.get("parent_company_name"),
                             "vat": kwargs.get("nit", False),
@@ -362,7 +361,6 @@ class WebsiteForm(WebsiteForm):
                             "deed_number": int(kwargs.get("deed_input_number", False)),
                             "deed_date": kwargs.get("deed_input_date"),
                             "contact_type_id": contact_type_id,
-                            "child_ids": [(4, public_user.sudo().partner_id.id)],
                         }
                 if kwargs.get("supplier_type"):
                     if kwargs.get("supplier_type") == 'Productor':
@@ -378,7 +376,8 @@ class WebsiteForm(WebsiteForm):
                     partner_data['city_id'] = city_id
 
                 partner = request.env["res.partner"].sudo().create(partner_data)
-                
+                public_user.partner_id.write({"name": kwargs["partner_name"], "parent_id": partner.id})
+
                 # 1. Filtrar las claves que empiezan con 'files'
                 file_keys = [key for key in kwargs.keys() if key.startswith('legal_documentation')]
 
@@ -412,7 +411,7 @@ class WebsiteForm(WebsiteForm):
                 order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids] + [(0,0, {"product_id": product_id}) for product_id in onure_ids] 
                 order = request.env["sale.order"].sudo().create(
                     {
-                        "partner_id": public_user.sudo().partner_id.parent_id.id,
+                        "partner_id": public_user.partner_id.parent_id.id,
                         "order_line": order_line,
                     }
                 )
@@ -437,8 +436,8 @@ class WebsiteForm(WebsiteForm):
                     # "partner_id": partner.sudo().id,
                 crm_lead.sudo().write({"product_onure": [(6, 0, onure_ids)]})
                 
-                # partner.write({"child_ids": [(4, public_user.sudo().partner_id.id)]})
-                # public_user.sudo().partner_id.write({"parent_id":partner.sudo().id})
+                # partner.write({"child_ids": [(4, public_user.partner_id.id)]})
+                # public_user.partner_id.write({"parent_id":partner.sudo().id})
 
         if kwargs.get('productRequired') or kwargs.get('productOnure'):
             # Evitar doble creación si el formulario ya es de 'x_import'
@@ -521,7 +520,7 @@ class WebsiteForm(WebsiteForm):
 
                     # })
 
-            # public_user.sudo().partner_id.write({"parent_id":partner.sudo().id})
+            # public_user.partner_id.write({"parent_id":partner.sudo().id})
 
         # bandera
         # public_user.partner_id.sudo().write({"has_accredited_company": True})
@@ -704,8 +703,8 @@ class ControllerTest(http.Controller):
         crm_stage = ''
 
         if crm_lead_exists: 
-            potential_client_or_supplier = request.env.ref('crm.stage_lead1')
-            in_process_of_approval = request.env.ref('crm.stage_lead2')
+            potential_client_or_supplier = request.env.ref('crm.stage_lead1').sudo()
+            in_process_of_approval = request.env.ref('crm.stage_lead2').sudo()
 
             if potential_client_or_supplier and potential_client_or_supplier.id == crm_lead_exists.stage_id.id:
                 crm_stage = potential_client_or_supplier.name
