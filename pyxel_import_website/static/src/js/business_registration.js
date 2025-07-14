@@ -322,7 +322,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     async _validateFileType(inputFileId) {
         const fileInput = document.getElementById(inputFileId);
 
-        if(fileInput.files?.length > 0){
+        if(fileInput?.files?.length > 0){
             let valid = true
             for (const file of fileInput.files) {
                 const file_type = file.type
