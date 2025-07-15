@@ -8,6 +8,7 @@
     "author": "Pyxel Solutions",
     'contributors': [
         'Adnielys Abday Rojas Tadeo <adnielys.rojas89@gmail.com>',
+        'Sandy Comas Becerra <sandytechboy00@gmail.com>',
     ],
     "license": "LGPL-3",
     "website": "https://pyxelsolution.com",
@@ -21,10 +22,11 @@
         'stock',
         'contacts',
         'account',
-
     ],
     "data": [
         'data/crm_stage_data.xml',
+        'data/res_partner_management_type_data.xml',
+        'data/res_partner_category_data.xml',
         'data/res_partner_contact_type_data.xml',
         'data/importation_sequence.xml',
         'data/importation_stage_data.xml',

@@ -1,27 +1,49 @@
 <odoo>
-    <data noupdate="1">
+    <data>
         <record id="res_partner_contact_type_client" model="res.partner.contact.type">
-            <field name="name">Cliente</field>
-            <field name="code">cliente</field>
+            <field name="name">Cliente nacional</field>
+            <field name="code">cliente_nacional</field>
             <field name="type_of_contact">Client</field>
+            <field name="nationality_type">national</field>
+            <field name="management_type_ids" eval="[Command.set([
+                ref('pyxel_import_backend.res_partner_management_type_mipyme'),
+                ref('pyxel_import_backend.res_partner_management_type_tcp_client'),
+                ref('pyxel_import_backend.res_partner_management_type_natural_person'),
+                ref('pyxel_import_backend.res_partner_management_type_foreign_branch'),
+                ref('pyxel_import_backend.res_partner_management_type_state'),
+                ref('pyxel_import_backend.res_partner_management_type_cna'),
+                ref('pyxel_import_backend.res_partner_management_type_pdl')
+                ])]"/>
         </record>
 
         <record id="res_partner_contact_type_foreign_client" model="res.partner.contact.type">
             <field name="name">Cliente extranjero</field>
             <field name="code">cliente_extranjero</field>
             <field name="type_of_contact">Client</field>
+            <field name="nationality_type">foreign</field>
         </record>
 
         <record id="res_partner_contact_type_supplier" model="res.partner.contact.type">
-            <field name="name">Proveedor</field>
-            <field name="code">proveedor</field>
+            <field name="name">Proveedor nacional</field>
+            <field name="code">proveedor_nacional</field>
             <field name="type_of_contact">Supplier</field>
+            <field name="nationality_type">national</field>
+            <field name="management_type_ids" eval="[Command.set([
+                ref('pyxel_import_backend.res_partner_management_type_mipyme'),
+                ref('pyxel_import_backend.res_partner_management_type_tcp_client'),
+                ref('pyxel_import_backend.res_partner_management_type_natural_person'),
+                ref('pyxel_import_backend.res_partner_management_type_foreign_branch'),
+                ref('pyxel_import_backend.res_partner_management_type_state'),
+                ref('pyxel_import_backend.res_partner_management_type_cna'),
+                ref('pyxel_import_backend.res_partner_management_type_pdl')
+                ])]"/>
         </record>
 
         <record id="res_partner_contact_type_foreign_supplier" model="res.partner.contact.type">
             <field name="name">Proveedor extranjero</field>
             <field name="code">proveedor_extranjero</field>
             <field name="type_of_contact">Supplier</field>
+            <field name="nationality_type">foreign</field>
         </record>
     </data>
 </odoo>

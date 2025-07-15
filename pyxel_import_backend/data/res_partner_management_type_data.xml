@@ -1,0 +1,31 @@
+<odoo>
+    <data noupdate="1">
+        <record id="res_partner_management_type_mipyme" model="res.partner.management.type">
+            <field name="name">Mipyme</field>
+        </record>
+
+        <record id="res_partner_management_type_tcp_client" model="res.partner.management.type">
+            <field name="name">TCP</field>
+        </record>
+
+        <record id="res_partner_management_type_natural_person" model="res.partner.management.type">
+            <field name="name">Persona Natural</field>
+        </record>
+
+        <record id="res_partner_management_type_foreign_branch" model="res.partner.management.type">
+            <field name="name">Sucursal Extranjera</field>
+        </record>
+
+        <record id="res_partner_management_type_state" model="res.partner.management.type">
+            <field name="name">Estatal</field>
+        </record>
+
+        <record id="res_partner_management_type_cna" model="res.partner.management.type">
+            <field name="name">CNA</field>
+        </record>
+
+        <record id="res_partner_management_type_pdl" model="res.partner.management.type">
+            <field name="name">PDL</field>
+        </record>
+    </data>
+</odoo>

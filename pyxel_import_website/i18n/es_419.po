@@ -1,0 +1,2415 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* pyxel_import_website
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0-20250611\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-07 22:25+0000\n"
+"PO-Revision-Date: 2025-07-07 22:25+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"- Documento constitutivo de la firma o compañía\n"
+"                                                                        <br/>\n"
+"                                                                        - Documento que acredite la existencia legal de\n"
+"                                                                        la firma o compañía.\n"
+"                                                                        <br/>\n"
+"                                                                        - Certificación del Registro Mercantil o\n"
+"                                                                        Registro Público.\n"
+"                                                                        <br/>\n"
+"                                                                        - Certificación de inscripción en el Registro de\n"
+"                                                                        Contribuyente\n"
+"                                                                        <br/>\n"
+"                                                                        - Licencia de la Cámara de Comercio de Cuba.\n"
+"                                                                        <br/>\n"
+"                                                                        - Carta timbrada a nombre de su compañía con la\n"
+"                                                                        intención de negocios.\n"
+"                                                                        <br/>\n"
+"                                                                        - Carnet de ACOREC o permiso de trabajo en Cuba,\n"
+"                                                                        del representante de la compañía en el país,\n"
+"                                                                        según corresponda.\n"
+"                                                                        <br/>\n"
+"                                                                        - Perfil del cliente"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"-Carnet de identidad\n"
+"                                                                            <br/>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"-Certificado de Validación del Proyecto, emitido por la Dirección Municipal de Trabajo, para el ejercicio de la actividad por Cuenta Propia.\n"
+"                                                                        <br/>\n"
+"                                                                        -Certifico de no adeudo con el organismo fiscal emitido en no menos de seis meses\n"
+"                                                                        <br/>\n"
+"                                                                        -Contrato suscrito con el banco para la apertura de cuenta corriente en MLC.\n"
+"                                                                        <br/>\n"
+"                                                                        -Contrato suscrito con el banco para la apertura de cuenta corriente en CUP"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"-Certifico legal\n"
+"                                                                            <br/>\n"
+"                                                                            -Plan de inversiones\n"
+"                                                                            <br/>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"-Contrato Marco de Vinculacion con la empresa agropecuaria, azucarera o forestal, Granja estatal o Cooperativa, a la cual se vinculan.\n"
+"                                                                        <br/>\n"
+"                                                                        -Certifico de no adeudo con el organismo fiscal emitido en no menos de seis meses\n"
+"                                                                        <br/>\n"
+"                                                                        -Contrato suscrito con el banco para la apertura de cuenta corriente en MLC\n"
+"                                                                        <br/>\n"
+"                                                                        -Contrato suscrito con el banco para la apertura de cuenta corriente en CUP"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"-Escritura Pública de Constitución\n"
+"                                                                        <br/>\n"
+"                                                                        -Copia certificada de la resolución de autorización del Ministerio de Economía y Planificación\n"
+"                                                                        <br/>\n"
+"                                                                        -Estatutos\n"
+"                                                                        <br/>\n"
+"                                                                        -Inscripción en el Registro Mercantil\n"
+"                                                                        <br/>\n"
+"                                                                        -Certifico de no adeudo con el organismo fiscal emitido en no menos de seis meses\n"
+"                                                                        <br/>\n"
+"                                                                        -Contrato suscrito con el banco para la apertura de cuenta corriente en MLC.\n"
+"                                                                        <br/>\n"
+"                                                                        -Contrato suscrito con el banco para la apertura de cuenta corriente en CUP\n"
+"                                                                        <br/>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"-Escritura constitucional\n"
+"                                                                            <br/>\n"
+"                                                                            -Registro mercantil\n"
+"                                                                            <br/>\n"
+"                                                                            -Aval Bancaria\n"
+"                                                                            <br/>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"-Escritura notarial\n"
+"                                                                            <br/>\n"
+"                                                                            -Registro Mercantil\n"
+"                                                                            <br/>\n"
+"                                                                            -Carnet de la ONAT\n"
+"                                                                            <br/>\n"
+"                                                                            -Contrato Banco MLC y CUP\n"
+"                                                                            <br/>\n"
+"                                                                            -Certifico de no adeudo\n"
+"                                                                            <br/>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"-Escritura notarial\n"
+"                                                                            <br/>\n"
+"                                                                            -Registro Mercantil\n"
+"                                                                            <br/>\n"
+"                                                                            -Carnet de la ONAT\n"
+"                                                                            <br/>\n"
+"                                                                            -Contrato Banco MLC y CUP\n"
+"                                                                            <br/>\n"
+"                                                                            -Certifico de no adeudo\n"
+"                                                                            <br/>\n"
+"                                                                            -Aprobación de la solicitud de creación de Mipymes\n"
+"                                                                            <br/>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"-Licencia de la cámara de comercial\n"
+"                                                                            <br/>\n"
+"                                                                            -Carnet de ACORE o PALCO\n"
+"                                                                            <br/>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"-Proyecto de trabajo\n"
+"                                                                            <br/>\n"
+"                                                                            -Carnet de identidad\n"
+"                                                                            <br/>\n"
+"                                                                            -Carnet de la ONAT\n"
+"                                                                            <br/>\n"
+"                                                                            -Contrato Banco MLC y CUP\n"
+"                                                                            <br/>\n"
+"                                                                            -Certifico de no adeudo\n"
+"                                                                            <br/>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"-Tarjeta de presentación\n"
+"                                                                                <br/>\n"
+"                                                                                -Carta timbrada u otro documento de la compañía extranjera que tenga su denominación, logo, dirección y teléfono\n"
+"                                                                                <br/>\n"
+"                                                                                -El certificado de documento constitutivo con no más de 6 meses de expedido"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid ""
+". Si\n"
+"                                                    tiene alguna duda, contáctenos. Con gusto\n"
+"                                                    le atenderemos."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid ""
+"<i class=\"fa fa-1x fa-fw fa-envelope me-2\"/>\n"
+"                                                    <span>correo@correo.com</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid ""
+"<i class=\"fa fa-map-marker fa-fw me-2\"/>\n"
+"                                                    <span class=\"o_force_ltr\">Calle  S/N e/ Calle y\n"
+"                                                         Rpto. Ejemplo, Ejemplo.\n"
+"                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid ""
+"<i class=\"fa fa-phone fa-fw me-2\"/>\n"
+"                                                    <span class=\"o_force_ltr\">78357575/78</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<option value=\"\" disabled=\"disabled\" selected=\"selected\">Seleccione el"
+" origen</option>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<option value=\"\" disabled=\"disabled\" selected=\"selected\">Seleccione un"
+" cliente</option>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "<option value=\"\">Municipio...</option>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "<option value=\"\">País..</option>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"FGNE type\" id=\"fgne_type\">\n"
+"                                                                        <option value=\"MYPIME\">MYPIME</option>\n"
+"                                                                        <option value=\"TCP\">TCP</option>\n"
+"                                                                        \n"
+"                                                                    </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"State\" id=\"state\">\n"
+"                                                                        <option value=\"\">Provincia...</option>\n"
+"\n"
+"                                                                    </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"Tipo de envío de la carga\" required=\"\" id=\"x_studio_certifies_receipt_load\">\n"
+"                                                                            <option value=\"\" disabled=\"disabled\" selected=\"selected\">Seleccione el tipo de envío</option>\n"
+"                                                                            <option value=\"(B/L)\">Importación marítima con contenedor lleno (FCL)</option>\n"
+"                                                                            <option value=\"(AWB)\">Importación vía aérea (AWB)</option>\n"
+"                                                                            <option value=\"(DAP)\">Compra en plaza (DAP)</option>\n"
+"                                                                            <option value=\"(GL)\">Carga agrupada (LCL)</option>\n"
+"                                                                        </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"city\" required=\"\" id=\"city\">\n"
+"                                                                        <option value=\"\">Municipio...</option>\n"
+"                                                                    </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"container_type_delivery\" id=\"container_type_delivery\">\n"
+"                                                                        <option value=\"20\">20 pies</option>\n"
+"                                                                        <option value=\"40\">40 pies</option>\n"
+"                                                                    </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"fgne_type\" id=\"fgne_type\" required=\"\">\n"
+"                                                                        <option value=\"\">Tipos de Gestión Empresarial...</option>\n"
+"                                                                    </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"pickup_address\" id=\"pickup_address\">\n"
+"                                                                        <option value=\"\">Mariel</option>\n"
+"\n"
+"                                                                    </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"state\" required=\"\" id=\"state\">\n"
+"                                                                        <option value=\"\">Provincia...</option>\n"
+"                                                                    </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<select class=\"form-select s_website_form_input\" style=\"\" name=\"supplier_type\" id=\"supplier_type\">\n"
+"                                                                        <option>Clasificación...</option>\n"
+"                                                                        <option value=\"Productor\">Productor</option>\n"
+"                                                                        <option value=\"Comerciante\">Comerciante</option>\n"
+"                                                                    </select>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.portal_my_quotations_inherit
+msgid "<span class=\"badge badge-danger\">Cancelada</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.portal_my_quotations_inherit
+msgid "<span class=\"badge badge-primary\">Pendiente</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.portal_my_quotations_inherit
+msgid "<span class=\"badge badge-success\">Aceptada</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_onboard_needed
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.services_onboard_needed
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.waiting_for_active_contract
+msgid "<span class=\"badge badge-success\">Acreditación</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_user_needed
+msgid "<span class=\"badge badge-success\">Inicie Sesión</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_user_needed
+msgid "<span class=\"badge badge-success\">Usuario</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.portal_my_quotations_inherit
+msgid "<span class=\"badge badge-warning\">Vencida</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "<span class=\"btn-text\">Buscar Producto</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid "<span class=\"btn-text\">Descargar Plantilla</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid "<span class=\"btn-text\">Descargar Solicitud</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\" id=\"deed_for_mipyme_cna_pdl\">Escritura notarial</span>\n"
+"                                                                    <span class=\"s_website_form_label_content\" id=\"deed_for_tcp\">Número de registro de proyecto</span>\n"
+"                                                                    <span class=\"s_website_form_label_content\" id=\"deed_for_state\">Escritura pública</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                            Acreditar nuevo cliente\n"
+"                                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                            Certificado de calidad\n"
+"                                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                            Certificado de exportación\n"
+"                                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                            Certificado de origen\n"
+"                                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                            Documentación BL/AWB\n"
+"                                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                            Documentación legal\n"
+"                                                                        </span>\n"
+"                                                                        <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                            Factura comercial\n"
+"                                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                            Lista de empaque\n"
+"                                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                        Contraseña\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                        Descripción\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                        Documentación legal\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                        Registrarse como:\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">\n"
+"                                                                        Teléfono\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Clasificación del Proveedor\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Cliente\n"
+"\n"
+"                                                                        </span>\n"
+"                                                                        <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Código\n"
+"                                                                        Mincex\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Confirme\n"
+"                                                                        contraseña\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Correo electrónico\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Código MINCEX</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">DAP</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Dirección\n"
+"                                                                        de entrega\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Dirección</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Domicilio\n"
+"                                                                        legal\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Email\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Ficha de cliente</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Lugar de\n"
+"                                                                        recogida\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Municipio\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Municipio\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">NIT\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">NIT/CI\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">No. BL/AWB/LCL\n"
+"                                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Nombre\n"
+"                                                                        del negocio\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Nombre\n"
+"                                                                        del negocio\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Nombre\n"
+"                                                                        y apellidos del contacto\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Nombre\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Nombre\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Nombre de\n"
+"                                                                        proveedor\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Nuestros Productos\n"
+"                                                                            </span>\n"
+"                                                                            <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Nuestros Productos\n"
+"                                                                        </span>\n"
+"                                                                        <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "<span class=\"s_website_form_label_content\">Oferta Firmada</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">País\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">País\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">País de origen\n"
+"                                                                        </span>\n"
+"                                                                        <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Perfil Proveedor</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Plantilla de socio de nacionalidad cubana</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Productos homologados por la ONURE\n"
+"                                                                                </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Productos homologados por la ONURE\n"
+"                                                                            </span>\n"
+"                                                                            <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Provincia\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Provincia\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Registrarse como:\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Requiere\n"
+"                                                                        de apoyo logístico\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Solicitud de oferta de compra</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Teléfono\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Teléfono\n"
+"                                                                    </span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Tipo de\n"
+"                                                                            envío de la carga\n"
+"                                                                        </span>\n"
+"                                                                        <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Tipo de\n"
+"                                                                        FGNE\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Tipo de\n"
+"                                                                        contenedor\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">Tipo</span>\n"
+"                                                                    <span class=\"s_website_form_mark\">*</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">¿La Empresa tiene socio de nacionalidad cubana?\n"
+"                                                                    </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span class=\"s_website_form_label_content\">¿Requiere código MINCEX?</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span id=\"cuban_partner_error\" style=\"color:red; display:none;\">El "
+"documento adjuntado debe ser del mismo tipo que el archivo "
+"descargado.</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span id=\"dap-error\" style=\"color:red; display:none;\">El DAP debe "
+"contener exactamente 4 dígitos.</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span id=\"ficha_cliente_error\" style=\"color:red; display:none;\">El "
+"documento adjuntado debe ser del mismo tipo que el archivo "
+"descargado.</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span id=\"legal_documentation_error\" style=\"color:red; "
+"display:none;\">Los documentos adjuntados deben ser pdf.</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span id=\"nit-error\" style=\"color:red; display:none;\">El NIT debe "
+"contener exactamente 11 dígitos.</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span id=\"planilla_proveedor_error\" style=\"color:red; display:none;\">El "
+"documento adjuntado debe ser del mismo tipo que el archivo "
+"descargado.</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"<span id=\"product-error\" class=\"text-danger\" style=\"display: none;\">\n"
+"                                                                Debe seleccionar al menos un producto\n"
+"                                                            </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span id=\"product-error\" class=\"text-danger\" style=\"display: none;\">\n"
+"                                                                Debe seleccionar al menos un producto\n"
+"                                                        </span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"<span style=\"font-size: 12px; color: #797b7e;width: 150px;\">Los documentos"
+" a subir en este formulario deben ser en formato PDF y no exceder los 6 MB "
+"cada uno.</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "<span style=\"margin: 0 10px; font-weight: bold; color: #555;\">o</span>"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2708
+msgid "Abreus"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Acreditación"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,help:pyxel_import_website.field_res_config_settings__ficha_cliente_fgne_tcp_attachment_id
+msgid ""
+"Adjunte aquí la plantilla de la ficha de clientes FGNE o TCP. Esta plantilla"
+" se utilizará en el formulario de importación."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,help:pyxel_import_website.field_res_config_settings__ficha_cliente_estatal_attachment_id
+msgid ""
+"Adjunte aquí la plantilla de la ficha de clientes estatales. Esta plantilla "
+"se utilizará en el formulario de importación."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,help:pyxel_import_website.field_res_config_settings__solicitud_attachment_id
+msgid ""
+"Adjunte aquí la plantilla de la solicitud. Esta plantilla se utilizará en el"
+" formulario de importación."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,help:pyxel_import_website.field_res_config_settings__perfil_attachment_id
+msgid ""
+"Adjunte aquí la plantilla del perfil de proveedores. Esta plantilla se "
+"utilizará en el formulario de acreditación."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,help:pyxel_import_website.field_res_config_settings__cuban_partner_attachment_id
+msgid ""
+"Adjunte aquí la plantilla del socio con nacionalidad cubana. Esta plantilla "
+"se utilizará en el formulario de importación."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_config_settings__cuban_partner_attachment_id
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_config_settings__ficha_cliente_estatal_attachment_id
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_config_settings__ficha_cliente_fgne_tcp_attachment_id
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_config_settings__perfil_attachment_id
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_config_settings__solicitud_attachment_id
+msgid "Adjunto de la Plantilla"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Agregar"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2701
+msgid "Aguada de Pasajeros"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2208
+msgid "Alquízar"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3108
+msgid "Amancio"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Anterior"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3204
+msgid "Antilla"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_product__approved_to_import
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_template__approved_to_import
+msgid "Aprobado"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2314
+msgid "Arroyo Naranjo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2209
+msgid "Artemisa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_onboard_needed
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_user_needed
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.services_onboard_needed
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.waiting_for_active_contract
+msgid "Atención:"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+msgid "BL"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2201
+msgid "Bahía Honda"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3203
+msgid "Banes"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3504
+msgid "Baracoa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2910
+msgid "Baraguá"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3311
+msgid "Bartolomé Masó"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2410
+msgid "Batabanó"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2205
+msgid "Bauta"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3304
+msgid "Bayamo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2401
+msgid "Bejucal"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2903
+msgid "Bolivia"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2313
+msgid "Boyeros"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3312
+msgid "Buey Arriba"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Buscar"
+msgstr ""
+
+#. module: pyxel_import_website
+#. odoo-javascript
+#: code:addons/pyxel_import_website/static/src/components/importations_table/importations_template.xml:0
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+#, python-format
+msgid "Buscar..."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3205
+msgid "Báguanos"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields.selection,name:pyxel_import_website.selection__product_template__type_of_product__cfi
+msgid "CFI"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2804
+msgid "Cabaiguán"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3208
+msgid "Cacocum"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2606
+msgid "Caibarién"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3508
+msgid "Caimanera"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2204
+msgid "Caimito"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2512
+msgid "Calimete"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3207
+msgid "Calixto García"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3008
+msgid "Camagüey"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2605
+msgid "Camajuaní"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3307
+msgid "Campechuela"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2210
+msgid "Candelaria"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_product__min_qty_sale
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_template__min_qty_sale
+msgid "Cantidad mín."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3001
+msgid "Carlos Manuel de Céspedes"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3302
+msgid "Cauto Cristo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2303
+msgid "Centro Habana"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2310
+msgid "Cerro"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2901
+msgid "Chambas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2908
+msgid "Ciego de Ávila"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2707
+msgid "Cienfuegos"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2610
+msgid "Cifuentes"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2905
+msgid "Ciro Redondo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2510
+msgid "Ciénaga de Zapata"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Cliente"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Cliente Extranjero"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3107
+msgid "Colombia"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2504
+msgid "Colón"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model,name:pyxel_import_website.model_res_config_settings
+msgid "Config Settings"
+msgstr "Ajustes de configuración"
+
+#. module: pyxel_import_website
+#: model:ir.model.fields.selection,name:pyxel_import_website.selection__product_template__type_of_product__consignado
+msgid "Consignado"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2107
+msgid "Consolación del Sur"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model,name:pyxel_import_website.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Contacte con nuestro equipo comercial"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3401
+msgid "Contramaestre"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2601
+msgid "Corralillo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2315
+msgid "Cotorro"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2705
+msgid "Cruces"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3210
+msgid "Cueto"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2706
+msgid "Cumanayagua"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2502
+msgid "Cárdenas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_product__de_importacion
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_template__de_importacion
+msgid "De Importación"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid "Descargue la plantilla, llénela y súbala aquí."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Describa en detalle el servicio que solicita."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2309
+msgid "Diez de Octubre"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Dirección, Provincia, Municipio"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3501
+msgid "El Salvador"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_onboard_needed
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_user_needed
+msgid "El acceso a la tienda solo está permitido a clientes acreditados."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.services_onboard_needed
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.waiting_for_active_contract
+msgid ""
+"El acceso a nuestros servicios solo está permitido a clientes acreditados y "
+"con un contrato activo."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid ""
+"El número de teléfono debe comenzar con + y tener hasta 17 dígitos "
+"adicionales."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,help:pyxel_import_website.field_product_product__approved_to_import
+#: model:ir.model.fields,help:pyxel_import_website.field_product_template__approved_to_import
+msgid ""
+"El producto está listo para usar en importaciones y en la venta de la tienda"
+" mayorista"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2604
+msgid "Encrucijada"
+msgstr ""
+
+#. module: pyxel_import_website
+#. odoo-python
+#: code:addons/pyxel_import_website/controllers/base_controller.py:0
+#, python-format
+msgid "Error retrieving user data"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3002
+msgid "Esmeralda"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+msgid "Estado"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,help:pyxel_import_website.field_crm_lead__product_onure
+msgid ""
+"Este campo permite seleccionar varios productos relacionados con el lead."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.portal_my_home_inherit
+msgid "Facturas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Flecha izquierda"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2906
+msgid "Florencia"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3009
+msgid "Florida"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2805
+msgid "Fomento"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3212
+msgid "Frank País"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3201
+msgid "Gibara"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3409
+msgid "Guama"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2307
+msgid "Guanabacoa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2203
+msgid "Guanajay"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2111
+msgid "Guane"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3509
+msgid "Guantánamo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Guardar"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3313
+msgid "Guisa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3006
+msgid "Guáimaro"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2408
+msgid "Güines"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2207
+msgid "Güira de Melena"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3206
+msgid "Holguín"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields.selection,name:pyxel_import_website.selection__product_template__product_type__electronico
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Homologados por la ONURE"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid "IMPORTADORA"
+msgstr ""
+
+#. module: pyxel_import_website
+#. odoo-javascript
+#: code:addons/pyxel_import_website/static/src/components/importations_table/importations_template.xml:0
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.portal_my_home_inherit
+#, python-format
+msgid "Importaciones"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Importación"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid "Imports"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3506
+msgid "Imías"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields.selection,name:pyxel_import_website.selection__product_template__type_of_product__in-bond
+msgid "In-bond"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+msgid "Inicio"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_4001
+msgid "Isla de la Juventud"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2511
+msgid "Jagüey Grande"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2403
+msgid "Jaruco"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2802
+msgid "Jatibonico"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3103
+msgid "Jesús Menéndez"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3303
+msgid "Jiguaní"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3011
+msgid "Jimaguayú"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3106
+msgid "Jobabo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2506
+msgid "Jovellanos"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2304
+msgid "La Habana Vieja"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2306
+msgid "La Habana del Este"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2312
+msgid "La Lisa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2105
+msgid "La Palma"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2808
+msgid "La Sierpe"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2704
+msgid "Lajas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3105
+msgid "Las Tunas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model,name:pyxel_import_website.model_crm_lead
+msgid "Lead/Opportunity"
+msgstr "Lead/oportunidad"
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2508
+msgid "Limonar"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Logística"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2513
+msgid "Los Arabos"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2106
+msgid "Los Palacios"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2405
+msgid "Madruga"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3505
+msgid "Maisí"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2907
+msgid "Majagua"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3104
+msgid "Majibacoa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3101
+msgid "Manatí"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2613
+msgid "Manicaragua"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2102
+msgid "Mantua"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3502
+msgid "Manuel Tames"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3306
+msgid "Manzanillo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid "Marcar si la empresa tiene socio de nacionalidad cubana."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid "Marcar si necesita el código MINCEX."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Marcar si necesita el servicio de logística."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2311
+msgid "Marianao"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2202
+msgid "Mariel"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid ""
+"Marque si desea acreditar un cliente que no\n"
+"                                                                            aparezca en la lista."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2503
+msgid "Martí"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2501
+msgid "Matanzas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3211
+msgid "Mayarí"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3308
+msgid "Media Luna"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2409
+msgid "Melena del Sur"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3402
+msgid "Mella"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3004
+msgid "Minas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2103
+msgid "Minas de Matahambre"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3214
+msgid "Moa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2902
+msgid "Morón"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields.selection,name:pyxel_import_website.selection__product_template__type_of_product__nacionalizado
+msgid "Nacionalizado"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3012
+msgid "Najasa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3510
+msgid "Niceto Pérez"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3309
+msgid "Niquero"
+msgstr ""
+
+#. module: pyxel_import_website
+#. odoo-javascript
+#: code:addons/pyxel_import_website/static/src/components/generic_table/table_body/table_body.js.xml:0
+#: code:addons/pyxel_import_website/static/src/components/generic_table/table_body_mobile/table_body_mobile.xml:0
+#, python-format
+msgid "No records found"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "No se encontraron productos"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_crm_lead__oferta_firmada_filename
+msgid "Nombre del Archivo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields.selection,name:pyxel_import_website.selection__product_template__product_type__alimento
+msgid "Nomenclador"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Nuestros Productos"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2406
+msgid "Nueva Paz"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3005
+msgid "Nuevitas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+msgid "Número"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_crm_lead__oferta_firmada
+msgid "Oferta Firmada (PDF)"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_product__product_origin
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_template__product_origin
+msgid "Origen del producto"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields.selection,name:pyxel_import_website.selection__product_template__product_type__otros
+msgid "Otros"
+msgstr ""
+
+#. module: pyxel_import_website
+#. odoo-javascript
+#: code:addons/pyxel_import_website/static/src/components/generic_table/table_pagination/table_panination.xml:0
+#, python-format
+msgid "Page"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3407
+msgid "Palma Soriano"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2703
+msgid "Palmira"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.sale_portal_my_home_inherit
+msgid "Pedidos"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2507
+msgid "Pedro Betancourt"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2505
+msgid "Perico"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3310
+msgid "Pilón"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2108
+msgid "Pinar del Río"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2608
+msgid "Placetas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid "Planilla de Perfil de Proveedores"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid "Planilla de Solicitud de Importación"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid "Planilla de la Ficha de Cliente Estatal"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid "Planilla de la Ficha de Cliente FGNE o TCP"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid "Planilla para Socio de Nacionalidad Cubana"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2301
+msgid "Playa"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2302
+msgid "Plaza de la Revolución"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_user_needed
+msgid "Por favor"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_onboard_needed
+msgid "Por favor inicie su proceso de"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Por favor, pruebe con otra búsqueda"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2904
+msgid "Primero de Enero"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model,name:pyxel_import_website.model_product_template
+msgid "Product"
+msgstr "Producto"
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_crm_lead__product_onure
+msgid "Producto Onure"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "Producto a importar"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_partner__profile_banner
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_users__profile_banner
+msgid "Profile Banner"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Proveedor"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Proveedor Extranjero"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_partner__is_fx_published
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_users__is_fx_published
+msgid "Published"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3102
+msgid "Puerto Padre"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2602
+msgid "Quemado de Güines"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2411
+msgid "Quivicán"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3202
+msgid "Rafael Freyre"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2612
+msgid "Ranchuelo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+msgid "Registrar importación"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Registro"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2305
+msgid "Regla"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2607
+msgid "Remedios"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_partner__website_ribbon_id
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_users__website_ribbon_id
+msgid "Ribbon"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2702
+msgid "Rodas"
+msgstr ""
+
+#. module: pyxel_import_website
+#. odoo-javascript
+#: code:addons/pyxel_import_website/static/src/components/generic_table/table_pagination/table_panination.xml:0
+#, python-format
+msgid "Rows per pages:"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3301
+msgid "Río Cauto"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3213
+msgid "Sagua de Tánamo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2603
+msgid "Sagua la Grande"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2206
+msgid "San Antonio de los Baños"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3507
+msgid "San Antonio del Sur"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2211
+msgid "San Cristóbal"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2402
+msgid "San José de las Lajas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2110
+msgid "San Juan y Martínez"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2109
+#: model:res.city,name:pyxel_import_website.municipio_3403
+msgid "San Luis"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2308
+msgid "San Miguel del Padrón"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2407
+msgid "San Nicolás de Bari"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2807
+msgid "Sancti Spíritus"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2101
+msgid "Sandino"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2609
+msgid "Santa Clara"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2404
+msgid "Santa Cruz del Norte"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3013
+msgid "Santa Cruz del Sur"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3406
+msgid "Santiago de Cuba"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2611
+msgid "Santo Domingo"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3404
+msgid "Segundo Frente"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid ""
+"Seleccione o cargue el adjunto que servirá como plantilla de la ficha de "
+"cliente FGNE o TCP para descarga."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid ""
+"Seleccione o cargue el adjunto que servirá como plantilla de la ficha de "
+"cliente estatal para descarga."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid ""
+"Seleccione o cargue el adjunto que servirá como plantilla de la solicitud "
+"para descarga."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid ""
+"Seleccione o cargue el adjunto que servirá como plantilla de socio con "
+"nacionalidad cubana para descarga."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.res_config_settings_view_form_inherit_x_model
+msgid ""
+"Seleccione o cargue el adjunto que servirá como plantilla del perfil de "
+"proveedores para descarga."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.services_onboard_needed
+msgid "Si aun no lo ha hecho, por favor inicie su proceso de"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.waiting_for_active_contract
+msgid "Si aún no lo ha hecho, por favor inicie su proceso de"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3007
+msgid "Sibanicú"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3003
+msgid "Sierra de Cubitas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Siguiente"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_partner__website_size_x
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_users__website_size_x
+msgid "Size X"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_partner__website_size_y
+#: model:ir.model.fields,field_description:pyxel_import_website.field_res_users__website_size_y
+msgid "Size Y"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "Solicitar servicio"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.sale_portal_my_home_inherit
+msgid "Solicitudes"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3405
+msgid "Songo La Maya"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid ""
+"Su documentación está siendo <b>\n"
+"                                                    procesada.\n"
+"                                                    </b> Nuestro equipo\n"
+"                                                    comercial se pondrá en contacto con usted. Si\n"
+"                                                    tiene alguna duda, contáctenos. Con gusto\n"
+"                                                    le atenderemos."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,help:pyxel_import_website.field_crm_lead__oferta_firmada
+msgid "Sube la oferta firmada en formato PDF."
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid "Sólo letras y números"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+msgid "Sólo números"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2803
+msgid "Taguasco"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3408
+msgid "Tercer Frente"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_product__product_type
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_template__product_type
+msgid "Tipo de mercancía"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_product__type_of_product
+#: model:ir.model.fields,field_description:pyxel_import_website.field_product_template__type_of_product
+msgid "Tipo de producto"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2806
+msgid "Trinidad"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2509
+msgid "Unión de Reyes"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3209
+msgid "Urbano Noris"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.sale_portal_my_home_inherit
+msgid "Vea sus cotizaciones"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.portal_my_home_inherit
+msgid "Vea sus facturas"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.portal_my_home_inherit
+msgid "Vea sus importaciones"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.sale_portal_my_home_inherit
+msgid "Vea sus órdenes"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2909
+msgid "Venezuela"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3010
+msgid "Vertientes"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2104
+msgid "Viñales"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid ""
+"Ya está acreditado o en proceso. Puede\n"
+"                                                    solicitar"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_2801
+msgid "Yaguajay"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3305
+msgid "Yara"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model:res.city,name:pyxel_import_website.municipio_3503
+msgid "Yateras"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid "acreditar un proveedor"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
+msgid "encontrado)"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.import_registration
+msgid "margin-top:28px"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid "nuestros servicios de logística"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.marketplace_user_needed
+msgid "o cree su"
+msgstr ""
+
+#. module: pyxel_import_website
+#. odoo-javascript
+#: code:addons/pyxel_import_website/static/src/components/generic_table/table_pagination/table_panination.xml:0
+#, python-format
+msgid "of"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_register_thanks_ir_ui_view
+msgid "una importación"
+msgstr ""
+
+#. module: pyxel_import_website
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
+#: model_terms:ir.ui.view,arch_db:pyxel_import_website.onure_template
+msgid "¡No pudimos encontrar ninguna coincidencia!"
+msgstr ""

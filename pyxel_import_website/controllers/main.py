@@ -2,25 +2,14 @@
 
 import json
 import logging
-import io
 import base64
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-from werkzeug.exceptions import NotFound
-from werkzeug.urls import url_encode
-
-from odoo import SUPERUSER_ID
-from odoo import fields, tools
 from odoo import http
-from odoo.addons.http_routing.models.ir_http import slug
 from odoo.addons.website.controllers.form import WebsiteForm
-from odoo.addons.website.controllers.main import QueryURL
-from odoo.addons.website_sale.controllers.main import TableCompute
 from odoo.exceptions import ValidationError
-from odoo.http import request
-from odoo.osv import expression
-from odoo.tools import lazy
+from odoo.http import Stream, request, Response
 
 _logger = logging.getLogger(__name__)
 
@@ -36,6 +25,11 @@ SPR = 4  # Proveedores Per Row
 
 def get_render_values(kw):
     country = request.env["res.country"].sudo()
+    contact_types = (
+        request.env["res.partner.contact.type"]
+        .sudo()
+        .search([])
+    )
     providers = (
         request.env["res.partner"]
         .sudo()
@@ -63,6 +57,8 @@ def get_render_values(kw):
     render_values = {
         "countries": country.get_website_sale_countries(),
         "states": request.env["res.country.state"].sudo().search([]),
+        "contact_types": contact_types,
+        "partner_id": request.env.user.partner_id.id,
         "providers": providers,
         "customers": customers,
         "banner": banner,
@@ -92,7 +88,7 @@ def get_render_values(kw):
     return render_values
 
 
-def loged_in(self):
+def loged_in():
     user = request.env.user
     if user._is_public():
         return request.redirect("/web/login")
@@ -100,14 +96,38 @@ def loged_in(self):
 
 class WebsiteForm(WebsiteForm):
 
-    @http.route("/get_form_states", type="json", auth="public", website=True)
-    def get_form_states(self, country_id=None, **kw):
+    @http.route('/check_file_type', type="json", auth="public", website=True)
+    def check_file_type(self, config_param, file_type, **kw):
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param(f'{config_param}.attachment_id')
+        if attachment_id_str:
+            try:
+                attachment_id = int(attachment_id_str)
+            except ValueError:
+                return 
+            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
+            if attachment and attachment.mimetype:
+                return attachment.mimetype == file_type
+
+    @http.route("/get_form_management_types", type="json", auth="public", website=True)
+    def get_form_management_types(self, contact_type_id=None, **kw):
         res = {}
-        if country_id:
+        if contact_type_id:
+            contact_types = (
+                request.env["res.partner.contact.type"]
+                .sudo()
+                .search([("id", "=", int(contact_type_id))])
+            )
+            res = {str(x.id): x.name for x in contact_types.management_type_ids}
+        return res
+
+    @http.route("/get_form_states", type="json", auth="public", website=True)
+    def get_form_states(self, country_code=None, **kw):
+        res = {}
+        if country_code:
             states = (
                 request.env["res.country.state"]
                 .sudo()
-                .search([("country_id", "=", int(country_id))])
+                .search([("country_id.code", "=", country_code)])
             )
             res = {str(x.id): x.name for x in states}
         return res
@@ -169,10 +189,25 @@ class WebsiteForm(WebsiteForm):
         )
 
     def website_form(self, model_name, **kwargs):
+        tipo_registro = kwargs.get("register_type") 
+
+        if model_name == "crm.lead" and tipo_registro == "accreditation":
+            domain_ids = [request.env.user.partner_id.id]
+            if request.env.user.partner_id.parent_id:
+                domain_ids.append(request.env.user.partner_id.parent_id.id)
+            crm_lead_exists = request.env["crm.lead"].sudo().search([
+                        ("partner_id", "in", domain_ids)
+                        ], limit=1)
+            if crm_lead_exists:
+                return Response(
+                    json.dumps({'error': 'Usted ya se ha acreditado, para volver a acreditarse debe hacerlo con un usuario nuevo que no esté acreditado'}),
+                    status=400,
+                    headers={'Content-Type': 'application/json'}
+                )
+
         res = super(WebsiteForm, self).website_form(model_name, **kwargs)
         _logger.info("Todas las claves disponibles en kwargs: %s", kwargs.keys())
-        tipo_registro = kwargs.get("register_type")
-
+    
         if model_name == "x_import":
             if tipo_registro == "logistic":
                 pass
@@ -294,65 +329,115 @@ class WebsiteForm(WebsiteForm):
                 purchase_order = request.env["purchase.order"].sudo().create(purchase_order_vals)
                 _logger.info("Orden de compra creada con ID: %s", purchase_order.id)
 
-        if kwargs["Register as"] == 'ClientNacional':
-            contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_client').id
-        elif kwargs["Register as"] == 'ClientExtranjero':
-            contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_foreign_client').id
-        elif kwargs["Register as"] == 'ProviderNacional':
-            contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_supplier').id
-        elif kwargs["Register as"] == 'ProviderExtranjero':
-            contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_foreign_supplier').id
-        else:
-            contact_type_id = False
+        # if kwargs["Register as"] == 'ClientNacional':
+        #     contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_client').id
+        # elif kwargs["Register as"] == 'ClientExtranjero':
+        #     contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_foreign_client').id
+        # elif kwargs["Register as"] == 'ProviderNacional':
+        #     contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_supplier').id
+        # elif kwargs["Register as"] == 'ProviderExtranjero':
+        #     contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_foreign_supplier').id
+        # else:
+        contact_type_id = int(kwargs.get("contact_type", False))
 
         if model_name == "crm.lead":
-            id_crm = eval(res.response[0])
-            product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if
-                                 id.strip().isdigit()]
-            product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if
-                                        id.strip().isdigit()]
-
-            public_user = request.env.user
+            public_user = request.env.user.sudo()
             # Crear la Cotización a partir de la solicitud de importación
-            if tipo_registro == "import":
-                nomenclature_ids = request.env["product.product"].sudo().search(
-                    [('product_tmpl_id', 'in', product_nomenclature_ids)]).ids
-                onure_ids = request.env["product.product"].sudo().search(
-                    [('product_tmpl_id', 'in', product_onure_ids)]).ids
-                order_line = [(0, 0, {"product_id": product_id}) for product_id in nomenclature_ids] + [
-                    (0, 0, {"product_id": product_id}) for product_id in onure_ids]
+            if tipo_registro == "accreditation": 
+                # if public_user.partner_id.parent_id:
+                #     raise ValidationError('Usted ya se ha acreditado, para volver a acreditarse debe hacerlo con un usuario nuevo que no esté acreditado')
+                partner_data = {
+                            "name": kwargs.get("parent_company_name"),
+                            "vat": kwargs.get("nit", False),
+                            "dap": kwargs.get("dap", False),
+                            "company_type": 'company',
+                            "phone": kwargs.get("phone"),
+                            "email": kwargs.get("parent_company_email"),
+                            "country_id": int(kwargs.get("country", request.env.ref('base.cu').id)),
+                            "state_id": int(kwargs.get("state",False)),
+                            "street": kwargs.get("address"),
+                            "license_holder": kwargs.get("license_holder"),
+                            "management_type_id": int(kwargs.get("fgne_type", False)),
+                            "deed_number": int(kwargs.get("deed_input_number", False)),
+                            "deed_date": kwargs.get("deed_input_date"),
+                            "contact_type_id": contact_type_id,
+                        }
+                if kwargs.get("supplier_type"):
+                    if kwargs.get("supplier_type") == 'Productor':
+                        category_id = request.env.ref('pyxel_import_backend.res_partner_category_producer').id  
+                        partner_data['category_id'] = [(4, category_id)]   
+                    elif kwargs.get("supplier_type") == 'Comerciante':
+                        category_id = request.env.ref('pyxel_import_backend.res_partner_category_businessman').id
+                        partner_data['category_id'] = [(4, category_id)]   
+
+                if kwargs.get("city"):
+                    city_id = int(kwargs.get("city",False))
+                    partner_data['city'] = request.env["res.city"].sudo().search([("id", "=", city_id)], limit=1).name
+                    partner_data['city_id'] = city_id
+
+                partner = request.env["res.partner"].sudo().create(partner_data)
+                public_user.partner_id.write({"name": kwargs["partner_name"], "parent_id": partner.id})
+
+                # 1. Filtrar las claves que empiezan con 'files'
+                file_keys = [key for key in kwargs.keys() if key.startswith('legal_documentation')]
+
+                if kwargs.get('ficha_cliente[0][0]'):
+                    file_keys.append('ficha_cliente[0][0]')
+                if kwargs.get('planilla_proveedor[0][0]'):
+                    file_keys.append('planilla_proveedor[0][0]')
+                if kwargs.get('cuban_partner[0][0]'):
+                    file_keys.append('cuban_partner[0][0]')
+
+                for file_key in file_keys:
+                    file = kwargs.get(file_key, {})
+                    # for file in request.httprequest.files.getlist(file_key):
+                    file.seek(0)  # Rebobinar al inicio del archivo, xq sino el file.read() devuelve b'', o sea que está vacío
+                    request.env['ir.attachment'].sudo().create({
+                        "name": file.filename,
+                        "datas": base64.b64encode(file.read()),
+                        "res_model": "res.partner",
+                        "res_id": partner.id,
+                        'type': 'binary',
+                        'mimetype': file.mimetype,
+                    })
+            elif tipo_registro == "import":
+                id_crm = eval(res.response[0])
+                product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if
+                        id.strip().isdigit()]
+                product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if
+                                            id.strip().isdigit()]
+                nomenclature_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_nomenclature_ids)]).ids
+                onure_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_onure_ids)]).ids
+                order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids] + [(0,0, {"product_id": product_id}) for product_id in onure_ids] 
                 order = request.env["sale.order"].sudo().create(
                     {
-                        "partner_id": public_user.sudo().partner_id.id,
+                        "partner_id": public_user.partner_id.parent_id.id,
                         "order_line": order_line,
                     }
                 )
+                file_keys = []
+                if kwargs.get('solicitud[0][0]'):
+                    file_keys.append('solicitud[0][0]')
 
-            # if "uid" not in request.context:
-            if not public_user.sudo().partner_id.parent_id:
-                partner = (
-                    request.env["res.partner"].sudo()
-                    .create(
-                        {
-                            "name": kwargs["company"],
-                            "company_type": 'company',
-                            # "phone": kwargs["phone"],
-                            "email": kwargs["company_email"],
-                            "contact_type_id": contact_type_id,
-                            "child_ids": [(4, public_user.sudo().partner_id.id)],
+                for file_key in file_keys:
+                    file = kwargs.get(file_key, {})
+                    # for file in request.httprequest.files.getlist(file_key):
+                    file.seek(0)  # Rebobinar al inicio del archivo, xq sino el file.read() devuelve b'', o sea que está vacío
+                    request.env['ir.attachment'].sudo().create({
+                        "name": file.filename,
+                        "datas": base64.b64encode(file.read()),
+                        "res_model": "sale.order",
+                        "res_id": order.id,
+                        'type': 'binary',
+                        'mimetype': file.mimetype,
+                    })
 
-                        }
-                    )
-                )
-            crm_lead = request.env["crm.lead"].sudo().browse(id_crm["id"])
-            crm_lead.sudo().write({
-                # "partner_id": partner.sudo().id,
-                "product_onure": [(6, 0, product_onure_ids)],
-
-            }),
-
-            # partner.write({"child_ids": [(4, public_user.sudo().partner_id.id)]})
-            # public_user.sudo().partner_id.write({"parent_id":partner.sudo().id})
+                crm_lead = request.env["crm.lead"].sudo().browse(id_crm["id"])
+                    # "partner_id": partner.sudo().id,
+                crm_lead.sudo().write({"product_onure": [(6, 0, onure_ids)]})
+                
+                # partner.write({"child_ids": [(4, public_user.partner_id.id)]})
+                # public_user.partner_id.write({"parent_id":partner.sudo().id})
 
         if kwargs.get('productRequired') or kwargs.get('productOnure'):
             # Evitar doble creación si el formulario ya es de 'x_import'
@@ -430,12 +515,12 @@ class WebsiteForm(WebsiteForm):
                     #     'x_studio_date_stop': end_date,
                     #     # 'provider_purchase': kwargs.get('provider_purchase'),
                     #     # 'user_name': request.env.user.name,
-                    #     # "company": kwargs.get("company"),
+                    #     # "company": kwargs.get("partner_name"),
                     #     # "company_email": kwargs.get("company_email"),
 
                     # })
 
-            # public_user.sudo().partner_id.write({"parent_id":partner.sudo().id})
+            # public_user.partner_id.write({"parent_id":partner.sudo().id})
 
         # bandera
         # public_user.partner_id.sudo().write({"has_accredited_company": True})
@@ -447,7 +532,6 @@ class WebsiteForm(WebsiteForm):
         return res
 
     def _handle_website_form(self, model_name, **kwargs):
-
         res = super(WebsiteForm, self)._handle_website_form(model_name, **kwargs)
         # id_crm = eval(res)
         # crm_lead = request.env['crm.lead'].browse(id_crm['id'])
@@ -618,9 +702,9 @@ class ControllerTest(http.Controller):
         ], limit=1)
         crm_stage = ''
 
-        if crm_lead_exists:
-            potential_client_or_supplier = request.env.ref('pyxel_import_backend.potential_client_or_supplier')
-            in_process_of_approval = request.env.ref('pyxel_import_backend.in_process_of_approval')
+        if crm_lead_exists: 
+            potential_client_or_supplier = request.env.ref('crm.stage_lead1').sudo()
+            in_process_of_approval = request.env.ref('crm.stage_lead2').sudo()
 
             if potential_client_or_supplier and potential_client_or_supplier.id == crm_lead_exists.stage_id.id:
                 crm_stage = potential_client_or_supplier.name
@@ -656,8 +740,16 @@ class ControllerTest(http.Controller):
                 return request.redirect('/business-register-thanks')
 
         render_values = get_render_values(kw)
-        if kw.get('type') == 'import' and not contract_exists:
-            return request.render('pyxel_import_website.waiting_for_active_contract')
+        if kw.get('type') == 'import':
+            # Si no se ha realizado el formulario de acreditación
+            if not crm_lead_exists:
+                return request.render('pyxel_import_website.waiting_for_active_contract')
+            # Si no es Cliente nacional no se puede acreditar
+            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact != "Client" and request.env.user.partner_id.parent_id.contact_type_id.nationality_type != 'national':
+                return request.render('pyxel_import_website.you_are_not_a_national_client', {'contact_type': request.env.user.partner_id.parent_id.contact_type_id.name})
+            # Si realizó el formulario de acreditación pero no está acreditado
+            if not contract_exists:
+                return request.redirect('/business-register-thanks')
 
         partner = request.env.user.partner_id
 
@@ -666,11 +758,11 @@ class ControllerTest(http.Controller):
         else:
             contact_type = partner.contact_type_id.type_of_contact
 
-        if contact_type == "Supplier":
+        # if contact_type == "Supplier":
 
-            return request.render('pyxel_import_website.import_registration', render_values)
-        else:
-            return request.render('pyxel_import_website.business_registration', render_values)
+        #     return request.render('pyxel_import_website.import_registration', render_values)
+        # else:
+        return request.render('pyxel_import_website.business_registration', render_values)
 
 
 class ProductSearchController(http.Controller):
@@ -759,12 +851,13 @@ class ProductSearchController(http.Controller):
             'pager': pager,
         })
 
+class DownloadFileController(http.Controller):
 
-class PerfilProveedorController(http.Controller):
-
-    @http.route('/descargar/perfil_proveedor', type='http', auth='public')
-    def descargar_perfil_proveedor(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('perfil_proveedor.attachment_id')
+    @http.route('/descargar/<string:file_name>', type='http', auth='public')
+    def download_file(self,file_name, **kw):
+        if file_name not in ['solicitud', 'ficha_cliente_estatal', 'ficha_cliente_fgne_tcp','perfil_proveedor', 'cuban_partner']:
+            return request.redirect('/web')
+        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param(f'{file_name}.attachment_id')
         if attachment_id_str:
             try:
                 attachment_id = int(attachment_id_str)
@@ -772,94 +865,5 @@ class PerfilProveedorController(http.Controller):
                 return request.redirect('/web')
             attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
             if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'plantilla_proveedor',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class SolicitudController(http.Controller):
-
-    @http.route('/descargar/solicitud', type='http', auth='public')
-    def descargar_solicitud(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('solicitud.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'solicitud',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class FichaClienteEstatalController(http.Controller):
-
-    @http.route('/descargar/ficha_cliente_estatal', type='http', auth='public')
-    def descargar_ficha_cliente_estatal(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_estatal.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'ficha_cliente',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class FichaClienteFGNEoTCPController(http.Controller):
-
-    @http.route('/descargar/ficha_cliente_fgne_tcp', type='http', auth='public')
-    def descargar_ficha_cliente_fgne_tcp(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('ficha_cliente_fgne_tcp.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'ficha_cliente',
-                    as_attachment=True
-                )
-        return request.redirect('/web')
-
-
-class SocioConNacionalidadCubanaController(http.Controller):
-
-    @http.route('/descargar/cuban_partner', type='http', auth='public')
-    def descargar_cuban_partner(self, **kw):
-        attachment_id_str = request.env['ir.config_parameter'].sudo().get_param('cuban_partner.attachment_id')
-        if attachment_id_str:
-            try:
-                attachment_id = int(attachment_id_str)
-            except ValueError:
-                return request.redirect('/web')
-            attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
-            if attachment and attachment.datas:
-                file_content = base64.b64decode(attachment.datas)
-                return http.send_file(
-                    io.BytesIO(file_content),
-                    filename=attachment.name or 'cuban_partner',
-                    as_attachment=True
-                )
+                return Stream.from_attachment(attachment).get_response(as_attachment=True)
         return request.redirect('/web')
