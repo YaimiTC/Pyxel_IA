@@ -645,7 +645,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <!-- <script src="/fruxelimport/pyxel_fruxelimport_website/static/src/js/business_registration.js"></script> -->
+                                                        <!-- <script src="/fruxelimport/pyxel_import_website/static/src/js/business_registration.js"></script> -->
 
                                                         <div class="mb-0 py-2 col-12 s_website_form_field s_website_form_required s_website_form_model_required" data-type="email" data-name="Field">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
