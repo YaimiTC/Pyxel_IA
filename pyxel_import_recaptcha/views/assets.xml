@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="assets_frontend" name="reCAPTCHA Assets" inherit_id="web.assets_frontend">
+        <xpath expr="." position="inside">
+            <t t-if="request.httprequest.path == '/web/login'">
+                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+            </t>
+        </xpath>
+    </template>
+</odoo>
