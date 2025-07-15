@@ -47,11 +47,11 @@
 
             'pyxel_import_website/static/src/js/business_registration.js',
             'pyxel_import_website/static/src/js/nomenclator_add.js',
-            # 'pyxel_fruxelimport_website/static/src/css/business_register.css',
+            # 'pyxel_import_website/static/src/css/business_register.css',
             'pyxel_import_website/static/src/css/badge_classes.css',
             'pyxel_import_website/static/src/css/nomenclator.css',
 
-            # 'pyxel_fruxelimport_website/static/src/scss/provider.scss',
+            # 'pyxel_import_website/static/src/scss/provider.scss',
         ]
     },
     "installable": True,

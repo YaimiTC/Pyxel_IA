@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Script de Google reCAPTCHA -->
+        <record id="website_recaptcha_js" model="ir.asset">
+            <field name="name">Google reCAPTCHA JS</field>
+            <field name="bundle">web.assets_frontend</field>
+            <field name="path">https://www.google.com/recaptcha/api.js</field>
+        </record>
+
+    </data>
+</odoo>
+

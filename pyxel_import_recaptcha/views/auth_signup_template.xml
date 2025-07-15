@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+         <template id="auth_signup_signup_inherit" inherit_id="auth_signup.signup" name="Add reCAPTCHA to Signup">
+                 <xpath expr="//form[@class='oe_signup_form']" position="inside">
+                        <!-- Agregar el widget de reCAPTCHA -->
+                        <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
+                        <div class="form-group mt-3">
+
+                            <div class="g-recaptcha"
+                                  t-att-data-sitekey="recaptcha_public_key">
+                            </div>
+
+                        </div>
+                    </xpath>
+         </template>
+    </data>
+</odoo>
