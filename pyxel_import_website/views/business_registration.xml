@@ -487,7 +487,7 @@
                                                                 </label>
                                                                 <div class="col-sm" style="position: relative;">
                                                                     <div class="input-group">
-                                                                         <div class="col-md-10">
+                                                                         <div class="col-md-8">
                                                                             <input id="deed_input_number" name="deed_input_number"
                                                                                 class="form-control s_website_form_input"
                                                                                 type="text" required=""
@@ -495,12 +495,14 @@
                                                                                 title="Sólo números"
                                                                                 onkeypress="if(!/\d/.test(String.fromCharCode(event.which))) event.preventDefault();"/>
                                                                         </div>
-                                                                        <div class="col-md-2 ps-2">
+                                                                        <div class="col-md-4 ps-2">
                                                                             <input id="deed_input_date" name="deed_input_date"
                                                                                 class="form-control s_website_form_input"
                                                                                 type="date" required=""
-                                                                                max="9999-12-31"
+                                                                                title="La fecha no puede ser posterior al día actual"
+                                                                                max="2025-07-17"
                                                                                 />
+                                                                            <span id="deed_input_date_error" style="color:red; display:none;">La fecha no puede ser posterior al día actual.</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
