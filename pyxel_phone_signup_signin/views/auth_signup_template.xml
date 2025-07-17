@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="pyxel_phone_signup_signin.fields_inherit" inherit_id="auth_signup.fields">
+        <!-- Modificar el label -->
+        <xpath expr="//label[@for='login']" position="replace">
+            <label for="login">Email or Phone</label>
+        </xpath>
+
+        <!-- Modificar atributos del input -->
+        <xpath expr="//input[@name='login']" position="attributes">
+            <attribute name="pattern">(^[\w\.-]+@[\w\.-]+\.\w+$)|(^\+?\d{7,15}$)</attribute>
+            <attribute name="title">Enter a valid email or phone number</attribute>
+        </xpath>
+    </template>
+</odoo>
+
