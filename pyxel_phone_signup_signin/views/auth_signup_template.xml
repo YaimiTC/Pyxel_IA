@@ -12,5 +12,14 @@
             <attribute name="title">Enter a valid email or phone number</attribute>
         </xpath>
     </template>
+
+    <odoo>
+        <template id="pyxel_phone_signup_signin.web_login_inherit" inherit_id="web.login">
+            <xpath expr="//label[@for='login']" position="replace">
+                <label for="login" class="form-label">Email or Phone</label>
+            </xpath>
+        </template>
+    </odoo>
+
 </odoo>
 
