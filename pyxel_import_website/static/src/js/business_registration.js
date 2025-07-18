@@ -15,6 +15,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         'click .register_business_button': 'validateForm',
         'keyup .is-invalid': '_removeInvalid',
         'click .is-invalid': '_removeInvalid',
+        'change input[name="deed_input_date"]': '_onchangeDeedInputDate',
         'change input[name="parent_company_name"]': '_onchangeParentCompanyName',
         'change input[name="legal_documentation"]': '_onchangeFile',
         'change input[name="ficha_cliente"]': '_onchangeFile',
@@ -40,6 +41,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     start: function () {
         var def = this._super.apply(this, arguments);
         this.showTab(this.currentTab);
+        this._setMaxDateToDeedInputDate();
         this._toggleFields();
         this._showHideNoMincexCodeDocumentation();
         this._showHideCubanPartner();
@@ -313,6 +315,37 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             license_holder_input?.setAttribute("required", "");
             if(license_holder_input)
                 license_holder_input.disabled = false;
+        }
+    },
+    _setMaxDateToDeedInputDate() {
+        const deed_input_date = document.getElementById('deed_input_date');
+
+        console.log(deed_input_date.max)
+        if(deed_input_date){
+            const today = new Date().toLocaleDateString().split('/').reverse();
+            if(today[1].length === 1)
+                today[1] = '0'+ today[1];
+            deed_input_date.max = today.join('-');
+        }
+        console.log(deed_input_date.max)
+    },
+    _onchangeDeedInputDate() {
+        const deed_input_date = document.getElementById('deed_input_date');
+        const errorElement = document.getElementById('deed_input_date_error');
+        
+        if(deed_input_date && deed_input_date?.value && errorElement){
+            if(new Date(deed_input_date.value.replaceAll('-', '/')).getTime() <=new Date().getTime()){
+                errorElement.style.display = "none";
+                deed_input_date?.classList?.add('is-valid');
+                deed_input_date?.classList?.remove('is-invalid');
+            } else {
+                errorElement.style.display = "block";
+                errorElement.style.margin = "10px 0px 10px";
+                deed_input_date?.classList?.add('is-invalid');
+                deed_input_date?.classList?.remove('is-valid');
+                return false
+                // fileDelete.click() 
+            }
         }
     },
     async _onchangeFile(ev) {
