@@ -32,6 +32,7 @@
         'data/importation_stage_data.xml',
         "security/ir.model.access.csv",
         'data/email_payment_to_supplier_template.xml',
+        'data/email_bl_upload_delay_template.xml',
         "views/res_partner_view.xml",
         "views/product_template_views.xml",
         "views/crm_lead_views.xml",
