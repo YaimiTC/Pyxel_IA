@@ -31,6 +31,7 @@
         'data/importation_sequence.xml',
         'data/importation_stage_data.xml',
         "security/ir.model.access.csv",
+        'data/email_payment_to_supplier_template.xml',
         "views/res_partner_view.xml",
         "views/product_template_views.xml",
         "views/crm_lead_views.xml",
@@ -51,6 +52,7 @@
         "views/importation_load_line_views.xml",
         "views/report_purchaseorder_no_code.xml",
         "views/report_saleorder_no_code.xml",
+
 
 
      ],
