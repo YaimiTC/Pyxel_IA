@@ -62,6 +62,13 @@ class PurchaseOrderLine(models.Model):
 
     sale_order_line_id = fields.Many2one('sale.order.line', string='Source Sales Line')
 
+    currency_id = fields.Many2one(
+        related='order_id.currency_id',
+        string='Currency',
+        store=True,
+        readonly=True
+    )
+
     quantity_available = fields.Float(
         string='Available Quantity for Containers',
         compute='_compute_quantity_available',

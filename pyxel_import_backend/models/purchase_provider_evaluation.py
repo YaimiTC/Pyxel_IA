@@ -20,7 +20,7 @@ class PurchaseProviderEvaluation(models.Model):
         'purchase.order',
         'evaluation_id',
         string='Purchase Orders',
-        tracking = True
+        tracking=True
     )
 
     has_evaluations_to_apply = fields.Boolean(

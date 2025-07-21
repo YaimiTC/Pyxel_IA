@@ -130,6 +130,7 @@ class ResPartnerContactType(models.Model):
         default='national'
     )
 
+
 class ResPartnerManagementType(models.Model):
     _name = 'res.partner.management.type'
     _description = 'Type of Management'
