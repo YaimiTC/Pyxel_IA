@@ -8,7 +8,7 @@ from odoo.exceptions import UserError
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    purchase_order_count = fields.Integer(string="Purchase Orders", compute='_compute_purchase_order_count')
+    purchase_order_count = fields.Integer(string="Purchase Orders", compute='_compute_purchase_order_count', store=True)
     provider_names = fields.Char(string="Providers", compute="_compute_purchase_order_count", store=True)
     invoice_names = fields.Char(string='Invoices', compute='_compute_invoice_names')
 
