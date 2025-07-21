@@ -190,6 +190,8 @@ class WebsiteForm(WebsiteForm):
 
     def website_form(self, model_name, **kwargs):
         tipo_registro = kwargs.get("register_type") 
+        public_user = request.env.user.sudo()
+        contact_type_id = int(kwargs.get("contact_type", False))
 
         if model_name == "crm.lead" and tipo_registro == "accreditation":
             domain_ids = [request.env.user.partner_id.id]
@@ -204,203 +206,191 @@ class WebsiteForm(WebsiteForm):
                     status=400,
                     headers={'Content-Type': 'application/json'}
                 )
+            
+            partner_data = {
+                "name": kwargs.get("parent_company_name"),
+                "vat": kwargs.get("nit", False),
+                "dap": kwargs.get("dap", False),
+                "company_type": 'company',
+                "phone": kwargs.get("phone"),
+                "email": kwargs.get("parent_company_email"),
+                "country_id": int(kwargs.get("country", request.env.ref('base.cu').id)),
+                "state_id": int(kwargs.get("state",False)),
+                "street": kwargs.get("address"),
+                "license_holder": kwargs.get("license_holder"),
+                "management_type_id": int(kwargs.get("fgne_type", False)),
+                "deed_number": int(kwargs.get("deed_input_number", False)),
+                "deed_date": kwargs.get("deed_input_date"),
+                "contact_type_id": contact_type_id,
+            }
+            if kwargs.get("supplier_type"):
+                if kwargs.get("supplier_type") == 'Productor':
+                    category_id = request.env.ref('pyxel_import_backend.res_partner_category_producer').id  
+                    partner_data['category_id'] = [(4, category_id)]   
+                elif kwargs.get("supplier_type") == 'Comerciante':
+                    category_id = request.env.ref('pyxel_import_backend.res_partner_category_businessman').id
+                    partner_data['category_id'] = [(4, category_id)]   
+
+            if kwargs.get("city"):
+                city_id = int(kwargs.get("city",False))
+                partner_data['city'] = request.env["res.city"].sudo().search([("id", "=", city_id)], limit=1).name
+                partner_data['city_id'] = city_id
+
+            partner = request.env["res.partner"].sudo().create(partner_data)
+            public_user.partner_id.write({"name": kwargs["partner_name"], "parent_id": partner.id})
+            request.params.update({'partner_id': partner.id})
+            kwargs.update({'partner_id': partner.id})
+
+            # 1. Filtrar las claves que empiezan con 'files'
+            file_keys = [key for key in kwargs.keys() if key.startswith('legal_documentation')]
+
+            if kwargs.get('ficha_cliente[0][0]'):
+                file_keys.append('ficha_cliente[0][0]')
+            if kwargs.get('planilla_proveedor[0][0]'):
+                file_keys.append('planilla_proveedor[0][0]')
+            if kwargs.get('cuban_partner[0][0]'):
+                file_keys.append('cuban_partner[0][0]')
+
+            for file_key in file_keys:
+                file = kwargs.get(file_key, {})
+                # for file in request.httprequest.files.getlist(file_key):
+                file.seek(0)  # Rebobinar al inicio del archivo, xq sino el file.read() devuelve b'', o sea que está vacío
+                request.env['ir.attachment'].sudo().create({
+                    "name": file.filename,
+                    "datas": base64.b64encode(file.read()),
+                    "res_model": "res.partner",
+                    "res_id": partner.id,
+                    'type': 'binary',
+                    'mimetype': file.mimetype,
+                })
 
         res = super(WebsiteForm, self).website_form(model_name, **kwargs)
         _logger.info("Todas las claves disponibles en kwargs: %s", kwargs.keys())
     
-        if model_name == "x_import":
-            if tipo_registro == "logistic":
-                pass
-            else:
-                id_import = eval(res.response[0])
-                import_rec = request.env["x_import"].sudo().browse(id_import["id"])
-                supplier = request.env.user.sudo().partner_id.id
+        # if model_name == "x_import":
+        #     if tipo_registro == "logistic":
+        #         pass
+        #     else:
+        #         id_import = eval(res.response[0])
+        #         import_rec = request.env["x_import"].sudo().browse(id_import["id"])
+        #         supplier = request.env.user.sudo().partner_id.id
 
-                def process_file(field_name):
-                    _logger.info("Procesando campo: %s", field_name)
-                    file_storage = kwargs.get(f'{field_name}[0][0]', False)
-                    _logger.info("Tipo de file_storage para %s: %s", field_name, type(file_storage))
+        #         def process_file(field_name):
+        #             _logger.info("Procesando campo: %s", field_name)
+        #             file_storage = kwargs.get(f'{field_name}[0][0]', False)
+        #             _logger.info("Tipo de file_storage para %s: %s", field_name, type(file_storage))
 
-                    if file_storage:
-                        if hasattr(file_storage, 'filename'):
-                            _logger.info("Nombre del archivo: %s", file_storage.filename)
-                            filename = file_storage.filename
-                        else:
-                            filename = f'documento_{field_name}.pdf'
+        #             if file_storage:
+        #                 if hasattr(file_storage, 'filename'):
+        #                     _logger.info("Nombre del archivo: %s", file_storage.filename)
+        #                     filename = file_storage.filename
+        #                 else:
+        #                     filename = f'documento_{field_name}.pdf'
 
-                        if hasattr(file_storage, 'seek') and callable(file_storage.seek):
-                            try:
-                                file_storage.seek(0)
-                                _logger.info("Archivo rebobinado correctamente")
-                            except Exception as e:
-                                _logger.error("Error al rebobinar: %s", str(e))
+        #                 if hasattr(file_storage, 'seek') and callable(file_storage.seek):
+        #                     try:
+        #                         file_storage.seek(0)
+        #                         _logger.info("Archivo rebobinado correctamente")
+        #                     except Exception as e:
+        #                         _logger.error("Error al rebobinar: %s", str(e))
 
-                        try:
-                            if hasattr(file_storage, 'read') and callable(file_storage.read):
-                                file_content = file_storage.read()
-                                _logger.info("Tamaño del contenido leído: %s bytes", len(file_content))
-                            else:
-                                _logger.warning("El objeto no tiene método read()")
-                                file_content = b''
-                        except Exception as e:
-                            _logger.error("Error leyendo el archivo: %s", str(e))
-                            file_content = b''
-                    else:
-                        _logger.warning("No se encontró el objeto file_storage para %s", field_name)
-                        file_content = b''
-                        filename = f'documento_{field_name}.pdf'
+        #                 try:
+        #                     if hasattr(file_storage, 'read') and callable(file_storage.read):
+        #                         file_content = file_storage.read()
+        #                         _logger.info("Tamaño del contenido leído: %s bytes", len(file_content))
+        #                     else:
+        #                         _logger.warning("El objeto no tiene método read()")
+        #                         file_content = b''
+        #                 except Exception as e:
+        #                     _logger.error("Error leyendo el archivo: %s", str(e))
+        #                     file_content = b''
+        #             else:
+        #                 _logger.warning("No se encontró el objeto file_storage para %s", field_name)
+        #                 file_content = b''
+        #                 filename = f'documento_{field_name}.pdf'
 
-                    if file_content == b'' and hasattr(request, 'httprequest') and hasattr(request.httprequest,
-                                                                                           'files'):
-                        _logger.info("Intentando método alternativo para %s...", field_name)
-                        file_found = False
+        #             if file_content == b'' and hasattr(request, 'httprequest') and hasattr(request.httprequest,
+        #                                                                                    'files'):
+        #                 _logger.info("Intentando método alternativo para %s...", field_name)
+        #                 file_found = False
 
-                        for key in request.httprequest.files:
-                            _logger.info("Revisando clave: %s", key)
-                            if field_name.replace('x_studio_', '') in key:
-                                alt_file = request.httprequest.files[key]
-                                try:
-                                    if hasattr(alt_file, 'seek'):
-                                        alt_file.seek(0)
-                                    alt_content = alt_file.read()
-                                    if alt_content and len(alt_content) > 0:
-                                        file_content = alt_content
-                                        if hasattr(alt_file, 'filename'):
-                                            filename = alt_file.filename
-                                        _logger.info("Contenido obtenido por método alternativo: %s bytes",
-                                                     len(file_content))
-                                        file_found = True
-                                        break
-                                except Exception as e:
-                                    _logger.error("Error en método alternativo: %s", str(e))
+        #                 for key in request.httprequest.files:
+        #                     _logger.info("Revisando clave: %s", key)
+        #                     if field_name.replace('x_studio_', '') in key:
+        #                         alt_file = request.httprequest.files[key]
+        #                         try:
+        #                             if hasattr(alt_file, 'seek'):
+        #                                 alt_file.seek(0)
+        #                             alt_content = alt_file.read()
+        #                             if alt_content and len(alt_content) > 0:
+        #                                 file_content = alt_content
+        #                                 if hasattr(alt_file, 'filename'):
+        #                                     filename = alt_file.filename
+        #                                 _logger.info("Contenido obtenido por método alternativo: %s bytes",
+        #                                              len(file_content))
+        #                                 file_found = True
+        #                                 break
+        #                         except Exception as e:
+        #                             _logger.error("Error en método alternativo: %s", str(e))
 
-                        if not file_found:
-                            _logger.warning("No se encontró un archivo válido para %s", field_name)
+        #                 if not file_found:
+        #                     _logger.warning("No se encontró un archivo válido para %s", field_name)
 
-                    if file_content and len(file_content) > 0:
-                        file_data_base64 = base64.b64encode(file_content)
-                        _logger.info("Datos codificados en base64 para %s: %s bytes", field_name, len(file_data_base64))
-                        return {
-                            field_name: file_data_base64,
-                            f"{field_name}_filename": filename
-                        }
-                    else:
-                        _logger.warning("No hay datos para codificar en base64 para %s", field_name)
-                        return {}
+        #             if file_content and len(file_content) > 0:
+        #                 file_data_base64 = base64.b64encode(file_content)
+        #                 _logger.info("Datos codificados en base64 para %s: %s bytes", field_name, len(file_data_base64))
+        #                 return {
+        #                     field_name: file_data_base64,
+        #                     f"{field_name}_filename": filename
+        #                 }
+        #             else:
+        #                 _logger.warning("No hay datos para codificar en base64 para %s", field_name)
+        #                 return {}
 
-                # agregar los campos de tipo pdf en el formulario...
-                file_fields = [
-                    'oferta_firmada',
-                    'x_studio_bill_of_lading_bl',
-                    'x_studio_x_comercial_invoice',
-                    'x_studio_package_list',
-                    'x_studio_export_certify',
-                    'x_studio_quality_certify',
-                    'x_studio_certificate_of_origin_co'
-                ]
+        #         # agregar los campos de tipo pdf en el formulario...
+        #         file_fields = [
+        #             'oferta_firmada',
+        #             'x_studio_bill_of_lading_bl',
+        #             'x_studio_x_comercial_invoice',
+        #             'x_studio_package_list',
+        #             'x_studio_export_certify',
+        #             'x_studio_quality_certify',
+        #             'x_studio_certificate_of_origin_co'
+        #         ]
 
-                values = {
-                    "x_studio_origin_country": eval(kwargs.get("Id de país", "None")),
-                    "x_studio_certifies_receipt_load": kwargs.get("Tipo de envío de la carga", None),
-                    "x_studio_bill_of_landing_number": kwargs.get("x_studio_bill_of_landing_number", ""),
-                    "x_studio_supplier": supplier,
+        #         values = {
+        #             "x_studio_origin_country": eval(kwargs.get("Id de país", "None")),
+        #             "x_studio_certifies_receipt_load": kwargs.get("Tipo de envío de la carga", None),
+        #             "x_studio_bill_of_landing_number": kwargs.get("x_studio_bill_of_landing_number", ""),
+        #             "x_studio_supplier": supplier,
 
-                }
+        #         }
 
-                for field in file_fields:
-                    file_values = process_file(field)
-                    values.update(file_values)
+        #         for field in file_fields:
+        #             file_values = process_file(field)
+        #             values.update(file_values)
 
-                import_rec.write(values)
+        #         import_rec.write(values)
 
-                if "Cliente nuevo" not in kwargs and model_name == "x_import":
-                    cliente = request.env["res.partner"].sudo().browse(int(kwargs["customer_id"]))
-                    import_rec.write({'x_studio_form_note': (
-                                                                    import_rec.x_studio_form_note or '') + "Cliente: " + cliente.name + "\nNIT: " + (
-                                                                    cliente.vat or '')})
+        #         if "Cliente nuevo" not in kwargs and model_name == "x_import":
+        #             cliente = request.env["res.partner"].sudo().browse(int(kwargs["customer_id"]))
+        #             import_rec.write({'x_studio_form_note': (
+        #                                                             import_rec.x_studio_form_note or '') + "Cliente: " + cliente.name + "\nNIT: " + (
+        #                                                             cliente.vat or '')})
 
-                # CREACIÓN DE LA ORDEN DE COMPRA ASOCIACIÓN AL LA IMPORTACION (x_import)
-                purchase_order_vals = {
-                    "x_studio_client": int(kwargs["customer_id"]),
-                    "partner_id": supplier,
-                    "x_studio_import_id": import_rec.id,
-                    "receipt_status": "pending",
-                }
-                purchase_order = request.env["purchase.order"].sudo().create(purchase_order_vals)
-                _logger.info("Orden de compra creada con ID: %s", purchase_order.id)
-
-        # if kwargs["Register as"] == 'ClientNacional':
-        #     contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_client').id
-        # elif kwargs["Register as"] == 'ClientExtranjero':
-        #     contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_foreign_client').id
-        # elif kwargs["Register as"] == 'ProviderNacional':
-        #     contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_supplier').id
-        # elif kwargs["Register as"] == 'ProviderExtranjero':
-        #     contact_type_id = request.env.ref('pyxel_import_backend.res_partner_contact_type_foreign_supplier').id
-        # else:
-        contact_type_id = int(kwargs.get("contact_type", False))
+        #         # CREACIÓN DE LA ORDEN DE COMPRA ASOCIACIÓN AL LA IMPORTACION (x_import)
+        #         purchase_order_vals = {
+        #             "x_studio_client": int(kwargs["customer_id"]),
+        #             "partner_id": supplier,
+        #             "x_studio_import_id": import_rec.id,
+        #             "receipt_status": "pending",
+        #         }
+        #         purchase_order = request.env["purchase.order"].sudo().create(purchase_order_vals)
+        #         _logger.info("Orden de compra creada con ID: %s", purchase_order.id)
 
         if model_name == "crm.lead":
-            public_user = request.env.user.sudo()
             # Crear la Cotización a partir de la solicitud de importación
-            if tipo_registro == "accreditation": 
-                # if public_user.partner_id.parent_id:
-                #     raise ValidationError('Usted ya se ha acreditado, para volver a acreditarse debe hacerlo con un usuario nuevo que no esté acreditado')
-                partner_data = {
-                            "name": kwargs.get("parent_company_name"),
-                            "vat": kwargs.get("nit", False),
-                            "dap": kwargs.get("dap", False),
-                            "company_type": 'company',
-                            "phone": kwargs.get("phone"),
-                            "email": kwargs.get("parent_company_email"),
-                            "country_id": int(kwargs.get("country", request.env.ref('base.cu').id)),
-                            "state_id": int(kwargs.get("state",False)),
-                            "street": kwargs.get("address"),
-                            "license_holder": kwargs.get("license_holder"),
-                            "management_type_id": int(kwargs.get("fgne_type", False)),
-                            "deed_number": int(kwargs.get("deed_input_number", False)),
-                            "deed_date": kwargs.get("deed_input_date"),
-                            "contact_type_id": contact_type_id,
-                        }
-                if kwargs.get("supplier_type"):
-                    if kwargs.get("supplier_type") == 'Productor':
-                        category_id = request.env.ref('pyxel_import_backend.res_partner_category_producer').id  
-                        partner_data['category_id'] = [(4, category_id)]   
-                    elif kwargs.get("supplier_type") == 'Comerciante':
-                        category_id = request.env.ref('pyxel_import_backend.res_partner_category_businessman').id
-                        partner_data['category_id'] = [(4, category_id)]   
-
-                if kwargs.get("city"):
-                    city_id = int(kwargs.get("city",False))
-                    partner_data['city'] = request.env["res.city"].sudo().search([("id", "=", city_id)], limit=1).name
-                    partner_data['city_id'] = city_id
-
-                partner = request.env["res.partner"].sudo().create(partner_data)
-                public_user.partner_id.write({"name": kwargs["partner_name"], "parent_id": partner.id})
-
-                # 1. Filtrar las claves que empiezan con 'files'
-                file_keys = [key for key in kwargs.keys() if key.startswith('legal_documentation')]
-
-                if kwargs.get('ficha_cliente[0][0]'):
-                    file_keys.append('ficha_cliente[0][0]')
-                if kwargs.get('planilla_proveedor[0][0]'):
-                    file_keys.append('planilla_proveedor[0][0]')
-                if kwargs.get('cuban_partner[0][0]'):
-                    file_keys.append('cuban_partner[0][0]')
-
-                for file_key in file_keys:
-                    file = kwargs.get(file_key, {})
-                    # for file in request.httprequest.files.getlist(file_key):
-                    file.seek(0)  # Rebobinar al inicio del archivo, xq sino el file.read() devuelve b'', o sea que está vacío
-                    request.env['ir.attachment'].sudo().create({
-                        "name": file.filename,
-                        "datas": base64.b64encode(file.read()),
-                        "res_model": "res.partner",
-                        "res_id": partner.id,
-                        'type': 'binary',
-                        'mimetype': file.mimetype,
-                    })
-            elif tipo_registro == "import":
+            if tipo_registro == "import":
                 id_crm = eval(res.response[0])
                 product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if
                         id.strip().isdigit()]
