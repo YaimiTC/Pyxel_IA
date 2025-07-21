@@ -6,3 +6,4 @@ include:
   - project: 'devops/templates'
     file: 'odoo/gitlab-ci.yml'
   
+  
