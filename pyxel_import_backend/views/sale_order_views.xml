@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
     <record id="view_order_form_inherit_evaluar_proveedor" model="ir.ui.view">
         <field name="name">sale.order.form.inherit.evaluar.proveedor</field>
         <field name="model">sale.order</field>
@@ -45,8 +46,7 @@
         </field>
         </record>
 
-
-     <record id="view_order_tree_inherit_order_type" model="ir.ui.view">
+    <record id="view_order_tree_inherit_order_type" model="ir.ui.view">
         <field name="name">sale.order.tree.inherit.order_type</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_quotation_tree"/>
@@ -59,4 +59,44 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_order_search_inherit_order_type_extension" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.order.type.extension</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='order_month']" position="after">
+                <filter string="Order type" name="group_by_order_type" context="{'group_by': 'order_type'}"/>
+                <filter string="Evaluación Final" name="filter_final_evaluation" domain="[('order_type', '=', 'evaluation_final')]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="context" eval="{'search_default_customer': 1, 'search_default_group_by_order_type': 1}"/>
+    </record>
+
+
+<!--    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">-->
+<!--        <field name="context" eval="{'group_by': ['partner_id', 'order_type']}"/>-->
+<!--    </record>-->
+
+ <record id="action_mass_send_quotation_final_evaluation_binding" model="ir.actions.server">
+    <field name="name">Enviar Cotizaciones: Evaluación Final</field>
+    <field name="model_id" ref="sale.model_sale_order"/>
+    <field name="binding_model_id" ref="sale.model_sale_order"/>
+    <field name="binding_view_types">list</field>
+    <field name="state">code</field>
+    <field name="code">
+records = env['sale.order'].search([('order_type', '=', 'evaluation_final')]) if not env.context.get('active_ids') else env['sale.order'].browse(env.context.get('active_ids')).filtered(lambda r: r.order_type == 'evaluation_final')
+for record in records:
+    record.action_quotation_send()
+    record.message_post(
+        body="Se ha enviado el correo de la cotización (Evaluación Final).",
+        message_type="comment"
+    )
+    </field>
+</record>
+
+
 </odoo>
