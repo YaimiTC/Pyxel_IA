@@ -1,3 +1,5 @@
+from datetime import timedelta, datetime
+
 from odoo import models, fields, api,_
 from odoo.exceptions import ValidationError, UserError
 
@@ -77,6 +79,9 @@ class ImportationProcess(models.Model):
 
     packing_list = fields.Binary(string='Packing List')
     packing_list_filename = fields.Char()
+
+    packing_list_filename_date = fields.Datetime(string="Packing List upload date")  # custom
+    alerted_late = fields.Boolean(string="Packing List uploaded late", default=False)
 
     load_tracking_ids = fields.One2many(
         'importation.load',
@@ -211,20 +216,52 @@ class ImportationProcess(models.Model):
         return super().create(vals)
 
     def write(self, vals):
-        if 'stage_id' in vals:
-            for record in self:
-                # Si se intenta cambiar la etapa y la actual es "Solicitud"
+        # Validación de cambio de etapa
+        for record in self:
+            if 'stage_id' in vals:
                 if record.stage_id.name == 'SOLICITUD':
-                    importation = record
                     if not (
-                            (importation.contract_reference_customer and importation.contract_reference_supplier) or
+                            (record.contract_reference_customer and record.contract_reference_supplier) or
                             (vals.get('contract_reference_customer') and vals.get('contract_reference_supplier'))
                     ):
                         raise UserError(_(
                             "No puede cambiar la etapa desde 'Solicitud' si no están definidas las referencias de "
                             "contrato del cliente y del proveedor."
                         ))
-        return super().write(vals)
+
+        # Preparar valores a actualizar en vals para evitar múltiples writes
+        for record in self:
+            # Si el archivo NO existe en el registro actual y no está explícito en vals, poner fecha a False
+            if ('packing_list' in vals and not vals.get('packing_list')) or (
+                    not record.packing_list and 'packing_list' not in vals):
+                vals['packing_list_filename_date'] = False
+            else:
+                # Si el archivo existe y se está cambiando el archivo
+                if 'packing_list_filename' in vals:
+                    vals['packing_list_filename_date'] = fields.Datetime.now()
+
+        res = super().write(vals)
+
+        # Después de guardar, hacer validación para enviar alerta y mensajes (sin modificar registros)
+        for record in self:
+            if record.packing_list_filename_date and record.documentation_sent_date:
+                doc_sent_dt = datetime.combine(record.documentation_sent_date, datetime.min.time())
+                delay = record.packing_list_filename_date - doc_sent_dt
+                if delay.total_seconds() > 72 * 3600 and not record.alerted_late:
+                    # Enviar email y mensaje
+                    record._send_alert_email_to_creator()
+                    record.message_post(
+                        body="⚠ El archivo 'Packing List' fue subido más de 72 horas después de la fecha de envío de la documentación.",
+                        message_type="notification"
+                    )
+                    record.write({'alerted_late': True})
+        return res
+
+    def _send_alert_email_to_creator(self):
+        template = self.env.ref('pyxel_import_backend.email_template_bl_upload_delay', raise_if_not_found=False)
+        if template and self.create_uid and self.create_uid.partner_id.email:
+            # Enviar correo
+            template.send_mail(self.id, force_send=True)
 
     def action_start_progress(self):
         self.write({'state': 'in_progress'})
