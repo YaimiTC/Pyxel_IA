@@ -16,7 +16,7 @@ class ResPartner(models.Model):
     deed_number = fields.Integer()
     deed_date = fields.Date()
     # count_imports = fields.Integer(string="Count Imports", compute="_compute_count_imports")
-    dap = fields.Char(string="DAP", help="Dos dígitos para provincia y dos para el municipio documento de la ONEI.")
+    dap = fields.Char(string="DPA", help="Dos dígitos para provincia y dos para el municipio documento de la ONEI.")
     license_holder = fields.Char(string="Mincex")
     activity_number = fields.Char(string="Activity Number")
     hiring_number = fields.Char(string="Hiring Number")
@@ -29,9 +29,9 @@ class ResPartner(models.Model):
         for record in self: 
             if record.dap:
                 if not record.dap.isdigit():
-                    raise ValidationError(_("The DAP must contain only digits."))
+                    raise ValidationError(_("The DPA must contain only digits."))
                 if len(record.dap) != 4:
-                    raise ValidationError(_("The DAP must be exactly 4 digits long."))
+                    raise ValidationError(_("The DPA must be exactly 4 digits long."))
 
     @api.constrains('vat')
     def _check_vat_length(self):

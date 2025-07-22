@@ -858,7 +858,7 @@ msgstr ""
 #. module: pyxel_import_website
 #: model_terms:ir.ui.view,arch_db:pyxel_import_website.business_registration
 msgid ""
-"<span id=\"dap-error\" style=\"color:red; display:none;\">El DAP debe "
+"<span id=\"dap-error\" style=\"color:red; display:none;\">El DPA debe "
 "contener exactamente 4 dígitos.</span>"
 msgstr ""
 
