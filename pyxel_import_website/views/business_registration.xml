@@ -414,12 +414,12 @@
                                                         <div name="dap" class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom">
                                                             <div class="row s_col_no_resize s_col_no_bgcolor">
                                                                 <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="dap">
-                                                                    <span class="s_website_form_label_content">DAP</span>
+                                                                    <span class="s_website_form_label_content">DPA</span>
                                                                     <span class="s_website_form_mark">*</span>
                                                                 </label>
                                                                 <div class="col-sm">
                                                                     <input id="dap" type="text" class="form-control s_website_form_input" name="dap" required="" pattern="\d{4}" maxlength="4" oninput="this.value = this.value.replace(/\D/g, '')"/>
-                                                                    <span id="dap-error" style="color:red; display:none;">El DAP debe contener exactamente 4 dígitos.</span>
+                                                                    <span id="dap-error" style="color:red; display:none;">El DPA debe contener exactamente 4 dígitos.</span>
                                                                 </div>
                                                             </div>
                                                         </div>

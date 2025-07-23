@@ -658,7 +658,7 @@ msgstr "Referencia del contrato del cliente"
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_res_partner__dap
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_res_users__dap
 #: model:ir.model.fields.selection,name:pyxel_import_backend.selection__importation_process__purchase_condition__dap
-msgid "DAP"
+msgid "DPA"
 msgstr ""
 
 #. module: pyxel_import_backend
@@ -2209,15 +2209,15 @@ msgstr "Costo adicional temporal"
 #. odoo-python
 #: code:addons/pyxel_import_backend/models/res_partner.py:0
 #, python-format
-msgid "The DAP must be exactly 4 digits long."
-msgstr "El DAP debe tener exactamente 4 dígitos de largo."
+msgid "The DPA must be exactly 4 digits long."
+msgstr "El DPA debe tener exactamente 4 dígitos de largo."
 
 #. module: pyxel_import_backend
 #. odoo-python
 #: code:addons/pyxel_import_backend/models/res_partner.py:0
 #, python-format
-msgid "The DAP must contain only digits."
-msgstr "El DAP debe contener únicamente dígitos."
+msgid "The DPA must contain only digits."
+msgstr "El DPA debe contener únicamente dígitos."
 
 #. module: pyxel_import_backend
 #. odoo-python
