@@ -206,6 +206,10 @@ class ImportationProcess(models.Model):
         stage = self.env['importation.stage'].browse(vals.get('stage_id'))
         importation = self.env['importation.process'].browse(vals.get('importation_id'))
 
+        if vals.get('name', 'New') == 'New':
+            sequence = self.env['ir.sequence'].next_by_code('importation.process')
+            vals['name'] = sequence or 'New'
+
         if stage.name != 'SOLICITUD':
             if not (vals.get('contract_reference_customer') and vals.get('contract_reference_supplier')):
                 raise UserError(_(
