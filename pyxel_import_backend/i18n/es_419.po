@@ -1823,6 +1823,7 @@ msgid "Promedio"
 msgstr ""
 
 #. module: pyxel_import_backend
+#: model:ir.model.fields,field_description:pyxel_import_backend.field_purchase_provider_evaluation__provider_names
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_sale_order__provider_names
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_order_tree_inherit_order_type
 msgid "Providers"
