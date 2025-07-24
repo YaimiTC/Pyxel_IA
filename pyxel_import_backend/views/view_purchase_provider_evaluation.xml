@@ -7,6 +7,7 @@
             <tree js_class="custom_provider_eval_tree" create="false">
                 <field name="name"/>
                 <field name="sale_order_id"/>
+                <field name="provider_names"/>
                 <field name="state"/>
                 <field name="has_evaluations_to_apply"/>
 
