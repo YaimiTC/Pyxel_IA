@@ -23,6 +23,14 @@ class PurchaseProviderEvaluation(models.Model):
         tracking=True
     )
 
+    provider_names = fields.Char(string="Providers", compute="_compute_purchase_provider", store=True)
+
+    def _compute_purchase_provider(self):
+        for evaluacion in self:
+            providers = self.env['purchase.order'].search([('evaluation_id', '=', evaluacion.id)])
+            providers_names = providers.mapped('partner_id.name')
+            evaluacion.provider_names = ', '.join(sorted(set(providers_names)))
+
     has_evaluations_to_apply = fields.Boolean(
         compute='_compute_has_evaluations_to_apply',
         string='Has Applicable Evaluations'
