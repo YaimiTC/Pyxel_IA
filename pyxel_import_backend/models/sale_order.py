@@ -8,8 +8,8 @@ from odoo.exceptions import UserError
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
-    purchase_order_count = fields.Integer(string="Purchase Orders", compute='_compute_purchase_order_count', store=True)
-    provider_names = fields.Char(string="Providers", compute="_compute_purchase_order_count", store=True)
+    purchase_order_count = fields.Integer(string="Purchase Orders", compute='_compute_purchase_order_count')
+    provider_names = fields.Char(string="Providers", compute="_compute_purchase_order_name")
     invoice_names = fields.Char(string='Invoices', compute='_compute_invoice_names')
 
     purchase_provider_evaluation_ids = fields.One2many('purchase.provider.evaluation', 'sale_order_id')
@@ -43,6 +43,16 @@ class SaleOrder(models.Model):
         readonly=False  # Solo si quieres permitir editar desde el sale.order
     )
 
+    contract_reference_customer = fields.Char(
+        string='Customer Contract Reference',
+        help='Reference of the contract between the customer and the importer'
+    )
+
+    contract_reference_supplier = fields.Char(
+        string='Supplier Contract Reference',
+        help='Reference of the contract between the supplier and the importer'
+    )
+
     @api.depends('purchase_provider_evaluation_ids.has_evaluations_to_apply')
     def _compute_has_applicable_evaluations(self):
         for order in self:
@@ -50,13 +60,33 @@ class SaleOrder(models.Model):
                 ev.has_evaluations_to_apply for ev in order.purchase_provider_evaluation_ids
             )
 
+    process_id = fields.Many2one("sale.order.process", string="Secuencia", ondelete="set null", index=True)
+
+    @api.onchange('import_progress_id')
+    def _check_importation_and_close_process(self):
+        for order in self:
+            if order.import_progress_id and order.process_id:
+                order.process_id.state = 'closed'
+
     def action_initial_process_importation(self):
+
+        if self.order_type != 'evaluation_final':
+            raise UserError(_("La orden debe ser dfe tipo 'Evaluación Final' para iniciar la importación."))
+
+        if not (
+                self.contract_reference_customer and self.contract_reference_supplier
+        ):
+            raise UserError(_(
+                "Debe definir al menos una referencia de contrato (cliente o proveedor) para iniciar la importación."
+            ))
         provider = self.evaluation_apply_id.purchase_order_ids[0].partner_id
 
         # 🔒 Validación controlada del país de origen
         if not provider.country_id:
             raise UserError("El proveedor seleccionado no tiene definido un país de origen.\nPor favor, complete este"
                             " dato antes de iniciar el proceso de importación.")
+
+
 
         cost_lines = [(0, 0, {
             'product_id': line.product_id.id,
@@ -98,8 +128,19 @@ class SaleOrder(models.Model):
         for order in self:
             providers = self.env['purchase.order'].search([('sale_order_id', '=', order.id)])
             order.purchase_order_count = len(providers)
-            providers_names = providers.mapped('partner_id.name')
-            order.provider_names = ', '.join(sorted(set(providers_names)))
+
+    def _compute_purchase_order_name(self):
+        for order in self:
+            if order.order_type == 'evaluation_final':
+                providers = order.evaluation_apply_id.purchase_order_ids
+            elif order.order_type == 'importation_process':
+                providers = order.importation_process_id.purchase_order_ids
+            else:
+                providers = self.env['purchase.order'].search([('sale_order_id', '=', order.id)])
+
+            if providers:
+                providers_names = providers.mapped('partner_id.name')
+                order.provider_names = ', '.join(sorted(set(providers_names)))
 
     def _compute_purchase_evaluation_count(self):
         for order in self:

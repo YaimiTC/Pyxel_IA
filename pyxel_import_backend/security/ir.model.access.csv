@@ -21,3 +21,4 @@ access_import_wizard,pyxel_import.import_wizard,model_import_wizard,,1,1,1,1
 access_average_container,pyxel_import.average_container,model_average_container,,1,1,1,1
 access_res_partner_contact_type,pyxel_import.res_partner_contact_type,model_res_partner_contact_type,,1,1,1,1
 access_res_partner_management_type,pyxel_import.res_partner_management_type,model_res_partner_management_type,,1,1,1,1
+access_sale_order_process,pyxel_import.sale_order_process,model_sale_order_process,,1,1,1,1

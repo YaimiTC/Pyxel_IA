@@ -213,7 +213,6 @@ class PurchaseProviderEvaluation(models.Model):
                     'name': line.name,
                 }))
 
-        # Add imported products from purchase orders
         for po in self.purchase_order_ids:
             for po_line in po.order_line:
                 order_lines.append((0, 0, {
@@ -239,6 +238,9 @@ class PurchaseProviderEvaluation(models.Model):
             }))
 
         # Write the lines
+        # providers_names = self.purchase_order_ids.mapped('partner_id.name')
+        # , 'provider_names': ', '.join(sorted(set(providers_names)))
+
         final_so.write({'order_line': order_lines})
         self.final_sale_order_id = final_so.id
         self.state = "evaluating_offer"

@@ -33,7 +33,19 @@ class ImportationProcess(models.Model):
     cost_line_ids = fields.One2many('importation.cost.line', 'importation_id', string='Additional Costs')
     total_cost = fields.Monetary(string='Total Cost', compute='_compute_total_cost')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)
-    sale_order_id = fields.Many2one('sale.order', string='Original Quotation')
+
+    sale_order_id = fields.Many2one('sale.order', string='Evaluation Quotation')
+
+    origin_sale_order_id = fields.Many2one('sale.order', string="Origin Quotation",
+                                           compute="_compute_origin_sale_order_id", store=True)
+
+    @api.depends('sale_order_id')
+    def _compute_origin_sale_order_id(self):
+        for rec in self:
+            # Aquí se asume que la evaluación tiene una relación hacia la venta original
+            rec.origin_sale_order_id = rec.sale_order_id.evaluation_apply_id.sale_order_id \
+                if rec.sale_order_id and rec.sale_order_id.evaluation_apply_id else False
+
     final_sale_order_id = fields.Many2one('sale.order', string='Final Generated Offer', readonly=True)
     customer_id = fields.Many2one('res.partner', string='Customer', required=False)
     provider_id = fields.Many2one('res.partner', string='Supplier', required=True)
@@ -97,20 +109,12 @@ class ImportationProcess(models.Model):
 
     invoice_count = fields.Integer(string='Invoice Count', compute='_compute_invoice_count')
 
-    contract_reference_customer = fields.Char(
-        string='Customer Contract Reference',
-        help='Reference of the contract between the customer and the importer'
-    )
-
-    contract_reference_supplier = fields.Char(
-        string='Supplier Contract Reference',
-        help='Reference of the contract between the supplier and the importer'
-    )
-
     def _compute_sale_order_count(self):
         for rec in self:
             rec.sale_order_count = self.env['sale.order'].search_count([
                 '|',
+                '|',
+                ('id', '=', rec.origin_sale_order_id.id),
                 ('id', '=', rec.sale_order_id.id),
                 ('id', '=', rec.final_sale_order_id.id)
             ])
@@ -152,14 +156,15 @@ class ImportationProcess(models.Model):
 
     def action_view_sale_orders(self):
         self.ensure_one()
-        domain = ['|', ('id', '=', self.sale_order_id.id), ('id', '=', self.final_sale_order_id.id)]
+        domain = ['|', '|', ('id', '=', self.origin_sale_order_id.id), ('id', '=', self.sale_order_id.id),
+                  ('id', '=', self.final_sale_order_id.id)]
         return {
             'name': 'Sales Orders',
             'type': 'ir.actions.act_window',
             'res_model': 'sale.order',
             'view_mode': 'tree,form',
             'domain': domain,
-            'context': {}
+            'context': {'search_default_group_by_order_type': 1}
         }
 
     @api.depends('purchase_order_ids')
@@ -203,35 +208,15 @@ class ImportationProcess(models.Model):
 
     @api.model
     def create(self, vals):
-        stage = self.env['importation.stage'].browse(vals.get('stage_id'))
-        importation = self.env['importation.process'].browse(vals.get('importation_id'))
 
         if vals.get('name', 'New') == 'New':
             sequence = self.env['ir.sequence'].next_by_code('importation.process')
             vals['name'] = sequence or 'New'
 
-        if stage.name != 'SOLICITUD':
-            if not (vals.get('contract_reference_customer') and vals.get('contract_reference_supplier')):
-                raise UserError(_(
-                    "No puede crear una carga en una etapa distinta a 'Solicitud' sin definir las referencias "
-                    "de contrato del cliente y del proveedor."
-                ))
-
         return super().create(vals)
 
     def write(self, vals):
         # Validación de cambio de etapa
-        for record in self:
-            if 'stage_id' in vals:
-                if record.stage_id.name == 'SOLICITUD':
-                    if not (
-                            (record.contract_reference_customer and record.contract_reference_supplier) or
-                            (vals.get('contract_reference_customer') and vals.get('contract_reference_supplier'))
-                    ):
-                        raise UserError(_(
-                            "No puede cambiar la etapa desde 'Solicitud' si no están definidas las referencias de "
-                            "contrato del cliente y del proveedor."
-                        ))
 
         # Preparar valores a actualizar en vals para evitar múltiples writes
         for record in self:
@@ -310,10 +295,13 @@ class ImportationProcess(models.Model):
 
             product_amounts[product_id]['price_unit'] += total_value
 
+        # providers_names = self.purchase_order_ids.mapped('partner_id.name')
+
         # Crear el sale.order con líneas acumuladas por producto
         sale_order = SaleOrder.create({
             'partner_id': self.sale_order_id.partner_id.id,
             'importation_process_id': self.id,
+            # 'providers_names':  ', '.join(sorted(set(providers_names))),
             'origin': self.name,
             'order_type': 'importation_process',
             'order_line': [(0, 0, {
