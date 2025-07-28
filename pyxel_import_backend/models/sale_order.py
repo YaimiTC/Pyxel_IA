@@ -168,6 +168,27 @@ class SaleOrder(models.Model):
             invoice_vals['importation_process_id'] = self.importation_process_id.id
         return invoice_vals
 
+    @api.model
+    def create(self, vals):
+        order = super().create(vals)
+
+        # Caso 1: si es orden final, hereda de evaluación inicial
+        if vals.get('evaluation_apply_id') and not order.process_id:
+            evaluation = self.env['purchase.provider.evaluation'].browse(vals['evaluation_apply_id'])
+            origin_order = evaluation.sale_order_id
+            if origin_order and origin_order.process_id:
+                order.process_id = origin_order.process_id.id
+
+        # Caso 2: si es creada desde importación
+        elif vals.get('importation_process_id') and not order.process_id:
+            importation = self.env['importation.process'].browse(vals['importation_process_id'])
+            if importation and importation.origin_sale_order_id.process_id:
+                order.process_id = importation.origin_sale_order_id.process_id.id
+
+        return order
+
+
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
