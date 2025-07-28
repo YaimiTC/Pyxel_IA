@@ -190,6 +190,13 @@ class ImportationLoad(models.Model):
     @api.model
     def create(self, vals):
         res = super().create(vals)
+        # Si se trata del primer contenedor de esa importación
+        if res.importation_id and len(res.importation_id.load_tracking_ids) == 1:
+            transit_stage = self.env['importation.stage'].search([('name', '=', 'EN TRANSITO A PUERTO DE DESTINO')],
+                                                                 limit=1)
+            if transit_stage and res.importation_id.stage_id.name in ['SOLICITUD', 'TRÁMITES EN ORIGEN']:
+                res.importation_id.stage_id = transit_stage.id
+
         if any(f in vals for f in ['arrival_date', 'release_date', 'extraction_date', 'return_date']):
             res._compute_state()  # Forzar el recompute en memoria para los nuevos registros
             res.update_stage_importation()  # Actualizar la etapa de la importación
@@ -197,6 +204,12 @@ class ImportationLoad(models.Model):
 
     def write(self, vals):
         res = super().write(vals)
+        # Si se trata del primer contenedor de esa importación
+        if self.importation_id and len(self.importation_id.load_tracking_ids) == 1:
+            transit_stage = self.env['importation.stage'].search([('name', '=', 'EN TRANSITO A PUERTO DE DESTINO')],
+                                                                 limit=1)
+            if transit_stage and self.importation_id.stage_id.name in ['SOLICITUD', 'TRÁMITES EN ORIGEN']:
+                self.importation_id.stage_id = transit_stage.id
         if any(f in vals for f in ['arrival_date', 'release_date', 'extraction_date', 'return_date']):
             for record in self:
                 record._compute_state()  # Forzar el recompute en memoria

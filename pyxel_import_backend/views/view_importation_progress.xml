@@ -108,10 +108,10 @@
                                     <group>
                                         <field name="name" readonly="1"/>
                                         <field name="provider_id"/>
-                                        <field name="contract_reference_supplier"/>
+<!--                                        <field name="contract_reference_supplier"/>-->
 
                                         <field name="customer_id"/>
-                                        <field name="contract_reference_customer"/>
+<!--                                        <field name="contract_reference_customer"/>-->
 
                                         <field name="country_origin_id"/>
                                         <field name="purchase_condition"/>
@@ -144,7 +144,7 @@
                                     </page>
 
                                     <page string="Importation Load">
-                                        <field name="load_tracking_ids" context="{'default_importation_id': active_id}"  readonly="contract_reference_customer == False or contract_reference_supplier == False">
+                                        <field name="load_tracking_ids" context="{'default_importation_id': active_id}" >
                                             <tree>
                                                 <field name="name"/>
                                                 <field name="cargo_type"/>
