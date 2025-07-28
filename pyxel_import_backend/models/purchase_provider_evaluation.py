@@ -157,6 +157,11 @@ class PurchaseProviderEvaluation(models.Model):
             ], limit=1)
             if existing:
                 raise ValidationError("An applied evaluation already exists for this sales order. Cannot create another.")
+        sale_order = self.env['sale.order'].browse(sale_order_id)
+        if sale_order and not sale_order.process_id:
+            process = self.env['sale.order.process'].create({'state': 'open'})
+            sale_order.process_id = process.id
+
         if vals.get('name', '/') == '/':
             sale_order = self.env['sale.order'].browse(vals.get('sale_order_id'))
             if not sale_order:
