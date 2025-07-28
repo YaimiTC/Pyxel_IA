@@ -40,23 +40,50 @@
                 </button>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="contract_reference_supplier"/>
+                <field name="contract_reference_customer"/>
                 <field name="order_type" string="Order Type" readonly="1"/>
                 <field name="importation_process_id" string="Importation Process" readonly="1"/>
+
             </xpath>
         </field>
         </record>
 
-    <record id="view_order_tree_inherit_order_type" model="ir.ui.view">
-        <field name="name">sale.order.tree.inherit.order_type</field>
+    <record id="view_quotation_tree_inherit_order_type" model="ir.ui.view">
+        <field name="name">sale.quotation.tree.inherit.order_type</field>
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_quotation_tree"/>
         <field name="arch" type="xml">
+
             <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="process_id"/>
                 <field name="order_type" string="Order Type"/>
                 <field name="provider_names" string="Providers"/>
                 <field name="invoice_names" string="Invoices"/>
                 <field name="is_third_party_contract" string="Is third party contract"/>
             </xpath>
+<!--            <xpath expr="//tree" position="attributes">-->
+<!--              <attribute name="default_group_by">partner_id,process_id,order_type</attribute>-->
+<!--           </xpath>-->
+        </field>
+    </record>
+
+     <record id="view_order_tree_inherit_order_type" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.order_type</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="process_id"/>
+                <field name="order_type" string="Order Type"/>
+                <field name="provider_names" string="Providers"/>
+                <field name="invoice_names" string="Invoices"/>
+                <field name="is_third_party_contract" string="Is third party contract"/>
+            </xpath>
+<!--            <xpath expr="//tree" position="attributes">-->
+<!--              <attribute name="default_group_by">partner_id,process_id,order_type</attribute>-->
+<!--           </xpath>-->
         </field>
     </record>
 
@@ -66,6 +93,7 @@
         <field name="inherit_id" ref="sale.view_sales_order_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='order_month']" position="after">
+                <filter string="Sequence" name="group_by_process_id" context="{'group_by': 'process_id'}"/>
                 <filter string="Order type" name="group_by_order_type" context="{'group_by': 'order_type'}"/>
                 <filter string="Evaluación Final" name="filter_final_evaluation" domain="[('order_type', '=', 'evaluation_final')]"/>
             </xpath>
@@ -73,13 +101,10 @@
     </record>
 
     <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
-        <field name="context" eval="{'search_default_customer': 1, 'search_default_group_by_order_type': 1}"/>
+        <field name="context" eval="{ 'search_default_customer': 1, 'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>
     </record>
 
 
-<!--    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">-->
-<!--        <field name="context" eval="{'group_by': ['partner_id', 'order_type']}"/>-->
-<!--    </record>-->
 
  <record id="action_mass_send_quotation_final_evaluation_binding" model="ir.actions.server">
     <field name="name">Enviar Cotizaciones: Evaluación Final</field>

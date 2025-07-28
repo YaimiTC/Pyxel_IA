@@ -11,5 +11,14 @@
             <field name="number_increment">1</field>
         </record>
 
+        <record id="seq_sale_order_process" model="ir.sequence">
+            <field name="name">Secuencia Proceso de Orden</field>
+            <field name="code">sale.order.process.seq</field>
+            <field name="prefix"></field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+
     </data>
 </odoo>
