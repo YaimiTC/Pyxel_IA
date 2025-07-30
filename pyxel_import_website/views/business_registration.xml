@@ -1215,9 +1215,10 @@
                                                     <i class="fa fa-1x fa-fw fa-envelope me-2"/>
                                                     <span>correo@correo.com</span>
                                                 </li>
-                                                <t t-if="crm_stage">
+                                                <t t-if="days_in_process != 'False'">
+                                                    <br/>
                                                     <li>
-                                                        <span><t t-out="crm_stage"/></span>
+                                                        <span>Días en proceso: <t t-out="days_in_process"/></span>
                                                     </li>
                                                 </t>
                                             </ul>

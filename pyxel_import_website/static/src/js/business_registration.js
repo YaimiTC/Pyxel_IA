@@ -320,14 +320,12 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     _setMaxDateToDeedInputDate() {
         const deed_input_date = document.getElementById('deed_input_date');
 
-        console.log(deed_input_date.max)
         if(deed_input_date){
             const today = new Date().toLocaleDateString().split('/').reverse();
             if(today[1].length === 1)
                 today[1] = '0'+ today[1];
             deed_input_date.max = today.join('-');
         }
-        console.log(deed_input_date.max)
     },
     _onchangeDeedInputDate() {
         const deed_input_date = document.getElementById('deed_input_date');
