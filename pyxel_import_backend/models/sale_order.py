@@ -141,6 +141,8 @@ class SaleOrder(models.Model):
             if providers:
                 providers_names = providers.mapped('partner_id.name')
                 order.provider_names = ', '.join(sorted(set(providers_names)))
+            else:
+                order.provider_names = ""
 
     def _compute_purchase_evaluation_count(self):
         for order in self:
@@ -186,8 +188,6 @@ class SaleOrder(models.Model):
                 order.process_id = importation.origin_sale_order_id.process_id.id
 
         return order
-
-
 
 
 class SaleOrderLine(models.Model):
