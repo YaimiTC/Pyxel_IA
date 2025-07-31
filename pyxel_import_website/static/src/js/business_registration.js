@@ -50,7 +50,8 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         return def;
     },
     contact_type: null, 
-    fgne_type: null, 
+    fgne_type: null,
+    optionalFields: [],
     showWhenForeignElements: ['need_mincex_code','license_holder', 'has_cuban_partner', 'country'],
     showWhenNationalElements: ['fgne_type', 'nit', 'dap', 'state', 'city'],
     showWhenProviderElements: ['supplier_type', 'perfil_proveedor'],
@@ -92,16 +93,20 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
 
         if (contactTypes.includes(this.contact_type)){
             element?.classList.remove("d-none");
-            if(elementInput?.type != 'checkbox')
-                elementInput?.setAttribute("required", "");
-            elementSelect?.setAttribute("required", "");
+            if (!this.optionalFields.includes(elementName)){
+                if(elementInput?.type != 'checkbox')
+                    elementInput?.setAttribute("required", "");
+                elementSelect?.setAttribute("required", "");
+            }
             if(elementInput)
                 elementInput.disabled = false;
         }
         else {
             element?.classList.add("d-none");
-            elementInput?.removeAttribute("required");
-            elementSelect?.removeAttribute("required");
+            if (!this.optionalFields.includes(elementName)){
+                elementInput?.removeAttribute("required");
+                elementSelect?.removeAttribute("required");
+            }
             if(elementInput)
                 elementInput.disabled = true;
         }
@@ -320,14 +325,12 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     _setMaxDateToDeedInputDate() {
         const deed_input_date = document.getElementById('deed_input_date');
 
-        console.log(deed_input_date.max)
         if(deed_input_date){
             const today = new Date().toLocaleDateString().split('/').reverse();
             if(today[1].length === 1)
                 today[1] = '0'+ today[1];
             deed_input_date.max = today.join('-');
         }
-        console.log(deed_input_date.max)
     },
     _onchangeDeedInputDate() {
         const deed_input_date = document.getElementById('deed_input_date');
@@ -701,7 +704,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             // If a field is empty...
             const array= ["productOnure","productRequired","x_studio_bill_of_landing_number","x_studio_certificate_of_origin_co","x_studio_bill_of_lading_bl","x_comercial_invoice","x_package_list","x_export_certify","x_quality_certify"];
             const valueToCheck = inputs[i].id;
-            if (array.indexOf(valueToCheck) === -1 &&((inputs[i].value == "" && inputs[i].disabled == false) ||(inputs[i].type == 'email' && inputs[i].disabled == false && !testEmail.test(inputs[i].value)) || inputs[i].className.indexOf('is-invalid') >= 0)){
+            if (array.indexOf(valueToCheck) === -1 &&((inputs[i].required && inputs[i].value == "" && inputs[i].disabled == false) ||(inputs[i].type == 'email' && inputs[i].disabled == false && !testEmail.test(inputs[i].value)) || inputs[i].className.indexOf('is-invalid') >= 0)){
                 // add an "invalid" class to the field:
                 inputs[i].className += " is-invalid";
                 // and set the current valid status to false:

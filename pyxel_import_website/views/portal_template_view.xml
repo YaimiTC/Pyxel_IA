@@ -39,7 +39,12 @@
         <xpath expr="//div[@class='o_portal_my_details']" position="inside">
             <t t-if="contract_status != False">
                 <div>
+                    <br/>
                     <span t-esc="contract_status"/>
+                    <t t-if="days_in_process != 'False'">
+                    <br/>
+                        <span>Días en proceso: <t t-out="days_in_process"/></span>
+                    </t>
                 </div>
             </t>
         </xpath>
