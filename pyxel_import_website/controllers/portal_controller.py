@@ -2,6 +2,8 @@ import binascii
 import logging
 import base64
 
+from datetime import datetime
+
 from odoo import fields
 from odoo import http, _
 from odoo.addons.http_routing.models.ir_http import slug
@@ -58,12 +60,24 @@ class Portal(CustomerPortal):
 
         # Estado del contrato:
         contract_status = False
+        days_in_process = 'False'
         if contact_type.type_of_contact == 'Client' or contact_type.type_of_contact == 'Supplier':
             lead = request.env['crm.lead'].sudo().search([('partner_id', '=', business_partner_id)],
                                                                     order='create_date desc', limit=1)
 
             if bool(lead):
                 contract_status = lead.stage_id.name
+
+                if contact_type.type_of_contact == 'Client':
+                    is_accredited = request.env["res.partner.contract.import"].sudo().search([
+                        ("partner_id", "=", business_partner_id), ("active_contract", "=", True)
+                    ], limit=1)
+                elif contact_type.type_of_contact == 'Supplier':
+                    is_accredited = lead.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
+
+                if not is_accredited:
+                    days_in_process = (datetime.now() - lead.create_date).days
+
         _logger.info(f"El estado del contrato es: {contract_status}")
         # Añade los contadores a los valores
         values.update({
@@ -71,7 +85,8 @@ class Portal(CustomerPortal):
             'new_orders_count': new_orders_count,
             'new_invoices_count': new_invoices_count,
             'new_importaciones_count': new_importaciones_count,
-            'contract_status': contract_status
+            'contract_status': contract_status,
+            'days_in_process': days_in_process,
         })
 
         return values

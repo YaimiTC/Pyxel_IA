@@ -688,21 +688,22 @@ class ControllerTest(http.Controller):
     @http.route('/business-register-thanks', type='http', auth="public", website=True)
     def business_register_thanks(self, **kw):
         crm_lead_exists = request.env["crm.lead"].sudo().search([
-            ("partner_id", "in", [request.env.user.partner_id.id])
+            ("partner_id", "in", [request.env.user.partner_id.parent_id.id])
         ], limit=1)
-        crm_stage = ''
+        days_in_process = 'False'
 
         if crm_lead_exists: 
-            potential_client_or_supplier = request.env.ref('crm.stage_lead1').sudo()
-            in_process_of_approval = request.env.ref('crm.stage_lead2').sudo()
+            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact == 'Client':
+                is_accredited = request.env["res.partner.contract.import"].sudo().search([
+                    ("partner_id", "in", [request.env.user.partner_id.parent_id.id]), ("active_contract", "=", True)
+                ], limit=1)
+            else:
+                is_accredited = crm_lead_exists.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
 
-            if potential_client_or_supplier and potential_client_or_supplier.id == crm_lead_exists.stage_id.id:
-                crm_stage = potential_client_or_supplier.name
-
-            elif in_process_of_approval and in_process_of_approval.id == crm_lead_exists.stage_id.id:
-                crm_stage = in_process_of_approval.name
-
-        return request.render('pyxel_import_website.business_register_thanks', {"crm_stage": crm_stage})
+            if not is_accredited:
+                days_in_process = (datetime.now() - crm_lead_exists.create_date).days
+            
+        return request.render('pyxel_import_website.business_register_thanks', {"days_in_process": days_in_process})
 
     @http.route('/business-register', type='http', auth="public", website=True)
     def controller_register(self, **kw):
@@ -717,14 +718,17 @@ class ControllerTest(http.Controller):
         crm_lead_exists = request.env["crm.lead"].sudo().search([
             ("partner_id", "in", domain_ids)
         ], limit=1)
-        contract_exists = False
+        is_accredited = False
+        
         if crm_lead_exists:
-            contract_exists = request.env["res.partner.contract.import"].sudo().search([
-                ("partner_id", "in", domain_ids), ("active_contract", "=", True)
-            ], limit=1)
-
+            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact == 'Client':
+                is_accredited = request.env["res.partner.contract.import"].sudo().search([
+                    ("partner_id", "in", domain_ids), ("active_contract", "=", True)
+                ], limit=1)
+            else:
+                is_accredited = crm_lead_exists.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
         if kw.get('type') == 'accreditation' and crm_lead_exists:
-            if contract_exists:
+            if is_accredited:
                 return request.redirect('/my/home')
             else:
                 return request.redirect('/business-register-thanks')
@@ -734,11 +738,11 @@ class ControllerTest(http.Controller):
             # Si no se ha realizado el formulario de acreditación
             if not crm_lead_exists:
                 return request.render('pyxel_import_website.waiting_for_active_contract')
-            # Si no es Cliente nacional no se puede acreditar
+            # Si no es Cliente nacional no puede solicitar una importación
             if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact != "Client" and request.env.user.partner_id.parent_id.contact_type_id.nationality_type != 'national':
                 return request.render('pyxel_import_website.you_are_not_a_national_client', {'contact_type': request.env.user.partner_id.parent_id.contact_type_id.name})
             # Si realizó el formulario de acreditación pero no está acreditado
-            if not contract_exists:
+            if not is_accredited:
                 return request.redirect('/business-register-thanks')
 
         partner = request.env.user.partner_id
