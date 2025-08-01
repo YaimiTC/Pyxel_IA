@@ -53,7 +53,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     fgne_type: null,
     optionalFields: [],
     showWhenForeignElements: ['need_mincex_code','license_holder', 'has_cuban_partner', 'country'],
-    showWhenNationalElements: ['fgne_type', 'nit', 'dap', 'state', 'city'],
+    showWhenNationalElements: ['fgne_type', 'nit', 'dap', 'state', 'city', 'deed_input'],
     showWhenProviderElements: ['supplier_type', 'perfil_proveedor'],
     _setContactType(){
         this.contact_type = $('select[name="contact_type"]').find('option:selected').text().trim();
