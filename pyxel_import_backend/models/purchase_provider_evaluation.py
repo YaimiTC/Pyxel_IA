@@ -23,7 +23,7 @@ class PurchaseProviderEvaluation(models.Model):
         tracking=True
     )
 
-    provider_names = fields.Char(string="Providers", compute="_compute_purchase_provider", store=True)
+    provider_names = fields.Char(string="Providers", compute="_compute_purchase_provider")
 
     def _compute_purchase_provider(self):
         for evaluacion in self:
