@@ -7,7 +7,8 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from odoo import http
-from odoo.addons.website.controllers.form import WebsiteForm
+from odoo.addons.website.controllers import form
+from odoo.addons.website_crm.controllers.website_form import WebsiteForm as WebsiteForm2
 from odoo.exceptions import ValidationError
 from odoo.http import Stream, request, Response
 
@@ -94,7 +95,7 @@ def loged_in():
         return request.redirect("/web/login")
 
 
-class WebsiteForm(WebsiteForm):
+class WebsiteForm(form.WebsiteForm):
 
     @http.route('/check_file_type', type="json", auth="public", website=True)
     def check_file_type(self, config_param, file_type, **kw):
@@ -457,7 +458,7 @@ class WebsiteForm(WebsiteForm):
                         'email': kwargs.get('other_provider_company_email'),
                         'street': kwargs.get('other_provider_address'),
                         'country_id': int(kwargs.get('other_provider_country')),
-                        'contact_type_id': self.env.ref('pyxel_import_backend.res_partner_contact_type_supplier').id,
+                        'contact_type_id': request.env.ref('pyxel_import_backend.res_partner_contact_type_supplier').id,
                     })
 
                 supplier_id = None
@@ -536,6 +537,28 @@ class WebsiteForm(WebsiteForm):
 
         return res
 
+    def insert_record(self, request, model, values, custom, meta=None):
+        is_lead_model = model.model == 'crm.lead'
+        if is_lead_model:
+            visitor_sudo = request.env['website.visitor']._get_visitor_from_request()
+            
+            if 'company_id' not in values:
+                values['company_id'] = request.website.company_id.id
+            lang = request.context.get('lang', False)
+            values['lang_id'] = values.get('lang_id') or request.env['res.lang']._lang_get_id(lang)
+
+        # TODO: Hacer que llame al método insert_record del website, no del website_crm
+        result = super(WebsiteForm2, self).insert_record(request, model, values, custom, meta=meta)
+
+        if is_lead_model and visitor_sudo and result:
+            lead_sudo = request.env['crm.lead'].browse(result).sudo()
+            if lead_sudo.exists():
+                vals = {'lead_ids': [(4, result)]}
+                if not visitor_sudo.lead_ids and not visitor_sudo.partner_id:
+                    vals['name'] = lead_sudo.contact_name
+                visitor_sudo.write(vals)
+        return result
+    
     # def _get_provider_search_domain(self, search):
     #     domain = [
     #         ("type_of_contact", "=", "Supplier"),
