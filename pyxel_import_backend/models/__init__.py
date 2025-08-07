@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+from . import incoterm
+from . import import_type
+from . import incoterm_import_type
 from . import res_partner
 from . import product_template
 from . import crm_lead
