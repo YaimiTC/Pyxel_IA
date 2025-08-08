@@ -295,19 +295,20 @@ class ImportationProcess(models.Model):
 
         res = super().write(vals)
 
-        # Después de guardar, hacer validación para enviar alerta y mensajes (sin modificar registros)
-        for record in self:
-            if record.packing_list_filename_date and record.documentation_sent_date:
-                doc_sent_dt = datetime.combine(record.documentation_sent_date, datetime.min.time())
-                delay = record.packing_list_filename_date - doc_sent_dt
-                if delay.total_seconds() > 72 * 3600 and not record.alerted_late:
-                    # Enviar email y mensaje
-                    record._send_alert_email_to_creator()
-                    record.message_post(
-                        body="⚠ El archivo 'Packing List' fue subido más de 72 horas después de la fecha de envío de la documentación.",
-                        message_type="notification"
-                    )
-                    record.write({'alerted_late': True})
+        # # Después de guardar, hacer validación para enviar alerta y mensajes (sin modificar registros)
+        # for record in self:
+        #     if record.packing_list_filename_date and record.documentation_sent_date:
+        #         doc_sent_dt = datetime.combine(record.documentation_sent_date, datetime.min.time())
+        #         delay = record.packing_list_filename_date - doc_sent_dt
+        #         if delay.total_seconds() > 72 * 3600 and not record.alerted_late:
+        #             # Enviar email y mensaje
+        #             record._send_alert_email_to_creator()
+        #             record.message_post(
+        #                 body="⚠ El archivo 'Packing List' fue subido más de 72 horas después de la fecha de envío de la documentación.",
+        #                 message_type="notification"
+        #             )
+        #             record.write({'alerted_late': True})
+
         return res
 
     def _send_alert_email_to_creator(self):
