@@ -14,6 +14,8 @@ class SaleOrderProcess(models.Model):
 
     sale_order_ids = fields.One2many('sale.order', 'process_id', string="Órdenes de venta relacionadas")
 
+    importation_id = fields.Many2one('importation.process', string="Importación Cerrada", readonly=True)
+
     @api.model
     def create(self, vals):
         if vals.get('name', 'Nuevo') == 'Nuevo':

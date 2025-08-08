@@ -82,7 +82,7 @@ class AverageContainer(models.TransientModel):
         _logger.info("action_generate_excel_report!!!!!!: %s", data)
 
         if self.type_of_summary == 'average_container':
-            report_model = self.env['report.pyxel_fruxelimport.average_container_report_template']
+            report_model = self.env['reports.pyxel_fruxelimport.average_container_report_template']
             records = report_model._get_average_container_report([], data)
             columns = [
                 ('No', 'index'),
@@ -99,7 +99,7 @@ class AverageContainer(models.TransientModel):
                 ('Días por Devolver', 'days_to_return'),
             ]
         elif self.type_of_summary == 'average_container_summary':
-            report_model = self.env['report.pyxel_fruxelimport.container_summary_report_template']
+            report_model = self.env['reports.pyxel_fruxelimport.container_summary_report_template']
             records = report_model._get_average_container_summary_report([], data)
             columns = [
                 ('No', 'index'),
