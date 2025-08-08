@@ -10,6 +10,7 @@
                     <field name="name"/>
                     <field name="description"/>
                     <field name="fold"/>
+                    <field name="is_final"/>
                 </tree>
             </field>
         </record>
@@ -26,7 +27,7 @@
                              <field name="name"/>
                              <field name="description"/>
                              <field name="fold"/>
-
+                             <field name="is_final"/>
                         </group>
                     </sheet>
                 </form>
