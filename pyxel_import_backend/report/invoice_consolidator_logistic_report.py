@@ -8,7 +8,7 @@ from odoo.http import request
 
 
 class InvoiceConsolidatorLogisticReport(models.AbstractModel):
-    _name = 'report.pyxel_fruxelimport.invoice_logistics_template'
+    _name = 'reports.pyxel_fruxelimport.invoice_logistics_template'
     _description = 'Invoice Consolidator Logistic Report'
 
     @api.model

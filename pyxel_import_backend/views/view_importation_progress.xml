@@ -106,13 +106,10 @@
                                 </div>
                                 <group>
                                     <group>
+                                        <field name="process_id"  options="{'no_create': True, 'no_open': True}" readonly="True" context="{'default_importation_id': id}"/>
                                         <field name="name" readonly="1"/>
                                         <field name="provider_id"/>
-<!--                                        <field name="contract_reference_supplier"/>-->
-
                                         <field name="customer_id"/>
-<!--                                        <field name="contract_reference_customer"/>-->
-
                                         <field name="country_origin_id"/>
                                         <field name="purchase_condition"/>
                                         <field name="purchase_condition_number"/>
