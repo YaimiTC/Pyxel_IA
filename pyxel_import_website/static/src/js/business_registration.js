@@ -159,7 +159,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         var deed_input_date = document.querySelector('div[name="deed_input"] input[name="deed_input_date"]');
 
         if(deed_input_number && deed_input_date){
-            if (!this.fgne_type || ['Persona Natural', 'Sucursal Extranjera'].includes(this.fgne_type)) {
+            if (!this.showWhenNationalElements.includes('deed_input') || !this.fgne_type || ['Persona Natural', 'Sucursal Extranjera'].includes(this.fgne_type)) {
                 deed_input_number.removeAttribute("required");
                 deed_input_number.disabled = true;
                 deed_input_date.removeAttribute("required");
@@ -172,19 +172,19 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             }
         }
 
-        if (this.fgne_type == 'TCP') {
+        if (this.showWhenNationalElements.includes('deed_input') && this.fgne_type == 'TCP') {
             deed_input?.classList.remove("d-none");
             deed_for_state?.classList.add("d-none");
             deed_for_tcp?.classList.remove("d-none");
             deed_for_mipyme_cna_pdl?.classList.add("d-none");
         }
-        else if (this.fgne_type == 'Estatal') {
+        else if (this.showWhenNationalElements.includes('deed_input') && this.fgne_type == 'Estatal') {
             deed_input?.classList.remove("d-none");
             deed_for_state?.classList.remove("d-none");
             deed_for_tcp?.classList.add("d-none");
             deed_for_mipyme_cna_pdl?.classList.add("d-none");
         }
-        else if (['Mipyme', 'CNA', 'PDL'].includes(this.fgne_type)) {
+        else if (this.showWhenNationalElements.includes('deed_input') && ['Mipyme', 'CNA', 'PDL'].includes(this.fgne_type)) {
             deed_input?.classList.remove("d-none");
             deed_for_state?.classList.add("d-none");
             deed_for_tcp?.classList.add("d-none");
