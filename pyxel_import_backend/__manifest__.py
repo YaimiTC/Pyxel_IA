@@ -53,6 +53,9 @@
         "views/importation_load_line_views.xml",
         "views/report_purchaseorder_no_code.xml",
         "views/report_saleorder_no_code.xml",
+        "views/incoterm_views.xml",
+        "views/import_type_views.xml",
+        "views/incoterm_import_type_views.xml",
 
 
 
