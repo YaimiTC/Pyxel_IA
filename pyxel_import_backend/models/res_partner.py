@@ -123,7 +123,6 @@ class ResPartnerContactType(models.Model):
         selection=[
             ('national', 'National'),
             ('foreign', 'Foreign')
-            # ('foreign', 'Extranjero')
         ],
         required=True,
         string='Nationality Type',
