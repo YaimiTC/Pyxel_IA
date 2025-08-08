@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="inherit_report_invoice_total_currency" inherit_id="account.document_tax_totals" priority="10">
+        <xpath expr="//tr[hasclass('o_total')]/td[2]/span" position="replace">
+            <span t-field="o.amount_total"/>
+            <span> (<t t-out="o.currency_id.name"/>)</span>
+        </xpath>
+    </template>
+</odoo>
