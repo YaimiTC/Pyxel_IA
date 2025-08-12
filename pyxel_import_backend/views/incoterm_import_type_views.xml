@@ -44,19 +44,19 @@
 
         <!-- Acción y menú para ICOTERM Import Type -->
         <record id="action_icoterm_import_type_config" model="ir.actions.act_window">
-            <field name="name">ICOTERM Import Type</field>
+            <field name="name">Incoterm Import Type</field>
             <field name="res_model">incoterm.import.type</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="pyxel_import_backend.view_incoterm_import_type_tree"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Start by creating a relation between Icoterm and Import type.
+                    Start by creating a relation between Incoterm and Import type.
                 </p>
             </field>
         </record>
 
         <menuitem id="menu_icoterm_import_type_config"
-                  name="ICOTERM Import Type"
+                  name="Incoterm Import Type"
                   parent="menu_importation_config"
                   action="action_icoterm_import_type_config"
                   sequence="30"/>

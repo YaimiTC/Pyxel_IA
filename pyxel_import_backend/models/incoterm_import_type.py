@@ -6,7 +6,7 @@ class IncotermImportType(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Incoterm - Import Type Relation'
 
-    incoterm_id = fields.Many2one('incoterm', string='Incoterm', required=True, ondelete='cascade')
+    incoterm_id = fields.Many2one('account.incoterms', string='Incoterm', required=True, ondelete='cascade')
     import_type_id = fields.Many2one('import.type', string='Import Type', required=True, ondelete='cascade')
     active = fields.Boolean(string='Active', default=True)
 

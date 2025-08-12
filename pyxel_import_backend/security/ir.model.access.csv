@@ -22,6 +22,5 @@ access_average_container,pyxel_import.average_container,model_average_container,
 access_res_partner_contact_type,pyxel_import.res_partner_contact_type,model_res_partner_contact_type,,1,1,1,1
 access_res_partner_management_type,pyxel_import.res_partner_management_type,model_res_partner_management_type,,1,1,1,1
 access_sale_order_process,pyxel_import.sale_order_process,model_sale_order_process,,1,1,1,1
-access_incoterm_user,access.incoterm,model_incoterm,base.group_user,1,1,1,1
 access_import_type_user,access.import.type,model_import_type,base.group_user,1,1,1,1
 access_incoterm_import_type_user,access.incoterm.import.type,model_incoterm_import_type,base.group_user,1,1,1,1
