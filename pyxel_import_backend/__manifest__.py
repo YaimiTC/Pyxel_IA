@@ -30,6 +30,8 @@
         'data/res_partner_contact_type_data.xml',
         'data/importation_sequence.xml',
         'data/importation_stage_data.xml',
+        'data/import_type_data.xml',
+        'data/incoterm_import_type_data.xml',
         "security/ir.model.access.csv",
         'data/email_payment_to_supplier_template.xml',
         'data/email_bl_upload_delay_template.xml',

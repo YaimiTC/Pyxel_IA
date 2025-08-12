@@ -6,11 +6,35 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <group>
-                            <field name="incoterm_id"/>
-                            <field name="import_type_id"/>
-                            <field name="active"/>
+                        <group name="main_group">
+                            <group name="left_group">
+                                <field name="incoterm_id"/>
+                                <field name="active"/>
+                            </group>
+                            <group name="left_group">
+                                <field name="import_type_id"/>
+                                <field name="port_or_airport"/>
+                            </group>
                         </group>
+                        <notebook>
+                            <page name="documents" string="Documents">
+                                <group name="documents_main_group">
+                                    <group name="documents_left_group">
+                                        <field name="has_bl"/>
+                                        <field name="has_packing_list"/>
+                                        <field name="has_signed_offer"/>
+                                        <field name="has_export_certificate"/>
+                                        <field name="has_supplier_payment_certificate"/>
+                                    </group>
+                                    <group name="documents_right_group">
+                                        <field name="has_awb"/>
+                                        <field name="has_commercial_invoice"/>
+                                        <field name="has_quality_certificate"/>
+                                        <field name="has_origin_certificate"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>

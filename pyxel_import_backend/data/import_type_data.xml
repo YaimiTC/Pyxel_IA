@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data noupdate="1">
+        <record id="import_type_ocean" model="import.type">
+            <field name="name">Ocean Freight</field>
+        </record>
+        <record id="import_type_air" model="import.type">
+            <field name="name">Air Freight</field>
+        </record>
+        <record id="import_type_on_site" model="import.type">
+            <field name="name">On Site</field>
+        </record>
+    </data>
+</odoo>
