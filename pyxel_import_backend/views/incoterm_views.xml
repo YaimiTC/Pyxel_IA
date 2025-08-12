@@ -1,39 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
-        <record id="view_incoterm_tree" model="ir.ui.view">
-            <field name="model">incoterm</field>
-            <field name="arch" type="xml">
-                <tree editable="bottom">
-                    <field name="name"/>
-                </tree>
-            </field>
-        </record>
 
-        <!-- Acción para configurar ICOTERM en purchase.order -->
-        <record id="action_icoterm_config" model="ir.actions.act_window">
-            <field name="name">ICOTERM Configuration</field>
-            <field name="res_model">incoterm</field>
+        <!-- Acción para configurar incoterm en purchase.order -->
+        <record id="action_incoterm_config" model="ir.actions.act_window">
+            <field name="name">Incoterm Configuration</field>
+            <field name="res_model">account.incoterms</field>
             <field name="view_mode">tree</field>
-            <field name="view_id" ref="pyxel_import_backend.view_incoterm_tree"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Start by creating an Icoterm.
+                    Start by creating an Incoterm.
                 </p>
             </field>
         </record>
 
         <!-- Menús -->
-        <menuitem id="menu_purchase_icoterm_config"
-                  name="ICOTERM"
+        <menuitem id="menu_purchase_incoterm_config"
+                  name="Incoterms"
                   parent="purchase.menu_purchase_config"
-                  action="action_icoterm_config"
+                  action="action_incoterm_config"
                   sequence="10"/>
 
-        <menuitem id="menu_import_icoterm_config"
-                  name="ICOTERM"
+        <menuitem id="menu_import_incoterm_config"
+                  name="Incoterms"
                   parent="menu_importation_config"
-                  action="action_icoterm_config"
+                  action="action_incoterm_config"
                   sequence="10"/>
 
     </data>
