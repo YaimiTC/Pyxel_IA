@@ -16,10 +16,6 @@ class BaseController(http.Controller):
         is_admin = not user.share  # Internal users have share=False
         is_portal = user.has_group('base.group_portal')
 
-        # New logic for dealer checks
-        # is_dealer = bool(partner.is_dealer)
-        # has_dealer_boss = bool(partner.dealer_boss_id)
-
         values = {
             'page_name': page_name,
             'user': user,
