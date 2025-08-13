@@ -84,7 +84,7 @@ export class ImportationsTable extends Component {
 
           // Aplicar dominio según tipo
           switch (typeOfContact) {
-            case "supplier":
+            case "Supplier":
               domain = [["provider_id", "=", companyPartnerId]];
               break;
             case "Client":
