@@ -34,6 +34,29 @@
                                     </group>
                                 </group>
                             </page>
+                            <page name="importation_load" string="Importation Load">
+                                <group name="importation_load_main">
+                                    <group name="general_information_group" string="General Information">
+                                        <field name="show_cargo_type"/>
+                                        <field name="show_volume"/>
+                                        <field name="show_bulk"/>
+                                    </group>
+
+                                    <group name="container_status_group" string="Container Status">
+                                        <field name="show_opening_date"/>
+                                        <field name="show_arrival_date"/>
+                                        <field name="show_release_date"/>
+                                        <field name="show_extraction_date"/>
+                                        <field name="show_return_date"/>
+                                    </group>
+
+                                    <group name="transport_group" string="Transport">
+                                        <field name="show_shipping_company"/>
+                                        <field name="show_airline"/>
+                                        <field name="show_transit_agency"/>
+                                    </group>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
