@@ -15,19 +15,15 @@
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
             <field name="port_or_airport">True</field>
-        </record>
-        <record id="rel_dap_ocean" model="incoterm.import.type">
-            <field name="incoterm_id" ref="account.incoterm_DAP"/>
-            <field name="import_type_id" ref="import_type_ocean"/>
-            <field name="has_bl">True</field>
-            <field name="has_packing_list">True</field>
-            <field name="has_commercial_invoice">True</field>
-            <field name="has_signed_offer">True</field>
-            <field name="has_quality_certificate">True</field>
-            <field name="has_export_certificate">True</field>
-            <field name="has_origin_certificate">True</field>
-            <field name="has_supplier_payment_certificate">True</field>
-            <field name="port_or_airport">True</field>
+            <field name="show_cargo_type">True</field>
+            <field name="show_opening_date">True</field>
+            <field name="show_arrival_date">True</field>
+            <field name="show_release_date">True</field>
+            <field name="show_extraction_date">True</field>
+            <field name="show_shipping_company">True</field>
+            <field name="show_transit_agency">True</field>
+            <field name="show_volume">True</field>
+            <field name="show_return_date">True</field>
         </record>
         <record id="rel_cfr_ocean" model="incoterm.import.type">
             <field name="incoterm_id" ref="account.incoterm_CFR"/>
@@ -41,6 +37,15 @@
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
             <field name="port_or_airport">True</field>
+            <field name="show_cargo_type">True</field>
+            <field name="show_opening_date">True</field>
+            <field name="show_arrival_date">True</field>
+            <field name="show_release_date">True</field>
+            <field name="show_extraction_date">True</field>
+            <field name="show_shipping_company">True</field>
+            <field name="show_transit_agency">True</field>
+            <field name="show_volume">True</field>
+            <field name="show_return_date">True</field>
         </record>
         <record id="rel_cif_ocean" model="incoterm.import.type">
             <field name="incoterm_id" ref="account.incoterm_CIF"/>
@@ -54,6 +59,15 @@
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
             <field name="port_or_airport">True</field>
+            <field name="show_cargo_type">True</field>
+            <field name="show_opening_date">True</field>
+            <field name="show_arrival_date">True</field>
+            <field name="show_release_date">True</field>
+            <field name="show_return_date">True</field>
+            <field name="show_extraction_date">True</field>
+            <field name="show_shipping_company">True</field>
+            <field name="show_transit_agency">True</field>
+            <field name="show_volume">True</field>
         </record>
 
         <!-- AÉREO -->
@@ -69,32 +83,11 @@
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
             <field name="port_or_airport">True</field>
-        </record>
-        <record id="rel_dap_air" model="incoterm.import.type">
-            <field name="incoterm_id" ref="account.incoterm_DAP"/>
-            <field name="import_type_id" ref="import_type_air"/>
-            <field name="has_awb">True</field>
-            <field name="has_packing_list">True</field>
-            <field name="has_commercial_invoice">True</field>
-            <field name="has_signed_offer">True</field>
-            <field name="has_quality_certificate">True</field>
-            <field name="has_export_certificate">True</field>
-            <field name="has_origin_certificate">True</field>
-            <field name="has_supplier_payment_certificate">True</field>
-            <field name="port_or_airport">True</field>
+            <field name="show_bulk">True</field>
+            <field name="show_airline">True</field>
         </record>
 
         <!-- EN PLAZA -->
-        <record id="rel_cpt_on_site" model="incoterm.import.type">
-            <field name="incoterm_id" ref="account.incoterm_CPT"/>
-            <field name="import_type_id" ref="import_type_on_site"/>
-            <field name="has_commercial_invoice">True</field>
-            <field name="has_signed_offer">True</field>
-            <field name="has_quality_certificate">True</field>
-            <field name="has_export_certificate">True</field>
-            <field name="has_origin_certificate">True</field>
-            <field name="has_supplier_payment_certificate">True</field>
-        </record>
         <record id="rel_dap_on_site" model="incoterm.import.type">
             <field name="incoterm_id" ref="account.incoterm_DAP"/>
             <field name="import_type_id" ref="import_type_on_site"/>
@@ -104,6 +97,9 @@
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
+            <field name="show_volume">True</field>
+            <field name="show_bulk">True</field>
+            <field name="show_return_date">True</field>
         </record>
 
     </data>
