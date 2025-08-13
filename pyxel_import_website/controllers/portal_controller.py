@@ -35,10 +35,10 @@ class Portal(CustomerPortal):
 
         if is_internal_user:
             _logger.info("Usuario interno: se cuentan todos los documentos.")
-            new_quotations_count = request.env['sale.order'].sudo().search_count([('state', '=', 'sent')])
-            new_orders_count = request.env['sale.order'].sudo().search_count([('state', '=', 'sale')])
+            new_quotations_count = request.env['sale.order'].sudo().search_count([('state', '=', 'draft')])
+            new_orders_count = request.env['sale.order'].sudo().search_count([('state', '=', 'draft')])
             new_invoices_count = request.env['account.move'].sudo().search_count([
-                ('state', '=', 'posted'),
+                ('state', '=', 'draft'),
                 ('move_type', '=', 'out_invoice')
             ])
             new_importaciones_count = request.env['importation.process'].sudo().search_count([
@@ -48,12 +48,12 @@ class Portal(CustomerPortal):
         elif contact_type.type_of_contact == 'Client':
             _logger.info("Usuario cliente: se cuentan solo ventas e importaciones como cliente.")
             new_quotations_count = request.env['sale.order'].sudo().search_count([
-                ('state', '=', 'sent'),
+                ('state', '=', 'draft'),
                 ('partner_id', '=', business_partner_id)
             ])
 
             new_invoices_count = request.env['account.move'].sudo().search_count([
-                ('state', '=', 'posted'),
+                ('state', '=', 'draft'),
                 ('move_type', '=', 'out_invoice'),
                 ('partner_id', '=', business_partner_id)
             ])
@@ -65,11 +65,11 @@ class Portal(CustomerPortal):
         elif contact_type.type_of_contact == 'Supplier':
             _logger.info("Usuario proveedor: se cuentan solo compras e importaciones como proveedor.")
             new_orders_count = request.env['purchase.order'].sudo().search_count([
-                ('state', '=', 'sent'),
+                ('state', '=', 'draft'),
                 ('partner_id', '=', business_partner_id)
             ])
             new_invoices_count = request.env['account.move'].sudo().search_count([
-                ('state', '=', 'posted'),
+                ('state', '=', 'draft'),
                 ('move_type', '=', 'out_invoice'),
                 ('invoice_line_ids.product_id.seller_ids.partner_id', '=', business_partner_id)
             ])
