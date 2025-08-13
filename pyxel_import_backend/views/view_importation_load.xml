@@ -57,7 +57,6 @@
                     </group>
                    <group>
                         <group string="Transport">
-
                             <field name="shipping_company" invisible="purchase_condition == 'FCL'"/>
                             <field name="airline" invisible="purchase_condition == 'AWB'"/>
                             <field name="transit_agency" invisible="purchase_condition not in ('FCL','LCL')"/>
