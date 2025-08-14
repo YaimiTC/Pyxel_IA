@@ -20,7 +20,8 @@ class IncotermImportType(models.Model):
     has_export_certificate = fields.Boolean(string='Export Certificate')
     has_origin_certificate = fields.Boolean(string='Origin Certificate')
     has_supplier_payment_certificate = fields.Boolean(string='Supplier Payment Certificate')
-    port_or_airport = fields.Boolean(string='Port/Airport?')
+    use_port = fields.Boolean(string='Port?')
+    use_airport = fields.Boolean(string='Airport?')
 
     # Load block
     show_cargo_type = fields.Boolean(string='Show Cargo Type')

@@ -1,8 +1,8 @@
+import json
 from datetime import timedelta, datetime
 
-from odoo import models, fields, api,_
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
-
 
 STATE_SELECTION = [
     ('new', 'New'),
@@ -120,6 +120,20 @@ class ImportationProcess(models.Model):
         store=True,
         readonly=False
     )
+
+    filtered_incoterm = fields.Char(default=json.dumps([]), store=True)
+
+    filtered_import_type = fields.Char(default=json.dumps([]), store=True)
+
+    incoterm_id = fields.Many2one(string='Incoterm', comodel_name='account.incoterms')
+
+    import_type_id = fields.Many2one(string='Import Type', comodel_name='import.type')
+
+    incoterm_import_type_id = fields.Many2one(string='Incoterm - Import Type', comodel_name='incoterm.import.type',
+                                              compute='_compute_incoterm_import_type')
+
+    use_port = fields.Boolean(string='Use Port?', related='incoterm_import_type_id.use_port')
+    use_airport = fields.Boolean(string='Use Port?', related='incoterm_import_type_id.use_airport')
 
     @api.depends('final_sale_order_id.process_id')
     def _compute_process_id(self):
@@ -396,6 +410,56 @@ class ImportationProcess(models.Model):
             else:
                 rec.is_third_party_contract = False  # O True, según lo que prefieras por defecto si no hay compras
 
+    @api.onchange('import_type_id')
+    def _compute_available_incoterms(self):
+        for record in self:
+            domain = []
+            if record.import_type_id:
+                # Buscar relaciones activas entre import_type y incoterms
+                relations = self.env['incoterm.import.type'].search([
+                    ('import_type_id', '=', record.import_type_id.id),
+                    ('active', '=', True)
+                ])
+                incoterm_ids = relations.mapped('incoterm_id.id')
+                domain = [('id', 'in', incoterm_ids)]
+            record.filtered_incoterm = json.dumps(domain)
+
+    @api.onchange('incoterm_id')
+    def _compute_available_import_type(self):
+        for record in self:
+            domain = []
+            if record.incoterm_id:
+                # Buscar relaciones activas entre import_type y incoterms
+                relations = self.env['incoterm.import.type'].search([
+                    ('incoterm_id', '=', record.incoterm_id.id),
+                    ('active', '=', True)
+                ])
+                import_type_ids = relations.mapped('import_type_id.id')
+                domain = [('id', 'in', import_type_ids)]
+            record.filtered_import_type = json.dumps(domain)
+
+    @api.depends('import_type_id', 'incoterm_id')
+    def _compute_incoterm_import_type(self):
+        for record in self:
+            record.incoterm_import_type_id = False
+            if record.incoterm_id and record.import_type_id:
+                get_record = self.env['incoterm.import.type'].search(
+                    [('active', '=', True), ('incoterm_id', '=', record.incoterm_id.id),
+                     ('import_type_id', '=', record.import_type_id.id)], limit=1)
+                record.incoterm_import_type_id = get_record if get_record else False
+
+    @api.constrains('incoterm_id', 'import_type_id')
+    def _check_incoterm_relation(self):
+        for record in self:
+            if record.incoterm_id and record.import_type_id:
+                exists = self.env['incoterm.import.type'].search_count([
+                    ('incoterm_id', '=', record.incoterm_id.id),
+                    ('import_type_id', '=', record.import_type_id.id),
+                    ('active', '=', True)
+                ])
+                if not exists:
+                    raise ValidationError(_("The selected Incoterm is not related to the type of import."))
+
 
 class ImportationCostLine(models.Model):
     _name = 'importation.cost.line'
@@ -429,8 +493,6 @@ class ImportationCostLine(models.Model):
             record.name = record.product_id.display_name or ''
 
 
-
-
 class ImportationStage(models.Model):
     _name = 'importation.stage'
     _description = 'Importation Process Stages'
@@ -441,4 +503,3 @@ class ImportationStage(models.Model):
     sequence = fields.Integer(required=True, default=1)
     fold = fields.Boolean('Folded in Kanban', default=False)
     is_final = fields.Boolean(string="Is Final Stage", default=False)
-
