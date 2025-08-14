@@ -23,13 +23,10 @@
                                     <group name="documents_left_group">
                                         <field name="has_bl"/>
                                         <field name="has_packing_list"/>
-                                        <field name="has_signed_offer"/>
                                         <field name="has_export_certificate"/>
-                                        <field name="has_supplier_payment_certificate"/>
                                     </group>
                                     <group name="documents_right_group">
                                         <field name="has_awb"/>
-                                        <field name="has_commercial_invoice"/>
                                         <field name="has_quality_certificate"/>
                                         <field name="has_origin_certificate"/>
                                     </group>

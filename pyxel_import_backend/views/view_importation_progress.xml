@@ -114,8 +114,8 @@
                         </button>
 
                     </div>
-                    <group>
-                        <group>
+                    <group name="main_group">
+                        <group name="info_group">
                             <field name="process_id" options="{'no_create': True, 'no_open': True}" readonly="True"
                                    context="{'default_importation_id': id}"/>
                             <field name="name" readonly="1"/>
@@ -135,29 +135,35 @@
                             <field name="declaration"/>
                             <field name="state" readonly="1"/>
                         </group>
-                        <group>
+
+                        <group name="date_group">
                             <field name="estimated_start_date"/>
                             <field name="estimated_end_date"/>
                             <field name="departure_date"/>
                             <field name="declaration_date"/>
                             <field name="documentation_sent_date"/>
-
                         </group>
                     </group>
 
                     <notebook>
-                        <page string="Documents">
+                        <page string="Documents" name="documents">
+                            <field name="has_origin_certificate" invisible="True"/>
+                            <field name="has_export_certificate" invisible="True"/>
+                            <field name="has_quality_certificate" invisible="True"/>
+                            <field name="has_packing_list" invisible="True"/>
+                            <field name="has_awb" invisible="True"/>
+                            <field name="has_bl" invisible="True"/>
                             <group>
-                                <field name="origin_certificate" filename="origin_certificate_filename"/>
-                                <field name="export_certificate" filename="export_certificate_filename"/>
-                                <field name="quality_certificate" filename="quality_certificate_filename"/>
+                                <field name="origin_certificate" filename="origin_certificate_filename" invisible="has_origin_certificate == False"/>
+                                <field name="export_certificate" filename="export_certificate_filename" invisible="has_export_certificate == False"/>
+                                <field name="quality_certificate" filename="quality_certificate_filename" invisible="has_quality_certificate == False"/>
 
-                                <field name="documentation_file" filename="documentation_file_filename"/>
-                                <field name="packing_list" filename="packing_list_filename"/>
+                                <field name="documentation_file" filename="documentation_file_filename" invisible="has_awb == False and has_bl == False"/>
+                                <field name="packing_list" filename="packing_list_filename" invisible="has_packing_list == False"/>
                             </group>
                         </page>
 
-                        <page string="Importation Load">
+                        <page string="Importation Load" name="importation_load">
                             <field name="load_tracking_ids" context="{'default_importation_id': active_id}">
                                 <tree>
                                     <field name="name"/>
@@ -249,7 +255,7 @@
                             </field>
                         </page>
 
-                        <page string="Purchase Orders">
+                        <page string="Purchase Orders" name="purchase_orders">
                             <field name="purchase_order_ids"
                                    domain="['|', ('importation_id', '=', False), ('importation_id', '=', active_id)]">
                                 <tree>
@@ -260,7 +266,8 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Import costs">
+
+                        <page string="Import costs" name="import_costs">
                             <field name="cost_line_ids">
                                 <tree editable="top" create="true" edit="true">
                                     <field name="product_id"

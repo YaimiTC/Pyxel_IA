@@ -8,12 +8,9 @@
             <field name="import_type_id" ref="import_type_ocean"/>
             <field name="has_bl">True</field>
             <field name="has_packing_list">True</field>
-            <field name="has_commercial_invoice">True</field>
-            <field name="has_signed_offer">True</field>
             <field name="has_quality_certificate">True</field>
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
-            <field name="has_supplier_payment_certificate">True</field>
             <field name="use_port">True</field>
             <field name="show_cargo_type">True</field>
             <field name="show_opening_date">True</field>
@@ -30,12 +27,9 @@
             <field name="import_type_id" ref="import_type_ocean"/>
             <field name="has_bl">True</field>
             <field name="has_packing_list">True</field>
-            <field name="has_commercial_invoice">True</field>
-            <field name="has_signed_offer">True</field>
             <field name="has_quality_certificate">True</field>
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
-            <field name="has_supplier_payment_certificate">True</field>
             <field name="use_port">True</field>
             <field name="show_cargo_type">True</field>
             <field name="show_opening_date">True</field>
@@ -52,12 +46,9 @@
             <field name="import_type_id" ref="import_type_ocean"/>
             <field name="has_bl">True</field>
             <field name="has_packing_list">True</field>
-            <field name="has_commercial_invoice">True</field>
-            <field name="has_signed_offer">True</field>
             <field name="has_quality_certificate">True</field>
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
-            <field name="has_supplier_payment_certificate">True</field>
             <field name="use_port">True</field>
             <field name="show_cargo_type">True</field>
             <field name="show_opening_date">True</field>
@@ -76,12 +67,9 @@
             <field name="import_type_id" ref="import_type_air"/>
             <field name="has_awb">True</field>
             <field name="has_packing_list">True</field>
-            <field name="has_commercial_invoice">True</field>
-            <field name="has_signed_offer">True</field>
             <field name="has_quality_certificate">True</field>
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
-            <field name="has_supplier_payment_certificate">True</field>
             <field name="use_airport">True</field>
             <field name="show_bulk">True</field>
             <field name="show_airline">True</field>
@@ -91,12 +79,9 @@
         <record id="rel_dap_on_site" model="incoterm.import.type">
             <field name="incoterm_id" ref="account.incoterm_DAP"/>
             <field name="import_type_id" ref="import_type_on_site"/>
-            <field name="has_commercial_invoice">True</field>
-            <field name="has_signed_offer">True</field>
             <field name="has_quality_certificate">True</field>
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
-            <field name="has_supplier_payment_certificate">True</field>
             <field name="show_volume">True</field>
             <field name="show_bulk">True</field>
             <field name="show_return_date">True</field>
