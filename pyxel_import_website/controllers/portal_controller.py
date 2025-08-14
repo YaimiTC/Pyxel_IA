@@ -28,14 +28,14 @@ class Portal(CustomerPortal):
         _logger.info(f"La primera etapa de CRM es: {first_stage.name} (ID: {first_stage.id})")
 
         # Inicializa contadores
-        new_quotations_count = 0
-        new_orders_count = 0
-        new_invoices_count = 0
-        new_importaciones_count = 0
+        new_quotations_count = 0  # representa a los purchase.order
+        new_orders_count = 0  # representa a los sale.order
+        new_invoices_count = 0  # representa a los invoices
+        new_importaciones_count = 0  # representa a las importaciones
 
         if is_internal_user:
             _logger.info("Usuario interno: se cuentan todos los documentos.")
-            new_quotations_count = request.env['sale.order'].sudo().search_count([('state', '=', 'draft')])
+            new_quotations_count = request.env['purchase.order'].sudo().search_count([('state', '=', 'draft')])
             new_orders_count = request.env['sale.order'].sudo().search_count([('state', '=', 'draft')])
             new_invoices_count = request.env['account.move'].sudo().search_count([
                 ('state', '=', 'draft'),
@@ -47,7 +47,7 @@ class Portal(CustomerPortal):
 
         elif contact_type.type_of_contact == 'Client':
             _logger.info("Usuario cliente: se cuentan solo ventas e importaciones como cliente.")
-            new_quotations_count = request.env['sale.order'].sudo().search_count([
+            new_orders_count = request.env['sale.order'].sudo().search_count([
                 ('state', '=', 'draft'),
                 ('partner_id', '=', business_partner_id)
             ])
@@ -64,14 +64,14 @@ class Portal(CustomerPortal):
 
         elif contact_type.type_of_contact == 'Supplier':
             _logger.info("Usuario proveedor: se cuentan solo compras e importaciones como proveedor.")
-            new_orders_count = request.env['purchase.order'].sudo().search_count([
+            new_quotations_count = request.env['purchase.order'].sudo().search_count([
                 ('state', '=', 'draft'),
                 ('partner_id', '=', business_partner_id)
             ])
             new_invoices_count = request.env['account.move'].sudo().search_count([
                 ('state', '=', 'draft'),
                 ('move_type', '=', 'out_invoice'),
-                ('invoice_line_ids.product_id.seller_ids.partner_id', '=', business_partner_id)
+                ('partner_id', '=', business_partner_id)
             ])
             new_importaciones_count = request.env['importation.process'].sudo().search_count([
                 ('stage_id', '=', first_stage.id),

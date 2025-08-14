@@ -11,9 +11,10 @@
                                 <field name="incoterm_id"/>
                                 <field name="active"/>
                             </group>
-                            <group name="left_group">
+                            <group name="right_group">
                                 <field name="import_type_id"/>
-                                <field name="port_or_airport"/>
+                                <field name="use_port"/>
+                                <field name="use_airport"/>
                             </group>
                         </group>
                         <notebook>

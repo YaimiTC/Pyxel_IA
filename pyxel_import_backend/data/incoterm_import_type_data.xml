@@ -14,7 +14,7 @@
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
-            <field name="port_or_airport">True</field>
+            <field name="use_port">True</field>
             <field name="show_cargo_type">True</field>
             <field name="show_opening_date">True</field>
             <field name="show_arrival_date">True</field>
@@ -36,7 +36,7 @@
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
-            <field name="port_or_airport">True</field>
+            <field name="use_port">True</field>
             <field name="show_cargo_type">True</field>
             <field name="show_opening_date">True</field>
             <field name="show_arrival_date">True</field>
@@ -58,7 +58,7 @@
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
-            <field name="port_or_airport">True</field>
+            <field name="use_port">True</field>
             <field name="show_cargo_type">True</field>
             <field name="show_opening_date">True</field>
             <field name="show_arrival_date">True</field>
@@ -82,7 +82,7 @@
             <field name="has_export_certificate">True</field>
             <field name="has_origin_certificate">True</field>
             <field name="has_supplier_payment_certificate">True</field>
-            <field name="port_or_airport">True</field>
+            <field name="use_airport">True</field>
             <field name="show_bulk">True</field>
             <field name="show_airline">True</field>
         </record>
