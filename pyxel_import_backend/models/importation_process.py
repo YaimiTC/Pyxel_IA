@@ -132,8 +132,34 @@ class ImportationProcess(models.Model):
     incoterm_import_type_id = fields.Many2one(string='Incoterm - Import Type', comodel_name='incoterm.import.type',
                                               compute='_compute_incoterm_import_type')
 
+    # Documentation block
+    has_bl = fields.Boolean(string='BL', related='incoterm_import_type_id.has_bl')
+    has_awb = fields.Boolean(string='AWB', related='incoterm_import_type_id.has_awb')
+    has_packing_list = fields.Boolean(string='Packing List', related='incoterm_import_type_id.has_packing_list')
+
+    has_quality_certificate = fields.Boolean(string='Quality Certificate',
+                                             related='incoterm_import_type_id.has_quality_certificate')
+    has_export_certificate = fields.Boolean(string='Export Certificate',
+                                            related='incoterm_import_type_id.has_export_certificate')
+    has_origin_certificate = fields.Boolean(string='Origin Certificate',
+                                            related='incoterm_import_type_id.has_origin_certificate')
     use_port = fields.Boolean(string='Use Port?', related='incoterm_import_type_id.use_port')
-    use_airport = fields.Boolean(string='Use Port?', related='incoterm_import_type_id.use_airport')
+    use_airport = fields.Boolean(string='Use Airport?', related='incoterm_import_type_id.use_airport')
+
+    # Load block
+    show_cargo_type = fields.Boolean(string='Show Cargo Type')
+    show_volume = fields.Boolean(string='Show Volume')
+    show_bulk = fields.Boolean(string='Show Bulk')
+
+    show_opening_date = fields.Boolean(string='Show Opening Date')
+    show_arrival_date = fields.Boolean(string='Show Arrival Date')
+    show_release_date = fields.Boolean(string='Show Release Date')
+    show_extraction_date = fields.Boolean(string='Show Extraction Date')
+    show_return_date = fields.Boolean(string='Show Return Date')
+
+    show_shipping_company = fields.Boolean(string='Show Shipping Company')
+    show_airline = fields.Boolean(string='Show Airline')
+    show_transit_agency = fields.Boolean(string='Show Transit Agency')
 
     @api.depends('final_sale_order_id.process_id')
     def _compute_process_id(self):
