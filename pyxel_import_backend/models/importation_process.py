@@ -62,8 +62,11 @@ class ImportationProcess(models.Model):
 
     date_import_closed = fields.Date(string='Date on which the import closed')
 
-    port = fields.Char(string='Port')
-    airport = fields.Char(string='Airport')
+    filtered_airport = fields.Char(default=json.dumps([]), store=True)
+    filtered_port = fields.Char(default=json.dumps([]), store=True)
+
+    port = fields.Many2one(comodel_name='transport.hub', string='Port')
+    airport = fields.Many2one(comodel_name='transport.hub', string='Airport')
 
     purchase_condition = fields.Selection([
         ('FCL', 'FCL'),
@@ -485,6 +488,26 @@ class ImportationProcess(models.Model):
                 ])
                 if not exists:
                     raise ValidationError(_("The selected Incoterm is not related to the type of import."))
+
+    @api.onchange('country_origin_id')
+    def _compute_filtered_hubs(self):
+        for record in self:
+            airport_domain = []
+            port_domain = []
+            record.port = False
+            record.airport = False
+            if record.country_origin_id:
+                airport_domain = [
+                    ('country_id', '=', record.country_origin_id.id),
+                    ('hub_type', '=', 'Airport')
+                ]
+                port_domain = [
+                    ('country_id', '=', record.country_origin_id.id),
+                    ('hub_type', '=', 'Port')
+                ]
+
+            record.filtered_airport = json.dumps(airport_domain)
+            record.filtered_port = json.dumps(port_domain)
 
 
 class ImportationCostLine(models.Model):
