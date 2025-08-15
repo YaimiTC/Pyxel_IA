@@ -129,8 +129,10 @@
                             <field name="import_type_id" domain="filtered_import_type"/>
                             <field name="use_port" invisible="True"/>
                             <field name="use_airport" invisible="True"/>
-                            <field name="port" invisible="use_port == False"/>
-                            <field name="airport" invisible="use_airport == False"/>
+                            <field name="filtered_port" invisible="True"/>
+                            <field name="filtered_airport" invisible="True"/>
+                            <field name="port" invisible="use_port == False" domain="filtered_port"/>
+                            <field name="airport" invisible="use_airport == False" domain="filtered_airport"/>
                             <field name="purchase_condition_number"/>
                             <field name="declaration"/>
                             <field name="state" readonly="1"/>
@@ -157,7 +159,6 @@
                                 <field name="origin_certificate" filename="origin_certificate_filename" invisible="has_origin_certificate == False"/>
                                 <field name="export_certificate" filename="export_certificate_filename" invisible="has_export_certificate == False"/>
                                 <field name="quality_certificate" filename="quality_certificate_filename" invisible="has_quality_certificate == False"/>
-
                                 <field name="documentation_file" filename="documentation_file_filename" invisible="has_awb == False and has_bl == False"/>
                                 <field name="packing_list" filename="packing_list_filename" invisible="has_packing_list == False"/>
                             </group>

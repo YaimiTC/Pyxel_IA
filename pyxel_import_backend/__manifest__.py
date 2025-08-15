@@ -22,6 +22,7 @@
         'stock',
         'contacts',
         'account',
+        'transport_hub'
     ],
     "data": [
         'data/crm_stage_data.xml',
