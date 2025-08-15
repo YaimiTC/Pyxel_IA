@@ -12,7 +12,7 @@
                 <field name="arrival_date"/>
                 <field name="extraction_date"/>
                 <field name="return_date"/>
-                <field name="days_in_tcm" />
+                <field name="days_in_tcm"/>
                 <field name="days_extracted"/>
             </tree>
         </field>
@@ -24,42 +24,55 @@
         <field name="arch" type="xml">
             <form string="Importation Load">
                 <header>
-                     <button name="%(action_x_container_fill_wizard)d"
-                        type="action"
-                        string="Line Fill"
-                        class="btn-secondary"/>
+                    <button name="%(action_x_container_fill_wizard)d"
+                            type="action"
+                            string="Line Fill"
+                            class="btn-secondary"/>
                 </header>
                 <sheet>
                     <group>
-                        <group  string="General information">
+                        <group string="General information">
+                            <field name="hide_cargo_type" invisible="1"/>
+                            <field name="hide_volume" invisible="1"/>
+                            <field name="hide_bulk" invisible="1"/>
+
                             <field name="name"/>
                             <field name="importation_id"/>
-                            <field name="purchase_condition" readonly="1"/>
-                            <field name="cargo_type" invisible="purchase_condition not in ('FCL','LCL')"/>
+                            <field name="cargo_type" invisible="hide_cargo_type"/>
                             <field name="size"/>
                             <field name="weight"/>
-                            <field name="volume" invisible="purchase_condition == 'AWB'"/>
-                            <field name="bulk" invisible="purchase_condition == 'LCL'"/>
+                            <field name="volume" invisible="hide_volume == True"/>
+                            <field name="bulk" invisible="hide_bulk == True"/>
                             <field name="supplier_invoice_number"/>
                         </group>
 
                         <group string="Container Status">
-                            <field name="opening_date" invisible="purchase_condition not in ('FCL','LCL')"/>
-                            <field name="arrival_date" invisible="purchase_condition not in ('FCL','LCL')"/>
-                            <field name="release_date" invisible="purchase_condition not in ('FCL','LCL')"/>
-                            <field name="extraction_date" invisible="purchase_condition not in ('FCL','LCL')"/>
-                            <field name="return_date" invisible="purchase_condition == 'AWB'"/>
+                            <field name="hide_opening_date" invisible="1"/>
+                            <field name="hide_arrival_date" invisible="1"/>
+                            <field name="hide_release_date" invisible="1"/>
+                            <field name="hide_extraction_date" invisible="1"/>
+                            <field name="hide_return_date" invisible="1"/>
+
+                            <field name="opening_date" invisible="hide_opening_date"/>
+                            <field name="arrival_date" invisible="hide_arrival_date"/>
+                            <field name="release_date" invisible="hide_release_date"/>
+                            <field name="extraction_date" invisible="hide_extraction_date"/>
+                            <field name="return_date" invisible="hide_return_date"/>
                             <field name="state" readonly="1"/>
                             <field name="currency_id" readonly="1"/>
                             <field name="days_in_tcm" readonly="1"/>
                             <field name="days_extracted" readonly="1"/>
                         </group>
                     </group>
-                   <group>
+                    <group>
                         <group string="Transport">
-                            <field name="shipping_company" invisible="purchase_condition == 'FCL'"/>
-                            <field name="airline" invisible="purchase_condition == 'AWB'"/>
-                            <field name="transit_agency" invisible="purchase_condition not in ('FCL','LCL')"/>
+                            <field name="hide_shipping_company" invisible="1"/>
+                            <field name="hide_airline" invisible="1"/>
+                            <field name="hide_transit_agency" invisible="1"/>
+
+                            <field name="shipping_company" invisible="hide_shipping_company"/>
+                            <field name="airline" invisible="hide_airline"/>
+                            <field name="transit_agency" invisible="hide_transit_agency"/>
                             <field name="pre_appointment_date"/>
                             <field name="appointment_date"/>
                             <field name="transport_company"/>
@@ -77,10 +90,11 @@
                     </group>
                     <notebook>
                         <page string="Product Lines">
-                            <field name="purchase_order_ids" />
+                            <field name="purchase_order_ids"/>
                             <field name="cargo_line_ids" context="{'default_cargo_id': active_id}">
                                 <tree editable="bottom">
-                                    <field name="purchase_order_line_id" domain="[('order_id', 'in', parent.purchase_order_ids)]"/>
+                                    <field name="purchase_order_line_id"
+                                           domain="[('order_id', 'in', parent.purchase_order_ids)]"/>
                                     <field name="product_id" readonly="1"/>
                                     <field name="quantity"/>
                                 </tree>
@@ -105,22 +119,22 @@
     </record>
 
     <record id="action_open_importation_wizard" model="ir.actions.server">
-            <field name="name">Conciliación</field>
-            <field name="model_id" ref="model_importation_load"/>
-            <field name="binding_model_id" ref="model_importation_load"/>
-            <field name="state">code</field>
-            <field name="code">
-                action = {
-                    'type': 'ir.actions.act_window',
-                    'name': 'Conciliación',
-                    'res_model': 'average.container',
-                    'view_mode': 'form',
-                    'target': 'new',
-                }
-            </field>
+        <field name="name">Conciliación</field>
+        <field name="model_id" ref="model_importation_load"/>
+        <field name="binding_model_id" ref="model_importation_load"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'type': 'ir.actions.act_window',
+            'name': 'Conciliación',
+            'res_model': 'average.container',
+            'view_mode': 'form',
+            'target': 'new',
+            }
+        </field>
     </record>
 
 
-
-    <menuitem id="menu_importation_load" name="Loads" parent="menu_importation_process" sequence="2" action="action_importation_load"/>
+    <menuitem id="menu_importation_load" name="Loads" parent="menu_importation_process" sequence="2"
+              action="action_importation_load"/>
 </odoo>

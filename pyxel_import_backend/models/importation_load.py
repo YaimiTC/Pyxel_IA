@@ -12,6 +12,8 @@ class ImportationLoad(models.Model):
     importation_id = fields.Many2one('importation.process', string='Import', required=True)
     purchase_condition = fields.Selection(related='importation_id.purchase_condition', string='Purchase Condition',
                                           readonly=True)
+    incoterm_import_type_id = fields.Many2one(comodel_name='incoterm.import.type',
+                                              related='importation_id.incoterm_import_type_id', string='IIT')
 
     cargo_type = fields.Selection([
         ('dry', 'Dry'),
@@ -45,8 +47,50 @@ class ImportationLoad(models.Model):
     extraction_date = fields.Date(string='Extraction Date')
     return_date = fields.Date(string='Return Date')
 
-    days_in_tcm = fields.Integer(string="Days in TCM",  compute='_compute_days_in_tcm')
-    days_extracted = fields.Integer(string="Days extracted",  compute='_compute_days_extracted')
+    days_in_tcm = fields.Integer(string="Days in TCM", compute='_compute_days_in_tcm')
+    days_extracted = fields.Integer(string="Days extracted", compute='_compute_days_extracted')
+
+    hide_cargo_type = fields.Boolean(string='Show Cargo Type', compute='_inverse_boolean_value')
+    hide_volume = fields.Boolean(string='Show Volume', compute='_inverse_boolean_value')
+    hide_bulk = fields.Boolean(string='Show Bulk', compute='_inverse_boolean_value')
+
+    hide_opening_date = fields.Boolean(string='Show Opening Date', compute='_inverse_boolean_value')
+    hide_arrival_date = fields.Boolean(string='Show Arrival Date', compute='_inverse_boolean_value')
+    hide_release_date = fields.Boolean(string='Show Release Date', compute='_inverse_boolean_value')
+    hide_extraction_date = fields.Boolean(string='Show Extraction Date', compute='_inverse_boolean_value')
+    hide_return_date = fields.Boolean(string='Show Return Date', compute='_inverse_boolean_value')
+
+    hide_shipping_company = fields.Boolean(string='Show Shipping Company', compute='_inverse_boolean_value')
+    hide_airline = fields.Boolean(string='Show Airline', compute='_inverse_boolean_value')
+    hide_transit_agency = fields.Boolean(string='Show Transit Agency', compute='_inverse_boolean_value')
+
+    @api.depends('incoterm_import_type_id')
+    def _inverse_boolean_value(self):
+        for record in self:
+            record.hide_cargo_type = False
+            record.hide_volume = False
+            record.hide_bulk = False
+            record.hide_opening_date = False
+            record.hide_arrival_date = False
+            record.hide_release_date = False
+            record.hide_extraction_date = False
+            record.hide_return_date = False
+            record.hide_shipping_company = False
+            record.hide_airline = False
+            record.hide_transit_agency = False
+            if record.incoterm_import_type_id:
+                record.hide_cargo_type = not record.incoterm_import_type_id.show_cargo_type
+                record.hide_volume = not record.incoterm_import_type_id.show_volume
+                record.hide_bulk = not record.incoterm_import_type_id.show_bulk
+                record.hide_opening_date = not record.incoterm_import_type_id.show_opening_date
+                record.hide_arrival_date = not record.incoterm_import_type_id.show_arrival_date
+                record.hide_release_date = not record.incoterm_import_type_id.show_release_date
+                record.hide_extraction_date = not record.incoterm_import_type_id.show_extraction_date
+                record.hide_return_date = not record.incoterm_import_type_id.show_return_date
+                record.hide_shipping_company = not record.incoterm_import_type_id.show_shipping_company
+                record.hide_airline = not record.incoterm_import_type_id.show_airline
+                record.hide_transit_agency = not record.incoterm_import_type_id.show_transit_agency
+
 
     # @api.depends('arrival_date', 'extraction_date')
     def _compute_days_in_tcm(self):
@@ -93,7 +137,7 @@ class ImportationLoad(models.Model):
 
     # Líneas de producto asignadas a la carga (fracción de ordenes de compra)
     cargo_line_ids = fields.One2many('importation.load.line', 'cargo_id', string='Products transported')
-    total_cargo_line = fields.Float(string='Amount of line',  compute='_compute_total_cargo_line')
+    total_cargo_line = fields.Float(string='Amount of line', compute='_compute_total_cargo_line')
 
     currency_id = fields.Many2one(
         'res.currency',
@@ -285,7 +329,8 @@ class ImportationLoadLine(models.Model):
 
             if line.quantity > available:
                 line.quantity = available
-                raise ValidationError(f"The quantity exceeds the available quantity ({available}). It has been automatically adjusted.")
+                raise ValidationError(
+                    f"The quantity exceeds the available quantity ({available}). It has been automatically adjusted.")
 
     @api.constrains('quantity')
     def _check_quantity_not_zero(self):
