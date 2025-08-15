@@ -149,21 +149,6 @@ class ImportationProcess(models.Model):
     use_port = fields.Boolean(string='Use Port?', related='incoterm_import_type_id.use_port')
     use_airport = fields.Boolean(string='Use Airport?', related='incoterm_import_type_id.use_airport')
 
-    # Load block
-    show_cargo_type = fields.Boolean(string='Show Cargo Type')
-    show_volume = fields.Boolean(string='Show Volume')
-    show_bulk = fields.Boolean(string='Show Bulk')
-
-    show_opening_date = fields.Boolean(string='Show Opening Date')
-    show_arrival_date = fields.Boolean(string='Show Arrival Date')
-    show_release_date = fields.Boolean(string='Show Release Date')
-    show_extraction_date = fields.Boolean(string='Show Extraction Date')
-    show_return_date = fields.Boolean(string='Show Return Date')
-
-    show_shipping_company = fields.Boolean(string='Show Shipping Company')
-    show_airline = fields.Boolean(string='Show Airline')
-    show_transit_agency = fields.Boolean(string='Show Transit Agency')
-
     @api.depends('final_sale_order_id.process_id')
     def _compute_process_id(self):
         for record in self:

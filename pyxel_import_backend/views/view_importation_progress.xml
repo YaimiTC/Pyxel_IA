@@ -119,8 +119,8 @@
                             <field name="process_id" options="{'no_create': True, 'no_open': True}" readonly="True"
                                    context="{'default_importation_id': id}"/>
                             <field name="name" readonly="1"/>
-                            <field name="provider_id"/>
-                            <field name="customer_id"/>
+                            <field name="provider_id" domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Supplier')]"/>
+                            <field name="customer_id" domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Client')]"/>
                             <field name="country_origin_id"/>
                             <field name="filtered_incoterm" invisible="True"/>
                             <field name="filtered_import_type" invisible="True"/>
@@ -156,11 +156,16 @@
                             <field name="has_awb" invisible="True"/>
                             <field name="has_bl" invisible="True"/>
                             <group>
-                                <field name="origin_certificate" filename="origin_certificate_filename" invisible="has_origin_certificate == False"/>
-                                <field name="export_certificate" filename="export_certificate_filename" invisible="has_export_certificate == False"/>
-                                <field name="quality_certificate" filename="quality_certificate_filename" invisible="has_quality_certificate == False"/>
-                                <field name="documentation_file" filename="documentation_file_filename" invisible="has_awb == False and has_bl == False"/>
-                                <field name="packing_list" filename="packing_list_filename" invisible="has_packing_list == False"/>
+                                <field name="origin_certificate" filename="origin_certificate_filename"
+                                       invisible="has_origin_certificate == False"/>
+                                <field name="export_certificate" filename="export_certificate_filename"
+                                       invisible="has_export_certificate == False"/>
+                                <field name="quality_certificate" filename="quality_certificate_filename"
+                                       invisible="has_quality_certificate == False"/>
+                                <field name="documentation_file" filename="documentation_file_filename"
+                                       invisible="has_awb == False and has_bl == False"/>
+                                <field name="packing_list" filename="packing_list_filename"
+                                       invisible="has_packing_list == False"/>
                             </group>
                         </page>
 
@@ -168,14 +173,14 @@
                             <field name="load_tracking_ids" context="{'default_importation_id': active_id}">
                                 <tree>
                                     <field name="name"/>
-                                    <field name="cargo_type"/>
+                                    <field name="cargo_type" optional="show"/>
                                     <field name="size"/>
-                                    <field name="weight"/>
-                                    <field name="volume"/>
-                                    <field name="arrival_date"/>
-                                    <field name="release_date"/>
-                                    <field name="return_date"/>
-                                    <field name="extraction_date"/>
+                                    <field name="weight" optional="show"/>
+                                    <field name="volume" optional="show"/>
+                                    <field name="arrival_date" optional="show"/>
+                                    <field name="release_date" optional="show"/>
+                                    <field name="return_date" optional="show"/>
+                                    <field name="extraction_date" optional="show"/>
                                     <field name="days_in_tcm"/>
                                     <field name="days_extracted"/>
                                     <field name="state"/>
@@ -188,69 +193,77 @@
                                                 class="btn-secondary"/>
                                     </header>
                                     <sheet>
-                                        <group string="General information">
-                                            <field name="name"/>
-                                            <field name="importation_id"/>
-                                            <field name="purchase_condition" readonly="1"/>
-                                            <field name="cargo_type"
-                                                   invisible="purchase_condition not in ('FCL','LCL')"/>
-                                            <field name="size"/>
-                                            <field name="weight"/>
-                                            <field name="volume" invisible="purchase_condition == 'AWB'"/>
-                                            <field name="bulk" invisible="purchase_condition == 'LCL'"/>
-                                            <field name="supplier_invoice_number"/>
+                                        <group>
+                                            <group string="General information">
+                                                <field name="hide_cargo_type" invisible="1"/>
+                                                <field name="hide_volume" invisible="1"/>
+                                                <field name="hide_bulk" invisible="1"/>
 
+                                                <field name="name"/>
+                                                <field name="importation_id"/>
+                                                <field name="cargo_type" invisible="hide_cargo_type"/>
+                                                <field name="size"/>
+                                                <field name="weight"/>
+                                                <field name="volume" invisible="hide_volume == True"/>
+                                                <field name="bulk" invisible="hide_bulk == True"/>
+                                                <field name="supplier_invoice_number"/>
+                                            </group>
+
+                                            <group string="Container Status">
+                                                <field name="hide_opening_date" invisible="1"/>
+                                                <field name="hide_arrival_date" invisible="1"/>
+                                                <field name="hide_release_date" invisible="1"/>
+                                                <field name="hide_extraction_date" invisible="1"/>
+                                                <field name="hide_return_date" invisible="1"/>
+
+                                                <field name="opening_date" invisible="hide_opening_date"/>
+                                                <field name="arrival_date" invisible="hide_arrival_date"/>
+                                                <field name="release_date" invisible="hide_release_date"/>
+                                                <field name="extraction_date" invisible="hide_extraction_date"/>
+                                                <field name="return_date" invisible="hide_return_date"/>
+                                                <field name="state" readonly="1"/>
+                                                <field name="currency_id" readonly="1"/>
+                                                <field name="days_in_tcm" readonly="1"/>
+                                                <field name="days_extracted" readonly="1"/>
+                                            </group>
                                         </group>
+                                        <group>
+                                            <group string="Transport">
+                                                <field name="hide_shipping_company" invisible="1"/>
+                                                <field name="hide_airline" invisible="1"/>
+                                                <field name="hide_transit_agency" invisible="1"/>
 
-                                        <group string="Container Status">
-                                            <field name="opening_date"
-                                                   invisible="purchase_condition not in ('FCL','LCL')"/>
-                                            <field name="arrival_date"
-                                                   invisible="purchase_condition not in ('FCL','LCL')"/>
-                                            <field name="release_date"
-                                                   invisible="purchase_condition not in ('FCL','LCL')"/>
-                                            <field name="extraction_date"
-                                                   invisible="purchase_condition not in ('FCL','LCL')"/>
-                                            <field name="return_date" invisible="purchase_condition == 'AWB'"/>
-                                            <field name="state" readonly="1"/>
-                                            <field name="currency_id" readonly="1"/>
-                                            <field name="days_in_tcm" readonly="1"/>
-                                            <field name="days_extracted" readonly="1"/>
+                                                <field name="shipping_company" invisible="hide_shipping_company"/>
+                                                <field name="airline" invisible="hide_airline"/>
+                                                <field name="transit_agency" invisible="hide_transit_agency"/>
+                                                <field name="pre_appointment_date"/>
+                                                <field name="appointment_date"/>
+                                                <field name="transport_company"/>
+                                                <field name="province"/>
+                                                <field name="truck_plate"/>
+                                                <field name="destination"/>
+                                                <field name="driver"/>
+                                            </group>
+
+                                            <group string="Transshipment">
+                                                <field name="is_transferred"/>
+                                                <field name="is_transshipment"/>
+                                                <field name="transshipment_type" invisible="is_transshipment == False"/>
+                                            </group>
                                         </group>
-
-                                        <group string="Transport">
-                                            <field name="shipping_company"
-                                                   invisible="purchase_condition not in ('FCL','LCL')"/>
-                                            <field name="airline" invisible="purchase_condition == 'AWB'"/>
-                                            <field name="transit_agency"
-                                                   invisible="purchase_condition not in ('FCL','LCL')"/>
-                                            <field name="pre_appointment_date"/>
-                                            <field name="appointment_date"/>
-                                            <field name="transport_company"/>
-                                            <field name="province"/>
-                                            <field name="truck_plate"/>
-                                            <field name="destination"/>
-                                            <field name="driver"/>
-                                        </group>
-
-                                        <group string="Transfer">
-                                            <field name="is_transferred"/>
-                                            <field name="is_transshipment"/>
-                                            <field name="transshipment_type" invisible="is_transshipment == False"/>
-                                        </group>
-
                                         <notebook>
                                             <page string="Product Lines">
-                                                <field name="cargo_line_ids">
+                                                <field name="purchase_order_ids"/>
+                                                <field name="cargo_line_ids" context="{'default_cargo_id': active_id}">
                                                     <tree editable="bottom">
-                                                        <field name="purchase_order_line_id"/>
+                                                        <field name="purchase_order_line_id"
+                                                               domain="[('order_id', 'in', parent.purchase_order_ids)]"/>
                                                         <field name="product_id" readonly="1"/>
                                                         <field name="quantity"/>
                                                     </tree>
                                                 </field>
                                             </page>
                                         </notebook>
-
                                     </sheet>
                                 </form>
                             </field>
