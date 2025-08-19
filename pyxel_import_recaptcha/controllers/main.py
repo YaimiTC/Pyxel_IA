@@ -37,7 +37,7 @@ class AuthSignupRecaptcha(AuthSignupHome):
                 if login and password:
                     try:
                         request.session.authenticate(request.env.cr.dbname, login, password)
-                        return request.redirect('/web')
+                        return request.redirect(kw.get('redirect', '/web'))
                     except Exception:
                         return request.render('web.login', {
                             'error': 'Las credenciales son incorrectas. Por favor, inténtalo de nuevo.',
@@ -104,7 +104,7 @@ class AuthSignupRecaptcha(AuthSignupHome):
                 # Autenticar automáticamente al usuario después del registro
                 request.session.authenticate(request.env.cr.dbname, login, kw.get('password'))
                 _logger.info(f"Usuario {login} autenticado automáticamente después del registro.")
-                return request.redirect('/web')  # Redirigir al portal
+                return request.redirect(kw.get('redirect', '/web'))  # Redirigir al portal
 
         return response
 

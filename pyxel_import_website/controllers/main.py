@@ -145,50 +145,6 @@ class WebsiteForm(form.WebsiteForm):
             res = {str(x.id): x.name for x in states}
         return res
 
-    @http.route(
-        ["/business-register"],
-        type="http",
-        auth="public",
-        methods=["POST", "GET"],
-        website=True,
-    )
-    def business_register(self, **kw):
-        loged_in()
-        render_values = get_render_values(kw)
-        license_holder = kw.get('license_holder')
-        if license_holder:
-            request.env['res.partner'].sudo().create({
-                'license_holder': license_holder,
-            })
-        if render_values["registered_user"]:
-            if render_values["register_type"] == "accreditation":
-                return request.render(
-                    "pyxel_import_website.business_register_thanks", render_values
-                )
-            if (
-                    render_values["register_type"] == "import"
-                    and request.env.user.partner_id.contact_type_id.type_of_contact == "Supplier"
-            ):
-                customers = (
-                    request.env["res.partner"]
-                    .sudo()
-                    .search([("contact_type_id.type_of_contact", "=", "Customer")])
-                )
-                render_values["customers"] = customers
-                return request.render(
-                    "pyxel_import_website.import_registration", render_values
-                )
-
-            # if(
-            #     render_values["register_type"] == "import"
-            #     and request.env.user.partner_id.contact_type_id.type_of_contact == "Customer"
-            # ):
-            #    productRequired = kw.get('productRequired')
-
-        return request.render(
-            "pyxel_import_website.business_registration", render_values
-        )
-
     def website_form(self, model_name, **kwargs):
         tipo_registro = kwargs.get("register_type") 
         public_user = request.env.user.sudo()
@@ -547,7 +503,7 @@ class WebsiteForm(form.WebsiteForm):
             lang = request.context.get('lang', False)
             values['lang_id'] = values.get('lang_id') or request.env['res.lang']._lang_get_id(lang)
 
-        # TODO: Hacer que llame al método insert_record del website, no del website_crm
+        # Llama al método insert_record del website, no del website_crm
         result = super(WebsiteForm2, self).insert_record(request, model, values, custom, meta=meta)
 
         if is_lead_model and visitor_sudo and result:
@@ -731,7 +687,7 @@ class ControllerTest(http.Controller):
     @http.route('/business-register', type='http', auth="public", website=True)
     def controller_register(self, **kw):
         if request.env.user.id == request.env.ref('base.public_user').id:
-            return request.redirect('/web/login?redirect=/business-register?type=accreditation')
+            return request.redirect(f"/web/login?redirect=/business-register?type={kw.get('type', 'accreditation')}")
 
         domain_ids = [request.env.user.partner_id.id]
 
