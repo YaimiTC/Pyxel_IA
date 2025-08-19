@@ -9,7 +9,7 @@ from datetime import datetime, date
 
 
 class AverageContainerSummaryReport(models.AbstractModel):
-    _name = 'report.pyxel_fruxelimport.container_summary_report_template'
+    _name = 'reports.pyxel_fruxelimport.container_summary_report_template'
     _description = 'Average Container Summary Report'
 
     @api.model

@@ -36,6 +36,22 @@ class SaleOrder(models.Model):
         readonly=True,
         help='Importation process generated from this evaluation.'
     )
+
+    # Campo para año de importación (relacionado con el proceso)
+    import_year = fields.Char(
+        string="Año Importación",
+        compute='_compute_import_year',
+        store=True
+    )
+
+    @api.depends('importation_process_id')
+    def _compute_import_year(self):
+        for order in self:
+            if order.importation_process_id and order.importation_process_id.estimated_start_date:
+                order.import_year = order.importation_process_id.estimated_start_date.strftime('%y')
+            else:
+                order.import_year = False
+
     is_third_party_contract = fields.Boolean(
         string='Third-Party Contract',
         related='importation_process_id.is_third_party_contract',

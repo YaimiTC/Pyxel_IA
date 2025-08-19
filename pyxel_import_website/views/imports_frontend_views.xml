@@ -310,20 +310,24 @@
                                                         <t t-esc="container.size"/>
                                                     </span>
                                                 </div>
-                                                <div class="col-lg-4 mt-lg-4 col-sm-8">
-                                                    <span>
-                                                        <h7 style="font-weight: bold;">Tipo de carga:</h7>
-                                                        <t t-esc="type_load_label[container.cargo_type]"/>
-                                                    </span>
-                                                    <br/>
-
-                                                    <span>
-                                                        <h7 style="font-weight: bold;">Importe:</h7>
-                                                        <t t-esc="container.total_cargo_line"/>
-                                                        <t t-esc="container.currency_id.name"/>
-                                                    </span>
-                                                </div>
-
+                                                <t t-if="container != False">
+                                                    <div class="col-lg-4 mt-lg-4 col-sm-8">
+                                                        <t t-if="container.cargo_type != False">
+                                                            <span>
+                                                                <h7 style="font-weight: bold;">Tipo de carga:</h7>
+                                                                <t t-esc="type_load_label[container.cargo_type]"/>
+                                                            </span>
+                                                        </t>
+                                                        <t t-if="container.total_cargo_line != False">
+                                                            <br/>
+                                                            <span>
+                                                                <h7 style="font-weight: bold;">Importe:</h7>
+                                                                <t t-esc="container.total_cargo_line"/>
+                                                                <t t-esc="container.currency_id.name"/>
+                                                            </span>
+                                                        </t>
+                                                    </div>
+                                                </t>
                                             </div>
                                             <div class="table-responsive">
                                                 <table class="table table-sm" id="container_table">

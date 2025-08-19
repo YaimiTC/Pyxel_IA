@@ -6,11 +6,56 @@
             <field name="arch" type="xml">
                 <form>
                     <sheet>
-                        <group>
-                            <field name="incoterm_id"/>
-                            <field name="import_type_id"/>
-                            <field name="active"/>
+                        <group name="main_group">
+                            <group name="left_group">
+                                <field name="incoterm_id"/>
+                                <field name="active"/>
+                            </group>
+                            <group name="right_group">
+                                <field name="import_type_id"/>
+                                <field name="use_port"/>
+                                <field name="use_airport"/>
+                            </group>
                         </group>
+                        <notebook>
+                            <page name="documents" string="Documents">
+                                <group name="documents_main_group">
+                                    <group name="documents_left_group">
+                                        <field name="has_bl"/>
+                                        <field name="has_packing_list"/>
+                                        <field name="has_export_certificate"/>
+                                    </group>
+                                    <group name="documents_right_group">
+                                        <field name="has_awb"/>
+                                        <field name="has_quality_certificate"/>
+                                        <field name="has_origin_certificate"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page name="importation_load" string="Importation Load">
+                                <group name="importation_load_main">
+                                    <group name="general_information_group" string="General Information">
+                                        <field name="show_cargo_type"/>
+                                        <field name="show_volume"/>
+                                        <field name="show_bulk"/>
+                                    </group>
+
+                                    <group name="container_status_group" string="Container Status">
+                                        <field name="show_opening_date"/>
+                                        <field name="show_arrival_date"/>
+                                        <field name="show_release_date"/>
+                                        <field name="show_extraction_date"/>
+                                        <field name="show_return_date"/>
+                                    </group>
+
+                                    <group name="transport_group" string="Transport">
+                                        <field name="show_shipping_company"/>
+                                        <field name="show_airline"/>
+                                        <field name="show_transit_agency"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids"/>
@@ -44,19 +89,19 @@
 
         <!-- Acción y menú para ICOTERM Import Type -->
         <record id="action_icoterm_import_type_config" model="ir.actions.act_window">
-            <field name="name">ICOTERM Import Type</field>
+            <field name="name">Incoterm Import Type</field>
             <field name="res_model">incoterm.import.type</field>
             <field name="view_mode">tree,form</field>
             <field name="view_id" ref="pyxel_import_backend.view_incoterm_import_type_tree"/>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Start by creating a relation between Icoterm and Import type.
+                    Start by creating a relation between Incoterm and Import type.
                 </p>
             </field>
         </record>
 
         <menuitem id="menu_icoterm_import_type_config"
-                  name="ICOTERM Import Type"
+                  name="Incoterm Import Type"
                   parent="menu_importation_config"
                   action="action_icoterm_import_type_config"
                   sequence="30"/>

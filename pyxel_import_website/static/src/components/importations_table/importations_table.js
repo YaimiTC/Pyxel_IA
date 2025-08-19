@@ -57,48 +57,67 @@ export class ImportationsTable extends Component {
     this.updateFilter = this.updateFilter.bind(this);
   }
 
-  async _loadImportations() {
-    this.state.isLoading = true;
-    try {
-      const user = await this.rpc("/api/user-data", {});
-      const partnerId = user.data.user.partner_id;
-      const isPortal = user.data.user.is_portal;
-      console.log(isPortal)
-      let domain = [];
+    async _loadImportations() {
+      this.state.isLoading = true;
+      try {
+        const user = await this.rpc("/api/user-data", {});
+        const partnerId = user.data.user.partner_id;
+        const isPortal = user.data.user.is_portal;
 
-      if (isPortal) {
-        const contactData = await this.orm.read("res.partner", [partnerId], ["contact_type_id"]);
-        const contactType = contactData[0]?.contact_type_id?.[1];
+        let domain = [];
 
-        if (contactType === "Supplier") {
-          domain = [["provider_id", "=", partnerId]];
-        } else if (contactType === "Client") {
-          domain = [["customer_id", "=", partnerId]];
+        if (isPortal) {
+          // Leer el partner base
+          const partnerData = await this.orm.read("res.partner", [partnerId], ["parent_id"]);
+          const companyPartnerId = partnerData[0]?.parent_id?.[0] || partnerId;
+
+          // Leer el tipo de contacto desde la empresa
+          const companyData = await this.orm.read("res.partner", [companyPartnerId], ["contact_type_id"]);
+          const contactTypeId = companyData[0]?.contact_type_id?.[0];
+
+          let typeOfContact = null;
+
+          if (contactTypeId) {
+            const contactTypeData = await this.orm.read("res.partner.contact.type", [contactTypeId], ["type_of_contact"]);
+            typeOfContact = contactTypeData[0]?.type_of_contact;
+          }
+
+          // Aplicar dominio según tipo
+          switch (typeOfContact) {
+            case "Supplier":
+              domain = [["provider_id", "=", companyPartnerId]];
+              break;
+            case "Client":
+              domain = [["customer_id", "=", companyPartnerId]];
+              break;
+            default:
+              console.warn("Tipo de contacto no reconocido o no definido:", typeOfContact);
+          }
         }
+
+        const records = await this.orm.searchRead(
+          "importation.process",
+          domain,
+          ["name", "provider_id", "customer_id", "purchase_condition_number", "stage_id"]
+        );
+
+        this.state.records = records.map((r) => ({
+          id: r.id,
+          name: r.name,
+          provider: r.provider_id?.[1],
+          customer: r.customer_id?.[1],
+          bl: r.purchase_condition_number,
+          stage: r.stage_id?.[1],
+        }));
+
+        this.state.filteredData = [...this.state.records];
+      } catch (error) {
+        console.error("Error loading importations:", error);
+      } finally {
+        this.state.isLoading = false;
       }
-
-      const records = await this.orm.searchRead(
-        "importation.process",
-        domain,
-        ["name", "provider_id", "customer_id", "purchase_condition_number", "stage_id"]
-      );
-
-      this.state.records = records.map((r) => ({
-        id: r.id,
-        name: r.name,
-        provider: r.provider_id?.[1],
-        customer: r.customer_id?.[1],
-        bl: r.purchase_condition_number,
-        stage: r.stage_id?.[1],
-      }));
-
-      this.state.filteredData = [...this.state.records];
-    } catch (error) {
-      console.error("Error loading importations:", error);
-    } finally {
-      this.state.isLoading = false;
     }
-  }
+
 
   updateFilter(filterType, value) {
     this.state.filters[filterType] = value;

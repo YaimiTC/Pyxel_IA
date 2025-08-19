@@ -22,55 +22,85 @@ class Portal(CustomerPortal):
         user = request.env.user
         business_partner_id = user.partner_id.parent_id.id if user.partner_id.parent_id else user.partner_id.id
         contact_type = user.partner_id.parent_id.contact_type_id if user.partner_id.parent_id else user.partner_id.contact_type_id
+        is_internal_user = user.has_group('base.group_user')
+
         first_stage = request.env['importation.stage'].sudo().search([], order='sequence asc', limit=1)
         _logger.info(f"La primera etapa de CRM es: {first_stage.name} (ID: {first_stage.id})")
 
-        new_quotations_count = 0
-        new_orders_count = 0
-        new_invoices_count = 0
-        new_importaciones_count = 0
+        # Inicializa contadores
+        new_quotations_count = 0  # representa a los purchase.order
+        new_orders_count = 0  # representa a los sale.order
+        new_invoices_count = 0  # representa a los invoices
+        new_importaciones_count = 0  # representa a las importaciones
 
-        quotations_domain = [('state', '=', 'sent')]
-        orders_domain = [('state', '=', 'sale')]
-        invoices_domain = [('state', '=', 'posted'), ('move_type', '=', 'out_invoice')]
-        imports_domain = [('stage_id', '=', first_stage.id)]
+        if is_internal_user:
+            _logger.info("Usuario interno: se cuentan todos los documentos.")
+            new_quotations_count = request.env['purchase.order'].sudo().search_count([('state', '=', 'draft')])
+            new_orders_count = request.env['sale.order'].sudo().search_count([('state', '=', 'draft')])
+            new_invoices_count = request.env['account.move'].sudo().search_count([
+                ('state', '=', 'draft'),
+                ('move_type', '=', 'out_invoice')
+            ])
+            new_importaciones_count = request.env['importation.process'].sudo().search_count([
+                ('stage_id', '=', first_stage.id)
+            ])
 
-        if contact_type.type_of_contact == 'Client':
-            quotations_domain.append(('partner_id', '=', business_partner_id))
-            orders_domain.append(('partner_id', '=', business_partner_id))
-            invoices_domain.append(('partner_id', '=', business_partner_id))
-            imports_domain.append(('customer_id', '=', business_partner_id))
-        if contact_type.type_of_contact == 'Supplier':
-            quotations_domain.append(('supplier_id', '=', business_partner_id))
-            orders_domain.append(('supplier_id', '=', business_partner_id))
-            invoices_domain.append(('invoice_line_ids.product_id.seller_ids.partner_id', '=', business_partner_id))
-            imports_domain.append(('provider_id', '=', business_partner_id))
+        elif contact_type.type_of_contact == 'Client':
+            _logger.info("Usuario cliente: se cuentan solo ventas e importaciones como cliente.")
+            new_orders_count = request.env['sale.order'].sudo().search_count([
+                ('state', '=', 'draft'),
+                ('partner_id', '=', business_partner_id)
+            ])
 
-        # Calcula los contadores solo si el usuario es valido
-        if contact_type.type_of_contact or user.has_group('base.group_user'):
-            _logger.info(f"El usuario es válido y debemos calcular cantidades")
-            new_quotations_count = request.env['sale.order'].sudo().search_count(quotations_domain)
-            new_orders_count = request.env['sale.order'].sudo().search_count(orders_domain)
-            new_invoices_count = request.env['account.move'].sudo().search_count(invoices_domain)
-            new_importaciones_count = request.env['importation.process'].sudo().search_count(imports_domain)
-            _logger.info(f"Aplicando el dominio {imports_domain} el resultado es {new_importaciones_count}")
+            new_invoices_count = request.env['account.move'].sudo().search_count([
+                ('state', '=', 'draft'),
+                ('move_type', '=', 'out_invoice'),
+                ('partner_id', '=', business_partner_id)
+            ])
+            new_importaciones_count = request.env['importation.process'].sudo().search_count([
+                ('stage_id', '=', first_stage.id),
+                ('customer_id', '=', business_partner_id)
+            ])
+
+        elif contact_type.type_of_contact == 'Supplier':
+            _logger.info("Usuario proveedor: se cuentan solo compras e importaciones como proveedor.")
+            new_quotations_count = request.env['purchase.order'].sudo().search_count([
+                ('state', '=', 'draft'),
+                ('partner_id', '=', business_partner_id)
+            ])
+            new_invoices_count = request.env['account.move'].sudo().search_count([
+                ('state', '=', 'draft'),
+                ('move_type', '=', 'out_invoice'),
+                ('partner_id', '=', business_partner_id)
+            ])
+            new_importaciones_count = request.env['importation.process'].sudo().search_count([
+                ('stage_id', '=', first_stage.id),
+                ('provider_id', '=', business_partner_id)
+            ])
+            # Las órdenes de venta quedan en cero
+
         _logger.info(
-            "Quotations: " + str(new_quotations_count) + ", Orders: " + str(new_orders_count) + ", Invoices: " + str(
-                new_invoices_count) + ", Imports: " + str(new_importaciones_count))
+            f"Contadores calculados: Quotations: {new_quotations_count}, Orders: {new_orders_count}, "
+            f"Invoices: {new_invoices_count}, Imports: {new_importaciones_count}"
+        )
 
-        # Estado del contrato:
+        # === Estado del contrato ===
         contract_status = False
         days_in_process = 'False'
-        if contact_type.type_of_contact == 'Client' or contact_type.type_of_contact == 'Supplier':
-            lead = request.env['crm.lead'].sudo().search([('partner_id', '=', business_partner_id)],
-                                                                    order='create_date desc', limit=1)
 
-            if bool(lead):
+        if contact_type.type_of_contact in ['Client', 'Supplier']:
+            lead = request.env['crm.lead'].sudo().search(
+                [('partner_id', '=', business_partner_id)],
+                order='create_date desc',
+                limit=1
+            )
+
+            if lead:
                 contract_status = lead.stage_id.name
-
                 if contact_type.type_of_contact == 'Client':
                     is_accredited = request.env["res.partner.contract.import"].sudo().search([
-                        ("partner_id", "=", business_partner_id), ("active_contract", "=", True)
+                        ("partner_id", "=", business_partner_id),
+                        ("active_contract", "=", True)
                     ], limit=1)
                 elif contact_type.type_of_contact == 'Supplier':
                     is_accredited = lead.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
@@ -78,8 +108,9 @@ class Portal(CustomerPortal):
                 if not is_accredited:
                     days_in_process = (datetime.now() - lead.create_date).days
 
-        _logger.info(f"El estado del contrato es: {contract_status}")
-        # Añade los contadores a los valores
+        _logger.info(f"Estado del contrato: {contract_status}, Días en proceso: {days_in_process}")
+
+        # Actualiza valores del portal
         values.update({
             'new_quotations_count': new_quotations_count,
             'new_orders_count': new_orders_count,

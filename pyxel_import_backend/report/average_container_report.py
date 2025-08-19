@@ -5,7 +5,7 @@ from odoo import api, fields, models
 
 
 class AverageContainerReport(models.AbstractModel):
-    _name = 'report.pyxel_fruxelimport.average_container_report_template'
+    _name = 'reports.pyxel_fruxelimport.average_container_report_template'
     _description = 'Average Container Report'
 
     @api.model
