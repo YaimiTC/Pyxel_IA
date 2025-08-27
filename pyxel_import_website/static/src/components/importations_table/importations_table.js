@@ -67,6 +67,7 @@ export class ImportationsTable extends Component {
         let domain = [];
 
         if (isPortal) {
+          console.log("Usuario de Portal");
           // Leer el partner base
           const partnerData = await this.orm.read("res.partner", [partnerId], ["parent_id"]);
           const companyPartnerId = partnerData[0]?.parent_id?.[0] || partnerId;
@@ -80,6 +81,7 @@ export class ImportationsTable extends Component {
           if (contactTypeId) {
             const contactTypeData = await this.orm.read("res.partner.contact.type", [contactTypeId], ["type_of_contact"]);
             typeOfContact = contactTypeData[0]?.type_of_contact;
+            console.log("Tipo de contacto tiene como valor:", typeOfContact);
           }
 
           // Aplicar dominio según tipo
@@ -91,7 +93,8 @@ export class ImportationsTable extends Component {
               domain = [["customer_id", "=", companyPartnerId]];
               break;
             default:
-              console.warn("Tipo de contacto no reconocido o no definido:", typeOfContact);
+              domain=[["id", "=", false]]
+              console.log("Tipo de contacto no reconocido o no definido:", typeOfContact);
           }
         }
 
