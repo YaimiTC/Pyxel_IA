@@ -27,95 +27,180 @@ class InvoiceConsolidatorReport(models.AbstractModel):
         }
 
     def _get_invoice_report(self, docids, data=None):
-        domain = []
-        if len(docids) > 0:
-            domain = [('id', 'in', docids)]
-        if data['start_date'] and data['end_date']:
-            date_from = datetime.datetime.strptime(data['start_date'], '%Y-%m-%d').date()
-            date_to = datetime.datetime.strptime(data['end_date'], '%Y-%m-%d').date()
+        data = data or {}
+        result = []
 
-            domain = [
-                ('invoice_date', '<=', date_to),
-                ('invoice_date', '>=', date_from),
-                ('move_type', '=', 'out_invoice')
-            ]
+        # === Dominio base (todas las facturas de cliente de importación) ===
+        domain = [
+            ('move_type', '=', 'out_invoice'),
+            ('x_studio_type_import', 'in', ['operation service', 'tariff']),
+        ]
+        if docids:
+            domain.append(('id', 'in', docids))
 
-        if data['contract_to_third'] in ('yes', 'no'):
-            domain.append(('x_studio_contract_to_third', '=', True if data['contract_to_third'] == 'yes' else False))
+        start = data.get('start_date');
+        end = data.get('end_date')
+        if start and end:
+            dfrom = datetime.date.fromisoformat(start)
+            dto = datetime.date.fromisoformat(end)
+            domain += [('invoice_date', '>=', dfrom), ('invoice_date', '<=', dto)]
 
-        if data['partner_id']:
-            invoice_partner = self.env['res.partner'].browse(data['partner_id'])
-            domain.append(('invoice_partner_display_name', '=', invoice_partner.display_name))
+        ctt = data.get('contract_to_third')
+        if ctt in ('yes', 'no'):
+            domain.append(('x_studio_contract_to_third', '=', ctt == 'yes'))
 
-        domain.append('|')
-        domain.append(('x_studio_type_import', '=', 'operation service'))
-        domain.append(('x_studio_type_import', '=', 'tariff'))
+        partner_id = data.get('partner_id')
+        if partner_id:
+            partner = self.env['res.partner'].browse(partner_id).commercial_partner_id
+            domain.append(('commercial_partner_id', '=', partner.id))
 
-        # Agrupación por importación
-        groupby_fields = ['x_studio_import_id']
-        account_records = self.env['account.move'].read_group(domain, groupby_fields,
-                                                              ['x_studio_import_id', 'id:count'])
+        moves = self.env['account.move'].search(domain)
+        if not moves:
+            return result
 
-        result_records = []
+        # === Agrupar por importación ===
+        by_import = {}
+        for m in moves:
+            imp_id = m.x_studio_import_id.id if m.x_studio_import_id else False
+            by_import.setdefault(imp_id, self.env['account.move'])
+            by_import[imp_id] |= m
 
-        if account_records:
-            for move in account_records:
-                x_studio_import_id = (
-                    move['x_studio_import_id'][0]
-                    if isinstance(move.get('x_studio_import_id'), (list, tuple)) and move['x_studio_import_id']
-                    else None
-                )
-                record_count = move.get('x_studio_import_id_count', 0)
+        # --- helpers ---
+        def _guess_po_ids_from_move(move):
+            """Intenta detectar PO(s) asociados a una factura (por campo directo o contenedores/lineas)."""
+            po_ids = set()
+            # 1) Campo directo custom (si existe)
+            x_po = getattr(move, 'x_studio_purchase_id', False)
+            if x_po:
+                po_ids.add(x_po.id)
 
-                if record_count > 1:
-                    account_cup = self.env['account.move'].search(
-                        [('x_studio_import_id', '=', x_studio_import_id), ('x_studio_type_import', '=', 'tariff')],
-                        limit=1)
-                    account_usd = self.env['account.move'].search(
-                        [('x_studio_import_id', '=', x_studio_import_id),
-                         ('x_studio_type_import', '=', 'operation service')], limit=1)
+            # 2) Vía contenedores y sus líneas
+            for c in getattr(move, 'x_studio_container_ids', self.env['x.container'].browse()):
+                c_po = getattr(c, 'x_studio_purchase_id', False)
+                if c_po:
+                    po_ids.add(c_po.id)
+                for ol in getattr(c, 'x_studio_order_lines_by_container', []):
+                    # distintos posibles nombres de campo
+                    if getattr(ol, 'order_id', False):
+                        po_ids.add(ol.order_id.id)
+                    elif getattr(ol, 'purchase_id', False):
+                        po_ids.add(ol.purchase_id.id)
+                    elif getattr(ol, 'purchase_line_id', False):
+                        po_ids.add(ol.purchase_line_id.order_id.id)
 
-                    merchandise_value = 0
-                    currency_merchandise = ''
-                    if account_usd.x_studio_container_ids:
-                        for container in account_usd.x_studio_container_ids:
-                            for line in container.x_studio_order_lines_by_container:
-                                merchandise_value += line.x_studio_total
-                                currency_merchandise = line.x_studio_currency_id.name
-                            for cost_line in container.x_studio_container_cost_lines:
-                                merchandise_value += cost_line.x_studio_total
+            # 3) Si no se encontró nada, cuélgalo en None (grupo “sin PO”)
+            if not po_ids:
+                po_ids.add(None)
+            return po_ids
+
+        def _compute_merch_value_for_po(src_move, po_id):
+            """Calcula valor de mercancía por PO (usando contenedores; si no, el total de la PO)."""
+            merchandise_value = 0.0
+            currency_merch = ''
+            # Preferir contenedores (y filtrar por PO si es posible)
+            if src_move and getattr(src_move, 'x_studio_container_ids', False):
+                for c in src_move.x_studio_container_ids:
+                    for ol in getattr(c, 'x_studio_order_lines_by_container', []):
+                        rel_po_id = (
+                                            getattr(ol, 'order_id', False) and ol.order_id.id
+                                    ) or (getattr(ol, 'purchase_id', False) and ol.purchase_id.id) or (
+                                            getattr(ol, 'purchase_line_id', False) and ol.purchase_line_id.order_id.id
+                                    ) or None
+                        if po_id is None or (rel_po_id and rel_po_id == po_id):
+                            merchandise_value += (getattr(ol, 'x_studio_total', 0.0) or 0.0)
+                            cur = getattr(getattr(ol, 'x_studio_currency_id', False), 'name', '')
+                            currency_merch = cur or currency_merch
+                    # Los costos suelen no estar por PO; se incluyen (o limita si necesitas)
+                    for cl in getattr(c, 'x_studio_container_cost_lines', []):
+                        merchandise_value += (getattr(cl, 'x_studio_total', 0.0) or 0.0)
+            else:
+                # Fallback: total de la PO
+                if po_id:
+                    po = self.env['purchase.order'].browse(po_id)
+                    if po.exists():
+                        merchandise_value = po.amount_total
+                        currency_merch = po.currency_id.name
+            return round(merchandise_value, 2), currency_merch
+
+        # === Por cada importación, agrupar por PO y emparejar USD+CUP ===
+        for imp_id, imp_moves in by_import.items():
+            # Mapa: PO -> {'usd': recordset, 'cup': recordset}
+            per_po = {}
+            for m in imp_moves:
+                for po_id in _guess_po_ids_from_move(m):
+                    per_po.setdefault(po_id, {'usd': self.env['account.move'], 'cup': self.env['account.move']})
+                    if m.x_studio_type_import == 'operation service':
+                        per_po[po_id]['usd'] |= m
                     else:
-                        merchandise_value = sum(
-                            [p.amount_total for p in account_usd.x_studio_import_id.x_studio_purchase_ids])
+                        per_po[po_id]['cup'] |= m
 
-                    if account_cup and account_usd:
-                        # Nuevos cálculos de desglose CUP
-                        total_with_margin_cup = 0
-                        total_without_margin_cup = 0
+            # Emparejar por fecha dentro de cada PO
+            for po_id, bucket in per_po.items():
+                usd_list = bucket['usd'].sorted(key=lambda r: (r.invoice_date or r.create_date or fields.Date.today()))
+                cup_list = bucket['cup'].sorted(key=lambda r: (r.invoice_date or r.create_date or fields.Date.today()))
+                max_pairs = max(len(usd_list), len(cup_list))
 
-                        for line in account_cup.invoice_line_ids:
-                            if line.include_in_special_margin:
-                                total_with_margin_cup += line.price_subtotal
+                # Obtener nombre de importación/cliente/PO para imprimir
+                def _imp_name(rec):
+                    return (rec.x_studio_import_id and rec.x_studio_import_id.x_name) or ''
+
+                def _client_name(usd, cup):
+                    return (cup and cup.partner_id.name) or (usd and usd.partner_id.name) or ''
+
+                po_name = '(Sin PO)'
+                if po_id:
+                    po = self.env['purchase.order'].browse(po_id)
+                    if po.exists():
+                        po_name = po.name
+
+                for i in range(max_pairs):
+                    usd = usd_list[i] if i < len(usd_list) else self.env['account.move']
+                    cup = cup_list[i] if i < len(cup_list) else self.env['account.move']
+
+                    # Valor mercancía por PO (tomando preferentemente contenedores del USD; si no, CUP)
+                    src_for_merch = usd or cup
+                    merchandise_value, currency_merch = _compute_merch_value_for_po(src_for_merch, po_id)
+
+                    # Desglose CUP con/sin margen
+                    with_margin = 0.0
+                    without_margin = 0.0
+                    if cup:
+                        for line in cup.invoice_line_ids:
+                            if getattr(line, 'include_in_special_margin', False):
+                                with_margin += line.price_subtotal
                             else:
-                                total_without_margin_cup += line.price_subtotal
+                                without_margin += line.price_subtotal
 
-                        vals = {
-                            'no_import': account_cup.x_studio_import_id.x_name,
-                            'client': account_cup.partner_id.name,
-                            'container_by_import': account_cup.x_studio_container_by_import if account_cup.x_studio_container_by_import or account_cup.x_studio_import_id.x_studio_certifies_receipt_load == '(B/L)' else '(AWB)',
-                            'merchandise_value': round(merchandise_value, 2),
-                            'currency_merchandise': currency_merchandise,
-                            'account_date': account_usd.invoice_date,
-                            'no_account_cup': account_cup.name,
-                            'amount_total_cup': round(account_cup.amount_total_in_currency_signed, 2),
-                            'no_account_usd': account_usd.name,
-                            'amount_total_usd': round(account_usd.amount_total_in_currency_signed, 2),
-                            'total_fruta': round(account_usd.amount_total_in_currency_signed / 2, 2),
-                            'total_pyxel': round(account_usd.amount_total_in_currency_signed / 2, 2),
-                            # Valores adicionales
-                            'cup_total_with_margin': round(total_with_margin_cup, 2),
-                            'cup_total_without_margin': round(total_without_margin_cup, 2),
-                        }
-                        result_records.append(vals)
+                    # Contenedor por importación (AWB/B-L)
+                    def _container_flag(rec):
+                        if not rec:
+                            return '(AWB)'
+                        imp = rec.x_studio_import_id
+                        cbi = rec.x_studio_container_by_import
+                        if cbi or (imp and getattr(imp, 'x_studio_certifies_receipt_load', None) == '(B/L)'):
+                            return cbi or '(B/L)'
+                        return '(AWB)'
 
-        return result_records
+                    usd_total = round((usd.amount_total or 0.0), 2) if usd else 0.0
+                    vals = {
+                        'import_id': imp_id,
+                        'no_import': _imp_name(usd) or _imp_name(cup),
+                        'purchase_id': po_id,
+                        'purchase_name': po_name,
+                        'client': _client_name(usd, cup),
+                        'container_by_import': _container_flag(cup) if cup else _container_flag(usd),
+                        'merchandise_value': merchandise_value,
+                        'currency_merchandise': currency_merch,
+                        'account_date': usd.invoice_date or cup.invoice_date,
+                        'no_account_cup': cup.name or '',
+                        'amount_total_cup': round((cup.amount_total or 0.0), 2) if cup else 0.0,
+                        'no_account_usd': usd.name or '',
+                        'amount_total_usd': usd_total,
+                        'total_fruta': round(usd_total / 2.0, 2),
+                        'total_pyxel': round(usd_total / 2.0, 2),
+                        'cup_total_with_margin': round(with_margin, 2),
+                        'cup_total_without_margin': round(without_margin, 2),
+                    }
+                    result.append(vals)
+
+        return result
