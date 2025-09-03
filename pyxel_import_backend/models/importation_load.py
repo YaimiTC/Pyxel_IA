@@ -12,8 +12,8 @@ class ImportationLoad(models.Model):
     importation_id = fields.Many2one('importation.process', string='Import', required=True)
     purchase_condition = fields.Selection(related='importation_id.purchase_condition', string='Purchase Condition',
                                           readonly=True)
-    incoterm_import_type_id = fields.Many2one(comodel_name='incoterm.import.type',
-                                              related='importation_id.incoterm_import_type_id', string='IIT')
+    import_type_id = fields.Many2one(comodel_name='import.type',
+                                              related='importation_id.import_type_id', string='IIT')
 
     cargo_type = fields.Selection([
         ('dry', 'Dry'),
@@ -64,7 +64,7 @@ class ImportationLoad(models.Model):
     hide_airline = fields.Boolean(string='Show Airline', compute='_inverse_boolean_value')
     hide_transit_agency = fields.Boolean(string='Show Transit Agency', compute='_inverse_boolean_value')
 
-    @api.depends('incoterm_import_type_id')
+    @api.depends('import_type_id')
     def _inverse_boolean_value(self):
         for record in self:
             record.hide_cargo_type = False
@@ -78,18 +78,18 @@ class ImportationLoad(models.Model):
             record.hide_shipping_company = False
             record.hide_airline = False
             record.hide_transit_agency = False
-            if record.incoterm_import_type_id:
-                record.hide_cargo_type = not record.incoterm_import_type_id.show_cargo_type
-                record.hide_volume = not record.incoterm_import_type_id.show_volume
-                record.hide_bulk = not record.incoterm_import_type_id.show_bulk
-                record.hide_opening_date = not record.incoterm_import_type_id.show_opening_date
-                record.hide_arrival_date = not record.incoterm_import_type_id.show_arrival_date
-                record.hide_release_date = not record.incoterm_import_type_id.show_release_date
-                record.hide_extraction_date = not record.incoterm_import_type_id.show_extraction_date
-                record.hide_return_date = not record.incoterm_import_type_id.show_return_date
-                record.hide_shipping_company = not record.incoterm_import_type_id.show_shipping_company
-                record.hide_airline = not record.incoterm_import_type_id.show_airline
-                record.hide_transit_agency = not record.incoterm_import_type_id.show_transit_agency
+            if record.import_type_id:
+                record.hide_cargo_type = not record.import_type_id.show_cargo_type
+                record.hide_volume = not record.import_type_id.show_volume
+                record.hide_bulk = not record.import_type_id.show_bulk
+                record.hide_opening_date = not record.import_type_id.show_opening_date
+                record.hide_arrival_date = not record.import_type_id.show_arrival_date
+                record.hide_release_date = not record.import_type_id.show_release_date
+                record.hide_extraction_date = not record.import_type_id.show_extraction_date
+                record.hide_return_date = not record.import_type_id.show_return_date
+                record.hide_shipping_company = not record.import_type_id.show_shipping_company
+                record.hide_airline = not record.import_type_id.show_airline
+                record.hide_transit_agency = not record.import_type_id.show_transit_agency
 
 
     # @api.depends('arrival_date', 'extraction_date')
