@@ -136,18 +136,18 @@ class ImportationProcess(models.Model):
                                               compute='_compute_incoterm_import_type')
 
     # Documentation block
-    has_bl = fields.Boolean(string='BL', related='incoterm_import_type_id.has_bl')
-    has_awb = fields.Boolean(string='AWB', related='incoterm_import_type_id.has_awb')
-    has_packing_list = fields.Boolean(string='Packing List', related='incoterm_import_type_id.has_packing_list')
+    has_bl = fields.Boolean(string='BL', related='import_type_id.has_bl')
+    has_awb = fields.Boolean(string='AWB', related='import_type_id.has_awb')
+    has_packing_list = fields.Boolean(string='Packing List', related='import_type_id.has_packing_list')
 
     has_quality_certificate = fields.Boolean(string='Quality Certificate',
-                                             related='incoterm_import_type_id.has_quality_certificate')
+                                             related='import_type_id.has_quality_certificate')
     has_export_certificate = fields.Boolean(string='Export Certificate',
-                                            related='incoterm_import_type_id.has_export_certificate')
+                                            related='import_type_id.has_export_certificate')
     has_origin_certificate = fields.Boolean(string='Origin Certificate',
-                                            related='incoterm_import_type_id.has_origin_certificate')
-    use_port = fields.Boolean(string='Use Port?', related='incoterm_import_type_id.use_port')
-    use_airport = fields.Boolean(string='Use Airport?', related='incoterm_import_type_id.use_airport')
+                                            related='import_type_id.has_origin_certificate')
+    use_port = fields.Boolean(string='Use Port?', related='import_type_id.use_port')
+    use_airport = fields.Boolean(string='Use Airport?', related='import_type_id.use_airport')
 
     @api.depends('final_sale_order_id.process_id')
     def _compute_process_id(self):
