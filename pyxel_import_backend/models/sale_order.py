@@ -102,8 +102,6 @@ class SaleOrder(models.Model):
             raise UserError("El proveedor seleccionado no tiene definido un país de origen.\nPor favor, complete este"
                             " dato antes de iniciar el proceso de importación.")
 
-
-
         cost_lines = [(0, 0, {
             'product_id': line.product_id.id,
             'name': line.name,
@@ -112,7 +110,6 @@ class SaleOrder(models.Model):
             'distribution_type': line.distribution_type,
             'is_cost_special': line.is_cost_special,
         }) for line in self.evaluation_apply_id.cost_line_temp_ids]
-
 
         # Create the importation process from the evaluation
         importation = self.env['importation.process'].create({
@@ -126,7 +123,8 @@ class SaleOrder(models.Model):
             'cost_line_ids': cost_lines,
             'country_origin_id': provider.country_id.id,
             'state': 'in_progress',
-            'stage_id': self.env['importation.stage'].search([], limit=1).id
+            'stage_id': self.env['importation.stage'].search([], limit=1).id,
+            'incoterm_id': self.incoterm
         })
 
         self.importation_process_id = importation.id
@@ -162,7 +160,8 @@ class SaleOrder(models.Model):
 
     def _compute_purchase_evaluation_count(self):
         for order in self:
-            order.purchase_evaluation_count = self.env['purchase.provider.evaluation'].search_count([('sale_order_id', '=', order.id)])
+            order.purchase_evaluation_count = self.env['purchase.provider.evaluation'].search_count(
+                [('sale_order_id', '=', order.id)])
 
     @api.depends('invoice_ids.name')
     def _compute_invoice_names(self):
