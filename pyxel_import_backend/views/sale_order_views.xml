@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <record id="view_order_form_inherit_invoice_button" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.invoice.button</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority" eval="200"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@id='create_invoice']" position="attributes">
+                <attribute name="invisible">
+                    invoice_status != 'to invoice' or order_type != 'importation_process'
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_order_form_inherit_override_supplier" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.override.supplier</field>
+        <field name="model">sale.order</field>
+        <!-- Esta es la vista de sale_purchase que añade el botón -->
+        <field name="inherit_id" ref="sale_purchase.sale_order_inherited_form_purchase"/>
+        <!-- Súbela para que se aplique DESPUÉS -->
+        <field name="priority" eval="200"/>
+        <field name="arch" type="xml">
+            <!-- Usa // (descendiente) por si hay contenedores intermedios -->
+            <xpath expr="//div[@name='button_box']//button[@name='action_view_purchase_orders']"
+                   position="replace">
+                <button name="action_view_related_purchase_orders"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-shopping-cart">
+                    <field name="purchase_order_count" widget="statinfo" string="Purchases"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+
     <record id="view_order_form_inherit_evaluar_proveedor" model="ir.ui.view">
         <field name="name">sale.order.form.inherit.evaluar.proveedor</field>
         <field name="model">sale.order</field>
@@ -23,13 +60,9 @@
                         class="btn-secondary"
                         invisible="order_type != 'evaluation_final' or importation_process_id"/>
             </xpath>
+
             <xpath expr="//div[@class='oe_button_box']" position="inside">
-                <button name="action_view_related_purchase_orders"
-                        type="object"
-                        class="oe_stat_button"
-                        icon="fa-shopping-cart">
-                    <field name="purchase_order_count" widget="statinfo" string="Purchases"/>
-                </button>
+
                 <button type="action"
                         name="%(action_purchase_provider_evaluation)d"
                         class="oe_stat_button"
@@ -101,7 +134,8 @@
     </record>
 
     <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
-        <field name="context" eval="{ 'search_default_customer': 1, 'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>
+        <field name="context" eval="{'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>
+<!--        <field name="context" eval="{ 'search_default_customer': 1, 'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>-->
     </record>
 
 

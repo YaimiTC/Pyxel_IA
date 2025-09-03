@@ -17,6 +17,7 @@
         'base',
         'crm',
         'sale',
+        'sale_purchase',
         'sale_management',
         'purchase',
         'stock',
