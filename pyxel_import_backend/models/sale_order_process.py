@@ -23,5 +23,5 @@ class SaleOrderProcess(models.Model):
             province_code = user.partner_id.state_id.code or "XX"
             year = fields.Date.today().year
             sequence = self.env['ir.sequence'].next_by_code('sale.order.process.seq') or '0000'
-            vals['name'] = f"{province_code}-{year}-{sequence}"
+            vals['name'] = f"{province_code}-{sequence}-{year}"
         return super().create(vals)
