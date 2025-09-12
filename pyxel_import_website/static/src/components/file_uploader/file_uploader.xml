@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+  <t t-name="pyxel_import_website.FileUploader">
+    <div class="o_file_uploader">
+      <input type="file" accept="application/pdf" t-on-change="onFileChange"/>
+      <t t-if="state.uploading">
+        <span>Cargando...</span>
+      </t>
+    </div>
+  </t>
+</templates>
