@@ -83,6 +83,10 @@
               <attribute name="invisible">True</attribute>
               <!-- si prefieres el viejo flag: <attribute name="invisible">1</attribute> -->
             </xpath>
+             <xpath expr="//field[@name='partner_id']" position="attributes">
+                  <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Client')]</attribute>
+             </xpath>
+
         </field>
         </record>
 
