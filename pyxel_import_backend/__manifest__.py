@@ -60,6 +60,8 @@
         "views/incoterm_views.xml",
         "views/import_type_views.xml",
         "views/incoterm_import_type_views.xml",
+        "report/purchase_report_templates.xml",
+
 
 
 
