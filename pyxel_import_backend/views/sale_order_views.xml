@@ -79,6 +79,10 @@
                 <field name="importation_process_id" string="Importation Process" readonly="1"/>
 
             </xpath>
+            <xpath expr="//field[@name='validity_date']" position="attributes">
+              <attribute name="invisible">True</attribute>
+              <!-- si prefieres el viejo flag: <attribute name="invisible">1</attribute> -->
+            </xpath>
         </field>
         </record>
 
