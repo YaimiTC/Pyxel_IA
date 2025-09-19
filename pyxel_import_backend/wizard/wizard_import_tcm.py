@@ -56,7 +56,7 @@ class ImportWizard(models.TransientModel):
 
                 _logger.info("[IMPORT] Procesando fila %s: Contenedor=%s, BL=%s", row_idx + 1, container_number, bl)
 
-                container = self.env['importation.load'].search([
+                container = self.env['importation.load'].with_context(lang='es_419').search([
                     ('name', '=', container_number),
                     ('importation_id.purchase_condition_number', '=', bl)
                 ], limit=1)
