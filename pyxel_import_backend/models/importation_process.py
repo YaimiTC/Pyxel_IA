@@ -298,7 +298,7 @@ class ImportationProcess(models.Model):
                     if record.date_import_closed:
                         record.date_import_closed = False
 
-            if 'date_import_closed' in vals:
+            if 'date_import_closed' in vals and record.process_id:
 
                 if not record.final_sale_order_id:
                     raise UserError("No se puede cerrar/reabrir importación sin Orden Final asignada")
