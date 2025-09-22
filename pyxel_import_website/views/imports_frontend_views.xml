@@ -2,139 +2,153 @@
 <odoo>
     <template id="importations_list" name="Imports">
         <t t-call="website.layout">
-            <owl-component name="pyxel_import_website.ImportationsTable"/>
+            <owl-component name="pyxel_import_website.ImportationsTable" />
         </t>
     </template>
     <template id="importation_view" name="import record">
         <t t-call="website.layout">
             <div id="o_website_record_page wrap">
                 <div class="container">
-                    <ol t-if="listing" class="breadcrumb p-0 my-2">
+                    <ol t-if="listing" class="breadcrumb bg-transparent p-0 my-2">
+                        <!-- Home -->
                         <li class="breadcrumb-item o_not_editable">
                             <a href="/my/home">
-                                <i class="fa fa-home"/>
+                                <span>Mi Cuenta</span>
                             </a>
                         </li>
                         <li class="breadcrumb-item o_not_editable">
                             <a t-att-href="listing['href']">
-                                <span t-out="listing['name']"/>
+                                <span t-out="listing['name']" />
                             </a>
                         </li>
                         <li class="breadcrumb-item active">
-                            <span t-field="record.display_name"/>
+                            <span t-field="record.display_name" />
                         </li>
                     </ol>
-                    <div class="d-flex flex-row my-4 flex-wrap align-items-top justify-content-between">
+                    <div
+                        class="d-flex flex-row my-4 flex-wrap align-items-top justify-content-between">
                         <div class="col-lg-4 col-sm-4" style="">
                             <div class="d-flex justify-content-start align-items-left gap-0 mb-1">
                                 <img class="o_portal_contact_img rounded o_object_fit_cover"
-                                     t-att-src="image_data_uri(record.provider_id.avatar_128)" alt="Contact"
-                                     width="70"/>
+                                    t-att-src="image_data_uri(record.provider_id.avatar_128)"
+                                    alt="Contact"
+                                    width="70" />
                                 <div class="d-flex flex-column justify-content-center">
-                                    <h4 class="mb-0" t-out="record.provider_id.name"/>
-                                    <p class="mb-0 text-muted" t-out="record.provider_id.company_name"/>
+                                    <h4 class="mb-0" t-out="record.provider_id.name" />
+                                    <p class="mb-0 text-muted"
+                                        t-out="record.provider_id.company_name" />
                                 </div>
                             </div>
                             <div class="card-text d-flex flex-column flex-grow-1">
                                 <div class="o_inner_group grid col-lg-12">
                                     <div>
                                         <span>BL:</span>
-                                        <span t-esc="record.purchase_condition_number or record.display_name"/>
+                                        <span
+                                            t-esc="record.purchase_condition_number or record.display_name" />
                                     </div>
                                     <div>
                                         <span>Proveedor:</span>
-                                        <span t-field="record.provider_id"/>
+                                        <span t-field="record.provider_id" />
                                     </div>
                                     <div>
                                         <span>Origen:</span>
-                                        <span t-field="record.country_origin_id"/>
+                                        <span t-field="record.country_origin_id" />
                                     </div>
                                     <div>
                                         <span>Estado:</span>
-                                        <span t-field="record.stage_id"/>
+                                        <span t-field="record.stage_id" />
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-8 mt-lg-8 col-sm-8">
                             <div id="informations">
-                                <!--<div class="row">-->
+                                <!--<div
+                                class="row">-->
                                 <div class="mb-3 mt-3 col-12 o_field_statusbar">
                                     <div class="o_statusbar_status" role="radiogroup">
-                                        <t t-set="stage" t-value="record.stage_id.id"/>
+                                        <t t-set="stage" t-value="record.stage_id.id" />
                                         <button t-att-disabled="stage == 9" type="button"
-                                                t-attf-class="btn boton_secondary_import o_arrow_button o_first #{'o_arrow_button_current' if stage == 9 else ''}"
-                                                t-esc="'DEVOLUCION DEL CONTENEDOR'"/>
+                                            t-attf-class="btn boton_secondary_import o_arrow_button o_first #{'o_arrow_button_current' if stage == 9 else ''}"
+                                            t-esc="'DEVOLUCION DEL CONTENEDOR'" />
                                         <button t-att-disabled="stage == 8" type="button"
-                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 8 else ''}"
-                                                t-if="stage != 2" t-esc="'EN ALMACÉN CLIENTE'"/>
+                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 8 else ''}"
+                                            t-if="stage != 2" t-esc="'EN ALMACÉN CLIENTE'" />
                                         <button type="button" t-att-disabled="stage == 6"
-                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 6 else ''}"
-                                                t-esc="'LISTO PARA EXTRAER'"/>
+                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 6 else ''}"
+                                            t-esc="'LISTO PARA EXTRAER'" />
                                         <button type="button" t-att-disabled="stage == 5"
-                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 5 else ''}  "
-                                                t-esc="'TRÁMITES EN DESTINO'"/>
+                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 5 else ''}  "
+                                            t-esc="'TRÁMITES EN DESTINO'" />
                                         <button type="button" t-att-disabled="stage == 2"
-                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 2 else ''}"
-                                                t-if="stage == 2" t-esc="'EN TRANSITO A PUERTO DE DESTINO'"/>
+                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 2 else ''}"
+                                            t-if="stage == 2"
+                                            t-esc="'EN TRANSITO A PUERTO DE DESTINO'" />
                                         <button type="button"
-                                                t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 7 else ''}"
-                                                t-att-disabled="stage == 7" t-esc="'TRAMITES EN ORIGEN'"/>
+                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 7 else ''}"
+                                            t-att-disabled="stage == 7" t-esc="'TRAMITES EN ORIGEN'" />
                                         <button type="button"
-                                                t-attf-class="btn boton_secondary_import o_arrow_button o_last o_arrow_button_current #{'o_arrow_button_current' if stage == 1 else ''}"
-                                                t-att-disabled="stage == 1" t-esc="'SOLICITUD'"/>
+                                            t-attf-class="btn boton_secondary_import o_arrow_button o_last o_arrow_button_current #{'o_arrow_button_current' if stage == 1 else ''}"
+                                            t-att-disabled="stage == 1" t-esc="'SOLICITUD'" />
                                     </div>
                                 </div>
                                 <!--</div>    -->
-                                <t t-set="containers" t-value="[i for i in record.load_tracking_ids]"/>
+                                <t t-set="containers"
+                                    t-value="[i for i in record.load_tracking_ids]" />
                                 <div class="row" id="po_date">
                                     <div class="mb-3 col-12">
                                         <strong>
                                             <h4>Datos de la operación</h4>
                                         </strong>
-                                        <a t-att-href="'/update_files/%s' % record.id">Adicionar información</a>
-                                        <!--<span t-field="order.date_order" t-options="{&quot;widget&quot;: &quot;date&quot;}"/>-->
+                                        <a t-att-href="'/update_files/%s' % record.id">Adicionar
+                                            información</a>
+                                        <!--<span
+                                        t-field="order.date_order" t-options="{&quot;widget&quot;:
+                                        &quot;date&quot;}"/>-->
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <!--  <strong class="d-block mb-1">Desde:</strong> -->
                                         <address t-field="record.provider_id"
-                                                 t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/>
-                                        <div t-att-class="'d-inline' if record.estimated_start_date else 'd-none'">
+                                            t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}" />
+                                        <div
+                                            t-att-class="'d-inline' if record.estimated_start_date else 'd-none'">
                                             <strong>Fecha de inicio de operación:</strong>
                                             <span class="ms-1" t-field="record.estimated_start_date"
-                                                  t-options="{&quot;widget&quot;: &quot;date&quot;}"/>
+                                                t-options="{&quot;widget&quot;: &quot;date&quot;}" />
                                         </div>
                                         <div t-att-class="'d-inline' if record.port else 'd-none'"
-                                             style="margin-left: 10px;">
+                                            style="margin-left: 10px;">
                                             <strong>Puerto de Origen:</strong>
-                                            <span class="ms-1" t-field="record.port"/>
+                                            <span class="ms-1" t-field="record.port" />
                                         </div>
                                         <div t-att-class="'d-inline' if containers else 'd-none'"
-                                             style="margin-left: 10px;">
+                                            style="margin-left: 10px;">
                                             <strong>Naviera:</strong>
-                                            <t t-set="shipping_company" t-value="'---'"/>
+                                            <t t-set="shipping_company" t-value="'---'" />
                                             <t t-foreach="containers" t-as="container">
                                                 <t t-if="container.shipping_company">
                                                     <t t-set="shipping_company"
-                                                       t-value="container.shipping_company"/>
-                                                    <t t-break=""/>
+                                                        t-value="container.shipping_company" />
+                                                    <t t-break="" />
                                                 </t>
                                             </t>
-                                            <span class="ms-1" t-esc="shipping_company"/>
+                                            <span class="ms-1" t-esc="shipping_company" />
                                         </div>
                                     </div>
                                 </div>
-                                <!-- <t t-set="containers" t-value="[i for i in record.load_tracking_ids]"/> -->
+                                <!-- <t t-set="containers" t-value="[i for i in
+                                record.load_tracking_ids]"/> -->
                                 <div t-if="not containers" class="row" t-cache="false">
                                     <div class="col">
-                                        <strong class="d-block mb-1">Ordenes de compra:
-                                            <t t-esc="len(record.purchase_order_ids)"/>
+                                        <strong class="d-block mb-1">Ordenes de compra: <t
+                                                t-esc="len(record.purchase_order_ids)" />
                                         </strong>
                                     </div>
                                     <t t-foreach="record.purchase_order_ids" t-as="purchase">
-                                        <section id="details" style="page-break-inside: auto;" class="mt10">
+                                        <section id="details" style="page-break-inside: auto;"
+                                            class="mt10">
                                             <div class="table-responsive">
                                                 <table class="table table-sm" id="container_table">
                                                     <thead class="bg-100">
@@ -145,51 +159,66 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody class="purchase_tbody">
-                                                        <t t-set="current_subtotal" t-value="0"/>
-                                                        <t t-foreach="purchase.sudo().order_line" t-as="line">
+                                                        <t t-set="current_subtotal" t-value="0" />
+                                                        <t t-foreach="purchase.sudo().order_line"
+                                                            t-as="line">
                                                             <t t-set="current_subtotal"
-                                                               t-value="current_subtotal + line.price_subtotal"/>
-                                                            <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic text-break' if line.display_type == 'line_note' else ''">
+                                                                t-value="current_subtotal + line.price_subtotal" />
+                                                            <tr
+                                                                t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic text-break' if line.display_type == 'line_note' else ''">
                                                                 <t t-if="not line.display_type">
                                                                     <td id="product_name">
-                                                                        <t t-if="line.sudo().product_id.image_1024">
-                                                                            <img t-att-src="image_data_uri(resize_to_48(line.sudo().product_id.image_1024))"
-                                                                                 alt="Product"
-                                                                                 class="d-none d-lg-inline"/>
+                                                                        <t
+                                                                            t-if="line.sudo().product_id.image_1024">
+                                                                            <img
+                                                                                t-att-src="image_data_uri(resize_to_48(line.sudo().product_id.image_1024))"
+                                                                                alt="Product"
+                                                                                class="d-none d-lg-inline" />
                                                                         </t>
-                                                                        <span t-field="line.name"/>
+                                                                        <span t-field="line.name" />
                                                                     </td>
                                                                     <td class="text-end">
                                                                         <div id="quote_qty">
-                                                                            <span t-field="line.product_qty"/>
-                                                                            <span t-field="line.product_uom"
-                                                                                  groups="uom.group_uom"/>
+                                                                            <span
+                                                                                t-field="line.product_qty" />
+                                                                            <span
+                                                                                t-field="line.product_uom"
+                                                                                groups="uom.group_uom" />
                                                                         </div>
                                                                     </td>
-                                                                    <td t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
-                                                                        <div t-field="line.price_subtotal"
-                                                                             class="text-end"/>
+                                                                    <td
+                                                                        t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+                                                                        <div
+                                                                            t-field="line.price_subtotal"
+                                                                            class="text-end" />
                                                                     </td>
                                                                 </t>
-                                                                <t t-if="line.display_type == 'line_section'">
+                                                                <t
+                                                                    t-if="line.display_type == 'line_section'">
                                                                     <td colspan="99">
-                                                                        <span t-field="line.name"/>
+                                                                        <span t-field="line.name" />
                                                                     </td>
-                                                                    <t t-set="current_section" t-value="line"/>
-                                                                    <t t-set="current_subtotal" t-value="0"/>
+                                                                    <t t-set="current_section"
+                                                                        t-value="line" />
+                                                                    <t t-set="current_subtotal"
+                                                                        t-value="0" />
                                                                 </t>
-                                                                <t t-if="line.display_type == 'line_note'">
+                                                                <t
+                                                                    t-if="line.display_type == 'line_note'">
                                                                     <td colspan="99">
-                                                                        <span t-field="line.name"/>
+                                                                        <span t-field="line.name" />
                                                                     </td>
                                                                 </t>
                                                             </tr>
-                                                            <t t-if="current_section and (line_last or order.order_line[line_index+1].display_type == 'line_section')">
+                                                            <t
+                                                                t-if="current_section and (line_last or order.order_line[line_index+1].display_type == 'line_section')">
                                                                 <tr class="is-subtotal text-end">
                                                                     <td colspan="99">
-                                                                        <strong class="mr16">Subtotal</strong>
-                                                                        <span t-esc="current_subtotal"
-                                                                              t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: order.currency_id}"/>
+                                                                        <strong class="mr16">
+                                                                            Subtotal</strong>
+                                                                        <span
+                                                                            t-esc="current_subtotal"
+                                                                            t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: order.currency_id}" />
                                                                     </td>
                                                                 </tr>
                                                             </t>
@@ -197,10 +226,14 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <!--<div id="total" t-if="order.state in ['purchase', 'done']" class="row"-->
+                                            <!--<div
+                                            id="total" t-if="order.state in ['purchase', 'done']"
+                                            class="row"-->
                                             <!--     name="total" style="page-break-inside: avoid;">-->
-                                            <!--    <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ms-auto">-->
-                                            <!--        <t t-call="purchase.purchase_order_portal_content_totals_table"/>-->
+                                            <!--    <div t-attf-class="#{'col-4' if report_type !=
+                                            'html' else 'col-sm-7 col-md-5'} ms-auto">-->
+                                            <!--        <t
+                                            t-call="purchase.purchase_order_portal_content_totals_table"/>-->
                                             <!--    </div>-->
                                             <!--</div>-->
                                         </section>
@@ -208,94 +241,108 @@
                                 </div>
                                 <div t-if="containers" class="row" t-cache="false">
                                     <div class="col">
-                                        <strong class="d-block mb-1">Cantidad de contenedores:
-                                            <t t-esc="len(containers)"/>
+                                        <strong class="d-block mb-1">Cantidad de contenedores: <t
+                                                t-esc="len(containers)" />
                                         </strong>
                                     </div>
                                     <!-- Nueva fila con las fechas -->
                                     <div class="row">
                                         <div class="col">
-                                            <strong class="d-block mb-1">Fecha de Arribo:
-                                                <t t-set="arrival_date" t-value="'Por arribar'"/>
-                                                <t t-foreach="containers" t-as="container">
+                                            <strong class="d-block mb-1">Fecha de Arribo: <t
+                                                    t-set="arrival_date" t-value="'Por arribar'" />
+                                                <t
+                                                    t-foreach="containers" t-as="container">
                                                     <t t-if="container.arrival_date">
                                                         <t t-set="arrival_date"
-                                                           t-value="container.arrival_date"/>
-                                                        <t t-break=""/>
+                                                            t-value="container.arrival_date" />
+                                                        <t t-break="" />
                                                     </t>
                                                 </t>
-                                                <t t-esc="arrival_date"/>
+                                                <t
+                                                    t-esc="arrival_date" />
                                             </strong>
                                         </div>
                                         <div class="col">
-                                            <strong class="d-block mb-1">Fecha de Extracción:
-                                                <t t-set="extraction_date" t-value="'Por extraer'"/>
-                                                <t t-foreach="containers" t-as="container">
+                                            <strong class="d-block mb-1">Fecha de Extracción: <t
+                                                    t-set="extraction_date" t-value="'Por extraer'" />
+                                                <t
+                                                    t-foreach="containers" t-as="container">
                                                     <t t-if="container.extraction_date">
                                                         <t t-set="extraction_date"
-                                                           t-value="container.extraction_date"/>
-                                                        <t t-break=""/>
+                                                            t-value="container.extraction_date" />
+                                                        <t t-break="" />
                                                     </t>
                                                 </t>
-                                                <t t-esc="extraction_date"/>
+                                                <t
+                                                    t-esc="extraction_date" />
                                             </strong>
                                         </div>
                                         <div class="col">
-                                            <strong class="d-block mb-1">Fecha de Devolución:
-                                                <t t-set="return_date" t-value="'Por devolver'"/>
-                                                <t t-foreach="containers" t-as="container">
+                                            <strong class="d-block mb-1">Fecha de Devolución: <t
+                                                    t-set="return_date" t-value="'Por devolver'" />
+                                                <t
+                                                    t-foreach="containers" t-as="container">
                                                     <t t-if="container.return_date">
                                                         <t t-set="return_date"
-                                                           t-value="container.return_date"/>
-                                                        <t t-break=""/>
+                                                            t-value="container.return_date" />
+                                                        <t t-break="" />
                                                     </t>
                                                 </t>
-                                                <t t-esc="return_date"/>
+                                                <t
+                                                    t-esc="return_date" />
                                             </strong>
                                         </div>
                                     </div>
                                     <t t-foreach="containers" t-as="container">
-                                        <section t-cache="False" id="details" style="page-break-inside: auto;"
-                                                 class="mt10">
+                                        <section t-cache="False" id="details"
+                                            style="page-break-inside: auto;"
+                                            class="mt10">
                                             <div class="row mb-2">
                                                 <t t-set="type_load_label"
-                                                   t-value="{'refrigerated':'Refigerada','grouped':'Agrupada','dry':'Seca'}"/>
+                                                    t-value="{'refrigerated':'Refigerada','grouped':'Agrupada','dry':'Seca'}" />
                                                 <div class="col-lg-4 mt-lg-4 col-sm-8">
                                                     <span>
                                                         <h7 style="font-weight: bold;">Contenedor:</h7>
-                                                        <t t-esc="container.name"/>
+                                                        <t t-esc="container.name" />
                                                     </span>
-                                                    <br/>
+                                                    <br />
                                                     <span>
                                                         <h7 style="font-weight: bold;">Arribo:</h7>
-                                                        <t t-esc="container.arrival_date"/>
+                                                        <t t-esc="container.arrival_date" />
                                                     </span>
                                                 </div>
                                                 <div class="col-lg-4 mt-lg-4 col-sm-8">
                                                     <span>
                                                         <h7 style="font-weight: bold;">Peso (kg):</h7>
-                                                        <t t-esc="container.weight"/>
+                                                        <t t-esc="container.weight" />
                                                     </span>
-                                                    <br/>
+                                                    <br />
                                                     <span>
-                                                        <h7 style="font-weight: bold;">Tamaño (pies):</h7>
-                                                        <t t-esc="container.size"/>
+                                                        <h7 style="font-weight: bold;">Tamaño
+                                                            (pies):</h7>
+                                                        <t t-esc="container.size" />
                                                     </span>
                                                 </div>
                                                 <t t-if="container != False">
                                                     <div class="col-lg-4 mt-lg-4 col-sm-8">
                                                         <t t-if="container.cargo_type != False">
                                                             <span>
-                                                                <h7 style="font-weight: bold;">Tipo de carga:</h7>
-                                                                <t t-esc="type_load_label[container.cargo_type]"/>
+                                                                <h7 style="font-weight: bold;">Tipo
+                                                                    de carga:</h7>
+                                                                <t
+                                                                    t-esc="type_load_label[container.cargo_type]" />
                                                             </span>
                                                         </t>
-                                                        <t t-if="container.total_cargo_line != False">
-                                                            <br/>
+                                                        <t
+                                                            t-if="container.total_cargo_line != False">
+                                                            <br />
                                                             <span>
-                                                                <h7 style="font-weight: bold;">Importe:</h7>
-                                                                <t t-esc="container.total_cargo_line"/>
-                                                                <t t-esc="container.currency_id.name"/>
+                                                                <h7 style="font-weight: bold;">
+                                                                    Importe:</h7>
+                                                                <t
+                                                                    t-esc="container.total_cargo_line" />
+                                                                <t
+                                                                    t-esc="container.currency_id.name" />
                                                             </span>
                                                         </t>
                                                     </div>
@@ -311,53 +358,71 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody class="purchase_tbody">
-                                                        <t t-set="current_subtotal" t-value="0"/>
+                                                        <t t-set="current_subtotal" t-value="0" />
                                                         <t t-foreach="container.purchase_order_ids"
-                                                           t-as="purchase_order">
-                                                            <t t-foreach="purchase_order.order_line" t-as="line">
+                                                            t-as="purchase_order">
+                                                            <t t-foreach="purchase_order.order_line"
+                                                                t-as="line">
                                                                 <t t-set="current_subtotal"
-                                                                   t-value="current_subtotal + line.price_subtotal"/>
-                                                                <tr t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic text-break' if line.display_type == 'line_note' else ''">
+                                                                    t-value="current_subtotal + line.price_subtotal" />
+                                                                <tr
+                                                                    t-att-class="'bg-200 fw-bold o_line_section' if line.display_type == 'line_section' else 'fst-italic text-break' if line.display_type == 'line_note' else ''">
                                                                     <t t-if="not line.display_type">
                                                                         <td id="product_name">
-                                                                            <t t-if="line.sudo().product_id.image_1024">
-                                                                                <img t-att-src="image_data_uri(resize_to_48(line.sudo().product_id.image_1024))"
-                                                                                     alt="Product"
-                                                                                     class="d-none d-lg-inline"/>
+                                                                            <t
+                                                                                t-if="line.sudo().product_id.image_1024">
+                                                                                <img
+                                                                                    t-att-src="image_data_uri(resize_to_48(line.sudo().product_id.image_1024))"
+                                                                                    alt="Product"
+                                                                                    class="d-none d-lg-inline" />
                                                                             </t>
-                                                                            <span t-field="line.name"/>
+                                                                            <span
+                                                                                t-field="line.name" />
                                                                         </td>
                                                                         <td class="text-end">
                                                                             <div id="quote_qty">
-                                                                                <span t-field="line.product_qty"/>
-                                                                                <span t-field="line.product_uom"
-                                                                                      groups="uom.group_uom"/>
+                                                                                <span
+                                                                                    t-field="line.product_qty" />
+                                                                                <span
+                                                                                    t-field="line.product_uom"
+                                                                                    groups="uom.group_uom" />
                                                                             </div>
                                                                         </td>
-                                                                        <td t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
-                                                                            <div t-field="line.price_subtotal"
-                                                                                 class="text-end"/>
+                                                                        <td
+                                                                            t-attf-class="text-end {{ 'd-none d-sm-table-cell' if report_type == 'html' else '' }}">
+                                                                            <div
+                                                                                t-field="line.price_subtotal"
+                                                                                class="text-end" />
                                                                         </td>
                                                                     </t>
-                                                                    <t t-if="line.display_type == 'line_section'">
+                                                                    <t
+                                                                        t-if="line.display_type == 'line_section'">
                                                                         <td colspan="99">
-                                                                            <span t-field="line.name"/>
+                                                                            <span
+                                                                                t-field="line.name" />
                                                                         </td>
-                                                                        <t t-set="current_section" t-value="line"/>
-                                                                        <t t-set="current_subtotal" t-value="0"/>
+                                                                        <t t-set="current_section"
+                                                                            t-value="line" />
+                                                                        <t t-set="current_subtotal"
+                                                                            t-value="0" />
                                                                     </t>
-                                                                    <t t-if="line.display_type == 'line_note'">
+                                                                    <t
+                                                                        t-if="line.display_type == 'line_note'">
                                                                         <td colspan="99">
-                                                                            <span t-field="line.name"/>
+                                                                            <span
+                                                                                t-field="line.name" />
                                                                         </td>
                                                                     </t>
                                                                 </tr>
-                                                                <t t-if="current_section and (line_last or order.order_line[line_index+1].display_type == 'line_section')">
+                                                                <t
+                                                                    t-if="current_section and (line_last or order.order_line[line_index+1].display_type == 'line_section')">
                                                                     <tr class="is-subtotal text-end">
                                                                         <td colspan="99">
-                                                                            <strong class="mr16">Subtotal</strong>
-                                                                            <span t-esc="current_subtotal"
-                                                                                  t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: order.currency_id}"/>
+                                                                            <strong class="mr16">
+                                                                                Subtotal</strong>
+                                                                            <span
+                                                                                t-esc="current_subtotal"
+                                                                                t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: order.currency_id}" />
                                                                         </td>
                                                                     </tr>
                                                                 </t>
@@ -366,10 +431,14 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <!--<div id="total" t-if="order.state in ['purchase', 'done']" class="row"-->
+                                            <!--<div
+                                            id="total" t-if="order.state in ['purchase', 'done']"
+                                            class="row"-->
                                             <!--     name="total" style="page-break-inside: avoid;">-->
-                                            <!--    <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ms-auto">-->
-                                            <!--        <t t-call="purchase.purchase_order_portal_content_totals_table"/>-->
+                                            <!--    <div t-attf-class="#{'col-4' if report_type !=
+                                            'html' else 'col-sm-7 col-md-5'} ms-auto">-->
+                                            <!--        <t
+                                            t-call="purchase.purchase_order_portal_content_totals_table"/>-->
                                             <!--    </div>-->
                                             <!--</div>-->
                                         </section>
@@ -377,13 +446,13 @@
                                     <div id="a">
                                         <h4>Comuníquese con nosotros</h4>
                                         <t t-call="portal.message_thread">
-                                            <t t-set="object" t-value="record"/>
+                                            <t t-set="object" t-value="record" />
                                         </t>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <hr/>
+                        <hr />
                     </div>
                 </div>
             </div>
@@ -392,8 +461,7 @@
     <template id="update_files_template" name="Actualizar Archivos">
         <t t-call="website.layout">
             <div class="container">
-                <h3>Actualizar archivos para la solicitud:
-                    <t t-esc="record.name"/>
+                <h3>Actualizar archivos para la solicitud: <t t-esc="record.name" />
                 </h3>
                 <!-- Archivos de la orden de importación -->
                 <h4>Archivos generales de la importación</h4>
@@ -402,11 +470,13 @@
                         <div class="col-md-6 col-12">
                             <label>Certificado de Origen</label>
                             <t t-if="record.origin_certificate">
-                                <a t-att-href="'/web/content/importation.process/%s/origin_certificate?download=true' % record.id" target="_blank">Ver PDF</a>
+                                <a
+                                    t-att-href="'/web/content/importation.process/%s/origin_certificate?download=true' % record.id"
+                                    target="_blank">Ver PDF</a>
                             </t>
                             <t t-else="">
                                 <owl-component name="pyxel_import_website.FileUploader"
-                            t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'origin_certificate'})"/>
+                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'origin_certificate'})" />
                             </t>
                         </div>
                     </t>
@@ -414,26 +484,30 @@
                         <div class="col-md-6 col-12">
                             <label>Certificado de Calidad</label>
                             <t t-if="record.quality_certificate">
-                                <a t-att-href="'/web/content/importation.process/%s/quality_certificate?download=true' % record.id" target="_blank">Ver PDF</a>
+                                <a
+                                    t-att-href="'/web/content/importation.process/%s/quality_certificate?download=true' % record.id"
+                                    target="_blank">Ver PDF</a>
                             </t>
                             <t t-else="">
                                 <owl-component name="pyxel_import_website.FileUploader"
-                            t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'quality_certificate'})"/>
+                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'quality_certificate'})" />
                             </t>
                         </div>
                     </t>
                 </div>
-                <br/>
+                <br />
                 <div class="row to-toggle">
                     <t t-if="record.has_awb or record.has_bl">
                         <div class="col-md-6 col-12">
                             <label>Documentación BL/AWB</label>
                             <t t-if="record.documentation_file">
-                                <a t-att-href="'/web/content/importation.process/%s/documentation_file?download=true' % record.id" target="_blank">Ver PDF</a>
+                                <a
+                                    t-att-href="'/web/content/importation.process/%s/documentation_file?download=true' % record.id"
+                                    target="_blank">Ver PDF</a>
                             </t>
                             <t t-else="">
                                 <owl-component name="pyxel_import_website.FileUploader"
-                            t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'documentation_file'})"/>
+                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'documentation_file'})" />
                             </t>
                         </div>
                     </t>
@@ -441,38 +515,42 @@
                         <div class="col-md-6 col-12">
                             <label>Lista de Empaque</label>
                             <t t-if="record.packing_list">
-                                <a t-att-href="'/web/content/importation.process/%s/packing_list?download=true' % record.id" target="_blank">Ver PDF</a>
+                                <a
+                                    t-att-href="'/web/content/importation.process/%s/packing_list?download=true' % record.id"
+                                    target="_blank">Ver PDF</a>
                             </t>
                             <t t-else="">
                                 <owl-component name="pyxel_import_website.FileUploader"
-                            t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'packing_list'})"/>
+                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'packing_list'})" />
                             </t>
                         </div>
                     </t>
                 </div>
-                <br/>
+                <br />
                 <div class="row to-toggle">
                     <t t-if="record.has_export_certificate">
                         <div class="col-md-6 col-12">
                             <label>Certificado de Exportación</label>
                             <t t-if="record.export_certificate">
-                                <a t-att-href="'/web/content/importation.process/%s/export_certificate?download=true' % record.id" target="_blank">Ver PDF</a>
+                                <a
+                                    t-att-href="'/web/content/importation.process/%s/export_certificate?download=true' % record.id"
+                                    target="_blank">Ver PDF</a>
                             </t>
                             <t t-else="">
                                 <owl-component name="pyxel_import_website.FileUploader"
-                            t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'export_certificate'})"/>
+                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'export_certificate'})" />
                             </t>
                         </div>
                     </t>
                 </div>
-                <br/>
-                
+                <br />
+
                 <h4>Archivos por orden de compra</h4>
                 <t t-foreach="record.purchase_order_ids" t-as="po">
                     <div class="card mb-3">
                         <div class="card-header">
                             <strong>
-                                <t t-esc="po.partner_id.name"/>
+                                <t t-esc="po.partner_id.name" />
                             </strong>
                         </div>
                         <div class="card-body">
@@ -480,21 +558,25 @@
                                 <div class="col-md-6 col-12">
                                     <label>Oferta Firmada</label>
                                     <t t-if="po.signed_offer">
-                                        <a t-att-href="'/web/content/purchase.order/%s/signed_offer?download=true' % po.id" target="_blank">Ver PDF</a>
+                                        <a
+                                            t-att-href="'/web/content/purchase.order/%s/signed_offer?download=true' % po.id"
+                                            target="_blank">Ver PDF</a>
                                     </t>
                                     <t t-else="">
                                         <owl-component name="pyxel_import_website.FileUploader"
-                                    t-att-props="json.dumps({'model':'purchase.order', 'recordId':po.id, 'fieldName':'signed_offer'})"/>
+                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId':po.id, 'fieldName':'signed_offer'})" />
                                     </t>
                                 </div>
                                 <div class="col-md-6 col-12">
                                     <label>Factura Comercial</label>
                                     <t t-if="po.commercial_invoice">
-                                        <a t-att-href="'/web/content/purchase.order/%s/commercial_invoice?download=true' % po.id" target="_blank">Ver PDF</a>
+                                        <a
+                                            t-att-href="'/web/content/purchase.order/%s/commercial_invoice?download=true' % po.id"
+                                            target="_blank">Ver PDF</a>
                                     </t>
                                     <t t-else="">
                                         <owl-component name="pyxel_import_website.FileUploader"
-                                    t-att-props="json.dumps({'model':'purchase.order', 'recordId':po.id, 'fieldName':'commercial_invoice'})"/>
+                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId':po.id, 'fieldName':'commercial_invoice'})" />
                                     </t>
                                 </div>
                             </div>
@@ -503,7 +585,8 @@
                 </t>
                 <!-- Botones -->
                 <div class="form-group mt-3">
-                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">
+                        Cancelar</button>
                 </div>
             </div>
         </t>

@@ -25,7 +25,7 @@ class ImportationsController(BaseController):
         values = self._prepare_page_values('Import')
         values['record'] = record
         values['listing'] = {
-            'name': 'Imports',
+            'name': 'Importaciones',
             'href': '/model/imports',
         }
         return request.render("pyxel_import_website.importation_view", values)

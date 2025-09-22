@@ -41,12 +41,16 @@
     ],
     'assets': {
         'web.assets_frontend': [
+            'https://code.jquery.com/jquery-3.6.0.min.js',
+            'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
+            'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
             'pyxel_import_website/static/src/components/**/*.js',
             'pyxel_import_website/static/src/components/**/*.xml',
             # 'website_sale/static/src/**/*',
-
             'pyxel_import_website/static/src/js/business_registration.js',
             'pyxel_import_website/static/src/js/nomenclator_add.js',
+            'pyxel_import_website/static/src/js/select2_init_products.js',
+            'pyxel_import_website/static/src/js/select2_init_onure.js',
             # 'pyxel_import_website/static/src/css/business_register.css',
             'pyxel_import_website/static/src/css/badge_classes.css',
             'pyxel_import_website/static/src/css/nomenclator.css',
