@@ -713,6 +713,7 @@ class ControllerTest(http.Controller):
                 return request.redirect('/business-register-thanks')
 
         render_values = get_render_values(kw)
+        
         if kw.get('type') == 'import':
             # Si no se ha realizado el formulario de acreditación
             if not crm_lead_exists:

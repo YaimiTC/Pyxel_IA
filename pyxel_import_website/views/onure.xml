@@ -1,113 +1,141 @@
 <odoo>
     <template id="onure_template" name="Onoure">
         <t t-call="website.layout">
-                <div class="custom-container mt-5" id="nomenclator_form">
-                    <div class="arrow-element">
-                        <t t-if="from_view == 'business_registration' or from_view == 'import_registration'">
-                            <form>
-                                <button style="background-color:#FFFFFF;border:none" type="submit" data-trigger="specific-submit"><img src="/pyxel_import_website/static/src/img/ph_arrow-up.svg" alt="Flecha izquierda" class="arrow_left"/></button>
-                            </form>
-                        </t>
-                    </div>   
-                    <div>
-                         <!-- Tabs para cambiar entre alimentos y electrónicos -->
-                        <ul class="nav nav-tabs" id="nomenclador-tabs">
-                            <li class="nav-item">
-                                <t t-if="from_view == 'business_registration' or from_view == 'import_registration'">
-                                    <a href="/nomenclador?from=import_registration" class="nav-link inactive" data-tab="alimentos" id="alimentos-tab">Nuestros Productos</a>
-                                </t> 
-                                <t t-else="">
-                                    <a href="/nomenclador" class="nav-link inactive" data-tab="alimentos" id="alimentos-tab">Nuestros Productos</a>
-                                </t>
-                            </li>
-                            <li class="nav-item">
-                                <t t-if="from_view == 'business_registration' or from_view == 'import_registration'">  
-                                    <a href="/onure?from=import_registration" class="nav-link active" data-tab="electronicos" id="electronicos-tab">Homologados por la ONURE</a>
-                                </t> 
-                                <t t-else="">
-                                    <a href="/onure" class="nav-link active" data-tab="electronicos" id="electronicos-tab">Homologados por la ONURE</a>
-                                </t>
-                            </li>
-                        </ul>
-                        <div class="container-aftertabs">
-                            <form method="get" action="/onure" class="mb-4 search-form">
-                                <div class="input-group">
-                                    <input type="search" name="search" class="form-control" placeholder="Producto a importar" t-att-value="search or ''"/>
-                                    <input type="hidden" name="from" t-att-value="from_view or ''"/>
-                                    <button class="btn btn-primary search-btn" style=" border-top-right-radius: 20px ; border-bottom-right-radius: 20px " type="submit">
-                                        <img src="/pyxel_import_website/static/src/img/material-symbols-light_search.svg" alt="Buscar" style="width: 22px; height: 22px;" />
-                                    </button>
-                                </div>
-                            </form>
-                            <t t-if="from_view == 'business_registration' or from_view == 'import_registration'">
-                                <t t-if="products">
-                                    <form class="form-with-right-button">
-                                        <input type="hidden" name="from_view" t-att-value="from_view"/>
-                                        <button type="submit" class="btn btn-primary mt-4 save-button" data-trigger="specific-submit">Guardar</button>
-                                    </form>
-                                </t>
-                            </t>
-                            <t t-if="products">
-                                <div class="line"></div>
-                            </t>
-
-                            <!-- Paginación -->
-                            <div class="pagination-container">
-                                <div class="pagination small-pagination">
-                                    <t t-call="website.pager"/>
-                                </div>
-                            </div>
-                        
-
-                            <t t-if="products">
-                                <div class="products-list">
-                                    <ul class="list-group">
-                                        <t t-foreach="products" t-as="product">
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                <span><t t-esc="product.name"/></span>
-                                                <t t-if="from_view == 'business_registration' or from_view == 'import_registration'">
-                                                    <form >
-                                                        <input type="hidden" name="product_id" t-att-value="product.id"/>
-                                                        <button type="submit" id="addToSessionElectric" class="btn btn-primary btn-sm" t-att-data-electric-id="product.id" >Agregar</button>
-                                                    </form> 
-                                                </t>    
-                                            </li>
-                                        </t>
-                                    </ul>
-                                </div>
+            <div class="custom-container mt-5" id="nomenclator_form">
+                <div class="arrow-element">
+                    <t
+                        t-if="from_view == 'business_registration' or from_view == 'import_registration'">
+                        <form>
+                            <button class="btn btn-info mb-3" type="submit"
+                                data-trigger="specific-submit">
+                                <i class="fas fa-arrow-left f-1x text-white"></i>
+                            </button>
+                        </form>
+                    </t>
+                </div>
+                <div>
+                    <!-- Tabs para cambiar entre alimentos y electrónicos -->
+                    <ul class="nav nav-tabs" id="nomenclador-tabs">
+                        <li class="nav-item">
+                            <t
+                                t-if="from_view == 'business_registration' or from_view == 'import_registration'">
+                                <a href="/nomenclador?from=import_registration"
+                                    class="nav-link inactive" data-tab="alimentos"
+                                    id="alimentos-tab">Nuestros Productos</a>
                             </t>
                             <t t-else="">
-                                <div class="text-center text-muted">
-                                    <!-- Imagen añadida -->
-                                    <img class="image-no-results"
+                                <a href="/nomenclador" class="nav-link inactive"
+                                    data-tab="alimentos" id="alimentos-tab">Nuestros Productos</a>
+                            </t>
+                        </li>
+                        <li class="nav-item">
+                            <t
+                                t-if="from_view == 'business_registration' or from_view == 'import_registration'">
+                                <a href="/onure?from=import_registration" class="nav-link active"
+                                    data-tab="electronicos" id="electronicos-tab">Homologados por la
+                                    ONURE</a>
+                            </t>
+                            <t t-else="">
+                                <a href="/onure" class="nav-link active" data-tab="electronicos"
+                                    id="electronicos-tab">Homologados por la ONURE</a>
+                            </t>
+                        </li>
+                    </ul>
+                    <div class="container-aftertabs">
+                        <form method="get" action="/onure" class="mb-4 search-form">
+                            <div class="input-group">
+                                <input type="search" name="search" class="form-control"
+                                    placeholder="Producto a importar" t-att-value="search or ''" />
+                                <input type="hidden" name="from" t-att-value="from_view or ''" />
+                                <button class="btn btn-info search-btn"
+                                    style=" border-top-right-radius: 20px ; border-bottom-right-radius: 20px "
+                                    type="submit">
+                                    <i class="fa fa-search text-white"></i>
+                                </button>
+                            </div>
+                        </form>
+                        <t
+                            t-if="from_view == 'business_registration' or from_view == 'import_registration'">
+                            <t t-if="products">
+                                <form class="form-with-right-button">
+                                    <input type="hidden" name="from_view" t-att-value="from_view" />
+                                    <button type="submit" class="btn btn-primary mt-4 save-button"
+                                        data-trigger="specific-submit">Guardar</button>
+                                </form>
+                            </t>
+                        </t>
+                        <t t-if="products">
+                            <div class="line"></div>
+                        </t>
+
+                        <!-- Paginación -->
+                        <div class="pagination-container">
+                            <div class="pagination small-pagination">
+                                <t t-call="website.pager" />
+                            </div>
+                        </div>
+
+
+                        <t t-if="products">
+                            <div class="products-list">
+                                <ul class="list-group">
+                                    <t t-foreach="products" t-as="product">
+                                        <li
+                                            class="list-group-item d-flex justify-content-between align-items-center">
+                                            <span>
+                                                <t t-esc="product.name" />
+                                            </span>
+                                            <t
+                                                t-if="from_view == 'business_registration' or from_view == 'import_registration'">
+                                                <form>
+                                                    <input type="hidden" name="product_id"
+                                                        t-att-value="product.id" />
+                                                    <button type="submit" id="addToSessionElectric"
+                                                        class="btn btn-primary btn-sm"
+                                                        t-att-data-electric-id="product.id">Agregar</button>
+                                                </form>
+                                            </t>
+                                        </li>
+                                    </t>
+                                </ul>
+                            </div>
+                        </t>
+                        <t t-else="">
+                            <div class="text-center text-muted">
+                                <!-- Imagen añadida -->
+                                <!--<img
+                                class="image-no-results"
                                         src="/pyxel_import_website/static/src/img/no-results.png" 
                                         alt="No se encontraron productos" 
-                                        />
-                                    
-                                    <!-- Texto en negrita -->
-                                    <p style="font-weight: bold; font-size: 18px; color: #000000">¡No pudimos encontrar ninguna coincidencia!</p>
-                                    
-                                    <!-- Texto pequeño -->
-                                    <p style="font-size: 14px;color: #000000">Por favor, pruebe con otra búsqueda</p>
+                                        />-->
 
-                                    <!-- Línea con la "o" centrada -->
-                                    <div style="display: flex; align-items: center; justify-content: center; margin: 20px 0;">
-                                        <div style="flex-grow: 1; height: 1px; background-color: #ccc;"></div>
-                                        <span style="margin: 0 10px; font-weight: bold; color: #555;">o</span>
-                                        <div style="flex-grow: 1; height: 1px; background-color: #ccc;"></div>
-                                    </div>
+                                <!-- Texto en negrita -->
+                                <p style="font-weight: bold; font-size: 18px; color: #000000">¡No
+                                    pudimos encontrar ninguna coincidencia!</p>
 
-                                    <!-- Botón para contactar -->
-                                    <a href="mailto:comercial@fruxelimport.com" 
-                                    class="btn btn-primary" 
-                                    style="padding: 10px 20px; font-size: 12px;width: 340px;height: 36px;">
-                                        Contacte con nuestro equipo comercial
-                                    </a>
+                                <!-- Texto pequeño -->
+                                <p style="font-size: 14px;color: #000000">Por favor, pruebe con otra
+                                    búsqueda</p>
+
+                                <!-- Línea con la "o" centrada -->
+                                <div
+                                    style="display: flex; align-items: center; justify-content: center; margin: 20px 0;">
+                                    <div style="flex-grow: 1; height: 1px; background-color: #ccc;"></div>
+                                    <span style="margin: 0 10px; font-weight: bold; color: #555;">o</span>
+                                    <div style="flex-grow: 1; height: 1px; background-color: #ccc;"></div>
                                 </div>
-                            </t>
-                        </div>
+
+                                <!-- Botón para contactar -->
+                                <a href="mailto:comercial@fruxelimport.com"
+                                    class="btn btn-outline-info"
+                                    style="padding: 10px 20px; font-size: 12px;width: 340px;height: 36px;">
+                                    Contacte con nuestro equipo comercial
+                                </a>
+                            </div>
+                        </t>
                     </div>
                 </div>
+            </div>
         </t>
     </template>
 </odoo>
