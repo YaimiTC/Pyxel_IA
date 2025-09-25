@@ -54,8 +54,8 @@ class ImportationProcess(models.Model):
 
     declaration = fields.Char(string='Goods Declaration')
 
-    estimated_start_date = fields.Date(string='Estimated Start Date', required=True)
-    estimated_end_date = fields.Date(string='Estimated End Date', required=True)
+    estimated_start_date = fields.Date(string='Estimated Start Date', )
+    estimated_end_date = fields.Date(string='Estimated End Date')
     departure_date = fields.Date(string='Departure Date from Origin')
     declaration_date = fields.Date(string='Goods Declaration Date')
     documentation_sent_date = fields.Date(string='Documentation Sent Date')
