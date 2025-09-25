@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
   <t t-name="pyxel_import_website.ImportationsTableTemplate" owl="1">
-    <div class="container mt-3">
+    <div class="container my-3">
       <div class="d-flex align-items-center gap-2 mb-3 text-secondary">
         <a href="/my/home" class="text-decoration-none text-primary-custom d-flex align-items-center">
         <i class="fa fa-home"></i>
