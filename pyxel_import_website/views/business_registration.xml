@@ -34,8 +34,7 @@
                             href="/business-register?type=accreditation">
                             <span class="badge badge-success">Acreditación</span>
                         </a>
-                        .
-                    </h4>
+                        . </h4>
                 </div>
                 <div id="o_shared_blocks" class="oe_unremovable" data-oe-id="562"
                     data-oe-xpath="/data/xpath/div" data-oe-model="ir.ui.view" data-oe-field="arch"></div>
@@ -888,7 +887,7 @@
                                                                 <div
                                                                     style="display: flex;flex-direction: column;width: 200px;">
                                                                     <label
-                                                                        class="col-sm-auto s_website_form_label"
+                                                                        class="pl-0 s_website_form_label"
                                                                         style="width: 200px"
                                                                         for="legal_documentation">
                                                                         <span
@@ -1447,7 +1446,7 @@
                                                                 <div
                                                                     style="display: flex;flex-direction: column;width: 200px;">
                                                                     <label
-                                                                        class="col-sm-auto s_website_form_label"
+                                                                        class="pl-0 s_website_form_label"
                                                                         style="width: 200px"
                                                                         for="legal_documentation">
                                                                         <span
@@ -1684,7 +1683,7 @@
                                                         href="/business-register?type=import">
                                                         una importación
                                                     </a>
-                                                    ,                                                    <a
+                                                    , <a
                                                         style="font-color:#EE7D00"
                                                         href="/business-register?type=logistic">
                                                     nuestros servicios de logística
