@@ -24,8 +24,17 @@
                 }
             },
         });
-        let alimentosDeImportacion = JSON.parse($selector.attr("data-alimentos") || "[]");
-        let selectedProducts = JSON.parse($selector.attr("data-alimentos-selected") || "[]");
+
+        function  cleanJSONString(str) {
+            return str
+                .replace(/\\\"/g, '\"') // Manejar escapes existentes
+                .replace(/(?<!: )"(?!,|}|:)/g, '\\"') // Escapar comillas dobles internas
+                .replace(/'(?=:|}|,)|(?<={|, |: )'/g, '"') // Convertir las comillas simples a comillas dobles solamente si tienen delante un "{", ", ", ": " o tengan detras un "}", ","  
+        }
+        const alimentos = cleanJSONString($selector.attr("data-alimentos") || "[]")
+        const alimentosSelected = cleanJSONString($selector.attr("data-alimentos-selected") || "[]")
+        let alimentosDeImportacion = JSON.parse(alimentos);
+        let selectedProducts = JSON.parse(alimentosSelected);
 
         // Función para cargar las opciones en el select
         function loadSelect2Options(products, selectedProducts) {

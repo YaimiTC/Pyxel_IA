@@ -1053,7 +1053,7 @@
                                                                         <div class="input-group">
                                                                             <select
                                                                                 id="productRequired"
-                                                                                class="js-example-basic-multiple form-select s_website_form_input"
+                                                                                class="js-example-basic-multiple"
                                                                                 name="productRequired"
                                                                                 multiple="multiple"
                                                                                 t-att-data-alimentos="alimentos_de_importacion"
@@ -1143,7 +1143,7 @@
                                                                             movidos al manifest-->
                                                                             <div class="input-group">
                                                                                 <select
-                                                                                    class="js-example-basic-multiple form-select s_website_form_input"
+                                                                                    class="js-example-basic-multiple"
                                                                                     name="productOnure"
                                                                                     id="productOnure"
                                                                                     multiple="multiple"
