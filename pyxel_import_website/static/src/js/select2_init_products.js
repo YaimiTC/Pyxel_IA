@@ -1,7 +1,7 @@
 (function ($) {
     $(document).ready(function () {
 
-        console.log("✅ jQuery version:", $.fn.jquery);
+        console.log("jQuery version:", $.fn.jquery);
         const $selector = $('#productRequired');
 
         $selector.select2({

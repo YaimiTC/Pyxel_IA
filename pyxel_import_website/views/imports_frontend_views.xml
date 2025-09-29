@@ -27,7 +27,7 @@
                     </ol>
                     <div
                         class="d-flex flex-row my-4 flex-wrap align-items-top justify-content-between">
-                        <div class="col-lg-4 col-sm-4" style="">
+                        <div class="col-lg-3 col-sm-3 pl-0" style="">
                             <div class="d-flex justify-content-start align-items-left gap-0 mb-1">
                                 <img class="o_portal_contact_img rounded o_object_fit_cover"
                                     t-att-src="image_data_uri(record.provider_id.avatar_128)"
@@ -61,35 +61,35 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-8 mt-lg-8 col-sm-8">
+                        <div class="col-lg-9 mt-lg-9 col-sm-9 px-0">
                             <div id="informations">
                                 <!--<div
                                 class="row">-->
                                 <div class="mb-3 mt-3 col-12 o_field_statusbar">
                                     <div class="o_statusbar_status" role="radiogroup">
                                         <t t-set="stage" t-value="record.stage_id.id" />
-                                        <button t-att-disabled="stage == 9" type="button"
-                                            t-attf-class="btn boton_secondary_import o_arrow_button o_first #{'o_arrow_button_current' if stage == 9 else ''}"
-                                            t-esc="'DEVOLUCION DEL CONTENEDOR'" />
-                                        <button t-att-disabled="stage == 8" type="button"
-                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 8 else ''}"
-                                            t-if="stage != 2" t-esc="'EN ALMACÉN CLIENTE'" />
-                                        <button type="button" t-att-disabled="stage == 6"
-                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 6 else ''}"
-                                            t-esc="'LISTO PARA EXTRAER'" />
-                                        <button type="button" t-att-disabled="stage == 5"
-                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 5 else ''}  "
-                                            t-esc="'TRÁMITES EN DESTINO'" />
+                                        <button type="button"
+                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button o_last o_arrow_button_current #{'o_arrow_button_current' if stage == 1 else ''}"
+                                            t-att-disabled="stage == 1" t-esc="'SOLICITUD'" />
                                         <button type="button" t-att-disabled="stage == 2"
-                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 2 else ''}"
+                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 2 else ''}"
                                             t-if="stage == 2"
                                             t-esc="'EN TRANSITO A PUERTO DE DESTINO'" />
                                         <button type="button"
-                                            t-attf-class="btn boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 7 else ''}"
+                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 7 else ''}"
                                             t-att-disabled="stage == 7" t-esc="'TRAMITES EN ORIGEN'" />
-                                        <button type="button"
-                                            t-attf-class="btn boton_secondary_import o_arrow_button o_last o_arrow_button_current #{'o_arrow_button_current' if stage == 1 else ''}"
-                                            t-att-disabled="stage == 1" t-esc="'SOLICITUD'" />
+                                        <button type="button" t-att-disabled="stage == 5"
+                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 5 else ''}  "
+                                            t-esc="'TRÁMITES EN DESTINO'" />
+                                        <button type="button" t-att-disabled="stage == 6"
+                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 6 else ''}"
+                                            t-esc="'LISTO PARA EXTRAER'" />
+                                        <button t-att-disabled="stage == 8" type="button"
+                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 8 else ''}"
+                                            t-if="stage != 2" t-esc="'EN ALMACÉN CLIENTE'" />
+                                        <button t-att-disabled="stage == 9" type="button"
+                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button o_first #{'o_arrow_button_current' if stage == 9 else ''}"
+                                            t-esc="'DEVOLUCION DEL CONTENEDOR'" />
                                     </div>
                                 </div>
                                 <!--</div>    -->
