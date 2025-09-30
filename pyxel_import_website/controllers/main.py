@@ -46,14 +46,9 @@ def get_render_values(kw):
     productos_de_importacion = request.env['product.template'].sudo().search([('de_importacion', '=', True)])
     alimentos_de_importacion = request.env['product.template'].sudo().search(
         [('product_type', '=', 'alimento'), ('de_importacion', '=', True)])
-    electronicos_de_importacion = request.env['product.template'].sudo().search(
-        [('product_type', '=', 'electronico'), ('de_importacion', '=', True)])
 
     product_selected = request.session.get('product_selected', [])
-    electronic_selected = request.session.get('electronic_selected', [])
     alimentos_de_importacion_data = [{'id': product.id, 'name': product.name} for product in alimentos_de_importacion]
-    electronicos_de_importacion_data = [{'id': product.id, 'name': product.name} for product in
-                                        electronicos_de_importacion]
 
     render_values = {
         "countries": country.get_website_sale_countries(),
@@ -66,14 +61,8 @@ def get_render_values(kw):
         "register_type": register_type,
         "registered_user": False,
         "productos_de_importacion": productos_de_importacion,
-        "alimentos_de_importacion": alimentos_de_importacion,
-        "electronicos_de_importacion": electronicos_de_importacion,
         "productos_seleccionados_ids": product_selected,
-        "electronic_selected_ids": electronic_selected,
-        # "electronicos_de_importacion": electronicos_de_importacion,
         'alimentos_de_importacion': json.dumps(alimentos_de_importacion_data),
-        'electronicos_de_importacion': json.dumps(electronicos_de_importacion_data),
-
     }
     domain_ids = [request.env.user.partner_id.id]
     if request.env.user.partner_id.parent_id:
@@ -349,13 +338,10 @@ class WebsiteForm(form.WebsiteForm):
             # Crear la Cotización a partir de la solicitud de importación
             if tipo_registro == "import":
                 id_crm = eval(res.response[0])
-                product_onure_ids = [int(id.strip()) for id in kwargs.get("productOnure", "").split(",") if
-                        id.strip().isdigit()]
                 product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if
                                             id.strip().isdigit()]
                 nomenclature_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_nomenclature_ids)]).ids
-                onure_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_onure_ids)]).ids
-                order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids] + [(0,0, {"product_id": product_id}) for product_id in onure_ids] 
+                order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids]
                 order = request.env["sale.order"].sudo().create(
                     {
                         "partner_id": public_user.partner_id.parent_id.id,
@@ -381,20 +367,18 @@ class WebsiteForm(form.WebsiteForm):
 
                 crm_lead = request.env["crm.lead"].sudo().browse(id_crm["id"])
                     # "partner_id": partner.sudo().id,
-                crm_lead.sudo().write({"product_onure": [(6, 0, onure_ids)]})
                 
                 # partner.write({"child_ids": [(4, public_user.partner_id.id)]})
                 # public_user.partner_id.write({"parent_id":partner.sudo().id})
 
-        if kwargs.get('productRequired') or kwargs.get('productOnure'):
+        if kwargs.get('productRequired'):
             # Evitar doble creación si el formulario ya es de 'x_import'
             if model_name == 'x_import':
                 # Aquí podemos saltarnos la creación manual porque el super() ya loo creó
                 pass
             else:
 
-                product_ids_str = kwargs.get('productRequired') if kwargs.get('productRequired') else kwargs.get(
-                    'productOnure')
+                product_ids_str = kwargs.get('productRequired') if kwargs.get('productRequired') else ''
                 product_ids_list = product_ids_str.split(
                     ',')  # divide la cadena en una lista de strings usando la coma como delimitador porque al ser un campo many2many toma la coma entre los elementos y da
 
@@ -444,16 +428,9 @@ class WebsiteForm(form.WebsiteForm):
                 studio_client = kwargs.get("customer_id") if kwargs.get(
                     "customer_id") else request.env.user.partner_id.parent_id.id
 
-                if studio_client:
-                    product_onure_ids = [
-                        int(id.strip())
-                        for id in kwargs.get("productOnure", "").split(",")
-                        if id.strip().isdigit()
-                    ]
-
+                # if studio_client:
                     # request.env['x_import'].sudo().create({
                     #     'x_studio_form_note': kwargs.get('productRequired'),
-                    #     "product_onure": [(6, 0, product_onure_ids)],
                     #     # 'x_studio_producto_a_importar': [(6, 0, productos_ids)],
                     #     'x_studio_supplier': import_supplier.id,
                     #     'x_studio_origin_country': origin_country_id,
@@ -473,8 +450,6 @@ class WebsiteForm(form.WebsiteForm):
         # public_user.partner_id.sudo().write({"has_accredited_company": True})
 
         request.session['product_selected'] = []
-
-        request.session['electronic_selected'] = []
 
         return res
 
@@ -625,45 +600,6 @@ class ControllerTest(http.Controller):
 
         return {'status': 'success', 'message': 'Sesión actualizada correctamente'}
 
-    @http.route('/business-register/update_session_electronics', type='json', auth='user')
-    def actualizar_sesion_electronicos(self, selected_electronics, action=None):
-        """
-        Actualiza la variable de sesión `electronic_selected` con los valores seleccionados.
-        Puede agregar o eliminar productos según el parámetro `action`. Si no se le pasa por param, por defecto agrega.
-        """
-        action = action or "add"
-
-        if not isinstance(selected_electronics, list):
-            selected_electronics = []
-        else:
-            selected_electronics = [
-                int(p) for p in selected_electronics if isinstance(p, (int, str)) and str(p).isdigit()
-            ]
-
-        # Obtén la lista de productos previamente seleccionados para electrónicos
-        previous_products = request.session.get('electronic_selected', [])
-
-        # Asegúrate de que previous_products sea una lista válida
-        if not isinstance(previous_products, list):
-            previous_products = []
-        else:
-            previous_products = [
-                int(p) for p in previous_products if isinstance(p, (int, str)) and str(p).isdigit()
-            ]
-
-        if action == "add":
-            updated_products = list(set(previous_products + selected_electronics))
-        elif action == "remove":
-            updated_products = [p for p in previous_products if p not in selected_electronics]
-        else:
-            return {'status': 'error', 'message': f'Acción no válida: {action}'}
-
-        # Actualizar la sesión con los nuevos productos seleccionados
-        request.session['electronic_selected'] = updated_products
-        request.session.modified = True
-
-        return {'status': 'success', 'message': 'Sesión de electrónicos actualizada correctamente'}
-
     @http.route('/business-register-thanks', type='http', auth="public", website=True)
     def business_register_thanks(self, **kw):
         crm_lead_exists = request.env["crm.lead"].sudo().search([
@@ -719,7 +655,9 @@ class ControllerTest(http.Controller):
             if not crm_lead_exists:
                 return request.render('pyxel_import_website.waiting_for_active_contract')
             # Si no es Cliente nacional no puede solicitar una importación
-            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact != "Client" and request.env.user.partner_id.parent_id.contact_type_id.nationality_type != 'national':
+            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact == "Client" and request.env.user.partner_id.parent_id.contact_type_id.nationality_type == 'national':
+                pass
+            else:
                 return request.render('pyxel_import_website.you_are_not_a_national_client', {'contact_type': request.env.user.partner_id.parent_id.contact_type_id.name})
             # Si realizó el formulario de acreditación pero no está acreditado
             if not is_accredited:
@@ -779,49 +717,6 @@ class ProductSearchController(http.Controller):
             'search': search,
             'from_view': from_view,
             'alimentos_de_importacion': alimentos_de_importacion,
-            'pager': pager,
-        })
-
-    @http.route(['/onure', '/onure/page/<int:page>'], type='http', auth='public', website=True)
-    def onure_view(self, search=None, page=1, **kwargs):
-        loged_in()
-        """Renderiza la vista con el buscador y los resultados paginados."""
-        electronicos_de_importacion = request.env['product.template'].sudo().search(
-            [('product_type', '=', 'electronico'), ('de_importacion', '=', True)])
-
-        # Filtros para búsqueda
-        filters = [('product_type', '=', 'electronico')]
-        domain = [('name', 'ilike', search)] if search else []
-        domain += filters
-
-        from_view = kwargs.get('from', None)
-
-        total_products = request.env['product.template'].sudo().search_count(domain)
-
-        base_url = "/onure"
-
-        url_args = {}
-        if from_view:
-            url_args['from'] = from_view
-        if search:
-            url_args['search'] = search
-
-        pager = request.website.pager(
-            url=base_url,
-            url_args=url_args,
-            total=total_products,
-            page=page,
-            step=10,  # 10 productos por página
-            scope=3
-        )
-
-        products = request.env['product.template'].sudo().search(domain, limit=10, offset=(page - 1) * 10)
-
-        return request.render('pyxel_import_website.onure_template', {
-            'products': products,
-            'search': search,
-            'from_view': from_view,
-            "electronicos_de_importacion": electronicos_de_importacion,
             'pager': pager,
         })
 

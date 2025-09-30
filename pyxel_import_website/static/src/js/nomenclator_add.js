@@ -1,6 +1,6 @@
 /** @odoo-module **/
 
-import publicWidget from '@web/legacy/js/public/public_widget'
+import publicWidget from '@web/legacy/js/public/public_widget';
 
 
 export const NomenclatorAdd = publicWidget.Widget.extend({
@@ -32,11 +32,6 @@ _onTabClick(ev) {
 // async _loadAlimento(ev){
 //     await this.rpc('/nomenclador', '/nomenclador/page/<int:page>')
 // },
-
-// async _loadElectronic(ev){
-//     await this.rpc('/onure', '/onure/page/<int:page>')
-// },
-
 
 // Establecer la pestaña activa
 _setActiveTab(activeTab) {

@@ -28,8 +28,6 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         'change select[name="state"]': '_reloadCities',
         'change #hiddenTestInput': '_updateSessionProducts',
         'select2:select #productRequired': '_updateSessionProducts',
-        'change #hiddenTestInputElectronic': '_updateSessionProductsElectronic',
-        'select2:select #productOnure':'_updateSessionProductsElectronic',
         'change #x_studio_certifies_receipt_load': '_toggleFields',
         // 'click #addToSession': '_addToSessionNomenclator',
     },
@@ -443,11 +441,10 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
     },
     _checkProducts() {
         var valid = true;
-        var productRequired = document.getElementById("select2-productRequired-container");
-        var productOnure = document.getElementById("select2-productOnure-container");
+        var productRequired = document.querySelector("#s2id_productRequired ul");
         var errorEnvolt = document.getElementById("error_envolt");
         var productError = document.getElementById("product-error");
-            if (productRequired?.childElementCount === 0 && productOnure?.childElementCount === 0) { 
+            if (productRequired?.childElementCount === 1) { 
                 valid = false;
             }
         // var x = document.getElementsByClassName("js-example-basic-multiple");
@@ -460,7 +457,9 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         if (errorEnvolt && productError) {
             if (valid) {
                 errorEnvolt.style.border = "none";
+                errorEnvolt.style.padding = "0px 0px 0px";
                 productError.style.display = "none";
+                productError.style.margin = "0px 0px 0px";
             } else {
                 errorEnvolt.style.border = "1px solid red";
                 errorEnvolt.style.padding = "10px 10px 0px";
@@ -685,7 +684,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         if (textAreas.length >=1){
             for (i = 0; i < textAreas.length; i++) {
                 // If a field is empty...
-                const array= ["productOnure","productRequired","x_studio_bill_of_landing_number","x_studio_certificate_of_origin_co","x_studio_bill_of_lading_bl","x_comercial_invoice","x_package_list","x_export_certify","x_quality_certify"];
+                const array= ["productRequired","x_studio_bill_of_landing_number","x_studio_certificate_of_origin_co","x_studio_bill_of_lading_bl","x_comercial_invoice","x_package_list","x_export_certify","x_quality_certify"];
                 const valueToCheck = inputs[i].id;
                 if (array.indexOf(valueToCheck) === -1 &&
                     ((inputs[i].value == "" && inputs[i].disabled == false) || 
@@ -702,7 +701,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         // A loop that checks every input field in the current tab:
         for (i = 0; i < inputs.length; i++) {
             // If a field is empty...
-            const array= ["productOnure","productRequired","x_studio_bill_of_landing_number","x_studio_certificate_of_origin_co","x_studio_bill_of_lading_bl","x_comercial_invoice","x_package_list","x_export_certify","x_quality_certify"];
+            const array= ["productRequired","x_studio_bill_of_landing_number","x_studio_certificate_of_origin_co","x_studio_bill_of_lading_bl","x_comercial_invoice","x_package_list","x_export_certify","x_quality_certify"];
             const valueToCheck = inputs[i].id;
             if (array.indexOf(valueToCheck) === -1 &&((inputs[i].required && inputs[i].value == "" && inputs[i].disabled == false) ||(inputs[i].type == 'email' && inputs[i].disabled == false && !testEmail.test(inputs[i].value)) || inputs[i].className.indexOf('is-invalid') >= 0)){
                 // add an "invalid" class to the field:
@@ -766,19 +765,5 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             console.error("Error al actualizar la sesión", error);
         });
     },
-    async _updateSessionProductsElectronic(ev) {
-        const $select = $('#productOnure');
-        const selectedValues = $select.val()
-
-        // Llamada RPC para actualizar la sesión
-        await this.rpc("/business-register/update_session_electronics", {
-            selected_electronics: selectedValues
-        }).then(function (response) {
-            console.log("Sesión actualizada con éxito", response);
-        }).catch(function (error) {
-            console.error("Error al actualizar la sesión", error);
-        });
-    },
-    
 });
 publicWidget.registry.BusinessRegistrationForm = BusinessRegistrationForm;
