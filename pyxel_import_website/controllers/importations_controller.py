@@ -30,6 +30,7 @@ class ImportationsController(BaseController):
         }
         return request.render("pyxel_import_website.importation_view", values)
 
+    """
     @http.route(['/update_files/<int:record_id>'], type='http', auth='public', website=True)
     def update_files(self, record_id, **kwargs):
         # Recuperar el registro importation.process por su ID
@@ -37,6 +38,17 @@ class ImportationsController(BaseController):
 
         # Renderizar la plantilla y pasar el registro
         return request.render('pyxel_import_website.update_files_template', {
+            'record': record,
+        })
+    """
+
+    # TESTING FOR FRONTEND DEV
+    @http.route(['/update_files_test/<int:record_id>'], type='http', auth='public', website=True)
+    def update_files_test(self, record_id, **kwargs):
+        # Recuperar el registro importation.process por su ID
+        record = request.env['importation.process'].sudo().browse(record_id)
+        # Renderizar la plantilla y pasar el registro
+        return request.render('pyxel_import_website.update_files_test', {
             'record': record,
         })
     

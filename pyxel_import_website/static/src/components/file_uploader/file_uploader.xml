@@ -1,10 +1,91 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
   <t t-name="pyxel_import_website.FileUploader">
-    <div class="o_file_uploader">
-      <input type="file" accept="application/pdf" t-on-change="onFileChange"/>
+    <style>
+    /* Add this to your SCSS/CSS file */
+    .o_file_uploader {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .file-upload-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .file-input {
+      position: absolute !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      /* Make sure it's not interfering with layout */
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+
+    .file-upload-button {
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      /* Ensure the label doesn't get text selection */
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+
+    .file-status {
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .upload-loading {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  </style>
+   <div class="o_file_uploader">
+      <div class="file-upload-wrapper">
+        <!-- Hidden actual file input WITH an ID -->
+        <input 
+          type="file" 
+          accept="application/pdf" 
+          t-on-change="onFileChange"
+          class="file-input"
+          t-ref="fileInput"
+        />
+        <!-- Custom styled button with click handler -->
+        <button 
+          type="button" 
+          class="btn btn-sm btn-outline-primary px-2 file-upload-button"
+          t-on-click="triggerFileInput"
+        >
+          Seleccionar archivo
+        </button>
+        <!-- Status label -->
+        <span 
+          t-if="!state.selectedFile" 
+          class="file-status text-muted fst-italic ms-2"
+        >
+          Sin archivos seleccionados
+        </span>
+        <span 
+          t-if="state.selectedFile" 
+          class="file-status text-success fst-italic ms-2"
+        >
+          <t t-esc="state.selectedFile"/>
+        </span>
+      </div>
+
+      <!-- Loading indicator -->
       <t t-if="state.uploading">
-        <span>Cargando...</span>
+        <div class="upload-loading mt-2">
+          <span>Cargando...</span>
+        </div>
       </t>
     </div>
   </t>
