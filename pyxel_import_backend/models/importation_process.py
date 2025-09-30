@@ -198,10 +198,18 @@ class ImportationProcess(models.Model):
 
     @api.constrains('estimated_start_date', 'estimated_end_date')
     def _check_date_range(self):
+        today = fields.Date.today()
         for record in self:
-            if record.estimated_start_date and record.estimated_end_date:
-                if record.estimated_end_date < record.estimated_start_date:
-                    raise ValidationError("The end date cannot be earlier than the start date.")
+            start = record.estimated_start_date
+            end = record.estimated_end_date
+
+            # Validar start >= hoy
+            if start and start < today:
+                raise ValidationError(_("The start date cannot be earlier than today."))
+
+            # Validar end >= start
+            if start and end and end < start:
+                raise ValidationError(_("The end date cannot be earlier than the start date."))
 
     def action_view_sale_orders(self):
         self.ensure_one()
