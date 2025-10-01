@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!--Styled Template for Shipment Information-->
     <template id="update_files_test" name="Actualizar Archivos">
         <t t-call="website.layout">
             <div class="container">
@@ -178,13 +179,13 @@
                                                 <div class="px-5 align-items-center">
                                                     <t t-if="po.commercial_invoice">
                                                         <a class="text-decoration-none"
-                                                            t-att-href="'/web/content/purchase.order/%s/commercial_invoice?download=true' % 2"
+                                                            t-att-href="'/web/content/purchase.order/%s/commercial_invoice?download=true' % po.id"
                                                             target="_blank">Ver PDF</a>
                                                     </t>
                                                     <t t-else="">
                                                         <owl-component
                                                             name="pyxel_import_website.FileUploader"
-                                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId': 2, 'fieldName':'commercial_invoice'})" />
+                                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId': po.id, 'fieldName':'commercial_invoice'})" />
                                                     </t>
                                                 </div>
                                             </div>

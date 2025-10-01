@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
   <t t-name="pyxel_import_website.FileUploader">
     <style>
-    /* Add this to your SCSS/CSS file */
+    /* Adding SCSS/CSS file */
     .o_file_uploader {
       display: flex;
       flex-direction: column;
@@ -21,7 +21,7 @@
       pointer-events: none !important;
       width: 0 !important;
       height: 0 !important;
-      /* Make sure it's not interfering with layout */
+      /* Avoiding interference with layout */
       margin: 0 !important;
       padding: 0 !important;
       border: none !important;
@@ -31,7 +31,7 @@
       cursor: pointer;
       user-select: none;
       white-space: nowrap;
-      /* Ensure the label doesn't get text selection */
+      /* Ensuring the label doesn't get text selection */
       -webkit-user-select: none;
       -moz-user-select: none;
       -ms-user-select: none;
@@ -83,7 +83,7 @@
 
       <!-- Loading indicator -->
       <t t-if="state.uploading">
-        <div class="upload-loading mt-2">
+        <div class="upload-loading text-info mt-2">
           <span>Cargando...</span>
         </div>
       </t>
