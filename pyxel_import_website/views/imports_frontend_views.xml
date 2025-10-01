@@ -27,7 +27,7 @@
                     </ol>
                     <div
                         class="d-flex flex-row my-4 flex-wrap align-items-top justify-content-between">
-                        <div class="col-lg-3 col-sm-3 pl-0" style="">
+                        <div class="col-lg-3 col-sm-3 pl-0">
                             <div class="d-flex justify-content-start align-items-left gap-0 mb-1">
                                 <img class="o_portal_contact_img rounded o_object_fit_cover"
                                     t-att-src="image_data_uri(record.provider_id.avatar_128)"
@@ -100,7 +100,8 @@
                                         <strong>
                                             <h4>Datos de la operación</h4>
                                         </strong>
-                                        <a t-att-href="'/update_files/%s' % record.id">Adicionar
+                                        <!-- TESTING FOR FRONTEND DEV-->
+                                        <a t-att-href="'/update_files_test/%s' % record.id">Adicionar
                                             información</a>
                                         <!--<span
                                         t-field="order.date_order" t-options="{&quot;widget&quot;:
