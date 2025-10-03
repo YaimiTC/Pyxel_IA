@@ -28,18 +28,6 @@
                                     id="alimentos-tab">Nuestros Productos</a>
                             </t>
                         </li>
-                        <li class="nav-item">
-                            <t
-                                t-if="from_view == 'business_registration' or from_view == 'import_registration'">
-                                <a href="/onure?from=import_registration" class="nav-link inactive"
-                                    data-tab="electronicos" id="electronicos-tab">Homologados por la
-                                    ONURE</a>
-                            </t>
-                            <t t-else="">
-                                <a href="/onure" class="nav-link inactive" data-tab="electronicos"
-                                    id="electronicos-tab">Homologados por la ONURE</a>
-                            </t>
-                        </li>
                     </ul>
                     <div class="container-aftertabs">
                         <form method="get" action="/nomenclador" class="mb-4 search-form">

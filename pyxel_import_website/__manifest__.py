@@ -34,8 +34,8 @@
         'views/import_registration.xml',
         'views/product_templates_views.xml',
         'views/nomenclator.xml',
-        'views/onure.xml',
         'views/imports_frontend_views.xml',
+        'views/update_files_test.xml',
         'views/res_config_setting_views.xml',
         'views/portal_template_view.xml'
     ],
@@ -50,7 +50,6 @@
             'pyxel_import_website/static/src/js/business_registration.js',
             'pyxel_import_website/static/src/js/nomenclator_add.js',
             'pyxel_import_website/static/src/js/select2_init_products.js',
-            'pyxel_import_website/static/src/js/select2_init_onure.js',
             # 'pyxel_import_website/static/src/css/business_register.css',
             'pyxel_import_website/static/src/css/badge_classes.css',
             'pyxel_import_website/static/src/css/nomenclator.css',
