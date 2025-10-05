@@ -101,6 +101,12 @@ class SaleOrder(models.Model):
         if not provider.country_id:
             raise UserError("El proveedor seleccionado no tiene definido un país de origen.\nPor favor, complete este"
                             " dato antes de iniciar el proceso de importación.")
+            
+        incoterms = self.evaluation_apply_id.purchase_order_ids.mapped('incoterm_id')
+        if len(set(incoterms)) > 1:
+            raise UserError(_("Todas las órdenes de compra deben tener el mismo Incoterm para iniciar el proceso de importación."))
+        
+        incoterm = incoterms[0]    
 
         cost_lines = [(0, 0, {
             'product_id': line.product_id.id,
@@ -124,7 +130,7 @@ class SaleOrder(models.Model):
             'country_origin_id': provider.country_id.id,
             'state': 'in_progress',
             'stage_id': self.env['importation.stage'].search([], limit=1).id,
-            'incoterm_id': self.incoterm
+            'incoterm_id': incoterm.id
         })
 
         self.importation_process_id = importation.id

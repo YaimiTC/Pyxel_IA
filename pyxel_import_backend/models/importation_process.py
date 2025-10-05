@@ -1,8 +1,11 @@
 import json
+import logging
 from datetime import timedelta, datetime
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
+
+_logger = logging.getLogger(__name__)
 
 STATE_SELECTION = [
     ('new', 'New'),
@@ -502,6 +505,13 @@ class ImportationProcess(models.Model):
             record.filtered_airport = json.dumps(airport_domain)
             record.filtered_port = json.dumps(port_domain)
 
+    @api.onchange('purchase_order_ids')
+    def _check_incoterms(self):
+        _logger.info(f"[_check_incoterm] Accede al metodo.")
+        for record in self:
+            for po in record.purchase_order_ids:
+                if record.incoterm_id != po.incoterm_id:
+                    raise ValidationError(f"La orden de compra {po.name} tiene el incoterm {po.incoterm_id.name} y la importación solo admite {record.incoterm_id.name}")
 
 class ImportationCostLine(models.Model):
     _name = 'importation.cost.line'
