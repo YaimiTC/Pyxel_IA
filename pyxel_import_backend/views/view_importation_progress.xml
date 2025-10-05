@@ -125,7 +125,7 @@
                             <field name="filtered_incoterm" invisible="True"/>
                             <field name="filtered_import_type" invisible="True"/>
                             <field name="incoterm_import_type_id" invisible="True"/>
-                            <field name="incoterm_id" domain="filtered_incoterm"/>
+                            <field name="incoterm_id" domain="filtered_incoterm" readonly="True"/>
                             <field name="import_type_id" domain="filtered_import_type"/>
                             <field name="use_port" invisible="True"/>
                             <field name="use_airport" invisible="True"/>
