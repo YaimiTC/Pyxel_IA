@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!--Styled Template for Shipment Information-->
+    <!--Styled Template for Shipment
+    Information-->
     <template id="update_files_test" name="Actualizar Archivos">
         <t t-call="website.layout">
             <div class="container">
+                <ol class="breadcrumb bg-transparent p-0 my-2">
+                    <!-- Home -->
+                    <li class="breadcrumb-item o_not_editable">
+                        <a href="/my/home">
+                            <span>Mi Cuenta</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item o_not_editable">
+                        <a href="/model/imports">
+                            <span>Importaciones</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item o_not_editable">
+                        <a t-att-href="f'/importations/view/{record.id}'">
+                             <span t-field="record.display_name" />
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <span>Información de Embarque</span>
+                    </li>
+                </ol>
                 <h3 class="text-display text-primary text-uppercase">Introducir Información de
                     Embarque</h3>
                 <!-- Archivos de la orden de importación -->
@@ -139,7 +161,7 @@
                     </div>
                     <br />
 
-                    <h4>Archivos por orden de compra</h4>
+                    <h5 class="text-uppercase">Archivos por orden de compra</h5>
                     <t t-foreach="record.purchase_order_ids" t-as="po">
                         <div class="card mb-3">
                             <div class="card-header">

@@ -650,6 +650,7 @@ class ControllerTest(http.Controller):
 
         render_values = get_render_values(kw)
         
+        
         if kw.get('type') == 'import':
             # Si no se ha realizado el formulario de acreditación
             if not crm_lead_exists:
@@ -662,7 +663,7 @@ class ControllerTest(http.Controller):
             # Si realizó el formulario de acreditación pero no está acreditado
             if not is_accredited:
                 return request.redirect('/business-register-thanks')
-
+        
         partner = request.env.user.partner_id
 
         if partner.parent_id:

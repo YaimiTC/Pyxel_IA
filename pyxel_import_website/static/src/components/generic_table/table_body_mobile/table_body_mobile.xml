@@ -36,7 +36,7 @@
             <t t-else="">
                 <div class="d-flex justify-content-center align-items-center py-4">
                     <span class="text-muted font-weight-bold">
-                        No records found
+                        No se encontraron resultados
                     </span>
                 </div>
             </t>

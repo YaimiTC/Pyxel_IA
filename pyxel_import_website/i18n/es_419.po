@@ -1804,7 +1804,7 @@ msgstr ""
 #: code:addons/pyxel_import_website/static/src/components/generic_table/table_body_mobile/table_body_mobile.xml:0
 #, python-format
 msgid "No records found"
-msgstr ""
+msgstr "No se han encontrado resultados"
 
 #. module: pyxel_import_website
 #: model_terms:ir.ui.view,arch_db:pyxel_import_website.nomenclador_template
@@ -2377,7 +2377,7 @@ msgstr ""
 
 #. module: pyxel_import_website
 #: model_terms:ir.ui.view,arch_db:pyxel_import_website.custom_imports_list_view
-msgid "encontrado)"
+msgid "encontrado"
 msgstr ""
 
 #. module: pyxel_import_website

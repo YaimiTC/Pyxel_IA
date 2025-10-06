@@ -5,7 +5,10 @@
         const $selector = $('#productRequired');
 
         $selector.select2({
-            width: '50%',
+            allowClear: true,
+            // Improving mobile UX
+            dropdownAutoWidth: true,
+            width: '100%',
             placeholder: "Seleccione los productos",
             language: {
                 noResults: function () {

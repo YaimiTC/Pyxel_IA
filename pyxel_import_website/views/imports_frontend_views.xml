@@ -65,7 +65,7 @@
                             <div id="informations">
                                 <!--<div
                                 class="row">-->
-                                <div class="mb-3 mt-3 col-12 o_field_statusbar">
+                                <div class="mb-3 mt-3 px-0 col-12 o_field_statusbar">
                                     <div class="o_statusbar_status" role="radiogroup">
                                         <t t-set="stage" t-value="record.stage_id.id" />
                                         <button type="button"
@@ -100,8 +100,8 @@
                                         <strong>
                                             <h4>Datos de la operación</h4>
                                         </strong>
-                                        <!-- TESTING FOR FRONTEND DEV-->
-                                        <a t-att-href="'/update_files_test/%s' % record.id">Adicionar
+                                        <!-- TESTING FRONTEND CUSTOMIZATION-->
+                                        <a t-att-href="'/update_files/%s' % record.id">Adicionar
                                             información</a>
                                         <!--<span
                                         t-field="order.date_order" t-options="{&quot;widget&quot;:
