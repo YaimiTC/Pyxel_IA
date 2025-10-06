@@ -87,12 +87,12 @@
                   <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Client')]</attribute>
              </xpath>
             <!-- Insertar la UoM en el árbol de order_line -->
-            <xpath expr="//field[@name='order_line']/tree//field[@name='product_uom_qty']" position="after">
+            <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
               <!-- En ventas el campo es product_uom -->
               <field name="product_uom" optional="show"/>
             </xpath>
             <!-- Si también tienes vista tipo form de la línea -->
-            <xpath expr="//field[@name='order_line']/form//field[@name='product_uom_qty']" position="after">
+            <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="after">
               <field name="product_uom"/>
             </xpath>
 

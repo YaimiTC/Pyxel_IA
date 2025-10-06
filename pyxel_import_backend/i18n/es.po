@@ -3020,3 +3020,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_sale_order_process__sale_order_ids
 msgid "Órdenes de venta relacionadas"
 msgstr ""
+
+#. module: pyxel_import_backend
+#. odoo-python
+#: code:addons/pyxel_import_backend/models/importation_process.py:0
+#, python-format
+msgid "The start date cannot be earlier than today."
+msgstr "La fecha de inicio no puede ser anterior a hoy."
+
