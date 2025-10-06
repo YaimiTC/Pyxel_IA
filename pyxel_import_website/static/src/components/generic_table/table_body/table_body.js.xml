@@ -24,7 +24,7 @@
                 <tr>
                     <td t-att-colspan="props.columns.length" class="text-center py-4">
                         <div class="text-lg text-gray-500 font-medium">
-                            No records found
+                            No se encontraron resultados
                         </div>
                     </td>
                 </tr>

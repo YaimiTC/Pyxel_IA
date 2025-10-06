@@ -53,7 +53,7 @@
             <!-- Selector y contador (abajo en móvil) -->
             <div class="d-flex flex-column flex-md-row align-items-center gap-2 order-md-1">
                 <div class="d-flex align-items-center gap-2">
-                    <span class="text-nowrap">Rows per pages:</span>
+                    <span class="text-nowrap">Resultados por página:</span>
                     <select 
                         class="form-select form-select-sm" 
                         style="width: 80px;"
@@ -67,7 +67,7 @@
                 </div>
                 
                 <span class="text-muted text-nowrap">
-                    Page <t t-esc="props.currentPage + 1"/> of <t t-esc="props.totalPages"/>
+                    Página <t t-esc="props.currentPage + 1"/> de <t t-esc="props.totalPages"/>
                 </span>
             </div>
         </div>

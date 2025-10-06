@@ -53,6 +53,7 @@
             # 'pyxel_import_website/static/src/css/business_register.css',
             'pyxel_import_website/static/src/css/badge_classes.css',
             'pyxel_import_website/static/src/css/nomenclator.css',
+            'pyxel_import_website/static/src/css/imports_form.css',
 
             # 'pyxel_import_website/static/src/scss/provider.scss',
         ]
