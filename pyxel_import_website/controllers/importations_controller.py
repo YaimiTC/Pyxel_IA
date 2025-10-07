@@ -46,7 +46,7 @@ class ImportationsController(BaseController):
     """
 
     # TESTING FRONTEND CUSTOMIZATION
-    @http.route(["/update_files/<int:record_id>"], type="http", auth="public", website=True)
+    @http.route(["/update_files/<int:record_id>"], type="http", auth="user", website=True)
     def update_files_test(self, record_id, **kwargs):
         # Recuperar el registro importation.process por su ID
         record = request.env["importation.process"].sudo().browse(record_id)
