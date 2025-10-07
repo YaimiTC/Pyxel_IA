@@ -55,7 +55,7 @@ class ImportationsController(BaseController):
         # Renderizar la plantilla y pasar el registro
         return request.render(
             "pyxel_import_website.update_files_test", {
-                "record": record,
+                'record': record,
             })
 
     @http.route("/upload_pdf", type="http", auth="user", methods=["POST"], csrf=True)
