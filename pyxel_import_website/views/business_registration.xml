@@ -6,7 +6,8 @@
             <t t-call="website.layout">
                 <div class="alert alert-danger text-center " role="alert">
                     <h1 style="font-size: 4.5rem; color: black;">Atención:</h1>
-                    <h3 style="color: black;"> Usted está registrado como "<t t-out="contact_type" />" por lo que no puede solicitar una importación. </h3>
+                    <h3 style="color: black;"> Usted está registrado como "<t t-out="contact_type" />"
+                        por lo que no puede solicitar una importación. </h3>
                     <h3 style="color: black;">
                         Esta acción solo está disponible para clientes nacionales.
                     </h3>
@@ -1044,20 +1045,21 @@
                                                                             class="s_website_form_mark">
                                                                             *</span>
                                                                     </label>
-                                                                    <div class="col-sm"
-                                                                        style="position: relative">
+                                                                    <div class="col-sm">
                                                                         <!-- Enlaces externos a las
                                                                         librerias fueron movidos al
                                                                         manifest-->
-                                                                        <div class="input-group">
+                                                                        <div
+                                                                            class="d-flex align-items-center w-100">
                                                                             <select
                                                                                 id="productRequired"
-                                                                                class="js-example-basic-multiple"
+                                                                                class="js-example-basic-multiple flex-grow-1"
                                                                                 name="productRequired"
                                                                                 multiple="multiple"
                                                                                 required=""
                                                                                 t-att-data-alimentos="alimentos_de_importacion"
-                                                                                t-att-data-alimentos-selected="productos_seleccionados_ids">
+                                                                                t-att-data-alimentos-selected="productos_seleccionados_ids"
+                                                                                style="min-width: 0;">
                                                                                 <!-- Este Select se
                                                                                 llenara
                                                                                 dinámicamente    -->
@@ -1065,56 +1067,16 @@
                                                                             <a
                                                                                 href="/nomenclador?from=import_registration"
                                                                                 class="btn btn-primary add-btn"
-                                                                                style="padding-bottom: 2.8rem!important;">
+                                                                                style="flex-shrink: 0; white-space: nowrap; margin-left: 0 !important;">
                                                                                 <span
-                                                                                    class="btn-text mx-1 mt-2">Buscar
-                                                                                    Producto</span>
-                                                                                <!--<i
-                                                                                class="fa fa-search
-                                                                                text-white"></i>-->
+                                                                                    class="btn-text">Buscar Producto
+                                                                                </span>
                                                                             </a>
                                                                             <input
                                                                                 id="hiddenTestInput"
                                                                                 type="hidden"
                                                                                 value="1" />
                                                                         </div>
-                                                                        <style>
-                                                                            #productRequired {
-                                                                            min-height: 40px
-                                                                            !important; /* same as
-                                                                            Bootstrap input height
-                                                                            */
-                                                                            height: 40px;
-                                                                            display: flex;
-                                                                            align-items: center;
-                                                                            }
-                                                                            .select2-container--default
-                                                                            .select2-results__option--highlighted.select2-results__option--selectable
-                                                                            {
-                                                                            background-color:
-                                                                            #EE7D00 !important;
-                                                                            color: white !important;
-                                                                            }
-                                                                            .custom-select-focus {
-                                                                            border-color: #f7be80
-                                                                            !important;
-                                                                            outline: 0;
-                                                                            box-shadow: 0 0 0
-                                                                            0.25rem rgba(238, 125,
-                                                                            0, 0.25) !important;
-                                                                            }
-                                                                            .select2-selection:hover
-                                                                            {
-                                                                            border-color: #EE7D00
-                                                                            !important;
-                                                                            }
-                                                                            .select2-container--default
-                                                                            .select2-selection--multiple
-                                                                            .select2-selection__choice
-                                                                            {
-                                                                            width:110px;
-                                                                            }
-                                                                        </style>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1140,12 +1102,12 @@
                                                                         *</span>
                                                                 </label>
                                                                 <div class="col-sm pl-5"
-                                                                    style="position: relative;">
+                                                                    >
                                                                     <div
                                                                         name="solicitud_input_group"
-                                                                        class="input-group">
+                                                                        class="d-flex align-items-center w-100">
                                                                         <input type="file"
-                                                                            class="form-control s_website_form_input"
+                                                                            class="form-control s_website_form_input flex-grow-1"
                                                                             name="solicitud"
                                                                             id="solicitud"
                                                                             accept=".xlsx,.xls,.pdf,.docx,.doc"
@@ -1153,12 +1115,14 @@
                                                                             data-max-file-size="30"
                                                                             data-fill-with="undefined"
                                                                             data-label=""
-                                                                            required="" />
+                                                                            required="" 
+                                                                            style="min-width: 0;"/>
 
                                                                         <a id="solicitud"
                                                                             href="/descargar/solicitud"
                                                                             target="_blank"
-                                                                            class="btn btn-primary add-btn">
+                                                                            class="btn btn-primary add-btn"
+                                                                            style="flex-shrink: 0; white-space: nowrap; margin-left: 0 !important;">
                                                                             <span class="btn-text">Descargar
                                                                                 Solicitud</span>
                                                                         </a>

@@ -87,7 +87,10 @@
 
 .add-btn {
     max-height: 45px;
+    min-height: 38px;
     margin-left: 20px;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
     border-top-right-radius: 20px !important;
     border-bottom-right-radius: 20px !important;
     min-width: 200px;
@@ -121,10 +124,6 @@
     .image-no-results{
         width: 250px;
     }
-    .add-btn .btn-text {
-        display: none; /* Oculta el texto en vista móvil */
-    }
-
     .add-btn {
         min-width: auto; /* Ajusta el ancho automáticamente */
         padding: 6px; /* Reduce el padding */

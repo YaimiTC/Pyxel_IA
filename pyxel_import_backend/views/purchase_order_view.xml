@@ -29,11 +29,11 @@
             </group>
         </xpath>
         <!-- Árbol en la pestaña de líneas -->
-        <xpath expr="//field[@name='order_line']/tree//field[@name='product_qty']" position="after">
+        <xpath expr="//field[@name='order_line']/tree//field[@name='name']" position="before">
           <field name="product_uom" optional="show"/>
         </xpath>
         <!-- Form de línea -->
-        <xpath expr="//field[@name='order_line']/form//field[@name='product_qty']" position="after">
+        <xpath expr="//field[@name='order_line']/form//field[@name='name']" position="before">
           <field name="product_uom"/>
         </xpath>
     </field>
