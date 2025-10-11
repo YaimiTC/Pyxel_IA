@@ -18,7 +18,7 @@
                         </a>
                     </li>
                     <li class="breadcrumb-item o_not_editable">
-                        <a t-att-href="f'/importations/view/{record.id}'">
+                        <a t-att-href="'/importations/view/%s' % record.id">
                              <span t-field="record.display_name" />
                         </a>
                     </li>
