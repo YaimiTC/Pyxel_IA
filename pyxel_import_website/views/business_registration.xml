@@ -18,16 +18,14 @@
             </t>
         </template>
 
-        <template id="waiting_for_active_contract" name="Esperando por un contrato activo">
-            <!-- <template id="waiting_for_active_contract" name="Waiting for active contract"> -->
+        <template id="waiting_for_active_contract" name="Esperando a ser acreditado">
             <t t-call="website.layout">
                 <div class="alert alert-info text-center " role="alert">
                     <!-- <h1>Atención:</h1>
                     <h3> -->
                     <h1 style="font-size: 4.5rem; color: black;">Atención:</h1>
                     <h3 style="color: black;">
-                        El acceso a nuestros servicios solo está permitido a clientes acreditados y
-                        con un contrato activo.
+                        El acceso a nuestros servicios solo está permitido a clientes nacionales acreditados.
                     </h3>
                     <br />
                     <h4>Si aún no lo ha hecho, por favor inicie su proceso de <a

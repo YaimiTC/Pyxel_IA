@@ -608,12 +608,7 @@ class ControllerTest(http.Controller):
         days_in_process = 'False'
 
         if crm_lead_exists: 
-            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact == 'Client':
-                is_accredited = request.env["res.partner.contract.import"].sudo().search([
-                    ("partner_id", "in", [request.env.user.partner_id.parent_id.id]), ("active_contract", "=", True)
-                ], limit=1)
-            else:
-                is_accredited = crm_lead_exists.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
+            is_accredited = crm_lead_exists.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
 
             if not is_accredited:
                 days_in_process = (datetime.now() - crm_lead_exists.create_date).days
@@ -636,12 +631,7 @@ class ControllerTest(http.Controller):
         is_accredited = False
         
         if crm_lead_exists:
-            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact == 'Client':
-                is_accredited = request.env["res.partner.contract.import"].sudo().search([
-                    ("partner_id", "in", domain_ids), ("active_contract", "=", True)
-                ], limit=1)
-            else:
-                is_accredited = crm_lead_exists.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
+            is_accredited = crm_lead_exists.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
         if kw.get('type') == 'accreditation' and crm_lead_exists:
             if is_accredited:
                 return request.redirect('/my/home')
