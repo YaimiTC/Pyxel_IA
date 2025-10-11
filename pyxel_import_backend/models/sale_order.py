@@ -106,7 +106,7 @@ class SaleOrder(models.Model):
         if len(set(incoterms)) > 1:
             raise UserError(_("Todas las órdenes de compra deben tener el mismo Incoterm para iniciar el proceso de importación."))
         
-        incoterm = incoterms[0]    
+        incoterm = incoterms[0] if incoterms else False
 
         cost_lines = [(0, 0, {
             'product_id': line.product_id.id,
@@ -130,7 +130,7 @@ class SaleOrder(models.Model):
             'country_origin_id': provider.country_id.id,
             'state': 'in_progress',
             'stage_id': self.env['importation.stage'].search([], limit=1).id,
-            'incoterm_id': incoterm.id
+            'incoterm_id': incoterm.id if incoterm else False,
         })
 
         self.importation_process_id = importation.id

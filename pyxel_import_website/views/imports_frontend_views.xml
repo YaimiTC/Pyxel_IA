@@ -8,7 +8,7 @@
     <template id="importation_view" name="import record">
         <t t-call="website.layout">
             <div id="o_website_record_page wrap">
-                <div class="container">
+                <div class="container-fluid px-4">
                     <ol t-if="listing" class="breadcrumb bg-transparent p-0 my-2">
                         <!-- Home -->
                         <li class="breadcrumb-item o_not_editable">
@@ -27,7 +27,7 @@
                     </ol>
                     <div
                         class="d-flex flex-row my-4 flex-wrap align-items-top justify-content-between">
-                        <div class="col-lg-3 col-sm-3 pl-0">
+                        <div class="col-lg-2 col-sm-2 pl-0">
                             <div class="d-flex justify-content-start align-items-left gap-0 mb-1">
                                 <img class="o_portal_contact_img rounded o_object_fit_cover"
                                     t-att-src="image_data_uri(record.provider_id.avatar_128)"
@@ -61,16 +61,16 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-9 mt-lg-9 col-sm-9 px-0">
+                        <div class="col-lg-10 mt-lg-10 col-sm-9 px-3">
                             <div id="informations">
                                 <!--<div
                                 class="row">-->
                                 <div class="mb-3 mt-3 px-0 col-12 o_field_statusbar">
                                     <div class="o_statusbar_status" role="radiogroup">
                                         <t t-set="stage" t-value="record.stage_id.id" />
-                                        <button type="button"
-                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button o_last o_arrow_button_current #{'o_arrow_button_current' if stage == 1 else ''}"
-                                            t-att-disabled="stage == 1" t-esc="'SOLICITUD'" />
+                                        <button type="button" t-att-disabled="stage == 1"
+                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 1 else ''}"
+                                            t-esc="'SOLICITUD'" />
                                         <button type="button" t-att-disabled="stage == 2"
                                             t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 2 else ''}"
                                             t-if="stage == 2"
