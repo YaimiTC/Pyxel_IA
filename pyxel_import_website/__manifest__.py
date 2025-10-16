@@ -35,7 +35,7 @@
         'views/product_templates_views.xml',
         'views/nomenclator.xml',
         'views/imports_frontend_views.xml',
-        'views/update_files_test.xml',
+        'views/update_files_template.xml',
         'views/res_config_setting_views.xml',
         'views/portal_template_view.xml'
     ],
