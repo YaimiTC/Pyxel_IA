@@ -67,29 +67,18 @@
                                 class="row">-->
                                 <div class="mb-3 mt-3 px-0 col-12 o_field_statusbar">
                                     <div class="o_statusbar_status" role="radiogroup">
-                                        <t t-set="stage" t-value="record.stage_id.id" />
-                                        <button type="button" t-att-disabled="stage == 1"
-                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 1 else ''}"
-                                            t-esc="'SOLICITUD'" />
-                                        <button type="button" t-att-disabled="stage == 2"
-                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 2 else ''}"
-                                            t-if="stage == 2"
-                                            t-esc="'EN TRANSITO A PUERTO DE DESTINO'" />
-                                        <button type="button"
-                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 7 else ''}"
-                                            t-att-disabled="stage == 7" t-esc="'TRAMITES EN ORIGEN'" />
-                                        <button type="button" t-att-disabled="stage == 5"
-                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 5 else ''}  "
-                                            t-esc="'TRÁMITES EN DESTINO'" />
-                                        <button type="button" t-att-disabled="stage == 6"
-                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 6 else ''}"
-                                            t-esc="'LISTO PARA EXTRAER'" />
-                                        <button t-att-disabled="stage == 8" type="button"
-                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage == 8 else ''}"
-                                            t-if="stage != 2" t-esc="'EN ALMACÉN CLIENTE'" />
-                                        <button t-att-disabled="stage == 9" type="button"
-                                            t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button o_first #{'o_arrow_button_current' if stage == 9 else ''}"
-                                            t-esc="'DEVOLUCION DEL CONTENEDOR'" />
+                                        <t t-set="current_stage_id" t-value="record.stage_id.id"/>
+                                        <t t-set="all_stages" t-value="record.stage_id._name and env[record.stage_id._name].search([])"/>
+                                        <div class="mb-3 mt-3 px-0 col-12 o_field_statusbar">
+                                            <div class="o_statusbar_status" role="radiogroup">
+                                                <t t-foreach="all_stages" t-as="stage">
+                                                    <button type="button"
+                                                        t-att-disabled="stage.id == current_stage_id"
+                                                        t-attf-class="btn btn-sm p-1 boton_secondary_import o_arrow_button #{'o_arrow_button_current' if stage.id == current_stage_id else ''}"
+                                                        t-esc="stage.name"/>
+                                                </t>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <!--</div>    -->
