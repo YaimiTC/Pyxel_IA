@@ -56,6 +56,15 @@ class PurchaseOrder(models.Model):
 
         return res
 
+    def _resequence_purchase_lines(self):
+        for order in self:
+            lines = order.order_line.sorted(lambda l: (l.sequence, l.id))
+            # Para ignorar secciones/notas:
+            # lines = lines.filtered(lambda l: not l.display_type)
+            for idx, line in enumerate(lines, start=1):
+                if line.line_number != idx:
+                    line.sudo().write({'line_number': idx})
+
 
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
@@ -89,3 +98,42 @@ class PurchaseOrderLine(models.Model):
 
             total_assigned = sum(record.container_fix_ids.mapped('quantity'))
             record.quantity_available = record.product_uom_qty - total_assigned
+
+    line_number = fields.Integer(
+        string="N°",
+        compute="_compute_line_number",
+        store=True,
+        readonly=True,
+        help="Número de línea autocalculado, inicia en 1 y se reenumera sin huecos."
+    )
+
+    @api.depends('order_id', 'sequence', 'display_type')
+    def _compute_line_number(self):
+        for order in self.mapped('order_id'):
+            lines = order.order_line.sorted(lambda l: (l.sequence, l.id))
+            # Para ignorar secciones/notas:
+            # lines = lines.filtered(lambda l: not l.display_type)
+            num = 1
+            for line in lines:
+                line.line_number = num
+                num += 1
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        orders = records.mapped('order_id')
+        orders._resequence_purchase_lines()
+        return records
+
+    def write(self, vals):
+        orders_before = self.mapped('order_id')
+        res = super().write(vals)
+        orders_after = (self.mapped('order_id') | orders_before)
+        orders_after._resequence_purchase_lines()
+        return res
+
+    def unlink(self):
+        orders = self.mapped('order_id')
+        res = super().unlink()
+        orders._resequence_purchase_lines()
+        return res
