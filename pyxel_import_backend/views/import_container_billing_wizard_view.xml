@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!-- FORM VIEW -->
+    <record id="view_import_container_invoice_wizard_form" model="ir.ui.view">
+      <field name="name">import.container.invoice.wizard.form</field>
+      <field name="model">import.container.billing.wizard</field>
+      <field name="arch" type="xml">
+        <form string="Facturar por Excel (Contenedores)">
+          <sheet>
+
+            <!-- Archivo Excel -->
+            <group string="Archivo Excel">
+              <group>
+                <field name="file_data" filename="file_name" required="1"/>
+                <field name="file_name" readonly="1"/>
+                <field name="sheet_index" invisible="False" help="Índice de la hoja a procesar (0 = primera)."/>
+                <field name="header_row" help="Fila (1-based) donde están los encabezados. Déjalo en blanco si no hay encabezados."/>
+              </group>
+              <group>
+                <field name="instruction_excel" readonly="True"/>
+              </group>
+            </group>
+
+            <!-- Mapeo de columnas -->
+            <group string="Mapeo de Columnas">
+              <group>
+                <field name="col_container" placeholder="p.ej. Contenedor ó A" required="1"/>
+                <field name="col_bl" placeholder="p.ej. BL ó B" required="1"/>
+                <field name="col_cost" placeholder="p.ej. Costo ó C" required="1"/>
+              </group>
+              <group>
+                <field name="col_customer" placeholder="(opcional; si viene en el Excel)" invisible="True"/>
+                <field name="instruction_client" readonly="True"/>
+              </group>
+            </group>
+
+            <!-- Parámetros de facturación -->
+            <group string="Parámetros de Facturación">
+              <group>
+                <field name="product_id" domain="[('detailed_type','=','service')]"  options="{'no_create': True, 'no_create_edit': True}" required="1"
+                       context="{'default_detailed_type':'service'}"
+                       help="Servicio/Concepto a facturar (línea de factura)."/>
+                <field name="journal_id" required="1"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="invoice_date" required="1"/>
+              </group>
+              <group>
+                <field name="force_currency_id"/>
+                <field name="price_division_mode" widget="selection"
+                       help="Cómo dividir el costo entre clientes. Por defecto: en partes iguales."/>
+                <field name="rounding_mode" widget="selection"
+                       help="Redondeo al dividir montos entre múltiples clientes."/>
+              </group>
+            </group>
+
+            <!-- Comportamiento -->
+            <group string="Comportamiento">
+              <group>
+                <field name="grouping_mode"
+                     widget="selection"
+                     required="1"
+                     help="• Agrupar por Cliente + Importación: mantiene vínculos (x_studio_import_id y x_studio_container_ids) y cada línea muestra el contenedor/BL.&#10;• Agrupar solo por Cliente: NO vincula importaciones ni contenedores en la factura, pero cada línea SI detalla el Contenedor/BL en la descripción."/>
+                <field name="draft_only" widget="boolean"
+                       help="Crear facturas en borrador (recomendado)."/>
+              </group>
+              <group>
+                <field name="instruction_linking" readonly="True"/>
+              </group>
+            </group>
+             <!-- SECCIÓN: Comportamiento de omisión -->
+            <group string="Omisiones">
+              <group>
+                 <field name="skip_missing_container" widget="boolean"
+                       help="Si el contenedor no existe, omitir la fila en vez de lanzar error."/>
+                <field name="skip_missing_import" widget="boolean"
+                       help="Si no se puede inferir la importación desde el contenedor/BL, omitir fila."/>
+
+              </group>
+            </group>
+
+            <!-- Resumen (opcional) -->
+            <group string="Resumen de ejecución" invisible="result_message == False">
+              <field name="result_message" nolabel="1" readonly="1"/>
+            </group>
+
+          </sheet>
+          <footer>
+            <button string="Procesar" type="object" name="action_process_file"
+                    class="btn-primary" confirm="¿Deseas procesar el archivo y generar las facturas?"/>
+            <button string="Cancelar" class="btn-secondary" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+
+    <!-- ACTION para abrir el wizard -->
+    <record id="action_import_container_invoice_wizard" model="ir.actions.act_window">
+      <field name="name">Facturar por Excel (Contenedores)</field>
+      <field name="res_model">import.container.billing.wizard</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="view_id" ref="view_import_container_invoice_wizard_form"/>
+      <!-- Puedes pasar defaults por contexto si quieres -->
+      <!-- <field name="context">{'default_draft_only': True}</field> -->
+    </record>
+
+    <!-- Menú (opcional) -->
+
+    <menuitem id="menu_import_container_invoice_wizard"
+              name="Facturar por Excel"
+              parent="account.menu_finance_reports"
+              action="action_import_container_invoice_wizard"
+              sequence="90"/>
+
+
+
+</odoo>
