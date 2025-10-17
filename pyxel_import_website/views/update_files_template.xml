@@ -2,7 +2,7 @@
 <odoo>
     <!--Styled Template for Shipment
     Information-->
-    <template id="update_files_test" name="Actualizar Archivos">
+    <template id="update_files" name="Actualizar Archivos">
         <t t-call="website.layout">
             <div class="container">
                 <ol class="breadcrumb bg-transparent p-0 my-2">
