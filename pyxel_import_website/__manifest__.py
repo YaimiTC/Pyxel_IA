@@ -48,6 +48,7 @@
             'pyxel_import_website/static/src/components/**/*.xml',
             # 'website_sale/static/src/**/*',
             'pyxel_import_website/static/src/js/business_registration.js',
+            'pyxel_import_website/static/src/js/import_registration.js',
             'pyxel_import_website/static/src/js/nomenclator_add.js',
             'pyxel_import_website/static/src/js/select2_init_products.js',
             # 'pyxel_import_website/static/src/css/business_register.css',
