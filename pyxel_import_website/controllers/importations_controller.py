@@ -33,30 +33,19 @@ class ImportationsController(BaseController):
         }
         return request.render("pyxel_import_website.importation_view", values)
 
-    """
-    @http.route(['/update_files/<int:record_id>'], type='http', auth='public', website=True)
-    def update_files(self, record_id, **kwargs):
-        # Recuperar el registro importation.process por su ID
-        record = request.env['importation.process'].sudo().browse(record_id)
-
-        # Renderizar la plantilla y pasar el registro
-        return request.render('pyxel_import_website.update_files_template', {
-            'record': record,
-        })
-    """
-
-    # TESTING FRONTEND CUSTOMIZATION
     @http.route(["/update_files/<int:record_id>"], type="http", auth="user", website=True)
-    def update_files_test(self, record_id, **kwargs):
+    def update_files(self, record_id, **kwargs):
         # Recuperar el registro importation.process por su ID
         record = request.env["importation.process"].sudo().browse(record_id)
         if not record.exists():
             raise werkzeug.exceptions.NotFound()
         # Renderizar la plantilla y pasar el registro
         return request.render(
-            "pyxel_import_website.update_files_test", {
-                'record': record,
-            })
+            "pyxel_import_website.update_files",
+            {
+                "record": record,
+            },
+        )
 
     @http.route("/upload_pdf", type="http", auth="user", methods=["POST"], csrf=True)
     def upload_pdf(self, model, record_id, field_name, **kwargs):
