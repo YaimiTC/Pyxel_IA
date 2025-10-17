@@ -61,6 +61,7 @@
         "views/import_type_views.xml",
         "views/incoterm_import_type_views.xml",
         "report/purchase_report_templates.xml",
+        "report/sale_order_report_template.xml",
         "views/po_line_import_wizard_views.xml",
         "views/import_container_billing_wizard_view.xml",
 
