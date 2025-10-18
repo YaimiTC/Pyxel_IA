@@ -6,11 +6,12 @@ import base64
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-from odoo import http
+from odoo import http, _
 from odoo.addons.website.controllers import form
 from odoo.addons.website_crm.controllers.website_form import WebsiteForm as WebsiteForm2
 from odoo.exceptions import ValidationError
 from odoo.http import Stream, request, Response
+from odoo.addons.base.models.ir_qweb_fields import nl2br_enclose
 
 _logger = logging.getLogger(__name__)
 
@@ -210,261 +211,21 @@ class WebsiteForm(form.WebsiteForm):
                     'mimetype': file.mimetype,
                 })
 
+        elif model_name == "sale.order" and tipo_registro == "import":
+            # Crear la Cotización a partir de la solicitud de importación
+            order_line = kwargs.get("productRequired", "")
+
+            request.params.update({'partner_id': public_user.partner_id.parent_id.id, 'order_line': order_line})
+            kwargs.update({'partner_id': public_user.partner_id.parent_id.id, 'order_line': order_line})
+            request.params.pop('productRequired')
+            request.params.pop('register_type')
+            kwargs.pop('productRequired')
+            kwargs.pop('register_type')
+
         res = super(WebsiteForm, self).website_form(model_name, **kwargs)
         _logger.info("Todas las claves disponibles en kwargs: %s", kwargs.keys())
-    
-        # if model_name == "x_import":
-        #     if tipo_registro == "logistic":
-        #         pass
-        #     else:
-        #         id_import = eval(res.response[0])
-        #         import_rec = request.env["x_import"].sudo().browse(id_import["id"])
-        #         supplier = request.env.user.sudo().partner_id.id
-
-        #         def process_file(field_name):
-        #             _logger.info("Procesando campo: %s", field_name)
-        #             file_storage = kwargs.get(f'{field_name}[0][0]', False)
-        #             _logger.info("Tipo de file_storage para %s: %s", field_name, type(file_storage))
-
-        #             if file_storage:
-        #                 if hasattr(file_storage, 'filename'):
-        #                     _logger.info("Nombre del archivo: %s", file_storage.filename)
-        #                     filename = file_storage.filename
-        #                 else:
-        #                     filename = f'documento_{field_name}.pdf'
-
-        #                 if hasattr(file_storage, 'seek') and callable(file_storage.seek):
-        #                     try:
-        #                         file_storage.seek(0)
-        #                         _logger.info("Archivo rebobinado correctamente")
-        #                     except Exception as e:
-        #                         _logger.error("Error al rebobinar: %s", str(e))
-
-        #                 try:
-        #                     if hasattr(file_storage, 'read') and callable(file_storage.read):
-        #                         file_content = file_storage.read()
-        #                         _logger.info("Tamaño del contenido leído: %s bytes", len(file_content))
-        #                     else:
-        #                         _logger.warning("El objeto no tiene método read()")
-        #                         file_content = b''
-        #                 except Exception as e:
-        #                     _logger.error("Error leyendo el archivo: %s", str(e))
-        #                     file_content = b''
-        #             else:
-        #                 _logger.warning("No se encontró el objeto file_storage para %s", field_name)
-        #                 file_content = b''
-        #                 filename = f'documento_{field_name}.pdf'
-
-        #             if file_content == b'' and hasattr(request, 'httprequest') and hasattr(request.httprequest,
-        #                                                                                    'files'):
-        #                 _logger.info("Intentando método alternativo para %s...", field_name)
-        #                 file_found = False
-
-        #                 for key in request.httprequest.files:
-        #                     _logger.info("Revisando clave: %s", key)
-        #                     if field_name.replace('x_studio_', '') in key:
-        #                         alt_file = request.httprequest.files[key]
-        #                         try:
-        #                             if hasattr(alt_file, 'seek'):
-        #                                 alt_file.seek(0)
-        #                             alt_content = alt_file.read()
-        #                             if alt_content and len(alt_content) > 0:
-        #                                 file_content = alt_content
-        #                                 if hasattr(alt_file, 'filename'):
-        #                                     filename = alt_file.filename
-        #                                 _logger.info("Contenido obtenido por método alternativo: %s bytes",
-        #                                              len(file_content))
-        #                                 file_found = True
-        #                                 break
-        #                         except Exception as e:
-        #                             _logger.error("Error en método alternativo: %s", str(e))
-
-        #                 if not file_found:
-        #                     _logger.warning("No se encontró un archivo válido para %s", field_name)
-
-        #             if file_content and len(file_content) > 0:
-        #                 file_data_base64 = base64.b64encode(file_content)
-        #                 _logger.info("Datos codificados en base64 para %s: %s bytes", field_name, len(file_data_base64))
-        #                 return {
-        #                     field_name: file_data_base64,
-        #                     f"{field_name}_filename": filename
-        #                 }
-        #             else:
-        #                 _logger.warning("No hay datos para codificar en base64 para %s", field_name)
-        #                 return {}
-
-        #         # agregar los campos de tipo pdf en el formulario...
-        #         file_fields = [
-        #             'oferta_firmada',
-        #             'x_studio_bill_of_lading_bl',
-        #             'x_studio_x_comercial_invoice',
-        #             'x_studio_package_list',
-        #             'x_studio_export_certify',
-        #             'x_studio_quality_certify',
-        #             'x_studio_certificate_of_origin_co'
-        #         ]
-
-        #         values = {
-        #             "x_studio_origin_country": eval(kwargs.get("Id de país", "None")),
-        #             "x_studio_certifies_receipt_load": kwargs.get("Tipo de envío de la carga", None),
-        #             "x_studio_bill_of_landing_number": kwargs.get("x_studio_bill_of_landing_number", ""),
-        #             "x_studio_supplier": supplier,
-
-        #         }
-
-        #         for field in file_fields:
-        #             file_values = process_file(field)
-        #             values.update(file_values)
-
-        #         import_rec.write(values)
-
-        #         if "Cliente nuevo" not in kwargs and model_name == "x_import":
-        #             cliente = request.env["res.partner"].sudo().browse(int(kwargs["customer_id"]))
-        #             import_rec.write({'x_studio_form_note': (
-        #                                                             import_rec.x_studio_form_note or '') + "Cliente: " + cliente.name + "\nNIT: " + (
-        #                                                             cliente.vat or '')})
-
-        #         # CREACIÓN DE LA ORDEN DE COMPRA ASOCIACIÓN AL LA IMPORTACION (x_import)
-        #         purchase_order_vals = {
-        #             "x_studio_client": int(kwargs["customer_id"]),
-        #             "partner_id": supplier,
-        #             "x_studio_import_id": import_rec.id,
-        #             "receipt_status": "pending",
-        #         }
-        #         purchase_order = request.env["purchase.order"].sudo().create(purchase_order_vals)
-        #         _logger.info("Orden de compra creada con ID: %s", purchase_order.id)
-
-        if model_name == "crm.lead":
-            # Crear la Cotización a partir de la solicitud de importación
-            if tipo_registro == "import":
-                id_crm = eval(res.response[0])
-                product_nomenclature_ids = [int(id.strip()) for id in kwargs.get("productRequired", "").split(",") if
-                                            id.strip().isdigit()]
-                nomenclature_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', product_nomenclature_ids)]).ids
-                order_line = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids]
-                order = request.env["sale.order"].sudo().create(
-                    {
-                        "partner_id": public_user.partner_id.parent_id.id,
-                        "order_line": order_line,
-                    }
-                )
-                file_keys = []
-                if kwargs.get('solicitud[0][0]'):
-                    file_keys.append('solicitud[0][0]')
-
-                for file_key in file_keys:
-                    file = kwargs.get(file_key, {})
-                    # for file in request.httprequest.files.getlist(file_key):
-                    file.seek(0)  # Rebobinar al inicio del archivo, xq sino el file.read() devuelve b'', o sea que está vacío
-                    request.env['ir.attachment'].sudo().create({
-                        "name": file.filename,
-                        "datas": base64.b64encode(file.read()),
-                        "res_model": "sale.order",
-                        "res_id": order.id,
-                        'type': 'binary',
-                        'mimetype': file.mimetype,
-                    })
-
-                crm_lead = request.env["crm.lead"].sudo().browse(id_crm["id"])
-                    # "partner_id": partner.sudo().id,
-                
-                # partner.write({"child_ids": [(4, public_user.partner_id.id)]})
-                # public_user.partner_id.write({"parent_id":partner.sudo().id})
-
-        if kwargs.get('productRequired'):
-            # Evitar doble creación si el formulario ya es de 'x_import'
-            if model_name == 'x_import':
-                # Aquí podemos saltarnos la creación manual porque el super() ya loo creó
-                pass
-            else:
-
-                product_ids_str = kwargs.get('productRequired') if kwargs.get('productRequired') else ''
-                product_ids_list = product_ids_str.split(
-                    ',')  # divide la cadena en una lista de strings usando la coma como delimitador porque al ser un campo many2many toma la coma entre los elementos y da
-
-                # Convertir los IDs a enteros usando una comprensión de lista
-                productos_ids = [int(pid.strip()) for pid in product_ids_list if pid.strip().isdigit()]
-
-                start_date = datetime.now()
-                end_date = start_date + relativedelta(months=8)
-
-                new_partner_supplier = None
-
-                if kwargs.get('other_provider') == 'Yes':
-                    new_partner_supplier = request.env['res.partner'].sudo().create({
-                        'name': kwargs.get('other_provider_name'),
-                        "company_type": 'company',
-                        'license_holder': kwargs.get('license_holder'),
-                        'email': kwargs.get('other_provider_company_email'),
-                        'street': kwargs.get('other_provider_address'),
-                        'country_id': int(kwargs.get('other_provider_country')),
-                        'contact_type_id': request.env.ref('pyxel_import_backend.res_partner_contact_type_supplier').id,
-                    })
-
-                supplier_id = None
-
-                if kwargs.get('provider_purchase'):
-                    supplier_id = int(kwargs.get('provider_purchase'))
-                    supplier = request.env['res.partner'].sudo().browse(supplier_id)
-                    origin_country_id = supplier.country_id.id
-
-
-                else:
-                    origin_country_value = kwargs.get("Id de país")
-                    if origin_country_value and origin_country_value.isdigit():
-                        origin_country_id = int(origin_country_value)
-                    elif new_partner_supplier:
-                        origin_country_id = new_partner_supplier.country_id.id
-                    else:
-                        origin_country_id = None
-
-                if supplier_id is not None:
-                    import_supplier = supplier
-                elif new_partner_supplier is not None:
-                    import_supplier = new_partner_supplier
-                else:
-                    import_supplier = request.env.user.partner_id.company_id
-
-                studio_client = kwargs.get("customer_id") if kwargs.get(
-                    "customer_id") else request.env.user.partner_id.parent_id.id
-
-                # if studio_client:
-                    # request.env['x_import'].sudo().create({
-                    #     'x_studio_form_note': kwargs.get('productRequired'),
-                    #     # 'x_studio_producto_a_importar': [(6, 0, productos_ids)],
-                    #     'x_studio_supplier': import_supplier.id,
-                    #     'x_studio_origin_country': origin_country_id,
-                    #     'x_studio_client': studio_client,
-                    #     'x_studio_date_start': start_date,
-                    #     'x_studio_date_stop': end_date,
-                    #     # 'provider_purchase': kwargs.get('provider_purchase'),
-                    #     # 'user_name': request.env.user.name,
-                    #     # "company": kwargs.get("partner_name"),
-                    #     # "company_email": kwargs.get("company_email"),
-
-                    # })
-
-            # public_user.partner_id.write({"parent_id":partner.sudo().id})
-
-        # bandera
-        # public_user.partner_id.sudo().write({"has_accredited_company": True})
 
         request.session['product_selected'] = []
-
-        return res
-
-    def _handle_website_form(self, model_name, **kwargs):
-        res = super(WebsiteForm, self)._handle_website_form(model_name, **kwargs)
-        # id_crm = eval(res)
-        # crm_lead = request.env['crm.lead'].browse(id_crm['id'])
-        if kwargs.get("password") != kwargs.get("confirm_password"):
-            raise ValidationError(["password", "confirm_password"])
-            return json.dumps(
-                {
-                    "error_fields": ["password", "confirm_password"],
-                    "error": "Passwords do not match; please retype them.",
-                }
-            )
 
         return res
 
@@ -478,8 +239,34 @@ class WebsiteForm(form.WebsiteForm):
             lang = request.context.get('lang', False)
             values['lang_id'] = values.get('lang_id') or request.env['res.lang']._lang_get_id(lang)
 
-        # Llama al método insert_record del website, no del website_crm
-        result = super(WebsiteForm2, self).insert_record(request, model, values, custom, meta=meta)
+        if model.model == 'sale.order':
+            values['user_id'] = None
+            nomenclature_ids = request.env["product.product"].sudo().search([('product_tmpl_id', 'in', values['order_line'])]).ids
+            values['order_line'] = [(0,0, {"product_id": product_id}) for product_id in nomenclature_ids]
+
+        if is_lead_model or model.model == 'sale.order':
+            record = request.env[model.model].sudo().with_context(
+                mail_create_nosubscribe=True,
+            ).create(values)
+            if custom or meta:
+                _custom_label = "%s\n___________\n\n" % _("Other Information:")  # Title for custom fields
+                default_field = model.website_form_default_field_id
+                default_field_data = values.get(default_field.name, '')
+                custom_content = (default_field_data + "\n\n" if default_field_data else '') \
+                    + (_custom_label + custom + "\n\n" if custom else '') \
+                    + (self._meta_label + "\n________\n\n" + meta if meta else '')
+
+                # If there is a default field configured for this model, use it.
+                # If there isn't, put the custom data in a message instead
+                if default_field.name:
+                    if default_field.ttype == 'html':
+                        custom_content = nl2br_enclose(custom_content)
+                    record.update({default_field.name: custom_content})
+
+            result = record.id
+        else:
+            # Llama al método insert_record del website, no del website_crm
+            result = super(WebsiteForm2, self).insert_record(request, model, values, custom, meta=meta)
 
         if is_lead_model and visitor_sudo and result:
             lead_sudo = request.env['crm.lead'].browse(result).sudo()
@@ -490,72 +277,6 @@ class WebsiteForm(form.WebsiteForm):
                 visitor_sudo.write(vals)
         return result
     
-    # def _get_provider_search_domain(self, search):
-    #     domain = [
-    #         ("type_of_contact", "=", "Supplier"),
-    #         ("is_fx_published", "=", True),
-    #     ]
-
-    #     if search:
-    #         for srch in search.split(" "):
-    #             domain += [("name", "ilike", srch)]
-    #     return domain
-
-    # def _get_provider_catalog_search_domain(self, provider, search):
-    #     # domain = [
-    #     #     ("type_of_contact", "=", "Supplier")
-    #     # ]
-    #     domain = [("type", "in", ["consu", "product"])]
-    #     if search:
-    #         for srch in search.split(" "):
-    #             domain += [("name", "ilike", srch)]
-    #     if provider:
-    #         domain += [
-    #             "|",
-    #             ("seller_ids.partner_id", "=", provider),
-    #             ("seller_ids.partner_id", "=", provider),
-    #         ]
-    #     return domain
-
-    # def _shop_get_query_url_kwargs(self, category, search, min_price, max_price, attrib=None, order=None, tags=None,
-    #                                **post):
-    #     return {
-    #         "category": category,
-    #         "search": search,
-    #         "attrib": attrib,
-    #         "tags": tags,
-    #         "min_price": min_price,
-    #         "max_price": max_price,
-    #         "order": order,
-    #     }
-
-    # def _shop_lookup_products(
-    #         self, attrib_set, options, post, search, website, partner):
-    #     order_s = (
-    #             post.get("order")
-    #             or request.env["website"].get_current_website().shop_default_sort
-    #     )
-    #     order = "is_published desc, %s, id desc" % order_s
-
-    #     # No limit because attributes are obtained from complete product list
-    #     product_count, details, fuzzy_search_term = website._search_with_fuzzy(
-    #         "products_only",
-    #         search,
-    #         limit=None,
-    #         order=order,
-    #         options=options,
-    #     )
-    #     search_result = (
-    #         details[0]
-    #         .get("results", request.env["product.template"])
-    #         .with_context(bin_size=True)
-    #     )
-    #     search_result = search_result.filtered(
-    #         lambda a: partner in a.seller_ids.mapped("partner_id").ids
-    #     )
-    #     return (fuzzy_search_term, len(search_result), search_result)
-
-
 class ControllerTest(http.Controller):
 
     @http.route('/business-register/update_session_products', type='json', auth='user')
@@ -653,18 +374,8 @@ class ControllerTest(http.Controller):
             # Si realizó el formulario de acreditación pero no está acreditado
             if not is_accredited:
                 return request.redirect('/business-register-thanks')
+            return request.render('pyxel_import_website.import_registration', render_values)
         
-        partner = request.env.user.partner_id
-
-        if partner.parent_id:
-            contact_type = partner.parent_id.contact_type_id.type_of_contact
-        else:
-            contact_type = partner.contact_type_id.type_of_contact
-
-        # if contact_type == "Supplier":
-
-        #     return request.render('pyxel_import_website.import_registration', render_values)
-        # else:
         return request.render('pyxel_import_website.business_registration', render_values)
 
 

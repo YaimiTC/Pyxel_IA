@@ -15,5 +15,20 @@
                 'partner_id',
             ]"/>
         </function>
+
+        <record id="sale.model_sale_order" model="ir.model">
+            <field name="website_form_key">create_sale_order</field>
+            <field name="website_form_access">True</field>
+            <field name="website_form_label">Create a Sale Order</field>
+        </record>
+
+        <function model="ir.model.fields" name="formbuilder_whitelist">
+            <value>sale.order</value>
+            <value eval="[
+                'partner_id',
+                'user_id',
+                'order_line',
+            ]"/>
+        </function>
     </data>
 </odoo>
