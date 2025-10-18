@@ -5,13 +5,8 @@ import publicWidget from '@web/legacy/js/public/public_widget';
 export const BusinessRegistrationForm = publicWidget.Widget.extend({
     selector: '#business_registration_form',
     events: {
-        'keyup #password': '_checkPassword',
-        'keyup #confirm_password': '_checkPassword',
-        'load #password': '_checkPassword',
-        'load #confirm_password': '_checkPassword',
         'click #prevBtn': 'clickPrev',
         'click #nextBtn': 'clickNext',
-        'load document': '_checkPassword',
         'click .register_business_button': 'validateForm',
         'keyup .is-invalid': '_removeInvalid',
         'click .is-invalid': '_removeInvalid',
@@ -19,16 +14,12 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         'change input[name="parent_company_name"]': '_onchangeParentCompanyName',
         'change input[name="legal_documentation"]': '_onchangeFile',
         'change input[name="ficha_cliente"]': '_onchangeFile',
-        'change input[name="solicitud"]': '_onchangeFile',
         'change select[name="contact_type"]': '_onchangeContactType',
         'change input[name="need_mincex_code"]': '_showHideNoMincexCodeDocumentation',
         'change input[name="has_cuban_partner"]': '_showHideCubanPartner',
         'change select[name="fgne_type"]': '_onchangeFGNEType',
         'change select[name="country"]': '_reloadStates',
         'change select[name="state"]': '_reloadCities',
-        'change #hiddenTestInput': '_updateSessionProducts',
-        'select2:select #productRequired': '_updateSessionProducts',
-        'change #x_studio_certifies_receipt_load': '_toggleFields',
         // 'click #addToSession': '_addToSessionNomenclator',
     },
     init() {
@@ -40,7 +31,6 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         var def = this._super.apply(this, arguments);
         this.showTab(this.currentTab);
         this._setMaxDateToDeedInputDate();
-        this._toggleFields();
         this._showHideNoMincexCodeDocumentation();
         this._showHideCubanPartner();
         this._onchangeContactType();
@@ -345,7 +335,6 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                 deed_input_date?.classList?.add('is-invalid');
                 deed_input_date?.classList?.remove('is-valid');
                 return false
-                // fileDelete.click() 
             }
         }
     },
@@ -379,7 +368,6 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                         fileInput?.classList?.add('is-invalid');
                         fileInput?.classList?.remove('is-valid');
                         return false
-                        // fileDelete.click() 
                     }
                 }
             }
@@ -447,12 +435,6 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             if (productRequired?.childElementCount === 1) { 
                 valid = false;
             }
-        // var x = document.getElementsByClassName("js-example-basic-multiple");
-        // for (let i = 0; i < x.length; i++) {
-        //     if (x[i].childElementCount === 0) { 
-        //         valid = false;
-        //     }
-        // }
         
         if (errorEnvolt && productError) {
             if (valid) {
@@ -465,27 +447,9 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                 errorEnvolt.style.padding = "10px 10px 0px";
                 productError.style.display = "block";
                 productError.style.margin = "10px 0px 10px";
-    
-                // if (ev) {
-                //     ev.preventDefault();
-                //     ev.stopImmediatePropagation();
-                // }
             }
         }
         return valid;
-        },
-    _checkPassword(ev) {
-        this._checkProducts();
-       
-        if ($("#password").length > 0 && $("#confirm_password").length > 0) {
-            if ($("#password").val() !== $("#confirm_password").val()) {
-                $("#confirm_password").addClass('is-invalid');
-                $("#confirm_password").removeClass('is-valid');
-            } else {
-                $("#confirm_password").addClass('is-valid');
-                $("#confirm_password").removeClass('is-invalid');
-            }
-        }
     },
     _removeInvalid: function(n) {
         if (this.$(n.currentTarget).closest('.is-invalid').attr('id') != 'confirm_password'){
@@ -505,33 +469,9 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             $("#nextBtn").addClass("d-none");
             $("#button-submit").removeClass("d-none");
         } else {
-               $("#nextBtn").removeClass("d-none");
+            $("#nextBtn").removeClass("d-none");
             $("#button-submit").addClass("d-none");
         }
-
-        var supplierimporter = document.getElementById("telefono");
-        if (supplierimporter) {
-            // Definir el comportamiento dinámico basado en el checkbox
-            var otherClientCheckbox = document.getElementById("other_client");
-
-            function updateButtonsBasedOnCheckbox() {
-                if (otherClientCheckbox.checked && n < (x.length - 1)) {
-                    $("#nextBtn").removeClass("d-none");       // Mostrar "Siguiente"
-                    $("#button-submit").addClass("d-none");    // Ocultar "Solicitar servicio"
-                } else {
-                    $("#nextBtn").addClass("d-none");          // Ocultar "Siguiente"
-                    $("#button-submit").removeClass("d-none"); // Mostrar "Solicitar servicio"
-                }
-            }
-
-            // Llamar la función al cargar la pestaña
-            updateButtonsBasedOnCheckbox();
-
-            // Añadir el evento dinámico para cambios en el checkbox
-            otherClientCheckbox.addEventListener("change", updateButtonsBasedOnCheckbox);
-        }
-        // Actualizar los indicadores de progreso
-        // this.fixStepIndicator(n);
     },
     clickPrev:function() {  
         var n = -1;
@@ -591,63 +531,12 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         $('.o_wizard_circle_progress').css({"--leftProgress": left_degree.concat("deg")});
         $('.o_wizard_circle_progress').css({"--rightProgress": right_degree.concat("deg")});
         $('.step_counter').text("2 de 2");
-
-    },
-    _toggleFields: function() {
-        this._toggleContainerField();
-        this._toggleDocumentFields();
-    },
-    _toggleContainerField: function() {
-        if (!$("#container_type").length) {
-            return;
-        }
-        var selectedOption = $("#x_studio_certifies_receipt_load option:selected").text();
-        var $containerField = $("#container_type").closest('[data-name="Field"]');
-        if (selectedOption.indexOf("FCL") !== -1 || selectedOption.indexOf("LCL") !== -1) {
-            $containerField.show();
-        } else {
-            $containerField.hide();
-        }
-    },
-    _toggleDocumentFields: function() {
-        if (!$("#x_studio_bill_of_lading_bl").length) {
-            return;
-        }
-        
-        var selectedOption = $("#x_studio_certifies_receipt_load option:selected").text();
-        var hideFields = selectedOption.indexOf("DAP") !== -1;
-        var fieldSelectors = [
-            "#x_studio_bill_of_lading_bl",  // Documentación BL/AWB 
-            "#x_studio_package_list",         // Lista de empaque
-            "#x_studio_export_certify"        // Certificado de exportación
-        ];
-        //ocultar o mostrar los campos según la opción seleccionada
-        fieldSelectors.forEach(function(selector) {
-            var $fieldContainer = $(selector).closest('[data-name="Field"]');
-            if (hideFields) {
-                $fieldContainer.hide();
-            } else {
-                $fieldContainer.show();
-            }
-        });
-        
-        var $label = $("label[for='x_studio_bill_of_landing_number'] .s_website_form_label_content");
-        if (hideFields) {
-            $label.text("Número");
-        } else {
-            $label.text("No. BL/AWB/LCL");
-        }
     },
     validateForm: function(ev) {
-        const billOfLandingField = document.getElementById('x_studio_bill_of_landing_number');
-        if (billOfLandingField && billOfLandingField.value === "") {
-            billOfLandingField.value = "0";
-        }
         // This function deals with validation of the form fields
-        var tabs, inputs, textAreas, i, valid = true;
+        var tabs, inputs, i, valid = true;
         tabs = document.getElementsByClassName("tab");
         inputs = tabs[this.currentTab].getElementsByTagName("input");
-        textAreas = tabs[this.currentTab].getElementsByTagName("textarea");
 
         valid = this._checkProducts();
         if(!this._validateFileType('legal_documentation'))
@@ -681,29 +570,11 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
             }
         }
         const testEmail = /^[A-Z0-9._%+-]+@([A-Z0-9-]+\.)+[A-Z]{2,4}$/i;
-        if (textAreas.length >=1){
-            for (i = 0; i < textAreas.length; i++) {
-                // If a field is empty...
-                const array= ["productRequired","x_studio_bill_of_landing_number","x_studio_certificate_of_origin_co","x_studio_bill_of_lading_bl","x_comercial_invoice","x_package_list","x_export_certify","x_quality_certify"];
-                const valueToCheck = inputs[i].id;
-                if (array.indexOf(valueToCheck) === -1 &&
-                    ((inputs[i].value == "" && inputs[i].disabled == false) || 
-                    (inputs[i].type == 'email' && inputs[i].disabled == false && !testEmail.test(inputs[i].value)) || 
-                    inputs[i].className.indexOf('is-invalid') >= 0)) {
-                    // add an "invalid" class to the field:
 
-                    inputs[i].className += " is-invalid";
-                    // and set the current valid status to false:
-                    valid = false;
-                }
-            }
-         }
         // A loop that checks every input field in the current tab:
         for (i = 0; i < inputs.length; i++) {
             // If a field is empty...
-            const array= ["productRequired","x_studio_bill_of_landing_number","x_studio_certificate_of_origin_co","x_studio_bill_of_lading_bl","x_comercial_invoice","x_package_list","x_export_certify","x_quality_certify"];
-            const valueToCheck = inputs[i].id;
-            if (array.indexOf(valueToCheck) === -1 &&((inputs[i].required && inputs[i].value == "" && inputs[i].disabled == false) ||(inputs[i].type == 'email' && inputs[i].disabled == false && !testEmail.test(inputs[i].value)) || inputs[i].className.indexOf('is-invalid') >= 0)){
+            if ((inputs[i].required && inputs[i].value == "" && inputs[i].disabled == false) ||(inputs[i].type == 'email' && inputs[i].disabled == false && !testEmail.test(inputs[i].value)) || inputs[i].className.indexOf('is-invalid') >= 0){
                 // add an "invalid" class to the field:
                 inputs[i].className += " is-invalid";
                 // and set the current valid status to false:
@@ -724,46 +595,12 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                 }
             }
         }
-        // If the valid status is true, mark the step as finished and valid:
-        // if (valid) {
-        //     document.getElementsByClassName("step")[this.currentTab].className += " finish complete";
-        // }
         if (ev && !valid) {
             ev.preventDefault();
             ev.stopImmediatePropagation();
         }
 
         return valid; // return the valid status
-    },
-    // fixStepIndicator: function(n) {
-    //     // This function removes the "active" class of all steps...
-    //     var i, x = document.getElementsByClassName("step");
-    //     for (i = 0; i < x.length; i++) {
-    //         x[i].className = x[i].className.replace(" in-progress", "");
-    //         x[i].className = x[i].className.replace("complete", "");
-    //         if (i <= n){
-    //             x[i].className += " complete";
-    //         }
-    //          if (i > n){
-    //             x[i].className = x[i].className.replace("complete", "");
-    //             x[i].className = x[i].className.replace("finish", "");
-    //         }
-    //     }
-    //     //... and adds the "active" class to the current step:
-    //     x[n].className += " in-progress";
-    // },
-    async _updateSessionProducts(ev) {
-        const $select = $('#productRequired');
-        const selectedValues = $select.val()
-
-        // Llamada RPC para actualizar la sesión
-        await this.rpc("/business-register/update_session_products", {
-            selected_products: selectedValues
-        }).then(function (response) {
-            console.log("Sesión actualizada con éxito", response);
-        }).catch(function (error) {
-            console.error("Error al actualizar la sesión", error);
-        });
     },
 });
 publicWidget.registry.BusinessRegistrationForm = BusinessRegistrationForm;
