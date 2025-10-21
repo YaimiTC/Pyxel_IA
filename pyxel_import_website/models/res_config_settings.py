@@ -1,5 +1,6 @@
-from odoo import models, fields, api
-
+import os
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
@@ -17,6 +18,14 @@ class ResConfigSettings(models.TransientModel):
         string="Adjunto de la Plantilla",
         config_parameter="solicitud.attachment_id",
         help="Adjunte aquí la plantilla de la solicitud. "
+             "Esta plantilla se utilizará en el formulario de importación."
+    )
+
+    load_products_attachment_id = fields.Many2one(
+        'ir.attachment',
+        string="Adjunto de la Plantilla",
+        config_parameter="load_products.attachment_id",
+        help="Adjunte aquí la plantilla de la carga de productos. "
              "Esta plantilla se utilizará en el formulario de importación."
     )
 
@@ -43,3 +52,22 @@ class ResConfigSettings(models.TransientModel):
         help="Adjunte aquí la plantilla del socio con nacionalidad cubana. "
              "Esta plantilla se utilizará en el formulario de importación."
     )
+
+    @api.constrains('load_products_attachment_id')
+    def _check_load_products_attachment_id(self):
+        for record in self:
+            if record.load_products_attachment_id:
+                allowed_extensions = ['.xlsx']
+                allowed_mimetypes = [
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ]
+                
+                filename = record.load_products_attachment_id.name or ''
+                extension = os.path.splitext(filename)[1].lower()
+                mimetype = record.load_products_attachment_id.mimetype or ''
+                
+                if (extension not in allowed_extensions and 
+                    mimetype not in allowed_mimetypes):
+                    raise ValidationError(
+                        _('La plantilla de la Carga de productos sólo puede ser de tipo Excel (.xlsx)')
+                    )
