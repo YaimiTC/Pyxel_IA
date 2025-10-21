@@ -11,6 +11,7 @@ export const ImportRegistrationForm = publicWidget.Widget.extend({
         'keyup .is-invalid': '_removeInvalid',
         'click .is-invalid': '_removeInvalid',
         'change input[name="solicitud"]': '_onchangeFile',
+        'change input[name="load_products"]': '_onchangeFile',
         'change #hiddenTestInput': '_updateSessionProducts',
         'select2:select #productRequired': '_updateSessionProducts',
         // 'click #addToSession': '_addToSessionNomenclator',
@@ -37,13 +38,9 @@ export const ImportRegistrationForm = publicWidget.Widget.extend({
             for (const file of fileInput.files) {
                 const file_type = file.type
                 const errorElement = document.getElementById(`${inputFileId}_error`);
-                // const fileDelete = document.querySelector(`div[name='${ev.target.name}_input_group'] .o_file_delete`);
-                if(fileInput.id !='legal_documentation'){
-                    const fileDownloadLink = document.querySelector(`div[name='${inputFileId}_input_group'] a:not(d-none)`)
-                    valid = await this.rpc('/check_file_type', { config_param: fileDownloadLink.id, file_type});
-                }
-                else
-                    valid = file_type == 'application/pdf'
+                const fileDownloadLink = document.querySelector(`div[name='${inputFileId}_input_group'] a:not(d-none)`)
+                valid = await this.rpc('/check_file_type', { config_param: fileDownloadLink.id, file_type});
+                
                 if(errorElement){
                     if(valid){
                         errorElement.style.display = "none";

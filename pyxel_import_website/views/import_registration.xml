@@ -115,8 +115,9 @@
                                                             style="display: none;">
                                                             Debe seleccionar al menos un producto
                                                         </span>
+                                                        
                                                         <div data-name="Field" name="solicitud"
-                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
+                                                            class="s_website_form_field mb-0 col-12 s_website_form_custom s_website_form_required"
                                                             data-type="binary">
                                                             <div
                                                                 class="row s_col_no_resize s_col_no_bgcolor py-3">
@@ -163,6 +164,57 @@
                                                                         llénela y súbala aquí.
                                                                     </div>
                                                                     <span id="solicitud_error"
+                                                                        style="color:red; display:none;">El
+                                                                        documento adjuntado debe ser
+                                                                        del mismo tipo que el
+                                                                        archivo descargado.</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div data-name="Field" name="load_products"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom"
+                                                            data-type="binary">
+                                                            <div
+                                                                class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label
+                                                                    class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px"
+                                                                    for="load_products">
+                                                                    <span
+                                                                        class="s_website_form_label_content">Carga de productos</span>
+                                                                </label>
+                                                                <div class="col-sm"
+                                                                    >
+                                                                    <div
+                                                                        name="load_products_input_group"
+                                                                        class="d-flex align-items-center w-100">
+                                                                        <input type="file"
+                                                                            class="form-control s_website_form_input flex-grow-1"
+                                                                            name="load_products"
+                                                                            id="load_products"
+                                                                            accept=".xlsx"
+                                                                            data-max-files-number="1"
+                                                                            data-max-file-size="6"
+                                                                            data-fill-with="undefined"
+                                                                            data-label=""
+                                                                            style="min-width: 0;"/>
+
+                                                                        <a id="load_products"
+                                                                            href="/descargar/load_products"
+                                                                            target="_blank"
+                                                                            class="btn btn-primary add-btn"
+                                                                            style="flex-shrink: 0; white-space: nowrap; margin-left: 0 !important;">
+                                                                            <span class="btn-text">Descargar
+                                                                                Carga de productos</span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <div
+                                                                        class="s_website_form_field_description small form-text text-muted">
+                                                                        Descargue la plantilla,
+                                                                        llénela y súbala aquí.
+                                                                    </div>
+                                                                    <span id="load_products_error"
                                                                         style="color:red; display:none;">El
                                                                         documento adjuntado debe ser
                                                                         del mismo tipo que el

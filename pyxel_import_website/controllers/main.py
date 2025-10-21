@@ -426,7 +426,7 @@ class DownloadFileController(http.Controller):
 
     @http.route('/descargar/<string:file_name>', type='http', auth='public')
     def download_file(self,file_name, **kw):
-        if file_name not in ['solicitud', 'ficha_cliente_estatal', 'ficha_cliente_fgne_tcp','perfil_proveedor', 'cuban_partner']:
+        if file_name not in ['load_products', 'solicitud', 'ficha_cliente_estatal', 'ficha_cliente_fgne_tcp','perfil_proveedor', 'cuban_partner']:
             return request.redirect('/web')
         attachment_id_str = request.env['ir.config_parameter'].sudo().get_param(f'{file_name}.attachment_id')
         if attachment_id_str:
