@@ -184,7 +184,7 @@
                                                                     <span
                                                                         class="s_website_form_label_content">Carga de productos</span>
                                                                 </label>
-                                                                <div class="col-sm"
+                                                                <div class="col-sm pl-5"
                                                                     >
                                                                     <div
                                                                         name="load_products_input_group"
