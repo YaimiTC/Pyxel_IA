@@ -195,20 +195,39 @@ class SaleOrder(models.Model):
     def create(self, vals):
         order = super().create(vals)
 
-        # Caso 1: si es orden final, hereda de evaluación inicial
-        if vals.get('evaluation_apply_id') and not order.process_id:
-            evaluation = self.env['purchase.provider.evaluation'].browse(vals['evaluation_apply_id'])
-            origin_order = evaluation.sale_order_id
-            if origin_order and origin_order.process_id:
-                order.process_id = origin_order.process_id.id
+        # Proceso “candidato”
+        target_process = False
 
-        # Caso 2: si es creada desde importación
-        elif vals.get('importation_process_id') and not order.process_id:
+        # Caso 1: si es orden final, hereda el proceso de la evaluación inicial
+        eval_id = vals.get('evaluation_apply_id')
+        if eval_id:
+            evaluation = self.env['purchase.provider.evaluation'].browse(eval_id)
+            origin_order = getattr(evaluation, 'sale_order_id', False)
+            target_process = getattr(origin_order, 'process_id', False)
+
+        # Caso 2: si es creada desde importación, hereda el proceso de la SO origen
+        elif vals.get('importation_process_id'):
             importation = self.env['importation.process'].browse(vals['importation_process_id'])
-            if importation and importation.origin_sale_order_id.process_id:
-                order.process_id = importation.origin_sale_order_id.process_id.id
+            origin_so = getattr(importation, 'origin_sale_order_id', False)
+            target_process = getattr(origin_so, 'process_id', False)
+
+        # Asignar proceso:
+        # - Si ya vino en vals o se asignó por los casos anteriores, se respeta.
+        # - Si NO hay proceso aún, crear uno nuevo en estado 'open'.
+        if not order.process_id:
+            if target_process:
+                order.process_id = target_process.id
+            else:
+                new_process = self.env['sale.order.process'].create({'state': 'open'})
+                order.process_id = new_process.id
 
         return order
+
+    def copy(self, default=None):
+        default = dict(default or {})
+        if 'process_id' not in default:
+            default['process_id'] = self.env['sale.order.process'].create({'state': 'open'}).id
+        return super().copy(default)
 
     def _resequence_sale_lines(self):
         for order in self:
