@@ -129,7 +129,7 @@ class ImportationProcess(models.Model):
 
     filtered_incoterm = fields.Char(default=json.dumps([]), store=True)
 
-    filtered_import_type = fields.Char(default=json.dumps([]), store=True)
+    filtered_import_type = fields.Char(compute="_compute_available_import_type", store=True)
 
     incoterm_id = fields.Many2one(string='Incoterm', comodel_name='account.incoterms')
 
@@ -449,7 +449,7 @@ class ImportationProcess(models.Model):
                 domain = [('id', 'in', incoterm_ids)]
             record.filtered_incoterm = json.dumps(domain)
 
-    @api.onchange('incoterm_id')
+    @api.depends('incoterm_id')
     def _compute_available_import_type(self):
         for record in self:
             domain = []
