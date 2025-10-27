@@ -38,3 +38,13 @@
     align-items: center;
     width: 100%;
 }
+
+/* El div del archivo adjuntado va a ocupar su máximo espacio de 75 px siempre y cuando el nombre del archivo requiera ese espacio */
+.o_file_wrap  {
+  width: fit-content !important;
+}
+
+/* Estirar el espacio entre el div del archivo adjuntado y el botón de "Remplazar archivo" */
+.o_files_zone_custom {
+  flex: 1 1 auto !important;
+}
