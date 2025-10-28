@@ -27,3 +27,4 @@ access_incoterm_import_type_user,access.incoterm.import.type,model_incoterm_impo
 access_po_line_import_wizard,pyxel_import.po_line_import_wizard,model_po_line_import_wizard,base.group_user,1,1,1,1
 access_import_container_billing_log,pyxel_import.import_container_billing_log,model_import_container_billing_log,,1,1,1,1
 access_import_container_billing_wizard,pyxel_import.import_container_billing_wizard,model_import_container_billing_wizard,,1,1,1,1
+access_so_line_import_wizard,pyxel_import.so_line_import_wizard,model_so_line_import_wizard,base.group_user,1,1,1,1
