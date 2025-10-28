@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+from odoo import models, fields, api
+from odoo.exceptions import UserError
+from odoo.tools.translate import _ as _tr
 import base64
 import io
 import re
 import logging
-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -15,296 +15,206 @@ except Exception:
     openpyxl = None
 
 
-# -----------------------
-# Utilidades comunes
-# -----------------------
+# -------------------- utilidades --------------------
 
 def _col_to_idx(col_ref):
-    """Convierte 'A'/'B'/'AA' o '1'/'2' -> índice 0-based (int)."""
+    """Convierte 'A'/'B'/'AA' o '1'/'2' a índice 0-based."""
     if isinstance(col_ref, int):
         return max(col_ref - 1, 0)
-
     s = (col_ref or '').strip()
     if not s:
-        raise UserError(_("Las referencias de columna no pueden estar vacías."))
-
+        raise UserError(_tr("Las referencias de columna no pueden estar vacías."))
     if s.isdigit():
         return max(int(s) - 1, 0)
-
     s = s.upper()
     if not re.fullmatch(r'[A-Z]+', s):
-        raise UserError(_("Columna inválida: %s (usa A,B,AA o 1,2,3)") % s)
-
+        raise UserError(_tr("Columna inválida: %s (usa A,B,AA o 1,2,3)") % s)
     n = 0
     for ch in s:
         n = n * 26 + (ord(ch) - 64)
     return n - 1
 
 
-def _normalize_txt(txt):
-    """Normaliza texto básico para comparar con etiquetas ('FLETE', 'SEGURO', etc.)."""
-    if not txt:
-        return ''
-    t = str(txt).upper()
-    t = (
-        t.replace('Á', 'A').replace('É', 'E').replace('Í', 'I')
-         .replace('Ó', 'O').replace('Ú', 'U').replace('Ñ', 'N')
-    )
-    return t.strip()
-
-
-def _to_float_loose(v):
-    """
-    Convierte algo como '1,234.56', '1.234,56', '$5.00' -> float
-    No lanza error, solo best effort (raise si imposible de interpretar).
-    """
+def _to_float(v):
+    """Convierte strings tipo '$1,234.56' o '1.234,56' a float robustamente."""
     if v is None:
         return 0.0
     if isinstance(v, (int, float)):
         return float(v)
-
     s = str(v).strip()
-    # quitar símbolos (monedas, espacios, etc.)
     s = re.sub(r'[^\d,.\-]', '', s)
-
-    # caso mezcla de , y .
     if s.count(',') and s.count('.'):
-        # consideramos que el último separador es decimal
         if s.rfind(',') > s.rfind('.'):
-            # coma decimal -> eliminar puntos de miles
             s = s.replace('.', '').replace(',', '.')
         else:
-            # punto decimal -> quitar comas de miles
             s = s.replace(',', '')
     else:
-        # si solo hay coma -> úsala como decimal
         if s.count(',') and not s.count('.'):
             s = s.replace(',', '.')
-
-    try:
-        return float(s)
-    except Exception:
-        raise UserError(_("No se pudo convertir a número: %s") % v)
+    return float(s)
 
 
-def _to_float_safe(v):
-    """
-    Versión segura: devuelve (float_value, es_valido_bool)
-    Si no es numérico claro -> (0.0, False) en vez de lanzar UserError.
-    """
-    if v is None or (isinstance(v, str) and not v.strip()):
-        return 0.0, False
-    try:
-        return _to_float_loose(v), True
-    except Exception:
-        return 0.0, False
+def _norm(txt):
+    """Normaliza texto para comparar (mayúsculas y sin acentos sencillos)."""
+    if not txt:
+        return ''
+    t = str(txt).upper()
+    t = (t.replace('Á', 'A').replace('É', 'E').replace('Í', 'I')
+           .replace('Ó', 'O').replace('Ú', 'U').replace('Ñ', 'N'))
+    return t
 
 
-# -----------------------
-# Wizard PO
-# -----------------------
+# -------------------- wizard --------------------
 
 class POLineImportWizard(models.TransientModel):
     _name = 'po.line.import.wizard'
     _description = 'Importar líneas a Orden de Compra desde Excel'
 
-    # === Contexto ===
-    purchase_id = fields.Many2one(
-        'purchase.order',
-        string="Orden de Compra",
-        required=True,
-        domain=[('state', 'in', ('draft', 'sent'))]
-    )
+    # Contexto
+    purchase_id = fields.Many2one('purchase.order', string="Orden de Compra", required=True)
 
-    # === Archivo Excel ===
+    # Archivo
     file_data = fields.Binary(string="Archivo Excel (.xlsx)", required=True)
     file_name = fields.Char(string="Nombre de archivo")
-    sheet_index = fields.Integer(string="Hoja (0=primera)", default=0)
 
-    # === Config tabla de PRODUCTOS ===
-    header_row_products = fields.Integer(
-        string="Fila encabezado (productos)",
-        default=1,
-        help="Fila donde está el encabezado de la tabla de productos. La siguiente fila es la primera de datos."
+    # Hoja/encabezado
+    sheet_index = fields.Integer(string="Hoja (0=primera)", default=0)
+    header_row = fields.Integer(string="Fila encabezado", default=1)
+
+    # Mapeo de columnas (por defecto según tu layout: B,C,D,E)
+    col_product = fields.Char(string="Columna Producto", required=True, default='B')
+    col_uom = fields.Char(string="Columna U.M.", required=True, default='C')
+    col_qty = fields.Char(string="Columna Cantidad", required=True, default='D')
+    col_price = fields.Char(string="Columna Precio U.M.", required=True, default='E')
+
+    # Opciones de control de lectura
+    stop_at_first_label = fields.Boolean(
+        string="Detener en primera etiqueta de recargos",
+        default=True,
+        help="La tabla de productos termina en la fila anterior a la primera etiqueta "
+             "como IMPORTE EXWORK, GASTO FOB, FLETE, SEGURO u OTROS GASTOS."
     )
-    max_product_rows = fields.Integer(
-        string="Máx. filas productos",
-        help="Si se define (>0), corta a esta cantidad de filas de productos desde el encabezado+1."
+    max_data_rows = fields.Integer(
+        string="Máx. filas de datos",
+        help="Si se define, limita el número de filas leídas desde 'Fila encabezado'+1."
     )
     empty_product_break = fields.Integer(
         string="Corte por filas vacías",
         default=2,
-        help="Si detecta este número de filas consecutivas sin producto, asume fin de la tabla de productos."
+        help="Si se encuentran esta cantidad de filas consecutivas sin Producto, se asume fin de tabla."
     )
-    strict_numeric_products = fields.Boolean(
-        string="Modo estricto numérico (productos)",
+    strict_numeric = fields.Boolean(
+        string="Modo estricto numérico",
         default=False,
-        help="Si está activo y Cantidad/Precio no son numéricos, lanza error. "
-             "Si está desactivado, esa fila se ignora y se deja nota."
+        help="Si está activo, una Cantidad/Precio no numérica detiene el proceso con error. "
+             "Si está desactivado, la fila se omite y se agrega una nota."
     )
 
-    # Mapeo columnas productos (usa letras A,B,C,... según tu Excel)
-    col_prod_seq = fields.Char(string="Col. N°", default='A',
-                               help="Columna del número de línea (opcional, se ignora a nivel de Odoo).")
-    col_prod_name = fields.Char(string="Col. Producto", default='B', required=True)
-    col_prod_code = fields.Char(string="Col. Código", default='C')
-    col_prod_uom = fields.Char(string="Col. U/M", default='D', required=True)
-    col_prod_qty = fields.Char(string="Col. Cantidad", default='E', required=True)
-    col_prod_price = fields.Char(string="Col. Precio Unitario", default='F', required=True)
-
-    # === Config tabla de SERVICIOS ===
-    header_row_services = fields.Integer(
-        string="Fila inicial servicios",
-        default=2,
-        help="Fila donde empiezan los servicios en la tabla lateral (sin incluir encabezado 'Servicio | Importe')."
-    )
-    max_service_rows = fields.Integer(
-        string="Máx. filas servicios",
-        default=10,
-        help="Límite de filas a leer en la tabla lateral de servicios."
-    )
-    empty_service_break = fields.Integer(
-        string="Corte filas vacías (servicios)",
-        default=2,
-        help="Si detectamos este # de filas seguidas sin servicio, dejamos de leer."
-    )
-    strict_numeric_services = fields.Boolean(
-        string="Modo estricto numérico (servicios)",
-        default=False,
-        help="Si está activo y el Importe del servicio no es numérico, error. "
-             "Si está desactivado, se omite esa fila."
-    )
-
-    # Mapeo columnas servicios (ej. columna J=Servicio, K=Importe)
-    col_srv_name = fields.Char(string="Col. Servicio", default='J')
-    col_srv_amount = fields.Char(string="Col. Importe", default='K')
-
-    # === Opciones de creación ===
-    create_missing_products = fields.Boolean(
-        string="Crear productos inexistentes",
-        default=True,
-        help="Si el producto no existe en Odoo, lo crea automáticamente (como plantilla + variante)."
-    )
+    # Opciones de creación
+    create_missing_products = fields.Boolean(string="Crear productos inexistentes", default=True)
     default_product_type = fields.Selection([
         ('product', 'Almacenable'),
         ('consu', 'Consumible'),
         ('service', 'Servicio'),
-    ], string="Tipo producto x defecto", default='product')
+    ], string="Tipo por defecto al crear", default='product')
+    default_uom_id = fields.Many2one('uom.uom', string="UoM por defecto al crear")
 
-    default_uom_id = fields.Many2one(
-        'uom.uom',
-        string="UoM por defecto al crear",
-        help="Se usa si no se encuentra la U/M por nombre en Odoo."
-    )
+    clear_existing_lines = fields.Boolean(string="Reemplazar líneas existentes", default=False)
 
-    clear_existing_lines = fields.Boolean(
-        string="Reemplazar líneas existentes",
-        default=False,
-        help="Si está activo, elimina todas las líneas actuales de la OC antes de importar."
-    )
+    # Servicios (recargos)
+    product_freight_id = fields.Many2one('product.product', string="Producto Servicio Flete",
+                                         domain=[('detailed_type', '=', 'service')])
+    product_insurance_id = fields.Many2one('product.product', string="Producto Servicio Seguro",
+                                           domain=[('detailed_type', '=', 'service')])
+    product_other_id = fields.Many2one('product.product', string="Producto Servicio Otros gastos",
+                                       domain=[('detailed_type', '=', 'service')])
+    product_fob_id = fields.Many2one('product.product', string="Producto Servicio Gasto FOB",
+                                     domain=[('detailed_type', '=', 'service')])
 
-    # Productos que representan cada servicio
-    product_fob_id = fields.Many2one(
-        'product.product',
-        string="Servicio: Gasto FOB",
-        domain=[('detailed_type', '=', 'service')]
-    )
-    product_freight_id = fields.Many2one(
-        'product.product',
-        string="Servicio: Flete",
-        domain=[('detailed_type', '=', 'service')]
-    )
-    product_insurance_id = fields.Many2one(
-        'product.product',
-        string="Servicio: Seguro",
-        domain=[('detailed_type', '=', 'service')]
-    )
-    product_other_id = fields.Many2one(
-        'product.product',
-        string="Servicio: Otros gastos",
-        domain=[('detailed_type', '=', 'service')]
-    )
-
-    # Mensaje resultado
     note = fields.Text(readonly=True)
 
-    # -------------------
-    # Helpers internos
-    # -------------------
+    # ================= Helpers Excel =================
 
     def _get_ws(self, wb):
         idx = self.sheet_index or 0
         sheets = wb.worksheets
         if idx < 0 or idx >= len(sheets):
-            raise UserError(_("Índice de hoja fuera de rango. El archivo tiene %s hoja(s).") % len(sheets))
+            raise UserError(_tr("Índice de hoja fuera de rango. El archivo tiene %s hoja(s).") % len(sheets))
         return sheets[idx]
 
-    def _find_uom(self, uom_name):
-        """Busca la UoM por nombre. Si no la encuentra, usa default_uom_id."""
-        if not uom_name:
-            return self.default_uom_id
-        UoM = self.env['uom.uom'].sudo()
-        u = UoM.search([('name', '=ilike', uom_name)], limit=1)
-        if not u:
-            u = UoM.search([('name', 'ilike', uom_name)], limit=1)
-        return u or self.default_uom_id
+    def _to_float_safe(self, v):
+        """Devuelve (float, ok_bool) sin lanzar UserError."""
+        if v is None or (isinstance(v, str) and not v.strip()):
+            return 0.0, False
+        try:
+            return _to_float(v), True
+        except Exception:
+            return 0.0, False
 
-    def _get_or_create_product(self, name, uom):
+    def _parse_surcharges(self, ws, return_first_row=False):
         """
-        Busca product.product por nombre aproximado.
-        Si no existe y create_missing_products=True -> lo crea.
+        Busca etiquetas de recargos en toda la hoja y toma el valor en la celda adyacente derecha.
+        Retorna dict con llaves: exworks, fob, freight, insurance, others.
+        Si return_first_row=True, también retorna la primera fila donde aparece alguna etiqueta.
         """
-        Product = self.env['product.product'].sudo()
-        prod = Product.search([('name', '=ilike', name)], limit=1)
-        if not prod:
-            prod = Product.search([('name', 'ilike', name)], limit=1)
-
-        if prod:
-            return prod
-
-        if not self.create_missing_products:
-            raise UserError(_("El producto '%s' no existe y la creación automática está desactivada.") % name)
-
-        tmpl_vals = {
-            'name': name,
-            'type': self.default_product_type,
-            'uom_id': uom.id if uom else False,
-            'uom_po_id': uom.id if uom else False,
-            'taxes_id': [(6, 0, [])],
-            'supplier_taxes_id': [(6, 0, [])],
+        labels = {
+            'IMPORTE EXWORK': 'exworks',
+            'GASTO FOB': 'fob',
+            'FLETE': 'freight',
+            'SEGURO': 'insurance',
+            'OTROS GASTOS': 'others',
         }
-        tmpl = self.env['product.template'].sudo().create(tmpl_vals)
-        return tmpl.product_variant_id
+        found = {}
+        first_row = None
+        for row in ws.iter_rows():
+            for cell in row:
+                val = cell.value
+                if not val or not isinstance(val, str):
+                    continue
+                key_txt = _norm(val)
+                for k, code in labels.items():
+                    if key_txt.startswith(k):
+                        # valor a la derecha (como en tu layout E->F)
+                        right_col = cell.column + 1
+                        v = cell.parent.cell(row=cell.row, column=right_col).value
+                        v_float, ok = self._to_float_safe(v)
+                        if ok:
+                            found[code] = v_float
+                        if return_first_row and first_row is None:
+                            first_row = cell.row
+        return (found, first_row) if return_first_row else found
 
-    # -------------------
-    # Parseo de productos
-    # -------------------
+    def _parse_table_lines(self, ws):
+        """
+        Devuelve (lines, notes):
+          lines = [{'name': str, 'uom': str, 'qty': float, 'price': float}, ...]
+          notes = [mensajes]
+        Aplica reglas de corte según opciones del wizard.
+        """
+        c_prod = _col_to_idx(self.col_product)
+        c_uom = _col_to_idx(self.col_uom)
+        c_qty = _col_to_idx(self.col_qty)
+        c_price = _col_to_idx(self.col_price)
 
-    def _parse_product_lines(self, ws):
-        """Lee el bloque principal (No., Producto, Código, U/M, Cantidad, Precio Unitario)."""
-        start = max(self.header_row_products or 1, 1) + 1
-        end = ws.max_row
+        start_row = max(self.header_row or 1, 1) + 1
+        end_row = ws.max_row
 
-        if self.max_product_rows and self.max_product_rows > 0:
-            end = min(end, start + self.max_product_rows - 1)
+        if self.stop_at_first_label:
+            _, first_label_row = self._parse_surcharges(ws, return_first_row=True)
+            if first_label_row:
+                end_row = min(end_row, first_label_row - 1)
 
-        # columnas resueltas a índice
-        c_name = _col_to_idx(self.col_prod_name)
-        c_code = _col_to_idx(self.col_prod_code) if self.col_prod_code else None
-        c_uom = _col_to_idx(self.col_prod_uom)
-        c_qty = _col_to_idx(self.col_prod_qty)
-        c_price = _col_to_idx(self.col_prod_price)
+        if self.max_data_rows and self.max_data_rows > 0:
+            end_row = min(end_row, start_row + self.max_data_rows - 1)
 
-        lines = []
-        notes = []
+        lines, notes = [], []
         empty_streak = 0
 
-        for row_idx in range(start, end + 1):
+        for r in range(start_row, end_row + 1):
+            def getv(ci):
+                return ws.cell(row=r, column=ci + 1).value if ci is not None else None
 
-            def _cell(ci):
-                return ws.cell(row=row_idx, column=ci + 1).value if ci is not None else None
-
-            raw_name = _cell(c_name)
+            raw_name = getv(c_prod)
             name = (raw_name or '').strip() if isinstance(raw_name, str) else raw_name
 
             if not name:
@@ -312,225 +222,159 @@ class POLineImportWizard(models.TransientModel):
                 if self.empty_product_break and empty_streak >= self.empty_product_break:
                     break
                 continue
-            empty_streak = 0  # reset porque sí hay nombre
+            else:
+                empty_streak = 0
 
-            raw_uom = _cell(c_uom)
-            uom_name = (raw_uom or '').strip() if isinstance(raw_uom, str) else raw_uom
+            raw_uom = getv(c_uom)
+            uom = (raw_uom or '').strip() if isinstance(raw_uom, str) else raw_uom
 
-            qty_val, qty_ok = _to_float_safe(_cell(c_qty))
-            price_val, price_ok = _to_float_safe(_cell(c_price))
+            qty_val, qty_ok = self._to_float_safe(getv(c_qty))
+            price_val, price_ok = self._to_float_safe(getv(c_price))
 
-            if self.strict_numeric_products and (not qty_ok or not price_ok):
-                raise UserError(
-                    _("Fila %s: Cantidad/Precio no son numéricos (%s / %s).") %
-                    (row_idx, _cell(c_qty), _cell(c_price))
-                )
+            if self.strict_numeric and (not qty_ok or not price_ok):
+                raise UserError(_tr("Fila %s: valores numéricos inválidos. Cantidad=%s, Precio=%s")
+                                % (r, getv(c_qty), getv(c_price)))
 
             if not qty_ok or not price_ok:
-                notes.append(
-                    _("Fila %s omitida por datos no numéricos. Cantidad=%s Precio=%s") %
-                    (row_idx, _cell(c_qty), _cell(c_price))
-                )
+                notes.append(_tr("Fila %s omitida por datos no numéricos (Cantidad=%s, Precio=%s).")
+                             % (r, getv(c_qty), getv(c_price)))
                 continue
 
-            code_val = _cell(c_code) if c_code is not None else ''
-
             lines.append({
-                'row': row_idx,
-                'name': name,
-                'code': code_val or '',
-                'uom_name': uom_name or '',
+                'name': str(name),
+                'uom': str(uom or ''),
                 'qty': qty_val,
                 'price': price_val,
             })
 
         return lines, notes
 
-    # -------------------
-    # Parseo de servicios
-    # -------------------
+    # ================= Helpers de datos =================
 
-    def _parse_service_lines(self, ws):
-        """
-        Lee la tabla de servicios (col_srv_name / col_srv_amount), fila a fila.
-        Crea estructuras: [{'service': 'FLETE', 'amount': 123.45}, ...]
-        """
-        start = max(self.header_row_services or 1, 1)
-        end = ws.max_row
+    def _find_uom(self, name):
+        if not name:
+            return self.default_uom_id
+        UoM = self.env['uom.uom'].sudo()
+        uom = UoM.search([('name', '=ilike', name)], limit=1)
+        if not uom:
+            uom = UoM.search([('name', 'ilike', name)], limit=1)
+        return uom or self.default_uom_id
 
-        if self.max_service_rows and self.max_service_rows > 0:
-            end = min(end, start + self.max_service_rows - 1)
+    def _get_or_create_product(self, name, uom):
+        Product = self.env['product.product'].sudo()
+        prod = Product.search([('name', '=ilike', name)], limit=1)
+        if prod:
+            return prod
+        if not self.create_missing_products:
+            raise UserError(_tr("El producto '%s' no existe y la opción de crear está desactivada.") % name)
 
-        c_srv_name = _col_to_idx(self.col_srv_name)
-        c_srv_amount = _col_to_idx(self.col_srv_amount)
+        # Fallback seguro de UoM si no viene
+        if not uom:
+            try:
+                uom = self.default_uom_id or self.env.ref('uom.product_uom_unit')
+            except Exception:
+                uom = self.default_uom_id  # si no existe el ref, usa el default si está
 
-        lines = []
-        notes = []
-        empty_streak = 0
-
-        for row_idx in range(start, end + 1):
-
-            def _cell(ci):
-                return ws.cell(row=row_idx, column=ci + 1).value if ci is not None else None
-
-            raw_srv = _cell(c_srv_name)
-            srv_name = (raw_srv or '').strip() if isinstance(raw_srv, str) else raw_srv
-
-            raw_amt = _cell(c_srv_amount)
-            amt_val, amt_ok = _to_float_safe(raw_amt)
-
-            # cortar si fila viene completamente vacía
-            if not srv_name and (raw_amt is None or str(raw_amt).strip() == ''):
-                empty_streak += 1
-                if self.empty_service_break and empty_streak >= self.empty_service_break:
-                    break
-                continue
-            empty_streak = 0
-
-            if self.strict_numeric_services and not amt_ok:
-                raise UserError(
-                    _("Fila servicio %s: importe no numérico (%s).") %
-                    (row_idx, raw_amt)
-                )
-
-            if not srv_name:
-                # sin nombre no tiene sentido crear
-                notes.append(_("Fila servicio %s omitida: sin nombre de servicio.") % row_idx)
-                continue
-
-            if not amt_ok:
-                notes.append(_("Fila servicio %s omitida: importe no numérico (%s).") %
-                             (row_idx, raw_amt))
-                continue
-
-            lines.append({
-                'row': row_idx,
-                'service': srv_name,
-                'amount': amt_val,
-            })
-
-        return lines, notes
-
-    # -------------------
-    # Crear líneas en PO
-    # -------------------
-
-    def _create_po_product_line(self, PO, prod, uom, qty, price, name):
-        self.env['purchase.order.line'].sudo().create({
-            'order_id': PO.id,
-            'product_id': prod.id,
+        vals_tmpl = {
             'name': name,
-            'product_qty': qty,
-            'price_unit': price,
-            'product_uom': (uom.id if uom else prod.uom_po_id.id),
-        })
+            'type': self.default_product_type,
+            'uom_id': uom.id if uom else False,
+            'uom_po_id': uom.id if uom else False,
+            'taxes_id': [(6, 0, [])],
+            'supplier_taxes_id': [(6, 0, [])],
+        }
+        tmpl = self.env['product.template'].sudo().create(vals_tmpl)
+        return tmpl.product_variant_id
 
-    def _create_po_service_line(self, PO, srv_name, amount):
-        """
-        Decide a qué producto de servicio asignar según el nombre.
-        Ejemplo:
-         - si el nombre contiene 'FOB' => product_fob_id
-         - si contiene 'FLETE' => product_freight_id
-         - si contiene 'SEGURO' => product_insurance_id
-         - else => product_other_id
-        """
-        norm = _normalize_txt(srv_name)
-
-        if 'FOB' in norm and self.product_fob_id:
-            service_prod = self.product_fob_id
-        elif 'FLETE' in norm and self.product_freight_id:
-            service_prod = self.product_freight_id
-        elif 'SEGURO' in norm and self.product_insurance_id:
-            service_prod = self.product_insurance_id
-        elif self.product_other_id:
-            service_prod = self.product_other_id
-        else:
-            # no hay producto configurado para este servicio
-            return _("No se creó línea de servicio '%s' (importe %s) porque no hay producto asignado.") % (
-                srv_name, amount
-            )
-
-        self.env['purchase.order.line'].sudo().create({
-            'order_id': PO.id,
-            'product_id': service_prod.id,
-            'name': service_prod.display_name,
-            'product_qty': 1.0,
-            'price_unit': amount,
-            'product_uom': service_prod.uom_po_id.id or service_prod.uom_id.id,
-        })
-        return False  # sin nota de error
-
-    # -------------------
-    # Acción principal
-    # -------------------
+    # ================= Proceso principal =================
 
     def action_import(self):
         if not self.purchase_id:
-            raise UserError(_("Debes indicar la Orden de Compra."))
+            raise UserError(_tr("Debes indicar la Orden de Compra."))
         if not self.file_data:
-            raise UserError(_("Adjunta el archivo Excel."))
+            raise UserError(_tr("Adjunta el archivo Excel."))
         if openpyxl is None:
-            raise UserError(_("Falta la librería 'openpyxl' en el servidor."))
+            raise UserError(_tr("Falta la librería 'openpyxl'."))
 
-        # Abrir workbook
         try:
             data = base64.b64decode(self.file_data)
             wb = openpyxl.load_workbook(io.BytesIO(data), data_only=True)
         except Exception as e:
-            raise UserError(_("No se pudo leer el Excel: %s") % e)
+            raise UserError(_tr("No se pudo leer el Excel: %s") % e)
 
         ws = self._get_ws(wb)
+
+        # 1) Recargos + detectar primera etiqueta (para el corte)
+        surcharges, _ = self._parse_surcharges(ws, return_first_row=True)
+
+        # 2) Líneas de productos (ya acotadas y tolerantes)
+        product_lines, parse_notes = self._parse_table_lines(ws)
+
         PO = self.purchase_id.sudo()
 
-        # ¿limpiar líneas actuales?
         if self.clear_existing_lines and PO.order_line:
             PO.order_line.unlink()
 
-        # 1) Productos
-        product_lines, notes_prod = self._parse_product_lines(ws)
-
         created_count = 0
-        for pl in product_lines:
-            uom = self._find_uom(pl['uom_name'])
-            prod = self._get_or_create_product(pl['name'], uom)
-            self._create_po_product_line(
-                PO,
-                prod,
-                uom,
-                qty=pl['qty'],
-                price=pl['price'],
-                name=pl['name'],
-            )
+        amount_exworks_calc = 0.0
+
+        for l in product_lines:
+            uom = self._find_uom(l['uom'])
+            prod = self._get_or_create_product(l['name'], uom)
+            self.env['purchase.order.line'].sudo().create({
+                'order_id': PO.id,
+                'product_id': prod.id,
+                'name': l['name'],
+                'product_qty': l['qty'],
+                'price_unit': l['price'],
+                'product_uom': (uom.id if uom else prod.uom_po_id.id),
+            })
             created_count += 1
+            amount_exworks_calc += (l['qty'] * l['price'])
 
-        # 2) Servicios
-        service_lines, notes_srv = self._parse_service_lines(ws)
-        for sl in service_lines:
-            warn = self._create_po_service_line(
-                PO,
-                srv_name=sl['service'],
-                amount=sl['amount'],
-            )
-            if warn:
-                notes_srv.append(warn)
+        notes = list(parse_notes)
 
-        # Mensaje final
-        msg = _("Se importaron %(cnt)s líneas de productos en la OC %(po)s.") % {
-            'cnt': created_count,
+        # Compara IMPORTE EXWORK si vino y hay líneas
+        if 'exworks' in surcharges and product_lines:
+            if round(surcharges['exworks'], 2) != round(amount_exworks_calc, 2):
+                notes.append(_tr("Aviso: IMPORTE EXWORK del Excel (%(x)s) difiere del calculado (%(y)s).") % {
+                    'x': surcharges['exworks'],
+                    'y': amount_exworks_calc,
+                })
+
+        # Crear líneas de servicios (1 unidad c/u)
+        def _create_service_line(prod_field, amount, label_fallback):
+            prod = getattr(self, prod_field)
+            if amount in (None, 0):
+                return
+            if not prod:
+                notes.append(_tr("Falta configurar el %s. Valor encontrado: %s") % (label_fallback, amount))
+                return
+            self.env['purchase.order.line'].sudo().create({
+                'order_id': PO.id,
+                'product_id': prod.id,
+                'name': prod.display_name,
+                'product_qty': 1.0,
+                'price_unit': amount,
+                'product_uom': prod.uom_po_id.id or prod.uom_id.id,
+            })
+
+        _create_service_line('product_fob_id', surcharges.get('fob'), "Producto Servicio Gasto FOB")
+        _create_service_line('product_freight_id', surcharges.get('freight'), "Producto Servicio Flete")
+        _create_service_line('product_insurance_id', surcharges.get('insurance'), "Producto Servicio Seguro")
+        _create_service_line('product_other_id', surcharges.get('others'), "Producto Servicio Otros gastos")
+
+        msg = _tr("Se importaron %(n)s líneas de productos en la OC %(po)s.") % {
+            'n': created_count,
             'po': PO.name,
         }
-        all_notes = notes_prod + notes_srv
-        if all_notes:
-            msg += "\n" + "\n".join(all_notes)
 
+        if notes:
+            msg += "\n" + "\n".join(notes)
         self.note = msg
 
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
-            'params': {
-                'title': _('Importación completada'),
-                'message': msg,
-                'sticky': False
-            }
+            'params': {'title': _tr('Importación completada'), 'message': msg, 'sticky': False}
         }
