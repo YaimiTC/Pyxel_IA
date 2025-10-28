@@ -4,14 +4,16 @@
     <field name="name">so.line.import.wizard.form</field>
     <field name="model">so.line.import.wizard</field>
     <field name="arch" type="xml">
-      <form string="Importar Pedido de Venta">
+      <form string="Importar líneas a Pedido de Venta">
         <sheet>
 
+          <!-- Pedido de Venta -->
           <group>
             <field name="sale_id" required="1"
                    domain="[('state','in',('draft','sent'))]"/>
           </group>
 
+          <!-- Archivo -->
           <group string="Archivo Excel">
             <field name="file_data" filename="file_name" required="1"/>
             <field name="file_name" readonly="1"/>
@@ -20,70 +22,44 @@
             </group>
           </group>
 
-          <notebook>
+          <!-- Config productos -->
+          <group string="Encabezado / Límites de productos">
+            <group>
+              <field name="header_row_products"/>
+              <field name="max_product_rows"/>
+            </group>
+            <group>
+              <field name="empty_product_break"/>
+              <field name="strict_numeric_products"/>
+            </group>
+          </group>
 
-            <!-- TAB Productos -->
-            <page string="Productos">
-              <group string="Encabezado / Límites">
-                <group>
-                  <field name="header_row_products"/>
-                  <field name="max_product_rows"/>
-                </group>
-                <group>
-                  <field name="empty_product_break"/>
-                  <field name="strict_numeric_products"/>
-                </group>
-              </group>
+          <group string="Columnas en Excel (tabla principal)">
+            <group>
+              <field name="col_prod_seq" placeholder="A"
+                     help="Columna del número de línea (opcional)"/>
+              <field name="col_prod_name" placeholder="B" required="1"/>
+              <field name="col_prod_code" placeholder="C"/>
+            </group>
+            <group>
+              <field name="col_prod_uom" placeholder="D" required="1"/>
+              <field name="col_prod_qty" placeholder="E" required="1"/>
+            </group>
+          </group>
 
-              <group string="Columnas Productos">
-                <group>
-                  <field name="col_prod_name" placeholder="B"/>
-                  <field name="col_prod_code" placeholder="C"/>
-                </group>
-                <group>
-                  <field name="col_prod_uom" placeholder="D"/>
-                  <field name="col_prod_qty" placeholder="E"/>
-                  <field name="col_prod_price" placeholder="F"/>
-                </group>
-              </group>
+          <group string="Opciones de creación de producto">
+            <group>
+              <field name="create_missing_products"/>
+              <field name="default_product_type"/>
+            </group>
+            <group>
+              <field name="default_uom_id"/>
+              <field name="clear_existing_lines"/>
+            </group>
+          </group>
 
-              <group string="Opciones de Creación">
-                <group>
-                  <field name="create_missing_products"/>
-                  <field name="default_product_type"/>
-                </group>
-                <group>
-                  <field name="default_uom_id"/>
-                  <field name="clear_existing_lines"/>
-                </group>
-              </group>
-            </page>
-
-            <!-- TAB Servicios -->
-            <page string="Servicios">
-              <group string="Encabezado / Límites">
-                <group>
-                  <field name="header_row_services"/>
-                  <field name="max_service_rows"/>
-                </group>
-                <group>
-                  <field name="empty_service_break"/>
-                  <field name="strict_numeric_services"/>
-                </group>
-              </group>
-
-              <group string="Columnas Servicios">
-                <group>
-                  <field name="col_srv_name" placeholder="J" help="Las filas de servicios se crean como líneas tipo servicio con cantidad = 1."/>
-                  <field name="col_srv_amount" placeholder="K"/>
-                </group>
-              </group>
-
-            </page>
-
-          </notebook>
-
-          <group string="Resultado" invisible=" note == False ">
+          <!-- Resultado -->
+          <group string="Resultado" invisible="note == False">
             <field name="note" nolabel="1" readonly="1"/>
           </group>
 
@@ -99,7 +75,7 @@
 
     <!-- Acción -->
   <record id="action_so_line_import_wizard" model="ir.actions.act_window">
-    <field name="name">Importar Oferta Comercial</field>
+    <field name="name">Importar Cotizacion</field>
     <field name="res_model">so.line.import.wizard</field>
     <field name="view_mode">form</field>
     <field name="target">new</field>
