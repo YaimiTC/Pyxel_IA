@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-from odoo import models, fields, api, _
-from odoo.exceptions import UserError
 import base64
 import io
 import re
 import logging
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -14,10 +15,7 @@ except Exception:
     openpyxl = None
 
 
-# -------------------- utilidades genéricas --------------------
-
 def _col_to_idx(col_ref):
-    """Convierte 'A'/'B'/'AA' o '1'/'2' a índice 0-based."""
     if isinstance(col_ref, int):
         return max(col_ref - 1, 0)
     s = (col_ref or '').strip()
@@ -34,45 +32,22 @@ def _col_to_idx(col_ref):
     return n - 1
 
 
-def _clean_numeric_text(v):
-    """Quita símbolos comunes de moneda, separadores de miles, etc."""
-    if v is None:
-        return ''
-    if isinstance(v, (int, float)):
-        return str(v)
-    s = str(v).strip()
-    # quita todo excepto dígitos, coma, punto y signo -
-    s = re.sub(r'[^\d,.\-]', '', s)
-    return s
-
-
-def _to_float(v):
-    """
-    Convierte strings tipo '$1,234.56' o '1.234,56' a float robustamente.
-    Lanza UserError si no se puede.
-    """
+def _to_float_loose(v):
     if v is None:
         return 0.0
     if isinstance(v, (int, float)):
         return float(v)
 
-    s = _clean_numeric_text(v)
-    if not s:
-        return 0.0
-
-    # Si hay coma y punto, asumimos que el separador decimal es el último que aparece.
+    s = str(v).strip()
+    s = re.sub(r'[^\d,.\-]', '', s)
     if s.count(',') and s.count('.'):
         if s.rfind(',') > s.rfind('.'):
-            # coma es decimal -> quitar puntos (miles)
             s = s.replace('.', '').replace(',', '.')
         else:
-            # punto es decimal -> quitar comas (miles)
             s = s.replace(',', '')
     else:
-        # Solo coma -> úsala como decimal
         if s.count(',') and not s.count('.'):
             s = s.replace(',', '.')
-
     try:
         return float(s)
     except Exception:
@@ -80,161 +55,90 @@ def _to_float(v):
 
 
 def _to_float_safe(v):
-    """
-    Retorna (float_value, ok_bool) sin lanzar error.
-    """
+    if v is None or (isinstance(v, str) and not v.strip()):
+        return 0.0, False
     try:
-        fv = _to_float(v)
-        return fv, True
+        return _to_float_loose(v), True
     except Exception:
         return 0.0, False
 
-
-# -------------------- Wizard --------------------
 
 class SOLineImportWizard(models.TransientModel):
     _name = 'so.line.import.wizard'
     _description = 'Importar líneas a Pedido de Venta desde Excel'
 
-    # Contexto: se abre desde la venta
+    # === Contexto ===
     sale_id = fields.Many2one(
         'sale.order',
         string="Pedido de Venta",
         required=True,
-        help="Venta destino donde se insertarán las líneas."
+        domain=[('state', 'in', ('draft', 'sent'))]  # ajusta si necesitas permitir 'sale'
     )
 
-    # Archivo
-    file_data = fields.Binary(
-        string="Archivo Excel (.xlsx)",
-        required=True
-    )
+    # === Archivo Excel ===
+    file_data = fields.Binary(string="Archivo Excel (.xlsx)", required=True)
     file_name = fields.Char(string="Nombre de archivo")
+    sheet_index = fields.Integer(string="Hoja (0=primera)", default=0)
 
-    # Hoja / encabezado
-    sheet_index = fields.Integer(
-        string="Hoja (0=primera)",
-        default=0
-    )
+    # === Config tabla de PRODUCTOS ===
     header_row_products = fields.Integer(
-        string="Fila encabezado productos",
+        string="Fila encabezado (productos)",
         default=1,
-        help="Fila donde están los títulos No./Producto/Código/... (la siguiente es la primera de datos)"
+        help="Fila donde está el encabezado. La siguiente fila es la primera de datos."
     )
-    header_row_services = fields.Integer(
-        string="Fila encabezado servicios",
-        default=1,
-        help="Fila donde están los títulos Servicio / Importe (la siguiente es la primera de datos)"
-    )
-
-    # ===== Mapeo columnas para PRODUCTOS =====
-    col_prod_name = fields.Char(
-        string="Columna Producto",
-        default='B',
-        required=True,
-        help="Columna donde está el nombre/descripcion del producto. Ej: B"
-    )
-    col_prod_code = fields.Char(
-        string="Columna Código",
-        default='C',
-        required=False,
-        help="Referencia interna / código. Ej: C"
-    )
-    col_prod_uom = fields.Char(
-        string="Columna U/M",
-        default='D',
-        required=True,
-        help="Columna U/M. Ej: D"
-    )
-    col_prod_qty = fields.Char(
-        string="Columna Cantidad",
-        default='E',
-        required=True,
-        help="Columna Cantidad. Ej: E"
-    )
-    col_prod_price = fields.Char(
-        string="Columna Precio Unitario",
-        default='F',
-        required=True,
-        help="Columna Precio Unitario. Ej: F"
-    )
-
-    # ===== Mapeo columnas para SERVICIOS =====
-    col_srv_name = fields.Char(
-        string="Columna Servicio",
-        default='J',
-        required=True,
-        help="Nombre del servicio. Ej: J"
-    )
-    col_srv_amount = fields.Char(
-        string="Columna Importe Servicio",
-        default='K',
-        required=True,
-        help="Importe del servicio. Ej: K"
-    )
-
-    # ===== Opciones de lectura (productos) =====
     max_product_rows = fields.Integer(
         string="Máx. filas productos",
-        help="Si se define (>0), corta la lectura de productos a tantas filas."
+        help="Si se define (>0), corta lectura a esa cantidad de filas."
     )
     empty_product_break = fields.Integer(
-        string="Corte por filas vacías (productos)",
+        string="Corte por filas vacías",
         default=2,
-        help="Si se encuentran esta cantidad de filas consecutivas sin producto, se asume fin de la tabla."
+        help="Si detecta este # de filas seguidas sin producto, asume fin."
     )
     strict_numeric_products = fields.Boolean(
-        string="Modo estricto numérico (productos)",
+        string="Modo estricto numérico",
         default=False,
-        help="Si está activo, una Cantidad/Precio no numérica en productos genera error. "
-             "Si está desactivado, esa fila se omite."
+        help="Si activo: cantidad no numéricos => error. "
+             "Si inactivo: esa fila se omite y se deja nota."
     )
 
-    # ===== Opciones de lectura (servicios) =====
-    max_service_rows = fields.Integer(
-        string="Máx. filas servicios",
-        help="Si se define (>0), corta la lectura de servicios a tantas filas."
-    )
-    empty_service_break = fields.Integer(
-        string="Corte por filas vacías (servicios)",
-        default=2,
-        help="Si se encuentran esta cantidad de filas consecutivas sin servicio, se asume fin de la tabla."
-    )
-    strict_numeric_services = fields.Boolean(
-        string="Modo estricto numérico (servicios)",
-        default=False,
-        help="Si está activo, un Importe no numérico en servicios genera error. "
-             "Si está desactivado, esa fila se omite."
-    )
+    # Mapeo columnas productos
+    col_prod_seq = fields.Char(string="Col. N°", default='A',
+                               help="Columna del número de línea (opcional, sólo informativo).")
+    col_prod_name = fields.Char(string="Col. Producto", default='B', required=True)
+    col_prod_code = fields.Char(string="Col. Código", default='C')
+    col_prod_uom = fields.Char(string="Col. U/M", default='D', required=True)
+    col_prod_qty = fields.Char(string="Col. Cantidad", default='E', required=True)
 
-    # ===== Creación de productos =====
+    # === Opciones de creación ===
     create_missing_products = fields.Boolean(
         string="Crear productos inexistentes",
         default=True,
-        help="Si no se encuentra un producto en Odoo, se creará automáticamente."
+        help="Si el producto no existe en Odoo, se creará automáticamente."
     )
     default_product_type = fields.Selection([
         ('product', 'Almacenable'),
         ('consu', 'Consumible'),
         ('service', 'Servicio'),
-    ], string="Tipo de producto por defecto", default='product')
+    ], string="Tipo producto x defecto", default='product')
 
     default_uom_id = fields.Many2one(
         'uom.uom',
-        string="U/M por defecto",
-        help="Si no encontramos la unidad del Excel en Odoo, usamos esta."
+        string="UoM por defecto al crear"
     )
 
     clear_existing_lines = fields.Boolean(
         string="Reemplazar líneas existentes",
         default=False,
-        help="Si está activo, borra las líneas actuales del pedido de venta antes de importar."
+        help="Si activo, borra líneas del pedido antes de importar."
     )
 
-    # Nota (resultado)
+    # Mensaje resultado
     note = fields.Text(readonly=True)
 
-    # ================= Helpers Excel =================
+    # -------------------
+    # Helpers internos
+    # -------------------
 
     def _get_ws(self, wb):
         idx = self.sheet_index or 0
@@ -243,37 +147,61 @@ class SOLineImportWizard(models.TransientModel):
             raise UserError(_("Índice de hoja fuera de rango. El archivo tiene %s hoja(s).") % len(sheets))
         return sheets[idx]
 
-    # --------- parsing tabla PRODUCTOS ----------
+    def _find_uom(self, uom_name):
+        if not uom_name:
+            return self.default_uom_id
+        UoM = self.env['uom.uom'].sudo()
+        u = UoM.search([('name', '=ilike', uom_name)], limit=1)
+        if not u:
+            u = UoM.search([('name', 'ilike', uom_name)], limit=1)
+        return u or self.default_uom_id
+
+    def _get_or_create_product(self, name, uom):
+        Product = self.env['product.product'].sudo()
+        prod = Product.search([('name', '=ilike', name)], limit=1)
+        if not prod:
+            prod = Product.search([('name', 'ilike', name)], limit=1)
+
+        if prod:
+            return prod
+
+        if not self.create_missing_products:
+            raise UserError(_("El producto '%s' no existe y la creación automática está desactivada.") % name)
+
+        tmpl_vals = {
+            'name': name,
+            'type': self.default_product_type,
+            'uom_id': uom.id if uom else False,
+            'uom_po_id': uom.id if uom else False,
+            'taxes_id': [(6, 0, [])],
+            'supplier_taxes_id': [(6, 0, [])],
+        }
+        tmpl = self.env['product.template'].sudo().create(tmpl_vals)
+        return tmpl.product_variant_id
 
     def _parse_product_lines(self, ws):
-        """
-        Lee las filas de productos debajo de header_row_products.
-        Devuelve (product_lines, notes)
-        product_lines: [ {name, code, uom, qty, price}, ...]
-        """
-        start_row = max(self.header_row_products or 1, 1) + 1
-        end_row = ws.max_row
+        start = max(self.header_row_products or 1, 1) + 1
+        end = ws.max_row
 
-        product_lines = []
-        notes = []
-        empty_streak = 0
-        rows_read = 0
+        if self.max_product_rows and self.max_product_rows > 0:
+            end = min(end, start + self.max_product_rows - 1)
 
         c_name = _col_to_idx(self.col_prod_name)
         c_code = _col_to_idx(self.col_prod_code) if self.col_prod_code else None
         c_uom = _col_to_idx(self.col_prod_uom)
         c_qty = _col_to_idx(self.col_prod_qty)
-        c_price = _col_to_idx(self.col_prod_price)
+        # c_price = _col_to_idx(self.col_prod_price)
 
-        for r in range(start_row, end_row + 1):
-            # Límite máximo de filas productos
-            if self.max_product_rows and rows_read >= self.max_product_rows:
-                break
+        lines = []
+        notes = []
+        empty_streak = 0
 
-            def getv(ci):
-                return ws.cell(row=r, column=ci + 1).value if ci is not None else None
+        for row_idx in range(start, end + 1):
 
-            raw_name = getv(c_name)
+            def _cell(ci):
+                return ws.cell(row=row_idx, column=ci + 1).value if ci is not None else None
+
+            raw_name = _cell(c_name)
             name = (raw_name or '').strip() if isinstance(raw_name, str) else raw_name
 
             if not name:
@@ -281,145 +209,52 @@ class SOLineImportWizard(models.TransientModel):
                 if self.empty_product_break and empty_streak >= self.empty_product_break:
                     break
                 continue
-            else:
-                empty_streak = 0
+            empty_streak = 0
 
-            raw_code = getv(c_code) if c_code is not None else ''
-            code = (raw_code or '').strip() if isinstance(raw_code, str) else raw_code or ''
+            raw_uom = _cell(c_uom)
+            uom_name = (raw_uom or '').strip() if isinstance(raw_uom, str) else raw_uom
 
-            raw_uom = getv(c_uom)
-            uom_txt = (raw_uom or '').strip() if isinstance(raw_uom, str) else raw_uom or ''
+            qty_val, qty_ok = _to_float_safe(_cell(c_qty))
 
-            raw_qty = getv(c_qty)
-            raw_price = getv(c_price)
+            if self.strict_numeric_products and (not qty_ok ):
+                raise UserError(
+                    _("Fila %s: Cantidad/Precio no son numéricos (%s / %s).") %
+                    (row_idx, _cell(c_qty))
+                )
 
-            qty_val, qty_ok = _to_float_safe(raw_qty)
-            price_val, price_ok = _to_float_safe(raw_price)
-
-            if self.strict_numeric_products and (not qty_ok or not price_ok):
-                raise UserError(_("Fila %s (productos): valores numéricos inválidos. Cantidad=%s, Precio=%s")
-                                % (r, raw_qty, raw_price))
-
-            if not qty_ok or not price_ok:
-                notes.append(_("Fila %s omitida en productos por datos no numéricos (Cantidad=%s, Precio=%s).")
-                             % (r, raw_qty, raw_price))
+            if not qty_ok:
+                notes.append(
+                    _("Fila %s omitida por datos no numéricos. Cantidad=%s") %
+                    (row_idx, _cell(c_qty))
+                )
                 continue
 
-            product_lines.append({
-                'name': str(name),
-                'code': str(code or ''),
-                'uom': str(uom_txt),
+            code_val = _cell(c_code) if c_code is not None else ''
+
+            lines.append({
+                'row': row_idx,
+                'name': name,
+                'code': code_val or '',
+                'uom_name': uom_name or '',
                 'qty': qty_val,
-                'price': price_val,
+                'price': 0,
             })
-            rows_read += 1
 
-        return product_lines, notes
+        return lines, notes
 
-    # --------- parsing tabla SERVICIOS ----------
-
-    def _parse_service_lines(self, ws):
-        """
-        Lee las filas de servicios debajo de header_row_services.
-        Devuelve (service_lines, notes)
-        service_lines: [ {name, amount}, ...]
-        """
-        start_row = max(self.header_row_services or 1, 1) + 1
-        end_row = ws.max_row
-
-        service_lines = []
-        notes = []
-        empty_streak = 0
-        rows_read = 0
-
-        c_srv_name = _col_to_idx(self.col_srv_name)
-        c_srv_amount = _col_to_idx(self.col_srv_amount)
-
-        for r in range(start_row, end_row + 1):
-            # Límite máximo de filas servicios
-            if self.max_service_rows and rows_read >= self.max_service_rows:
-                break
-
-            def getv(ci):
-                return ws.cell(row=r, column=ci + 1).value if ci is not None else None
-
-            raw_sname = getv(c_srv_name)
-            sname = (raw_sname or '').strip() if isinstance(raw_sname, str) else raw_sname
-
-            raw_amt = getv(c_srv_amount)
-
-            if not sname:
-                empty_streak += 1
-                if self.empty_service_break and empty_streak >= self.empty_service_break:
-                    break
-                continue
-            else:
-                empty_streak = 0
-
-            amt_val, amt_ok = _to_float_safe(raw_amt)
-
-            if self.strict_numeric_services and not amt_ok:
-                raise UserError(_("Fila %s (servicios): importe no numérico (%s).") % (r, raw_amt))
-
-            if not amt_ok:
-                notes.append(_("Fila %s omitida en servicios por importe no numérico (%s).") % (r, raw_amt))
-                continue
-
-            service_lines.append({
-                'name': str(sname),
-                'amount': amt_val,
-            })
-            rows_read += 1
-
-        return service_lines, notes
-
-    # ================= Helpers de datos en Odoo =================
-
-    def _find_uom(self, name):
-        """
-        Busca la UoM por nombre (ilike).
-        Si no encuentra, usa default_uom_id.
-        """
-        if not name:
-            return self.default_uom_id
-        UoM = self.env['uom.uom'].sudo()
-        u = UoM.search([('name', '=ilike', name)], limit=1)
-        if not u:
-            u = UoM.search([('name', 'ilike', name)], limit=1)
-        return u or self.default_uom_id
-
-    def _find_or_create_product(self, name, code, uom_rec):
-        """
-        Busca primero por código interno (default_code),
-        luego por nombre. Si no existe y está permitido, crea.
-        """
-        Product = self.env['product.product'].sudo()
-
-        prod = False
-        if code:
-            prod = Product.search([('default_code', '=ilike', code)], limit=1)
-        if not prod:
-            prod = Product.search([('name', '=ilike', name)], limit=1)
-
-        if prod:
-            return prod
-
-        if not self.create_missing_products:
-            raise UserError(_("El producto '%s' no existe y la opción de crear está desactivada.") % name)
-
-        tmpl_vals = {
+    def _create_so_line(self, SO, prod, uom, qty, price, name):
+        self.env['sale.order.line'].sudo().create({
+            'order_id': SO.id,
+            'product_id': prod.id,
             'name': name,
-            'default_code': code or False,
-            'type': self.default_product_type,
-            'uom_id': uom_rec.id if uom_rec else False,
-            'uom_po_id': uom_rec.id if uom_rec else False,
-            'taxes_id': [(6, 0, [])],
-            'supplier_taxes_id': [(6, 0, [])],
-        }
-        tmpl = self.env['product.template'].sudo().create(tmpl_vals)
-        return tmpl.product_variant_id
+            'product_uom_qty': qty,
+            'price_unit': price,
+            'product_uom': uom.id if uom else prod.uom_id.id,
+        })
 
-    # ================= Acción principal =================
+    # -------------------
+    # Acción principal
+    # -------------------
 
     def action_import(self):
         if not self.sale_id:
@@ -436,74 +271,33 @@ class SOLineImportWizard(models.TransientModel):
             raise UserError(_("No se pudo leer el Excel: %s") % e)
 
         ws = self._get_ws(wb)
+        SO = self.sale_id.sudo()
 
-        # 1) parse productos
-        product_lines, notes_products = self._parse_product_lines(ws)
+        if self.clear_existing_lines and SO.order_line:
+            SO.order_line.unlink()
 
-        # 2) parse servicios
-        service_lines, notes_services = self._parse_service_lines(ws)
+        product_lines, notes_prod = self._parse_product_lines(ws)
 
-        if not product_lines and not service_lines:
-            raise UserError(_("No se detectaron líneas válidas ni de productos ni de servicios."))
-
-        order = self.sale_id.sudo()
-
-        # limpiar si corresponde
-        if self.clear_existing_lines and order.order_line:
-            order.order_line.unlink()
-
-        created_prod = 0
-        created_srv = 0
-
-        # Insertar productos
+        created_count = 0
         for pl in product_lines:
-            uom_rec = self._find_uom(pl['uom'])
-            prod_rec = self._find_or_create_product(pl['name'], pl['code'], uom_rec)
+            uom = self._find_uom(pl['uom_name'])
+            prod = self._get_or_create_product(pl['name'], uom)
+            self._create_so_line(
+                SO,
+                prod,
+                uom,
+                qty=pl['qty'],
+                price=pl['price'],
+                name=pl['name']
+            )
+            created_count += 1
 
-            self.env['sale.order.line'].sudo().create({
-                'order_id': order.id,
-                'product_id': prod_rec.id,
-                'name': pl['name'],
-                'product_uom': uom_rec.id if uom_rec else prod_rec.uom_id.id,
-                'product_uom_qty': pl['qty'],
-                'price_unit': pl['price'],
-            })
-            created_prod += 1
-
-        # Insertar servicios
-        for sl in service_lines:
-            # Para servicios vamos a intentar buscar/crear por nombre como producto tipo service.
-            uom_service = self.default_uom_id
-            srv_prod = self._find_or_create_product(sl['name'], False, uom_service)
-
-            # Forzar que ese producto sea tipo servicio si no lo era
-            if srv_prod.product_tmpl_id.type != 'service':
-                srv_prod.product_tmpl_id.write({'type': 'service'})
-
-            self.env['sale.order.line'].sudo().create({
-                'order_id': order.id,
-                'product_id': srv_prod.id,
-                'name': sl['name'],
-                'product_uom': uom_service.id if uom_service else srv_prod.uom_id.id,
-                'product_uom_qty': 1.0,
-                'price_unit': sl['amount'],
-            })
-            created_srv += 1
-
-        notes = []
-        notes.extend(notes_products)
-        notes.extend(notes_services)
-
-        msg = _(
-            "Se importaron %(p)s líneas de productos y %(s)s líneas de servicios en el Pedido de Venta %(so)s."
-        ) % {
-            'p': created_prod,
-            's': created_srv,
-            'so': order.name,
+        msg = _("Se importaron %(cnt)s líneas de productos en el Pedido de Venta %(so)s.") % {
+            'cnt': created_count,
+            'so': SO.name,
         }
-
-        if notes:
-            msg += "\n" + "\n".join(notes)
+        if notes_prod:
+            msg += "\n" + "\n".join(notes_prod)
 
         self.note = msg
 
@@ -513,6 +307,6 @@ class SOLineImportWizard(models.TransientModel):
             'params': {
                 'title': _('Importación completada'),
                 'message': msg,
-                'sticky': False
+                'sticky': False,
             }
         }
