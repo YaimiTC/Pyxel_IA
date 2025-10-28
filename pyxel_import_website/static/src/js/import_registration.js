@@ -27,8 +27,13 @@ export const ImportRegistrationForm = publicWidget.Widget.extend({
         return def;
     },
     async _onchangeFile(ev) {
-        if(ev?.target?.id)
+        if(ev?.target?.id){
+            const fileZone = ev?.target.previousElementSibling;
+            if(fileZone){
+                fileZone.classList.add('o_files_zone_custom');
+            }
             this._validateFileType(ev.target.id)
+        }
     },
     async _validateFileType(inputFileId) {
         const fileInput = document.getElementById(inputFileId);
