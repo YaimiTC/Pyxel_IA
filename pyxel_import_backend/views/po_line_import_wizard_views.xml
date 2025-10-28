@@ -6,55 +6,108 @@
     <field name="arch" type="xml">
       <form string="Importar líneas a Orden de Compra">
         <sheet>
+
+          <!-- Orden de compra -->
           <group>
-            <field name="purchase_id" required="1" domain="[('state','in',('draft','sent'))]"/>
+            <field name="purchase_id" required="1"
+                   domain="[('state','in',('draft','sent'))]"/>
           </group>
 
-          <group string="Archivo">
+          <!-- Archivo -->
+          <group string="Archivo Excel">
             <field name="file_data" filename="file_name" required="1"/>
             <field name="file_name" readonly="1"/>
             <group>
               <field name="sheet_index"/>
-              <field name="header_row"/>
             </group>
           </group>
 
-          <group string="Mapeo de columnas">
-            <group>
-              <field name="col_product" placeholder="A"/>
-              <field name="col_uom" placeholder="B"/>
-            </group>
-            <group>
-              <field name="col_qty" placeholder="C"/>
-              <field name="col_price" placeholder="D"/>
-            </group>
-          </group>
+          <notebook>
 
-          <group string="Opciones">
-            <group>
-              <field name="create_missing_products"/>
-              <field name="default_product_type"/>
-              <field name="default_uom_id"/>
-            </group>
-            <group>
-              <field name="clear_existing_lines"/>
-            </group>
-          </group>
+            <!-- TAB Productos -->
+            <page string="Productos">
+              <group string="Encabezado / Límites de productos">
+                <group>
+                  <field name="header_row_products"/>
+                  <field name="max_product_rows"/>
+                </group>
+                <group>
+                  <field name="empty_product_break"/>
+                  <field name="strict_numeric_products"/>
+                </group>
+              </group>
 
-          <group string="Servicios (líneas especiales)">
-            <group>
-              <field name="product_freight_id"/>
-              <field name="product_insurance_id"/>
-            </group>
-            <group>
-              <field name="product_fob_id"/>
-              <field name="product_other_id"/>
-            </group>
-          </group>
+              <group string="Columnas en Excel (tabla principal)">
+                <group>
+                  <field name="col_prod_seq" placeholder="A"/>
+                  <field name="col_prod_name" placeholder="B"/>
+                  <field name="col_prod_code" placeholder="C"/>
+                </group>
+                <group>
+                  <field name="col_prod_uom" placeholder="D"/>
+                  <field name="col_prod_qty" placeholder="E"/>
+                  <field name="col_prod_price" placeholder="F"/>
+                </group>
+              </group>
 
+              <group string="Opciones de creación de producto">
+                <group>
+                  <field name="create_missing_products"/>
+                  <field name="default_product_type"/>
+                </group>
+                <group>
+                  <field name="default_uom_id"/>
+                  <field name="clear_existing_lines"/>
+                </group>
+              </group>
+            </page>
+
+            <!-- TAB Servicios -->
+            <page string="Servicios">
+              <group string="Encabezado / Límites de servicios">
+                <group>
+                  <field name="header_row_services"/>
+                  <field name="max_service_rows"/>
+                </group>
+                <group>
+                  <field name="empty_service_break"/>
+                  <field name="strict_numeric_services"/>
+                </group>
+              </group>
+
+              <group string="Columnas en Excel (tabla lateral de servicios)">
+                <group>
+                  <field name="col_srv_name" placeholder="J"
+                         help="Columna donde está el nombre del servicio ('Flete', 'Seguro', etc.)"/>
+                  <field name="col_srv_amount" placeholder="K"
+                         help="Columna donde está el importe asociado a ese servicio"/>
+                </group>
+              </group>
+
+              <group string="Productos servicio a usar">
+                <group>
+                  <field name="product_fob_id"/>
+                  <field name="product_freight_id"/>
+                </group>
+                <group>
+                  <field name="product_insurance_id"/>
+                  <field name="product_other_id"/>
+                </group>
+              </group>
+
+              <div class="o_form_label">
+                Las filas de servicios se crearán como líneas de servicio
+                en la Orden de Compra con cantidad = 1.
+              </div>
+            </page>
+
+          </notebook>
+
+          <!-- Resultado -->
           <group string="Resultado" invisible="note == False">
             <field name="note" nolabel="1" readonly="1"/>
           </group>
+
         </sheet>
 
         <footer>
@@ -66,7 +119,7 @@
   </record>
 
   <record id="action_po_line_import_wizard" model="ir.actions.act_window">
-    <field name="name">Importar líneas desde Excel</field>
+    <field name="name">Importar Oferta Comercial</field>
     <field name="res_model">po.line.import.wizard</field>
     <field name="view_mode">form</field>
     <field name="view_id" ref="view_po_line_import_wizard_form"/>
@@ -82,7 +135,7 @@
       <header position="inside">
         <button name="%(action_po_line_import_wizard)d"
                 type="action"
-                string="Importar líneas (Excel)"
+                string="Importar Orden de compra"
                 class="oe_highlight"
                 invisible="state not in ('draft','sent')"/>
       </header>
