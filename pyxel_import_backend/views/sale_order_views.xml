@@ -1,21 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="view_order_form_inherit_invoice_button" model="ir.ui.view">
-        <field name="name">sale.order.form.inherit.invoice.button</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="priority" eval="200"/>
-        <field name="arch" type="xml">
-            <xpath expr="//button[@id='create_invoice']" position="attributes">
-                <attribute name="invisible">
-                    invoice_status != 'to invoice' or order_type != 'importation_process'
-                </attribute>
-            </xpath>
-        </field>
-    </record>
-
-
     <record id="view_order_form_inherit_override_supplier" model="ir.ui.view">
         <field name="name">sale.order.form.inherit.override.supplier</field>
         <field name="model">sale.order</field>
@@ -107,6 +92,20 @@
 
         </field>
         </record>
+
+    <record id="view_order_form_inherit_invoice_button" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.invoice.button</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority" eval="200"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@id='create_invoice']" position="attributes">
+                <attribute name="invisible">
+                    invoice_status != 'to invoice' or order_type != 'importation_process'
+                </attribute>
+            </xpath>
+        </field>
+    </record>
 
     <record id="view_quotation_tree_inherit_order_type" model="ir.ui.view">
         <field name="name">sale.quotation.tree.inherit.order_type</field>
