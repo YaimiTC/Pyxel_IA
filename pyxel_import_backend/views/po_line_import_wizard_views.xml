@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-  <!-- Vista del wizard -->
   <record id="view_po_line_import_wizard_form" model="ir.ui.view">
     <field name="name">po.line.import.wizard.form</field>
     <field name="model">po.line.import.wizard</field>
     <field name="arch" type="xml">
-      <form string="Importar líneas a Orden de Compra" create="false" edit="false">
+      <form string="Importar líneas a Orden de Compra">
         <sheet>
-
-          <!-- PO destino -->
           <group>
             <field name="purchase_id" required="1" domain="[('state','in',('draft','sent'))]"/>
           </group>
 
-          <!-- Archivo -->
           <group string="Archivo">
             <field name="file_data" filename="file_name" required="1"/>
             <field name="file_name" readonly="1"/>
@@ -24,36 +19,18 @@
             </group>
           </group>
 
-          <!-- Mapeo de columnas (por defecto B,C,D,E en tu layout) -->
           <group string="Mapeo de columnas">
             <group>
-              <field name="col_product" placeholder="B" required="1"/>
-              <field name="col_uom" placeholder="C" required="1"/>
+              <field name="col_product" placeholder="A"/>
+              <field name="col_uom" placeholder="B"/>
             </group>
             <group>
-              <field name="col_qty" placeholder="D" required="1"/>
-              <field name="col_price" placeholder="E" required="1"/>
+              <field name="col_qty" placeholder="C"/>
+              <field name="col_price" placeholder="D"/>
             </group>
           </group>
 
-          <!-- Opciones de lectura y corte -->
-          <group string="Lectura y control">
-            <group>
-              <field name="stop_at_first_label"
-                     help="La tabla se corta antes de la primera etiqueta (IMPORTE EXWORK, GASTO FOB, FLETE, SEGURO u OTROS GASTOS)."/>
-              <field name="max_data_rows"
-                     help="Límite duro de filas tras el encabezado. Déjalo vacío para no limitar."/>
-            </group>
-            <group>
-              <field name="empty_product_break"
-                     help="Corta si detecta N filas consecutivas sin producto."/>
-              <field name="strict_numeric"
-                     help="Si está activo, fila con cantidad/precio no numéricos genera error; si no, se omite con aviso."/>
-            </group>
-          </group>
-
-          <!-- Opciones de creación -->
-          <group string="Opciones de creación">
+          <group string="Opciones">
             <group>
               <field name="create_missing_products"/>
               <field name="default_product_type"/>
@@ -64,7 +41,6 @@
             </group>
           </group>
 
-          <!-- Servicios (recargos) -->
           <group string="Servicios (líneas especiales)">
             <group>
               <field name="product_freight_id"/>
@@ -76,11 +52,9 @@
             </group>
           </group>
 
-          <!-- Resultado -->
-          <group string="Resultado" invisible="note ==  False">
+          <group string="Resultado" invisible="note == False">
             <field name="note" nolabel="1" readonly="1"/>
           </group>
-
         </sheet>
 
         <footer>
@@ -90,8 +64,6 @@
       </form>
     </field>
   </record>
-
-
 
   <record id="action_po_line_import_wizard" model="ir.actions.act_window">
     <field name="name">Importar líneas desde Excel</field>
