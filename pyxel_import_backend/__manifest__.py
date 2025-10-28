@@ -26,7 +26,7 @@
         'transport_hub'
     ],
     "data": [
-        'data/crm_stage_data.xml',
+        # 'data/crm_stage_data.xml',
         'data/res_partner_management_type_data.xml',
         'data/res_partner_category_data.xml',
         'data/res_partner_contact_type_data.xml',
