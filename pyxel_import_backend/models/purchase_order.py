@@ -1,4 +1,10 @@
-from odoo import models, fields, api
+import io
+import base64
+from datetime import date
+from odoo.exceptions import UserError
+import xlsxwriter
+from odoo import models, fields, api,_
+
 import logging
 _logger = logging.getLogger(__name__)
 
@@ -63,6 +69,11 @@ class PurchaseOrder(models.Model):
             for idx, line in enumerate(lines, start=1):
                 if line.line_number != idx:
                     line.sudo().write({'line_number': idx})
+
+    def action_rfq_send(self):
+
+        self.ensure_one()
+        return super().action_rfq_send()
 
 
 class PurchaseOrderLine(models.Model):
