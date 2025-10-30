@@ -1,5 +1,5 @@
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="res_partner_contact_type_client" model="res.partner.contact.type">
             <field name="name">Cliente nacional</field>
             <field name="code">cliente_nacional</field>
