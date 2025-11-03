@@ -156,23 +156,64 @@ class SOLineImportWizard(models.TransientModel):
             u = UoM.search([('name', 'ilike', uom_name)], limit=1)
         return u or self.default_uom_id
 
-    def _get_or_create_product(self, name, uom):
+    def _get_or_create_product(self, code, name, uom):
         Product = self.env['product.product'].sudo()
-        prod = Product.search([('name', '=ilike', name)], limit=1)
-        if not prod:
-            prod = Product.search([('name', 'ilike', name)], limit=1)
 
+        # 1) buscar primero por código
+        prod = False
+        if code:
+            prod = Product.search([('default_code', '=', code)], limit=1)
+
+        # 2) si no, por nombre EXACTO
+        if not prod and name:
+            prod = Product.search([('name', '=', name)], limit=1)
+
+        # ========== caso: el producto YA existe ==========
         if prod:
+            # si el Excel trae una U/M, validamos contra la del producto
+            if uom:
+                # en compras Odoo mira sobre todo uom_po_id
+                prod_uom = prod.uom_po_id or prod.uom_id
+                if prod_uom and prod_uom.category_id != uom.category_id:
+                    # categorías distintas -> no son compatibles
+                    raise UserError(_(
+                        "El producto '%(prod)s' ya existe con la U/M '%(p_uom)s' "
+                        "y en el Excel viene la U/M '%(x_uom)s'. "
+                        "Debes usar la misma U/M o corregir el producto."
+                    ) % {
+                                        'prod': prod.display_name,
+                                        'p_uom': prod_uom.display_name,
+                                        'x_uom': uom.display_name,
+                                    })
+                # mismas categorías pero distinto id → también lo puedes forzar a que se use la del producto
+                # o lanzar error; aquí lanzo error igual para que no haya sorpresas:
+                if prod_uom and prod_uom.id != uom.id:
+                    raise UserError(_(
+                        "El producto '%(prod)s' usa la U/M '%(p_uom)s', "
+                        "pero el Excel trae '%(x_uom)s'. Usa la U/M del producto."
+                    ) % {
+                                        'prod': prod.display_name,
+                                        'p_uom': prod_uom.display_name,
+                                        'x_uom': uom.display_name,
+                                    })
             return prod
 
+        # ========== caso: NO existe y vamos a crearlo ==========
         if not self.create_missing_products:
             raise UserError(_("El producto '%s' no existe y la creación automática está desactivada.") % name)
 
+        if not uom:
+            raise UserError(_(
+                "No se pudo determinar la Unidad de Medida para el producto '%s'. "
+                "Configura una U/M por defecto en el wizard o en el Excel."
+            ) % name)
+
         tmpl_vals = {
             'name': name,
+            'default_code': code,
             'type': self.default_product_type,
-            'uom_id': uom.id if uom else False,
-            'uom_po_id': uom.id if uom else False,
+            'uom_id': uom.id,
+            'uom_po_id': uom.id,
             'taxes_id': [(6, 0, [])],
             'supplier_taxes_id': [(6, 0, [])],
         }
@@ -281,7 +322,7 @@ class SOLineImportWizard(models.TransientModel):
         created_count = 0
         for pl in product_lines:
             uom = self._find_uom(pl['uom_name'])
-            prod = self._get_or_create_product(pl['name'], uom)
+            prod = self._get_or_create_product(pl['code'], pl['name'], uom)
             self._create_so_line(
                 SO,
                 prod,

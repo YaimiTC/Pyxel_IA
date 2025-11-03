@@ -13,7 +13,7 @@ class ImportationLoad(models.Model):
     purchase_condition = fields.Selection(related='importation_id.purchase_condition', string='Purchase Condition',
                                           readonly=True)
     import_type_id = fields.Many2one(comodel_name='import.type',
-                                              related='importation_id.import_type_id', string='IIT')
+                                     related='importation_id.import_type_id', string='IIT')
 
     cargo_type = fields.Selection([
         ('dry', 'Dry'),
@@ -90,7 +90,6 @@ class ImportationLoad(models.Model):
                 record.hide_shipping_company = not record.import_type_id.show_shipping_company
                 record.hide_airline = not record.import_type_id.show_airline
                 record.hide_transit_agency = not record.import_type_id.show_transit_agency
-
 
     # @api.depends('arrival_date', 'extraction_date')
     def _compute_days_in_tcm(self):
