@@ -56,7 +56,6 @@ def _normalize_txt(txt):
 def _to_float_loose(v):
     """
     Convierte algo como '1,234.56', '1.234,56', '$5.00' -> float
-    No lanza error, solo best effort (raise si imposible de interpretar).
     """
     if v is None:
         return 0.0
@@ -64,20 +63,14 @@ def _to_float_loose(v):
         return float(v)
 
     s = str(v).strip()
-    # quitar símbolos (monedas, espacios, etc.)
     s = re.sub(r'[^\d,.\-]', '', s)
 
-    # caso mezcla de , y .
     if s.count(',') and s.count('.'):
-        # consideramos que el último separador es decimal
         if s.rfind(',') > s.rfind('.'):
-            # coma decimal -> eliminar puntos de miles
             s = s.replace('.', '').replace(',', '.')
         else:
-            # punto decimal -> quitar comas de miles
             s = s.replace(',', '')
     else:
-        # si solo hay coma -> úsala como decimal
         if s.count(',') and not s.count('.'):
             s = s.replace(',', '.')
 
@@ -88,10 +81,7 @@ def _to_float_loose(v):
 
 
 def _to_float_safe(v):
-    """
-    Versión segura: devuelve (float_value, es_valido_bool)
-    Si no es numérico claro -> (0.0, False) en vez de lanzar UserError.
-    """
+    """Devuelve (float_value, es_valido_bool)."""
     if v is None or (isinstance(v, str) and not v.strip()):
         return 0.0, False
     try:
@@ -143,9 +133,8 @@ class POLineImportWizard(models.TransientModel):
              "Si está desactivado, esa fila se ignora y se deja nota."
     )
 
-    # Mapeo columnas productos (usa letras A,B,C,... según tu Excel)
-    col_prod_seq = fields.Char(string="Col. N°", default='A',
-                               help="Columna del número de línea (opcional, se ignora a nivel de Odoo).")
+    # Mapeo columnas productos
+    col_prod_seq = fields.Char(string="Col. N°", default='A')
     col_prod_name = fields.Char(string="Col. Producto", default='B', required=True)
     col_prod_code = fields.Char(string="Col. Código", default='C')
     col_prod_uom = fields.Char(string="Col. U/M", default='D', required=True)
@@ -174,8 +163,6 @@ class POLineImportWizard(models.TransientModel):
         help="Si está activo y el Importe del servicio no es numérico, error. "
              "Si está desactivado, se omite esa fila."
     )
-
-    # Mapeo columnas servicios (ej. columna J=Servicio, K=Importe)
     col_srv_name = fields.Char(string="Col. Servicio", default='J')
     col_srv_amount = fields.Char(string="Col. Importe", default='K')
 
@@ -183,7 +170,6 @@ class POLineImportWizard(models.TransientModel):
     create_missing_products = fields.Boolean(
         string="Crear productos inexistentes",
         default=True,
-        help="Si el producto no existe en Odoo, lo crea automáticamente (como plantilla + variante)."
     )
     default_product_type = fields.Selection([
         ('product', 'Almacenable'),
@@ -194,7 +180,6 @@ class POLineImportWizard(models.TransientModel):
     default_uom_id = fields.Many2one(
         'uom.uom',
         string="UoM por defecto al crear",
-        help="Se usa si no se encuentra la U/M por nombre en Odoo."
     )
 
     clear_existing_lines = fields.Boolean(
@@ -225,7 +210,6 @@ class POLineImportWizard(models.TransientModel):
         domain=[('detailed_type', '=', 'service')]
     )
 
-    # Mensaje resultado
     note = fields.Text(readonly=True)
 
     # -------------------
@@ -240,7 +224,6 @@ class POLineImportWizard(models.TransientModel):
         return sheets[idx]
 
     def _find_uom(self, uom_name):
-        """Busca la UoM por nombre. Si no la encuentra, usa default_uom_id."""
         if not uom_name:
             return self.default_uom_id
         UoM = self.env['uom.uom'].sudo()
@@ -250,10 +233,6 @@ class POLineImportWizard(models.TransientModel):
         return u or self.default_uom_id
 
     def _get_or_create_product(self, name, uom):
-        """
-        Busca product.product por nombre aproximado.
-        Si no existe y create_missing_products=True -> lo crea.
-        """
         Product = self.env['product.product'].sudo()
         prod = Product.search([('name', '=ilike', name)], limit=1)
         if not prod:
@@ -265,11 +244,14 @@ class POLineImportWizard(models.TransientModel):
         if not self.create_missing_products:
             raise UserError(_("El producto '%s' no existe y la creación automática está desactivada.") % name)
 
+        if not uom:
+            raise UserError(_("No se puede crear el producto '%s' porque no se obtuvo una U/M válida.") % name)
+
         tmpl_vals = {
             'name': name,
             'type': self.default_product_type,
-            'uom_id': uom.id if uom else False,
-            'uom_po_id': uom.id if uom else False,
+            'uom_id': uom.id,
+            'uom_po_id': uom.id,
             'taxes_id': [(6, 0, [])],
             'supplier_taxes_id': [(6, 0, [])],
         }
@@ -281,14 +263,13 @@ class POLineImportWizard(models.TransientModel):
     # -------------------
 
     def _parse_product_lines(self, ws):
-        """Lee el bloque principal (No., Producto, Código, U/M, Cantidad, Precio Unitario)."""
+        """Lee el bloque principal (Producto, Código, U/M, Cantidad, Precio)."""
         start = max(self.header_row_products or 1, 1) + 1
         end = ws.max_row
 
         if self.max_product_rows and self.max_product_rows > 0:
             end = min(end, start + self.max_product_rows - 1)
 
-        # columnas resueltas a índice
         c_name = _col_to_idx(self.col_prod_name)
         c_code = _col_to_idx(self.col_prod_code) if self.col_prod_code else None
         c_uom = _col_to_idx(self.col_prod_uom)
@@ -307,15 +288,17 @@ class POLineImportWizard(models.TransientModel):
             raw_name = _cell(c_name)
             name = (raw_name or '').strip() if isinstance(raw_name, str) else raw_name
 
+            # si no hay producto, contamos vacíos y quizás cortamos
             if not name:
                 empty_streak += 1
                 if self.empty_product_break and empty_streak >= self.empty_product_break:
                     break
                 continue
-            empty_streak = 0  # reset porque sí hay nombre
+            empty_streak = 0
 
+            # UoM: forzar a string siempre
             raw_uom = _cell(c_uom)
-            uom_name = (raw_uom or '').strip() if isinstance(raw_uom, str) else raw_uom
+            uom_name = str(raw_uom or '').strip()
 
             qty_val, qty_ok = _to_float_safe(_cell(c_qty))
             price_val, price_ok = _to_float_safe(_cell(c_price))
@@ -333,13 +316,15 @@ class POLineImportWizard(models.TransientModel):
                 )
                 continue
 
-            code_val = _cell(c_code) if c_code is not None else ''
+            # aquí el fix: lo que venga de la col de código lo paso SIEMPRE a str
+            raw_code = _cell(c_code) if c_code is not None else ''
+            code_val = str(raw_code or '').strip()
 
             lines.append({
                 'row': row_idx,
                 'name': name,
-                'code': code_val or '',
-                'uom_name': uom_name or '',
+                'code': code_val,
+                'uom_name': uom_name,
                 'qty': qty_val,
                 'price': price_val,
             })
@@ -351,10 +336,6 @@ class POLineImportWizard(models.TransientModel):
     # -------------------
 
     def _parse_service_lines(self, ws):
-        """
-        Lee la tabla de servicios (col_srv_name / col_srv_amount), fila a fila.
-        Crea estructuras: [{'service': 'FLETE', 'amount': 123.45}, ...]
-        """
         start = max(self.header_row_services or 1, 1)
         end = ws.max_row
 
@@ -379,7 +360,6 @@ class POLineImportWizard(models.TransientModel):
             raw_amt = _cell(c_srv_amount)
             amt_val, amt_ok = _to_float_safe(raw_amt)
 
-            # cortar si fila viene completamente vacía
             if not srv_name and (raw_amt is None or str(raw_amt).strip() == ''):
                 empty_streak += 1
                 if self.empty_service_break and empty_streak >= self.empty_service_break:
@@ -394,7 +374,6 @@ class POLineImportWizard(models.TransientModel):
                 )
 
             if not srv_name:
-                # sin nombre no tiene sentido crear
                 notes.append(_("Fila servicio %s omitida: sin nombre de servicio.") % row_idx)
                 continue
 
@@ -412,7 +391,7 @@ class POLineImportWizard(models.TransientModel):
         return lines, notes
 
     # -------------------
-    # Crear líneas en PO
+    # Crear / actualizar líneas en PO
     # -------------------
 
     def _create_po_product_line(self, PO, prod, uom, qty, price, name):
@@ -426,14 +405,6 @@ class POLineImportWizard(models.TransientModel):
         })
 
     def _create_po_service_line(self, PO, srv_name, amount):
-        """
-        Decide a qué producto de servicio asignar según el nombre.
-        Ejemplo:
-         - si el nombre contiene 'FOB' => product_fob_id
-         - si contiene 'FLETE' => product_freight_id
-         - si contiene 'SEGURO' => product_insurance_id
-         - else => product_other_id
-        """
         norm = _normalize_txt(srv_name)
 
         if 'FOB' in norm and self.product_fob_id:
@@ -445,7 +416,6 @@ class POLineImportWizard(models.TransientModel):
         elif self.product_other_id:
             service_prod = self.product_other_id
         else:
-            # no hay producto configurado para este servicio
             return _("No se creó línea de servicio '%s' (importe %s) porque no hay producto asignado.") % (
                 srv_name, amount
             )
@@ -458,7 +428,7 @@ class POLineImportWizard(models.TransientModel):
             'price_unit': amount,
             'product_uom': service_prod.uom_po_id.id or service_prod.uom_id.id,
         })
-        return False  # sin nota de error
+        return False
 
     # -------------------
     # Acción principal
@@ -472,7 +442,6 @@ class POLineImportWizard(models.TransientModel):
         if openpyxl is None:
             raise UserError(_("Falta la librería 'openpyxl' en el servidor."))
 
-        # Abrir workbook
         try:
             data = base64.b64decode(self.file_data)
             wb = openpyxl.load_workbook(io.BytesIO(data), data_only=True)
@@ -482,47 +451,115 @@ class POLineImportWizard(models.TransientModel):
         ws = self._get_ws(wb)
         PO = self.purchase_id.sudo()
 
-        # ¿limpiar líneas actuales?
+        # 1) parseo
+        product_lines, notes_prod = self._parse_product_lines(ws)
+        service_lines, notes_srv = self._parse_service_lines(ws)
+
+        # si NO se marca "reemplazar", vamos a ACTUALIZAR
+        not_matched = []
+        uom_mismatch = []
+        created_count = 0
+        updated_count = 0
+
         if self.clear_existing_lines and PO.order_line:
             PO.order_line.unlink()
 
-        # 1) Productos
-        product_lines, notes_prod = self._parse_product_lines(ws)
+        # índice de líneas existentes (solo cuando NO limpiamos)
+        existing_by_name = {}
+        existing_by_code = {}
+        if not self.clear_existing_lines:
+            for line in PO.order_line:
+                # por nombre
+                key_name = (line.product_id and line.product_id.name) or line.name or ''
+                if key_name:
+                    existing_by_name[key_name.strip().upper()] = line
+                # por código
+                if line.product_id and line.product_id.default_code:
+                    existing_by_code[line.product_id.default_code.strip().upper()] = line
 
-        created_count = 0
+        # 2) procesar productos
         for pl in product_lines:
+            excel_name = pl['name']
+            excel_code = (pl['code'] or '').strip().upper()
             uom = self._find_uom(pl['uom_name'])
-            prod = self._get_or_create_product(pl['name'], uom)
+
+            if not self.clear_existing_lines:
+                # modo actualizar
+                line_found = False
+                target_line = None
+
+                if excel_code:
+                    target_line = existing_by_code.get(excel_code)
+
+                if not target_line:
+                    target_line = existing_by_name.get(excel_name.strip().upper())
+
+                if target_line:
+                    # validar UoM
+                    if pl['uom_name'] and target_line.product_uom and \
+                            target_line.product_uom.name.strip().upper() != pl['uom_name'].strip().upper():
+                        uom_mismatch.append(
+                            _("Línea '%(name)s': U/M del Excel (%(u1)s) difiere de la OC (%(u2)s).") % {
+                                'name': excel_name,
+                                'u1': pl['uom_name'],
+                                'u2': target_line.product_uom.name,
+                            }
+                        )
+                    target_line.write({
+                        'price_unit': pl['price'],
+                        'product_qty': pl['qty'],
+                    })
+                    updated_count += 1
+                    line_found = True
+
+                if not line_found:
+                    not_matched.append(excel_name)
+                continue
+
+            # modo crear (clear_existing_lines = True)
+            prod = self._get_or_create_product(excel_name, uom)
             self._create_po_product_line(
-                PO,
-                prod,
-                uom,
+                PO, prod, uom,
                 qty=pl['qty'],
                 price=pl['price'],
-                name=pl['name'],
+                name=excel_name,
             )
             created_count += 1
 
-        # 2) Servicios
-        service_lines, notes_srv = self._parse_service_lines(ws)
+        # 3) procesar servicios (se crean siempre)
         for sl in service_lines:
-            warn = self._create_po_service_line(
-                PO,
-                srv_name=sl['service'],
-                amount=sl['amount'],
-            )
+            warn = self._create_po_service_line(PO, sl['service'], sl['amount'])
             if warn:
                 notes_srv.append(warn)
 
-        # Mensaje final
-        msg = _("Se importaron %(cnt)s líneas de productos en la OC %(po)s.") % {
-            'cnt': created_count,
-            'po': PO.name,
-        }
-        all_notes = notes_prod + notes_srv
-        if all_notes:
-            msg += "\n" + "\n".join(all_notes)
+        # 4) mensaje final
+        msg_parts = []
+        if self.clear_existing_lines:
+            msg_parts.append(_("Se importaron %(n)s líneas de productos en la OC %(po)s.") % {
+                'n': created_count,
+                'po': PO.name,
+            })
+        else:
+            msg_parts.append(_("Se actualizaron %(n)s líneas existentes en la OC %(po)s.") % {
+                'n': updated_count,
+                'po': PO.name,
+            })
 
+        if not self.clear_existing_lines and not_matched:
+            msg_parts.append(_("No se encontraron en la orden estos productos del Excel:"))
+            for nm in not_matched:
+                msg_parts.append(" - %s" % nm)
+
+        if uom_mismatch:
+            msg_parts.append(_("Diferencias de unidad de medida detectadas:"))
+            msg_parts.extend(uom_mismatch)
+
+        if notes_prod:
+            msg_parts.append("\n".join(notes_prod))
+        if notes_srv:
+            msg_parts.append("\n".join(notes_srv))
+
+        msg = "\n".join(msg_parts)
         self.note = msg
 
         return {
