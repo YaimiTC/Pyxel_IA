@@ -291,6 +291,7 @@ class SOLineImportWizard(models.TransientModel):
             'product_uom_qty': qty,
             'price_unit': price,
             'product_uom': uom.id if uom else prod.uom_id.id,
+            'tax_id': [(6, 0, [])],
         })
 
     # -------------------
