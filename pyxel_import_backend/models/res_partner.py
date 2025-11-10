@@ -24,6 +24,21 @@ class ResPartner(models.Model):
     legal_activity_ids = fields.One2many('res.partner.legal.activity', 'partner_id', string="Activities")
     contract_import_ids = fields.One2many('res.partner.contract.import', 'partner_id', string="Contracts")
 
+    is_accredited = fields.Boolean(string="Accredited", compute='_compute_is_accredited', store=True)
+
+    @api.depends('opportunity_ids.stage_id')
+    def _compute_is_accredited(self):
+        accreditation_stage = self.env['crm.stage'].search([('is_accreditation_stage', '=', True,)], limit=1)
+
+        for record in self:
+            lead = self.env['crm.lead'].search([('partner_id', '=', record.id,)], limit=1)
+            if lead.stage_id.sequence >= accreditation_stage.sequence and not lead.stage_id.is_rejection_stage:
+                if not record.is_accredited:
+                    record.is_accredited = True
+            else:
+                if record.is_accredited:
+                    record.is_accredited = False
+
     @api.constrains('dap')
     def _check_dap_length(self):
         for record in self: 

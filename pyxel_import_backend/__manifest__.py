@@ -40,6 +40,7 @@
         "views/res_partner_view.xml",
         "views/product_template_views.xml",
         "views/crm_lead_views.xml",
+        "views/crm_stage_views.xml",
         "views/view_load_fill_wizard.xml",
         "views/view_importation_progress.xml",
         "views/view_importation_load.xml",

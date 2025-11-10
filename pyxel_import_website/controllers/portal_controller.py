@@ -97,13 +97,13 @@ class Portal(CustomerPortal):
 
             if lead:
                 contract_status = lead.stage_id.name
-                if contact_type.type_of_contact == 'Client':
-                    is_accredited = request.env["res.partner.contract.import"].sudo().search([
-                        ("partner_id", "=", business_partner_id),
-                        ("active_contract", "=", True)
-                    ], limit=1)
-                elif contact_type.type_of_contact == 'Supplier':
-                    is_accredited = lead.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
+                # if contact_type.type_of_contact == 'Client':
+                #     is_accredited = request.env["res.partner.contract.import"].sudo().search([
+                #         ("partner_id", "=", business_partner_id),
+                #         ("active_contract", "=", True)
+                #     ], limit=1)
+                # elif contact_type.type_of_contact == 'Supplier':
+                is_accredited = lead.partner_id.is_accredited
 
                 if not is_accredited:
                     days_in_process = (datetime.now() - lead.create_date).days

@@ -69,7 +69,7 @@
               <!-- si prefieres el viejo flag: <attribute name="invisible">1</attribute> -->
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="attributes">
-                  <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Client')]</attribute>
+                  <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]</attribute>
              </xpath>
 
              <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="before">

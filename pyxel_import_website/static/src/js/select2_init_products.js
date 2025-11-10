@@ -31,6 +31,7 @@
         function  cleanJSONString(str) {
             return str
                 .replace(/\\\"/g, '\"') // Manejar escapes existentes
+                .replace(/\\xa0/g, ' ') // Manejar los non breaking spaces
                 .replace(/(?<!: |:|{|, |,)"(?!,|}|:)/g, '\\"') // Escapar comillas dobles internas
                 .replace(/'(?=:|}|,)|(?<={|, |: )'/g, '"') // Convertir las comillas simples a comillas dobles solamente si tienen delante un "{", ", ", ": " o tengan detras un "}", ","  
         }
