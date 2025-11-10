@@ -44,12 +44,10 @@ def get_render_values(kw):
     )
     register_type = kw.get("type", "accreditation")
     banner = operation_banner_img.get(register_type, operation_banner_img["accreditation"])
-    productos_de_importacion = request.env['product.template'].sudo().search([('de_importacion', '=', True)])
-    alimentos_de_importacion = request.env['product.template'].sudo().search(
-        [('product_type', '=', 'alimento'), ('de_importacion', '=', True)])
+    alimentos_de_importacion = request.env['product.template'].sudo().search_read(
+        [('product_type', '=', 'alimento'), ('de_importacion', '=', True)], ['id', 'name'])
 
     product_selected = request.session.get('product_selected', [])
-    alimentos_de_importacion_data = [{'id': product.id, 'name': product.name} for product in alimentos_de_importacion]
 
     render_values = {
         "countries": country.get_website_sale_countries(),
@@ -61,9 +59,8 @@ def get_render_values(kw):
         "banner": banner,
         "register_type": register_type,
         "registered_user": False,
-        "productos_de_importacion": productos_de_importacion,
         "productos_seleccionados_ids": product_selected,
-        'alimentos_de_importacion': json.dumps(alimentos_de_importacion_data),
+        'alimentos_de_importacion': json.loads(json.dumps(alimentos_de_importacion)),
     }
     domain_ids = [request.env.user.partner_id.id]
     if request.env.user.partner_id.parent_id:
@@ -329,7 +326,7 @@ class ControllerTest(http.Controller):
         days_in_process = 'False'
 
         if crm_lead_exists: 
-            is_accredited = crm_lead_exists.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
+            is_accredited = crm_lead_exists.partner_id.is_accredited
 
             if not is_accredited:
                 days_in_process = (datetime.now() - crm_lead_exists.create_date).days
@@ -352,7 +349,7 @@ class ControllerTest(http.Controller):
         is_accredited = False
         
         if crm_lead_exists:
-            is_accredited = crm_lead_exists.stage_id.id == request.env.ref('crm.stage_lead3').sudo().id
+            is_accredited = crm_lead_exists.partner_id.is_accredited
         if kw.get('type') == 'accreditation' and crm_lead_exists:
             if is_accredited:
                 return request.redirect('/my/home')

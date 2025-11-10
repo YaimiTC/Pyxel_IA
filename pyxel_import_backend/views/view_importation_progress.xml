@@ -119,8 +119,8 @@
                             <field name="process_id" options="{'no_create': True, 'no_open': True}" readonly="True"
                                    context="{'default_importation_id': id}"/>
                             <field name="name" readonly="1"/>
-                            <field name="provider_id" domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Supplier')]"/>
-                            <field name="customer_id" domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Client')]"/>
+                            <field name="provider_id" domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]"/>
+                            <field name="customer_id" domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]"/>
                             <field name="country_origin_id"/>
                             <field name="filtered_incoterm" invisible="True"/>
                             <field name="filtered_import_type" invisible="True"/>
