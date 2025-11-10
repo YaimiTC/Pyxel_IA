@@ -402,6 +402,7 @@ class POLineImportWizard(models.TransientModel):
             'product_qty': qty,
             'price_unit': price,
             'product_uom': (uom.id if uom else prod.uom_po_id.id),
+            'taxes_id': [(6, 0, [])],  # sin impuestos
         })
 
     def _create_po_service_line(self, PO, srv_name, amount):
