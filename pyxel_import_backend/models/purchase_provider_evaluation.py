@@ -269,16 +269,47 @@ class PurchaseProviderEvaluation(models.Model):
         if not pos_to_send:
             raise UserError(_("No hay órdenes de compra en estado borrador o enviadas para enviar."))
 
+        MailCompose = self.env['mail.compose.message']
         total_sent = 0
+
         for po in pos_to_send:
             try:
-                template.send_mail(po.id, force_send=True)
-                po.write({'state': 'sent'})  # Marcar como enviada
+                # 1) Generar el Excel
+                attachment = False
+                try:
+                    filename, data_b64 = MailCompose._generate_supplier_excel(po)
+                    attachment = self.env['ir.attachment'].create({
+                        'name': filename,
+                        'datas': data_b64,
+                        'res_model': 'purchase.order',
+                        'res_id': po.id,
+                        'type': 'binary',
+                        'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    })
+                except Exception as e:
+                    # Si falla la generación, logueamos y seguimos enviando el correo sin Excel
+                    _logger.exception(
+                        "No se pudo generar el Excel RFQ para la OC %s desde la evaluación %s: %s",
+                        po.name, self.display_name, e
+                    )
+                    attachment = False
+
+                # 2) Construir email_values para adjuntar el Excel
+                email_values = {}
+                if attachment:
+                    email_values['attachment_ids'] = [(4, attachment.id)]
+
+                # 3) Enviar el correo con la plantilla + adjunto Excel
+                template.send_mail(po.id, force_send=True, email_values=email_values)
+
+                # 4) Marcar la OC como enviada
+                po.write({'state': 'sent'})
                 total_sent += 1
+
             except Exception as e:
                 po.message_post(body=_("Error al enviar correo: %s") % str(e))
 
-        # Publicar mensaje en el chatter de la evaluación
+        # Mensaje en el chatter de la evaluación
         self.message_post(
             body=_("Se enviaron %s RFQs a proveedores desde la evaluación.") % total_sent,
             message_type="comment",
