@@ -6,8 +6,14 @@ from odoo.exceptions import ValidationError
 class Stage(models.Model):
     _inherit = "crm.stage"
 
+    def _default_sequence(self):
+        greatest_sequence = self.search([], order='sequence desc', limit=1).sequence
+        return greatest_sequence + 1
+
     is_accreditation_stage = fields.Boolean(string="Is Accreditation Stage?")
     is_rejection_stage = fields.Boolean(string="Is Cancellation Stage?")
+
+    sequence = fields.Integer(default=_default_sequence)
 
     @api.constrains('is_accreditation_stage', 'is_rejection_stage')
     def _check_accreditation_stage(self):
