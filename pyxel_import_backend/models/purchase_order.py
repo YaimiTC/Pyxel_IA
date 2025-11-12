@@ -12,6 +12,10 @@ _logger = logging.getLogger(__name__)
 class PurchaseOrder(models.Model):
     _inherit = 'purchase.order'
 
+    partner_id = fields.Many2one(
+        domain="[('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]",
+    )
+
     sale_order_id = fields.Many2one('sale.order', string='Related Quotation')
     evaluation_id = fields.Many2one('purchase.provider.evaluation', string='Evaluation')
     is_third_party_contract = fields.Boolean(string='Third-Party Contract')
