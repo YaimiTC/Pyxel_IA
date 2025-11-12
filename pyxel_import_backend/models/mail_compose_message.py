@@ -18,6 +18,7 @@ except Exception:
 class MailComposeMessage(models.TransientModel):
     _inherit = "mail.compose.message"
 
+    @api.model
     def _generate_supplier_excel(self, po):
         if not po:
             raise UserError(_("No se puede generar el Excel: no hay orden de compra válida."))
@@ -54,11 +55,10 @@ class MailComposeMessage(models.TransientModel):
             'align': 'right',
         })
 
-        # Column widths
-        ws.set_column('A:A', 50)  # Descripción
-        ws.set_column('B:B', 12)  # U.M.
-        ws.set_column('C:C', 12)  # Cantidad
-        ws.set_column('D:D', 15)  # Precio Unitario (vacío)
+        ws.set_column('A:A', 50)
+        ws.set_column('B:B', 12)
+        ws.set_column('C:C', 12)
+        ws.set_column('D:D', 15)
 
         row = 0
 
@@ -76,16 +76,14 @@ class MailComposeMessage(models.TransientModel):
 
         ws.write(row, 0, _("Fecha:"), fmt_header_label)
         ws.write(row, 1, today_str)
-        row += 2  # blank line
+        row += 2
 
-        # table header
         ws.write(row, 0, _("Descripción"), fmt_table_header)
         ws.write(row, 1, _("U.M."), fmt_table_header)
         ws.write(row, 2, _("Cantidad"), fmt_table_header)
         ws.write(row, 3, _("Precio Unitario"), fmt_table_header)
         row += 1
 
-        # lines
         for line in po.order_line:
             desc = line.name or (line.product_id.display_name or '')
             uom_name = line.product_uom and line.product_uom.name or ''
@@ -94,7 +92,7 @@ class MailComposeMessage(models.TransientModel):
             ws.write(row, 0, desc, fmt_cell_border)
             ws.write(row, 1, uom_name, fmt_cell_center)
             ws.write_number(row, 2, qty, fmt_cell_right)
-            ws.write(row, 3, "", fmt_cell_right)  # proveedor rellena aquí
+            ws.write(row, 3, "", fmt_cell_right)
             row += 1
 
         wb.close()
