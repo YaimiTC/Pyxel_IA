@@ -31,7 +31,7 @@ class ImportationProcess(models.Model):
         default='new',
         tracking=True,
     )
-    purchase_order_ids = fields.Many2many('purchase.order', string='Purchase Orders')
+    purchase_order_ids = fields.One2many('purchase.order', 'importation_id', string='Purchase Orders')
     purchase_order_count = fields.Integer(string='Purchase Order Count', compute='_compute_purchase_order_count')
     cost_line_ids = fields.One2many('importation.cost.line', 'importation_id', string='Additional Costs')
     total_cost = fields.Monetary(string='Total Cost', compute='_compute_total_cost')
