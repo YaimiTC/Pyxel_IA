@@ -60,7 +60,7 @@ def get_render_values(kw):
         "register_type": register_type,
         "registered_user": False,
         "productos_seleccionados_ids": product_selected,
-        'alimentos_de_importacion': json.loads(json.dumps(alimentos_de_importacion)),
+        'alimentos_de_importacion': json.dumps(alimentos_de_importacion),
     }
     domain_ids = [request.env.user.partner_id.id]
     if request.env.user.partner_id.parent_id:

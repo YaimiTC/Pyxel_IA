@@ -22,10 +22,6 @@
         <field name="evaluation_id" readonly="1"/>
       </xpath>
 
-      <xpath expr="//field[@name='partner_id']" position="attributes">
-        <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]</attribute>
-      </xpath>
-
        <xpath expr="//page[@name='purchase_delivery_invoice']" position="inside">
             <group>
                 <field name="is_third_party_contract"/>

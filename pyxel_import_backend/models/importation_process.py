@@ -31,7 +31,7 @@ class ImportationProcess(models.Model):
         default='new',
         tracking=True,
     )
-    purchase_order_ids = fields.Many2many('purchase.order', string='Purchase Orders')
+    purchase_order_ids = fields.One2many('purchase.order', 'importation_id', string='Purchase Orders')
     purchase_order_count = fields.Integer(string='Purchase Order Count', compute='_compute_purchase_order_count')
     cost_line_ids = fields.One2many('importation.cost.line', 'importation_id', string='Additional Costs')
     total_cost = fields.Monetary(string='Total Cost', compute='_compute_total_cost')
@@ -50,8 +50,8 @@ class ImportationProcess(models.Model):
                 if rec.sale_order_id and rec.sale_order_id.evaluation_apply_id else False
 
     final_sale_order_id = fields.Many2one('sale.order', string='Final Generated Offer', readonly=True)
-    customer_id = fields.Many2one('res.partner', string='Customer', required=False)
-    provider_id = fields.Many2one('res.partner', string='Supplier', required=True)
+    customer_id = fields.Many2one('res.partner', string='Customer', required=False, domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]")
+    provider_id = fields.Many2one('res.partner', string='Supplier', required=True, domain="[('contact_type_id', '!=', False), ('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]")
 
     country_origin_id = fields.Many2one('res.country', string='Country of Origin', required=True)
 

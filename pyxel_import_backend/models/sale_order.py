@@ -8,6 +8,10 @@ from odoo.exceptions import UserError
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
+    partner_id = fields.Many2one(
+        domain="[('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]",
+    )
+
     purchase_order_count = fields.Integer(string="Purchase Orders", compute='_compute_purchase_order_count')
     provider_names = fields.Char(string="Providers", compute="_compute_purchase_order_name")
     invoice_names = fields.Char(string='Invoices', compute='_compute_invoice_names')
