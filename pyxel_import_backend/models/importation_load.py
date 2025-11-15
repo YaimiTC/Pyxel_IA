@@ -295,47 +295,114 @@ class ImportationLoadLine(models.Model):
     quantity = fields.Float(string='Allocated Amount', required=True)
     price = fields.Float(string='Price')
 
+    # ---------- HELPERS ----------
+
+    def _get_allocation_context(self, line):
+        """Devuelve (allocated_total, old_qty, allocated_without_current, total_with_new, max_allowed)
+        para la purchase_order_line de esta línea.
+        """
+        po_line = line.purchase_order_line_id
+        if not po_line:
+            return 0.0, 0.0, 0.0, 0.0, 0.0
+
+        # Cantidad vieja (antes de editar). Si es nueva, 0.
+        old_qty = 0.0
+        if line._origin and line._origin.id:
+            old_qty = line._origin.quantity or 0.0
+
+        # Suma de TODAS las líneas (incluida esta) tal como están ahora en memoria
+        all_lines = po_line.container_fix_ids
+        allocated_total = sum(all_lines.mapped('quantity') or [])
+
+        # Lo que realmente aportan "los demás" = total - lo que tenía esta línea antes
+        allocated_without_current = allocated_total - old_qty
+
+        # Lo que habría si confirmamos la cantidad nueva
+        new_qty = line.quantity or 0.0
+        total_with_new = allocated_without_current + new_qty
+
+        max_allowed = po_line.product_uom_qty or 0.0
+
+        return allocated_total, old_qty, allocated_without_current, total_with_new, max_allowed
+
+        # ---------- CONSTRAINT ----------
+
     @api.constrains('quantity', 'purchase_order_line_id')
     def _check_quantity(self):
-        for line in self:
-            # Sumar las demás líneas, excluyendo la actual (si ya está creada)
-            other_lines = line.purchase_order_line_id.container_fix_ids.filtered(lambda l: l.id != line.id)
-            total_assigned = sum(other_lines.mapped('quantity')) + line.quantity
-
-            if total_assigned > line.purchase_order_line_id.product_uom_qty:
-                raise ValidationError("The total allocated quantity exceeds the quantity in the purchase line.")
-
-    @api.onchange('quantity')
-    def _onchange_quantity(self):
         for line in self:
             po_line = line.purchase_order_line_id
             if not po_line:
                 continue
-            if line.quantity <= 0:
-                raise ValidationError("You cannot assign an amount less than or equal to zero.")
 
-            def _get_id_safe(rec):
-                return rec._origin.id if rec._origin else rec.id
+            if line.quantity is None or line.quantity <= 0:
+                raise ValidationError(_("The amount allocated must be greater than zero."))
 
-            current_line_id = _get_id_safe(line)
+            (
+                allocated_total,
+                old_qty,
+                allocated_without_current,
+                total_with_new,
+                max_allowed,
+            ) = line._get_allocation_context(line)
 
-            other_lines = po_line.container_fix_ids.filtered(
-                lambda l: _get_id_safe(l) != current_line_id
-            )
-
-            total_assigned = sum(other_lines.mapped('quantity'))
-            available = po_line.product_uom_qty - total_assigned
-
-            if line.quantity > available:
-                line.quantity = available
+            if total_with_new > max_allowed + 1e-6:
+                available = max_allowed - allocated_without_current
                 raise ValidationError(
-                    f"The quantity exceeds the available quantity ({available}). It has been automatically adjusted.")
+                    _("The total allocated quantity exceeds the quantity in the purchase line. "
+                      "Available: %(available)s") % {'available': available}
+                )
+
+    @api.onchange('quantity', 'purchase_order_line_id')
+    def _onchange_quantity(self):
+        for line in self:
+            if not line.purchase_order_line_id:
+                continue
+
+            if line.quantity is None:
+                continue
+
+            if line.quantity <= 0:
+                line.quantity = 0.0
+                return {
+                    'warning': {
+                        'title': _('Invalid quantity'),
+                        'message': _('You cannot assign an amount less than or equal to zero.'),
+                    }
+                }
+
+            (
+                allocated_total,
+                old_qty,
+                allocated_without_current,
+                total_with_new,
+                max_allowed,
+            ) = line._get_allocation_context(line)
+
+            # Si no se pasa, todo bien
+            if total_with_new <= max_allowed:
+                continue
+
+            # Si se pasa, ajustamos a lo máximo permitido
+            available = max_allowed - allocated_without_current
+            if available < 0:
+                available = 0.0
+
+            line.quantity = available
+            return {
+                'warning': {
+                    'title': _('Quantity adjusted'),
+                    'message': _(
+                        'The quantity exceeds the available quantity (%(available)s). '
+                        'It has been automatically adjusted.'
+                    ) % {'available': available},
+                }
+            }
 
     @api.constrains('quantity')
     def _check_quantity_not_zero(self):
         for line in self:
             if line.quantity <= 0:
-                raise ValidationError("The amount allocated must be greater than zero.")
+                raise ValidationError(_("The amount allocated must be greater than zero."))
 
     @api.constrains('opening_date', 'arrival_date', 'release_date', 'extraction_date', 'return_date')
     def _check_dates_order(self):
