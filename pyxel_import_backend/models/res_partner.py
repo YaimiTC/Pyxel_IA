@@ -24,20 +24,21 @@ class ResPartner(models.Model):
     legal_activity_ids = fields.One2many('res.partner.legal.activity', 'partner_id', string="Activities")
     contract_import_ids = fields.One2many('res.partner.contract.import', 'partner_id', string="Contracts")
 
-    is_accredited = fields.Boolean(string="Accredited", compute='_compute_is_accredited', store=True)
+    is_accredited = fields.Boolean(string="Accredited", default=False, compute='_compute_is_accredited', store=True)
+    is_accredited2 = fields.Boolean(compute='_compute_is_accredited')
 
     @api.depends('opportunity_ids.stage_id')
     def _compute_is_accredited(self):
         accreditation_stage = self.env['crm.stage'].search([('is_accreditation_stage', '=', True,)], limit=1)
 
         for record in self:
-            lead = self.env['crm.lead'].search([('partner_id', '=', record.id,)], limit=1)
-            if lead.stage_id.sequence >= accreditation_stage.sequence and not lead.stage_id.is_rejection_stage:
-                if not record.is_accredited:
-                    record.is_accredited = True
+            lead = self.env['crm.lead'].search([('type','=','opportunity'), ('partner_id', '=', record.id,)], limit=1)
+            if lead and accreditation_stage and lead.stage_id.sequence >= accreditation_stage.sequence and not lead.stage_id.is_rejection_stage:
+                record.is_accredited = True
+                record.is_accredited2 = True
             else:
-                if record.is_accredited:
-                    record.is_accredited = False
+                record.is_accredited = False
+                record.is_accredited2 = False
 
     @api.constrains('dap')
     def _check_dap_length(self):
