@@ -123,20 +123,20 @@ class ImportContainerBillingWizard(models.TransientModel):
         return self.action_process()
 
     # ===== Aliases de modelos/campos personalizados =====
-    _container_model = 'x_container'
-    _import_model = 'x_import'
-    _container_name_field = 'x_name'
-    _container_bl_field = 'x_studio_bill_of_landing_number'  # BL en la importación
-    _container_import_m2o = 'x_studio_import_id'  # M2O hacia importación
+    _container_model = 'importation.load'
+    _import_model = 'importation.process'
+    _container_name_field = 'name'
+    _container_bl_field = 'purchase_condition_number'  # BL en la importación
+    _container_import_m2o = 'importation_id'  # M2O hacia importación
 
     # O2M intermedio y su M2O a PO line
-    _container_lines_o2m = 'x_studio_order_lines_by_container'  # -> x_containerlineorder (intermedio)
-    _container_line_po_line_m2o = 'x_studio_purchase_order_line'  # -> purchase.order.line
+    _container_lines_o2m = 'cargo_line_ids'  # -> importation.load.line (intermedio)
+    _container_line_po_line_m2o = 'purchase_order_line_id'  # -> purchase.order.line
 
     # Campos custom en factura
-    _move_import_m2o = 'x_studio_import_id'
-    _move_container_m2m = 'x_studio_container_ids'  # M2M
-    _move_type_import_field = 'x_studio_type_import'  # 'normal'
+    _move_import_m2o = 'importation_process_id'
+    _move_container_m2m = 'container_ids'  # M2M
+    _move_type_import_field = 'invoice_type'  # 'normal'
 
     # ====================== Core ========================
     def _get_worksheet(self, wb):
@@ -220,11 +220,11 @@ class ImportContainerBillingWizard(models.TransientModel):
                     _logger.info("IMPORT ID: %s", getattr(imp, 'id', False))
                     cont = C.with_context(lang='es_419').search([
                         (self._container_name_field, '=', container_name),
-                        ('x_studio_many2one_field_15t_1hjr52r0r.id', '=', imp.id)  # vínculo contenedor→importación
+                        ('importation_id.id', '=', imp.id)  # vínculo contenedor→importación
                     ], limit=1)
                     if cont:
-                        _logger.info("Contenedor encontrado: %s", getattr(cont, 'x_name', False))
-                        _logger.info("Importación encontrada: %s", getattr(imp, 'x_name', False))
+                        _logger.info("Contenedor encontrado: %s", getattr(cont, 'name', False))
+                        _logger.info("Importación encontrada: %s", getattr(imp, 'name', False))
                         return cont, imp
 
             return cont, imp
@@ -237,14 +237,14 @@ class ImportContainerBillingWizard(models.TransientModel):
             -> purchase.order.line.order_id            --> (m2o purchase.order)
             -> purchase.order.x_studio_client          --> (m2o res.partner)
         """
-        InterLine = self.env['x_containerlineorder']
+        InterLine = self.env['importation.load.line']
         inter_lines = getattr(container, self._container_lines_o2m, InterLine.browse())
         if not inter_lines:
             return self.env['res.partner']
 
         po_lines = inter_lines.mapped(self._container_line_po_line_m2o)
         purchase_orders = po_lines.mapped('order_id')
-        clients = purchase_orders.mapped('x_studio_client').filtered(lambda p: p and p.id)
+        clients = purchase_orders.mapped('importation_id.customer_id').filtered(lambda p: p and p.id)
         return clients
 
     def _get_taxes_for_product(self, product):
@@ -265,12 +265,12 @@ class ImportContainerBillingWizard(models.TransientModel):
 
         if key in cache:
             inv = cache[key]
-            inv.sudo().write({'x_studio_type_import': 'normal'})
+            inv.sudo().write({'invoice_type': 'normal'})
             if not simple_by_partner:
                 if import_rec:
-                    inv.sudo().write({'x_studio_import_id': import_rec.id})
+                    inv.sudo().write({'importation_process_id': import_rec.id})
                 if container_rec:
-                    inv.sudo().write({'x_studio_container_ids': [(4, container_rec.id)]})
+                    inv.sudo().write({'container_ids': [(4, container_rec.id)]})
             return inv
 
         vals = {
@@ -279,16 +279,16 @@ class ImportContainerBillingWizard(models.TransientModel):
             'journal_id': self.journal_id.id,
             'invoice_date': self.invoice_date or date.today(),
             'company_id': self.company_id.id,
-            'x_studio_type_import': 'normal',
+            'invoice_type': 'normal',
         }
         if self.force_currency_id:
             vals['currency_id'] = self.force_currency_id.id
 
         if not simple_by_partner:
             if import_rec:
-                vals['x_studio_import_id'] = import_rec.id
+                vals['importation_process_id'] = import_rec.id
             if container_rec:
-                vals['x_studio_container_ids'] = [(6, 0, [container_rec.id])]
+                vals['container_ids'] = [(6, 0, [container_rec.id])]
 
         inv = Move.with_company(self.company_id).sudo().create(vals)
         cache[key] = inv
@@ -296,7 +296,7 @@ class ImportContainerBillingWizard(models.TransientModel):
 
     def _attach_container_to_move(self, inv, container):
         if self.grouping_mode == 'by_import' and container:
-            inv.write({'x_studio_container_ids': [(4, container.id)]})
+            inv.write({'container_ids': [(4, container.id)]})
 
     def _create_line(self, inv, product, cost, container_rec=None, bl_value=''):
         name_bits = [product.display_name]
@@ -518,7 +518,7 @@ class ImportContainerBillingWizard(models.TransientModel):
         return """
             <p style="margin:0;">
                 El cliente se deduce de las líneas del contenedor:
-                <code>x_studio_order_lines_by_container → x_studio_purchase_order_line → order_id → x_studio_client</code>.<br/>
+                <code>cargo_line_ids → purchase_order_line_id → order_id → importation_id  → customer_id </code>.<br/>
                 Si hay varios clientes, se crea una factura por cliente y se divide el costo entre ellos.
             </p>
             """
@@ -526,7 +526,7 @@ class ImportContainerBillingWizard(models.TransientModel):
     def _default_instruction_linking(self):
         return """
             <p style="margin:0;">
-                Se vincularán <b>x_studio_container_ids</b> y <b>x_studio_import_id</b> en la factura,<br/>
-                y se establecerá <b>x_studio_type_import = 'normal'</b>.
+                Se vincularán <b>container_ids</b> y <b>importation_process_id</b> en la factura,<br/>
+                y se establecerá <b>invoice_type = 'normal'</b>.
             </p>
             """
