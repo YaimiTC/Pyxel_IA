@@ -285,23 +285,25 @@ class PurchaseOrderLine(models.Model):
 
     quantity_allocated = fields.Float(
         string='Allocated Quantity for Containers',
-        compute='_compute_allocation',
-        store=True
+        compute='_compute_quantity_allocated',
+        store=True,
     )
 
     quantity_available = fields.Float(
         string='Available Quantity for Containers',
-        compute='_compute_allocation',
-        # store=True
+        compute='_compute_quantity_available',
+        store=True,
     )
 
-    # @api.depends('product_uom_qty', 'container_fix_ids.quantity')
-    def _compute_allocation(self):
-        """Cantidad asignada y disponible = real, siempre basada en las líneas de contenedor."""
+    @api.depends('container_fix_ids.quantity')
+    def _compute_quantity_allocated(self):
         for line in self:
-            allocated = sum(line.container_fix_ids.mapped('quantity') or [])
-            line.quantity_allocated = allocated
-            line.quantity_available = (line.product_uom_qty or 0.0) - allocated
+            line.quantity_allocated = sum(line.container_fix_ids.mapped('quantity') or [])
+
+    @api.depends('product_uom_qty', 'quantity_allocated')
+    def _compute_quantity_available(self):
+        for line in self:
+            line.quantity_available = (line.product_uom_qty or 0.0) - (line.quantity_allocated or 0.0)
 
     # Helpers para reutilizar desde importation.load.line
     def _get_allocated_qty(self, exclude_line=None):
