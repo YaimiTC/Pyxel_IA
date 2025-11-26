@@ -49,7 +49,6 @@
                 'name': request.params.get('name', ''),     
                 'phone': request.params.get('phone', ''),
                 'partner_id': request.params.get('partner_id', ''),
-                'email_from': request.params.get('email_from', ''),
                 'company': request.params.get('company', ''),
                 'subject': request.params.get('subject', ''),
             }" />
@@ -108,10 +107,6 @@
                                                             class="form-control s_website_form_input"
                                                             name="name" required=""
                                                             data-fill-with="name" />
-                                                        <input id="contact3" type="hidden"
-                                                            class="form-control s_website_form_input"
-                                                            name="email_from" required=""
-                                                            data-fill-with="email" />
                                                         <input id="partner_id" type="hidden"
                                                             class="form-control s_website_form_input"
                                                             name="partner_id" required=""

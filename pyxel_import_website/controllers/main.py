@@ -182,8 +182,8 @@ class WebsiteForm(form.WebsiteForm):
 
             partner = request.env["res.partner"].sudo().create(partner_data)
             public_user.partner_id.write({"name": kwargs["partner_name"], "parent_id": partner.id})
-            request.params.update({'partner_id': partner.id})
-            kwargs.update({'partner_id': partner.id})
+            request.params.update({'partner_id': partner.id, 'email_from': kwargs.get("parent_company_email"), 'partner_name': kwargs.get("parent_company_name")})
+            kwargs.update({'partner_id': partner.id, 'email_from': kwargs.get("parent_company_email"), 'partner_name': kwargs.get("parent_company_name")})
 
             # 1. Filtrar las claves que empiezan con 'files'
             file_keys = [key for key in kwargs.keys() if key.startswith('legal_documentation')]
