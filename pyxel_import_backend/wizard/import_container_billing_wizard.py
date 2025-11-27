@@ -229,23 +229,53 @@ class ImportContainerBillingWizard(models.TransientModel):
 
             return cont, imp
 
-    def _get_clients_from_container(self, container):
+    def _get_clients_from_container(self, container, return_reason=False):
         """
-        Obtiene clientes únicos desde:
-          container.x_studio_order_lines_by_container  --> (o2m intermedio)
-            -> line.x_studio_purchase_order_line       --> (m2o purchase.order.line)
-            -> purchase.order.line.order_id            --> (m2o purchase.order)
-            -> purchase.order.x_studio_client          --> (m2o res.partner)
+        Devuelve:
+          - (clients, reason) si return_reason=True
+          - clients (recordset) si return_reason=False
+
+        reasons posibles:
+          - 'no_lines'         : el contenedor no tiene líneas intermedias
+          - 'no_po_lines'      : hay líneas intermedias pero no apuntan a purchase.order.line
+          - 'no_po'            : hay purchase.order.line pero no hay purchase.order
+          - 'no_client_field'  : hay órdenes pero ninguna tiene cliente en los campos esperados
+          - None               : todo OK (hay clientes)
         """
+        Partner = self.env['res.partner']
         InterLine = self.env['importation.load.line']
+
+        # 1) líneas intermedias en el contenedor
         inter_lines = getattr(container, self._container_lines_o2m, InterLine.browse())
         if not inter_lines:
-            return self.env['res.partner']
+            return (Partner, 'no_lines') if return_reason else Partner
 
+        # 2) líneas de compra
         po_lines = inter_lines.mapped(self._container_line_po_line_m2o)
+        if not po_lines:
+            return (Partner, 'no_po_lines') if return_reason else Partner
+
+        # 3) órdenes de compra
         purchase_orders = po_lines.mapped('order_id')
-        clients = purchase_orders.mapped('importation_id.customer_id').filtered(lambda p: p and p.id)
-        return clients
+        if not purchase_orders:
+            return (Partner, 'no_po') if return_reason else Partner
+
+        # 4) clientes posibles en diferentes rutas (ajusta el orden a tu preferencia)
+        client_paths = ['importation_id.customer_id', 'x_studio_client', 'partner_id']
+        clients = Partner
+        for path in client_paths:
+            try:
+                clients |= purchase_orders.mapped(path)
+            except Exception:
+                # Si algún path no existe en tu modelo, lo ignoramos sin romper
+                pass
+
+        # Limpiar nulos y duplicados
+        clients = clients.filtered(lambda p: p and p.id)
+        if not clients:
+            return (Partner, 'no_client_field') if return_reason else Partner
+
+        return (clients, None) if return_reason else clients
 
     def _get_taxes_for_product(self, product):
         company = self.company_id
@@ -439,10 +469,27 @@ class ImportContainerBillingWizard(models.TransientModel):
                         continue
                     raise UserError(msg)
 
-                clients = self._get_clients_from_container(container_rec)
+                clients, reason = self._get_clients_from_container(container_rec, return_reason=True)
+
                 if not clients:
-                    errors.append(_("Fila %s: El contenedor '%s' no tiene clientes asociados vía órdenes de compra.") %
-                                  (row['row'], getattr(container_rec, self._container_name_field, '')))
+                    cont_name = getattr(container_rec, self._container_name_field, '') or ''
+                    if reason == 'no_lines':
+                        errors.append(_("Fila %s: El contenedor '%s' no tiene líneas vinculadas al contenedor.") %
+                                      (row['row'], cont_name))
+                    elif reason == 'no_po_lines':
+                        errors.append(_("Fila %s: Las líneas del contenedor '%s' no apuntan a líneas de compra.") %
+                                      (row['row'], cont_name))
+                    elif reason == 'no_po':
+                        errors.append(_("Fila %s: No se encontraron órdenes de compra asociadas al contenedor '%s'.") %
+                                      (row['row'], cont_name))
+                    elif reason == 'no_client_field':
+                        errors.append(
+                            _("Fila %s: Las órdenes asociadas al contenedor '%s' no tienen cliente definido.") %
+                            (row['row'], cont_name))
+                    else:
+                        # por si añadimos razones nuevas en el futuro
+                        errors.append(_("Fila %s: No se pudieron determinar clientes para el contenedor '%s'.") %
+                                      (row['row'], cont_name))
                     continue
 
                 # Prorrateo en partes iguales
