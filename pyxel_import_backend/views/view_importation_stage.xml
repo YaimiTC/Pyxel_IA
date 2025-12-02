@@ -11,6 +11,7 @@
                     <field name="description"/>
                     <field name="fold"/>
                     <field name="is_final"/>
+                    <field name="cannot_upload"/>
                 </tree>
             </field>
         </record>
@@ -28,6 +29,7 @@
                              <field name="description"/>
                              <field name="fold"/>
                              <field name="is_final"/>
+                             <field name="cannot_upload"/>
                         </group>
                     </sheet>
                 </form>

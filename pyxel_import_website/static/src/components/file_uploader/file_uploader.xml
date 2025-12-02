@@ -57,6 +57,7 @@
           t-on-change="onFileChange"
           class="file-input"
           t-ref="fileInput"
+          t-att-disabled="cannotUpload"
         />
         <!-- Custom styled button with click handler -->
         <button 
