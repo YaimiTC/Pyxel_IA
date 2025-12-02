@@ -555,3 +555,4 @@ class ImportationStage(models.Model):
     sequence = fields.Integer(required=True, default=1)
     fold = fields.Boolean('Folded in Kanban', default=False)
     is_final = fields.Boolean(string="Is Final Stage", default=False)
+    cannot_upload = fields.Boolean(string='No subir archivos', help="Si se activa, en esta etapa no se permitira la subida de archivos al proveedor desde el portal.")

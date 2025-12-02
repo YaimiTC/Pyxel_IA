@@ -48,7 +48,7 @@
                                             <t t-else="">
                                                 <owl-component
                                                     name="pyxel_import_website.FileUploader"
-                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'documentation_file'})" />
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'documentation_file', 'cannotUpload': cannot_upload})" />
                                             </t>
                                         </div>
                                     </div>
@@ -71,7 +71,7 @@
                                             <t t-else="">
                                                 <owl-component
                                                     name="pyxel_import_website.FileUploader"
-                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id,'fieldName':'origin_certificate'})" />
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id,'fieldName':'origin_certificate', 'cannotUpload': cannot_upload})" />
                                             </t>
                                         </div>
                                     </div>
@@ -97,7 +97,7 @@
                                             <t t-else="">
                                                 <owl-component
                                                     name="pyxel_import_website.FileUploader"
-                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'export_certificate'})" />
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'export_certificate', 'cannotUpload': cannot_upload})" />
                                             </t>
                                         </div>
                                     </div>
@@ -120,7 +120,7 @@
                                             <t t-else="">
                                                 <owl-component
                                                     name="pyxel_import_website.FileUploader"
-                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'quality_certificate'})" />
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'quality_certificate', 'cannotUpload': cannot_upload})" />
                                             </t>
                                         </div>
                                     </div>
@@ -151,7 +151,7 @@
                                             <t t-else="">
                                                 <owl-component
                                                     name="pyxel_import_website.FileUploader"
-                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'packing_list'})" />
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'packing_list', 'cannotUpload': cannot_upload})" />
                                             </t>
                                         </div>
                                     </div>
@@ -186,7 +186,7 @@
                                                     <t t-else="">
                                                         <owl-component
                                                             name="pyxel_import_website.FileUploader"
-                                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId': po.id, 'fieldName':'signed_offer'})" />
+                                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId': po.id, 'fieldName':'signed_offer', 'cannotUpload': cannot_upload})" />
                                                     </t>
                                                 </div>
                                             </div>
@@ -207,7 +207,7 @@
                                                     <t t-else="">
                                                         <owl-component
                                                             name="pyxel_import_website.FileUploader"
-                                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId': po.id, 'fieldName':'commercial_invoice'})" />
+                                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId': po.id, 'fieldName':'commercial_invoice', 'cannotUpload': cannot_upload})" />
                                                     </t>
                                                 </div>
                                             </div>

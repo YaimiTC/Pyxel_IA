@@ -31,6 +31,14 @@ class ImportationsController(BaseController):
             "name": "Importaciones",
             "href": "/model/imports",
         }
+        
+        current_stage = record.stage_id
+        commercial_partner = request.env.user.commercial_partner_id
+        contact_type = commercial_partner.contact_type_id.type_of_contact if commercial_partner.contact_type_id.id else False
+        
+        upload_file_link_label = "Ver Información" if current_stage.cannot_upload or contact_type == "Client" else "Adicionar Información"
+        
+        values['upload_file_link_label'] = upload_file_link_label
         return request.render("pyxel_import_website.importation_view", values)
 
     @http.route(["/update_files/<int:record_id>"], type="http", auth="user", website=True)
@@ -39,11 +47,19 @@ class ImportationsController(BaseController):
         record = request.env["importation.process"].sudo().browse(record_id)
         if not record.exists():
             raise werkzeug.exceptions.NotFound()
+        
+        current_stage = record.stage_id
+        commercial_partner = request.env.user.commercial_partner_id
+        contact_type = commercial_partner.contact_type_id.type_of_contact if commercial_partner.contact_type_id.id else False  
+        
+        cannot_upload = True if current_stage.cannot_upload or contact_type == "Client" else False
+        
         # Renderizar la plantilla y pasar el registro
         return request.render(
             "pyxel_import_website.update_files",
             {
                 "record": record,
+                "cannot_upload": cannot_upload
             },
         )
 

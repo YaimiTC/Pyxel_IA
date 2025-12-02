@@ -12,6 +12,10 @@ export class FileUploader extends Component {
     });
   }
 
+  get cannotUpload() {
+    return this.props.cannotUpload;
+  }
+
   async onFileChange(ev) {
     const file = ev.target.files[0];
 

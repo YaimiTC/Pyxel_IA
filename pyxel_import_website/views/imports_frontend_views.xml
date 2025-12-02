@@ -89,8 +89,7 @@
                                         <strong>
                                             <h4>Datos de la operación</h4>
                                         </strong>
-                                        <a t-att-href="'/update_files/%s' % record.id">Adicionar
-                                            información</a>
+                                        <a t-att-href="'/update_files/%s' % record.id"> <t t-out="upload_file_link_label"/> </a>
                                         <!--<span
                                         t-field="order.date_order" t-options="{&quot;widget&quot;:
                                         &quot;date&quot;}"/>-->
