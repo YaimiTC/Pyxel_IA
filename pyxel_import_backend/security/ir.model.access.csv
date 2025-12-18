@@ -7,6 +7,7 @@ access_purchase_provider_evaluation_line,pyxel_import.purchase_provider_evaluati
 access_importation_load,pyxel_import.importation_load,model_importation_load,base.group_user,1,1,1,1
 access_importation_load_line,pyxel_import.importation_load_line,model_importation_load_line,base.group_user,1,1,1,1
 access_importation_process,pyxel_import.importation_process,model_importation_process,base.group_user,1,1,1,1
+access_importation_process_portal,pyxel_import.importation_process.portal,model_importation_process,base.group_portal,1,0,0,0
 access_importation_cost_line,pyxel_import.importation_cost_line,model_importation_cost_line,base.group_user,1,1,1,1
 access_importation_stage,pyxel_import.importation_stage,model_importation_stage,base.group_user,1,1,1,1
 access_wizard_evaluate_providers,pyxel_import.wizard_evaluate_providers,model_wizard_evaluate_providers,base.group_user,1,1,1,1
