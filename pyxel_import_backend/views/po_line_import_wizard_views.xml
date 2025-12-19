@@ -135,7 +135,7 @@
       <header position="inside">
         <button name="%(action_po_line_import_wizard)d"
                 type="action"
-                string="Importar Orden de compra"
+                string="Importar Oferta"
                 class="oe_highlight"
                 invisible="state not in ('draft','sent')"/>
       </header>
