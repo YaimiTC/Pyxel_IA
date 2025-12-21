@@ -159,7 +159,7 @@
                                                                         <t
                                                                             t-if="line.sudo().product_id.image_1024">
                                                                             <img
-                                                                                t-att-src="image_data_uri(resize_to_48(line.sudo().product_id.image_1024))"
+                                                                                t-att-src="image_data_uri(line.sudo().product_id.image_48)"
                                                                                 alt="Product"
                                                                                 class="d-none d-lg-inline" />
                                                                         </t>
@@ -360,7 +360,7 @@
                                                                             <t
                                                                                 t-if="line.sudo().product_id.image_1024">
                                                                                 <img
-                                                                                    t-att-src="image_data_uri(resize_to_48(line.sudo().product_id.image_1024))"
+                                                                                    t-att-src="image_data_uri(line.sudo().product_id.image_48)"
                                                                                     alt="Product"
                                                                                     class="d-none d-lg-inline" />
                                                                             </t>
