@@ -20,8 +20,8 @@ class Portal(CustomerPortal):
     def _prepare_portal_layout_values(self):
         values = super(Portal, self)._prepare_portal_layout_values()
         user = request.env.user
-        business_partner_id = user.partner_id.parent_id.id if user.partner_id.parent_id else user.partner_id.id
-        contact_type = user.partner_id.parent_id.contact_type_id if user.partner_id.parent_id else user.partner_id.contact_type_id
+        business_partner_id = user.commercial_partner_id.id
+        contact_type = user.commercial_partner_id.contact_type_id
         is_internal_user = user.has_group('base.group_user')
 
         first_stage = request.env['importation.stage'].sudo().search([], order='sequence asc', limit=1)
