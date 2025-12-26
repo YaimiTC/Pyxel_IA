@@ -62,11 +62,8 @@ def get_render_values(kw):
         "productos_seleccionados_ids": product_selected,
         'alimentos_de_importacion': json.dumps(alimentos_de_importacion),
     }
-    domain_ids = [request.env.user.partner_id.id]
-    if request.env.user.partner_id.parent_id:
-        domain_ids.append(request.env.user.partner_id.parent_id.id)
     crm_lead_exists = request.env["crm.lead"].sudo().search([
-        ("partner_id", "in", domain_ids)
+        ("partner_id", "=", request.env.user.commercial_partner_id.id)
     ], limit=1)
     render_values["crm_lead_exists"] = bool(crm_lead_exists)
 
@@ -138,11 +135,8 @@ class WebsiteForm(form.WebsiteForm):
         contact_type_id = int(kwargs.get("contact_type", False))
 
         if model_name == "crm.lead" and tipo_registro == "accreditation":
-            domain_ids = [request.env.user.partner_id.id]
-            if request.env.user.partner_id.parent_id:
-                domain_ids.append(request.env.user.partner_id.parent_id.id)
             crm_lead_exists = request.env["crm.lead"].sudo().search([
-                        ("partner_id", "in", domain_ids)
+                        ("partner_id", "=", request.env.user.commercial_partner_id.id)
                         ], limit=1)
             if crm_lead_exists:
                 return Response(
@@ -321,7 +315,7 @@ class ControllerTest(http.Controller):
     @http.route('/business-register-thanks', type='http', auth="public", website=True)
     def business_register_thanks(self, **kw):
         crm_lead_exists = request.env["crm.lead"].sudo().search([
-            ("partner_id", "in", [request.env.user.partner_id.parent_id.id])
+            ("partner_id", "=", request.env.user.commercial_partner_id.id)
         ], limit=1)
         days_in_process = 'False'
 
@@ -338,13 +332,8 @@ class ControllerTest(http.Controller):
         if request.env.user.id == request.env.ref('base.public_user').id:
             return request.redirect(f"/web/login?redirect=/business-register?type={kw.get('type', 'accreditation')}")
 
-        domain_ids = [request.env.user.partner_id.id]
-
-        if request.env.user.partner_id.parent_id:
-            domain_ids.append(request.env.user.partner_id.parent_id.id)
-
         crm_lead_exists = request.env["crm.lead"].sudo().search([
-            ("partner_id", "in", domain_ids)
+            ("partner_id", "=", request.env.user.commercial_partner_id.id)
         ], limit=1)
         is_accredited = False
         
@@ -364,10 +353,10 @@ class ControllerTest(http.Controller):
             if not crm_lead_exists:
                 return request.render('pyxel_import_website.waiting_for_active_contract')
             # Si no es Cliente nacional no puede solicitar una importación
-            if request.env.user.partner_id.parent_id.contact_type_id.type_of_contact == "Client" and request.env.user.partner_id.parent_id.contact_type_id.nationality_type == 'national':
+            if request.env.user.commercial_partner_id.contact_type_id.type_of_contact == "Client" and request.env.user.commercial_partner_id.contact_type_id.nationality_type == 'national':
                 pass
             else:
-                return request.render('pyxel_import_website.you_are_not_a_national_client', {'contact_type': request.env.user.partner_id.parent_id.contact_type_id.name})
+                return request.render('pyxel_import_website.you_are_not_a_national_client', {'contact_type': request.env.user.commercial_partner_id.contact_type_id.name})
             # Si realizó el formulario de acreditación pero no está acreditado
             if not is_accredited:
                 return request.redirect('/business-register-thanks')
