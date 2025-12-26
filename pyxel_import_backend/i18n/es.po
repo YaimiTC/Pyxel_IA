@@ -2020,7 +2020,7 @@ msgstr ""
 
 #. module: pyxel_import_backend
 #: model_terms:ir.ui.view,arch_db:pyxel_import_backend.view_order_form_inherit_import_lines
-msgid "Importar Oferta"
+msgid "Importar Productos"
 msgstr ""
 
 #. module: pyxel_import_backend

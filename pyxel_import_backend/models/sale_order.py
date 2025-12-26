@@ -247,6 +247,13 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
+    is_cost_special = fields.Boolean(string="Special Cost", default=False)
+
+    def _prepare_invoice_line(self, **optional_values):
+        vals = super()._prepare_invoice_line(**optional_values)
+        vals["is_cost_special"] = self.is_cost_special
+        return vals
+
     clean_description = fields.Char(
         string='Clean Description',
         compute='_compute_clean_description',

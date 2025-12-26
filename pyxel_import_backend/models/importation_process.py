@@ -50,8 +50,10 @@ class ImportationProcess(models.Model):
                 if rec.sale_order_id and rec.sale_order_id.evaluation_apply_id else False
 
     final_sale_order_id = fields.Many2one('sale.order', string='Final Generated Offer', readonly=True)
-    customer_id = fields.Many2one('res.partner', string='Customer', required=False, domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]")
-    provider_id = fields.Many2one('res.partner', string='Supplier', required=True, domain="[('contact_type_id', '!=', False), ('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]")
+    customer_id = fields.Many2one('res.partner', string='Customer', required=False,
+                                  domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]")
+    provider_id = fields.Many2one('res.partner', string='Supplier', required=True,
+                                  domain="[('contact_type_id', '!=', False), ('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]")
 
     country_origin_id = fields.Many2one('res.country', string='Country of Origin', required=True)
 
@@ -368,7 +370,6 @@ class ImportationProcess(models.Model):
 
     def action_create_cost_sale_order(self):
         SaleOrder = self.env['sale.order']
-        SaleOrderLine = self.env['sale.order.line']
 
         if not self.provider_id:
             raise ValidationError("Debe estar definido el proveedor en el proceso de importación.")
@@ -376,36 +377,35 @@ class ImportationProcess(models.Model):
         product_amounts = {}
 
         for cost_line in self.cost_line_ids:
-            total_value = 0.0
-
             if not cost_line.purchase_ids:
-                continue  # si no hay órdenes asociadas, omitir
+                continue
 
+            total_value = 0.0
             if cost_line.distribution_type == 'fixed':
                 total_value = cost_line.amount * len(cost_line.purchase_ids)
-
             elif cost_line.distribution_type == 'percentage':
                 for purchase in cost_line.purchase_ids:
                     total_value += purchase.amount_total * (cost_line.amount / 100.0)
 
-            product_id = cost_line.product_id.id
+            product = cost_line.product_id
+            is_special = bool(cost_line.is_cost_special)
 
-            if product_id not in product_amounts:
-                product_amounts[product_id] = {
-                    'product': cost_line.product_id,
+            # ✅ clave por producto + flag para NO mezclar special con normal
+            key = (product.id, is_special)
+
+            if key not in product_amounts:
+                product_amounts[key] = {
+                    'product': product,
                     'price_unit': 0.0,
-                    'name': cost_line.name or cost_line.product_id.name,
+                    'name': cost_line.name or product.name,
+                    'is_cost_special': is_special,
                 }
 
-            product_amounts[product_id]['price_unit'] += total_value
+            product_amounts[key]['price_unit'] += total_value
 
-        # providers_names = self.purchase_order_ids.mapped('partner_id.name')
-
-        # Crear el sale.order con líneas acumuladas por producto
         sale_order = SaleOrder.create({
             'partner_id': self.sale_order_id.partner_id.id,
             'importation_process_id': self.id,
-            # 'providers_names':  ', '.join(sorted(set(providers_names))),
             'origin': self.name,
             'order_type': 'importation_process',
             'order_line': [(0, 0, {
@@ -414,6 +414,9 @@ class ImportationProcess(models.Model):
                 'product_uom_qty': 1.0,
                 'price_unit': val['price_unit'],
                 'product_uom': val['product'].uom_id.id,
+
+                # ✅ aquí viaja el flag a la SOL
+                'is_cost_special': val['is_cost_special'],
             }) for val in product_amounts.values()]
         })
 
@@ -511,7 +514,9 @@ class ImportationProcess(models.Model):
         for record in self:
             for po in record.purchase_order_ids:
                 if record.incoterm_id != po.incoterm_id:
-                    raise ValidationError(f"La orden de compra {po.name} tiene el incoterm {po.incoterm_id.name} y la importación solo admite {record.incoterm_id.name}")
+                    raise ValidationError(
+                        f"La orden de compra {po.name} tiene el incoterm {po.incoterm_id.name} y la importación solo admite {record.incoterm_id.name}")
+
 
 class ImportationCostLine(models.Model):
     _name = 'importation.cost.line'
@@ -555,4 +560,5 @@ class ImportationStage(models.Model):
     sequence = fields.Integer(required=True, default=1)
     fold = fields.Boolean('Folded in Kanban', default=False)
     is_final = fields.Boolean(string="Is Final Stage", default=False)
-    cannot_upload = fields.Boolean(string='No subir archivos', help="Si se activa, en esta etapa no se permitira la subida de archivos al proveedor desde el portal.")
+    cannot_upload = fields.Boolean(string='No subir archivos',
+                                   help="Si se activa, en esta etapa no se permitira la subida de archivos al proveedor desde el portal.")
