@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_pyxel_import_conciliation_root"
+              name="Conciliation"
+              parent="account.menu_finance_reports"
+              sequence="220"/>
+
+    <menuitem id="menu_pyxel_import_conciliation_report"
+              name="Conciliation Report"
+              parent="menu_pyxel_import_conciliation_root"
+              action="action_pyxel_import_conciliation_wizard"
+              sequence="10"/>
+</odoo>
