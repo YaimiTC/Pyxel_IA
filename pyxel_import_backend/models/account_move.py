@@ -31,3 +31,9 @@ class AccountMove(models.Model):
         for record in self:
             containers = record.importation_process_id.load_tracking_ids
             record.container_names = ', '.join(containers.mapped('name')) if containers else ''
+
+
+class AccountMoveLine(models.Model):
+    _inherit = "account.move.line"
+
+    is_cost_special = fields.Boolean(string="Special Cost", default=False)
