@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="icp_layout_operation" model="ir.config_parameter">
+        <field name="key">invoice_conciliation_report.xls_layout.operation</field>
+        <field name="value">operation_default</field>
+    </record>
+
+    <record id="icp_layout_logistics" model="ir.config_parameter">
+        <field name="key">invoice_conciliation_report.xls_layout.logistics</field>
+        <field name="value">logistics_default</field>
+    </record>
+</odoo>

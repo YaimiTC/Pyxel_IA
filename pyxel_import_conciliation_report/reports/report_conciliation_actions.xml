@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_pyxel_import_conciliation_landscape" model="report.paperformat">
+        <field name="name">Pyxel Conciliation Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_pyxel_import_conciliation_sales" model="ir.actions.report">
+        <field name="name">Acta de Conciliación de Ventas</field>
+        <field name="model">pyxel.import.conciliation.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pyxel_import_conciliation_report.r_sales</field>
+        <field name="report_file">pyxel_import_conciliation_report.r_sales</field>
+        <field name="paperformat_id" ref="paperformat_pyxel_import_conciliation_landscape"/>
+    </record>
+
+</odoo>
