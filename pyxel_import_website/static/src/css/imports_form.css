@@ -48,3 +48,9 @@
 .o_files_zone_custom {
   flex: 1 1 auto !important;
 }
+
+/* Limitar la cantidad de caracteres del nombre del archivo que se muestran para que no se estire demasiado y termine poniéndose debajo del label */
+.s_website_form[data-vcss="001"] div.o_file_name
+{
+  max-width: 400px;
+}
