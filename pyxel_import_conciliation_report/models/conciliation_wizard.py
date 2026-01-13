@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class PyxelImportConciliationWizard(models.TransientModel):
@@ -47,6 +47,9 @@ class PyxelImportConciliationWizard(models.TransientModel):
 
     def action_generate_report(self):
         self.ensure_one()
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise UserError(_("La fecha inicial no puede ser mayor que la fecha final."))
+
         payload = self._build_payload()
 
         if self.format_of_report == "pdf":
@@ -56,5 +59,12 @@ class PyxelImportConciliationWizard(models.TransientModel):
 
         # XLS (por proceso)
         lines = self.env["pyxel.import.conciliation.service"].get_lines_by_process(payload)
+        if not lines:
+            raise UserError(_("No existen facturas en el período definido."))
         return self.env["pyxel.import.conciliation.xls_exporter"].export_sales(lines, payload)
 
+    @api.constrains("start_date", "end_date")
+    def _check_date_range(self):
+        for rec in self:
+            if rec.start_date and rec.end_date and rec.start_date > rec.end_date:
+                raise ValidationError(_("La fecha inicial no puede ser mayor que la fecha final."))
