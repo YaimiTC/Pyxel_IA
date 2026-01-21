@@ -27,9 +27,7 @@
         'pyxel_import_backend',
     ],
     "data": [
-        'data/states_data.xml',
         'data/ir_model_data.xml',
-        'data/cities_data.xml',
         'views/business_registration.xml',
         'views/import_registration.xml',
         'views/product_templates_views.xml',
