@@ -4,6 +4,6 @@ variables:
 
 include:
   - project: 'devops/templates'
-    file: 'odoo/gitlab-ci.yml'
+    file: 'odoo/gitlab-ci-multi-env.yml'
   
   
