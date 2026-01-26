@@ -1,4 +1,5 @@
 from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 
 
 class CrmLead(models.Model):
@@ -8,6 +9,21 @@ class CrmLead(models.Model):
     sale_order_count = fields.Integer(compute='_compute_sale_order_count', string='Number of Sales Orders')
 
     can_create_quotation = fields.Boolean(compute='_compute_can_create_quotation')
+
+    def write(self, vals):
+        if 'stage_id' in vals:
+            accreditation_stage = self.env['crm.stage'].search([('is_accreditation_stage', '=', True,)], limit=1)
+
+            stage_id = self.env['crm.stage'].search([('id', '=', vals['stage_id'])], limit=1)
+            if accreditation_stage and stage_id and stage_id.sequence >= accreditation_stage.sequence:
+                if 'partner_id' in vals:
+                    partner = self.env['res.partner'].search([('id', '=', vals['partner_id'])], limit=1)
+                else:
+                    partner = self.partner_id
+
+                if partner and not partner.contact_type_id:
+                    raise ValidationError(_("No es posible avanzar la solicitud de acreditación a una etapa de aprobación porque el contacto asociado no tiene definido el Tipo de Contacto."))
+        return super(CrmLead, self).write(vals)
 
     @api.depends('stage_id')
     def _compute_can_create_quotation(self):
