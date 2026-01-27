@@ -27,6 +27,12 @@ class ResPartner(models.Model):
     is_accredited = fields.Boolean(string="Accredited", default=False, compute='_compute_is_accredited', store=True)
     is_accredited2 = fields.Boolean(compute='_compute_is_accredited')
 
+    contact_type_id = fields.Many2one(
+        'res.partner.contact.type',
+        string='Type of contact',
+        help="Custom contact classification"
+    )
+
     @api.depends('opportunity_ids.stage_id')
     def _compute_is_accredited(self):
         accreditation_stage = self.env['crm.stage'].search([('is_accreditation_stage', '=', True,)], limit=1)
@@ -57,12 +63,6 @@ class ResPartner(models.Model):
                     raise ValidationError(_("The NIT must contain only digits."))
                 if len(record.vat) != 11:
                     raise ValidationError(_("The NIT must be exactly 11 digits long."))
-
-    contact_type_id = fields.Many2one(
-        'res.partner.contact.type',
-        string='Type of contact',
-        help="Custom contact classification"
-    )
 
     # @api.depends('contact_type_id')
     # def _compute_count_imports(self):
