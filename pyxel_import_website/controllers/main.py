@@ -128,24 +128,9 @@ class WebsiteForm(form.WebsiteForm):
             )
             res = {str(x.id): x.name for x in states}
         return res
-
-    def website_form(self, model_name, **kwargs):
-        tipo_registro = kwargs.get("register_type") 
-        public_user = request.env.user.sudo()
-        contact_type_id = int(kwargs.get("contact_type", False))
-
-        if model_name == "crm.lead" and tipo_registro == "accreditation":
-            crm_lead_exists = request.env["crm.lead"].sudo().search([
-                        ("partner_id", "=", request.env.user.commercial_partner_id.id)
-                        ], limit=1)
-            if crm_lead_exists:
-                return Response(
-                    json.dumps({'error': 'Usted ya se ha acreditado, para volver a acreditarse debe hacerlo con un usuario nuevo que no esté acreditado'}),
-                    status=400,
-                    headers={'Content-Type': 'application/json'}
-                )
-            
-            partner_data = {
+    
+    def _get_partner_data(self, kwargs):
+        partner_data = {
                 "name": kwargs.get("parent_company_name"),
                 "vat": kwargs.get("nit", False),
                 "dap": kwargs.get("dap", False),
@@ -159,21 +144,38 @@ class WebsiteForm(form.WebsiteForm):
                 "management_type_id": int(kwargs.get("fgne_type", False)),
                 "deed_number": int(kwargs.get("deed_input_number", False)),
                 "deed_date": kwargs.get("deed_input_date"),
-                "contact_type_id": contact_type_id,
+                "contact_type_id": int(kwargs.get("contact_type", False)),
             }
-            if kwargs.get("supplier_type"):
-                if kwargs.get("supplier_type") == 'Productor':
-                    category_id = request.env.ref('pyxel_import_backend.res_partner_category_producer').id  
-                    partner_data['category_id'] = [(4, category_id)]   
-                elif kwargs.get("supplier_type") == 'Comerciante':
-                    category_id = request.env.ref('pyxel_import_backend.res_partner_category_businessman').id
-                    partner_data['category_id'] = [(4, category_id)]   
+        if kwargs.get("supplier_type"):
+            if kwargs.get("supplier_type") == 'Productor':
+                category_id = request.env.ref('pyxel_import_backend.res_partner_category_producer').id  
+                partner_data['category_id'] = [(4, category_id)]   
+            elif kwargs.get("supplier_type") == 'Comerciante':
+                category_id = request.env.ref('pyxel_import_backend.res_partner_category_businessman').id
+                partner_data['category_id'] = [(4, category_id)]   
 
-            if kwargs.get("city"):
-                city_id = int(kwargs.get("city",False))
-                partner_data['city'] = request.env["res.city"].sudo().search([("id", "=", city_id)], limit=1).name
-                partner_data['city_id'] = city_id
+        if kwargs.get("city"):
+            city_id = int(kwargs.get("city",False))
+            partner_data['city'] = request.env["res.city"].sudo().search([("id", "=", city_id)], limit=1).name
+            partner_data['city_id'] = city_id
+        return partner_data
 
+    def website_form(self, model_name, **kwargs):
+        tipo_registro = kwargs.get("register_type") 
+        public_user = request.env.user.sudo()
+
+        if model_name == "crm.lead" and tipo_registro == "accreditation":
+            crm_lead_exists = request.env["crm.lead"].sudo().search([
+                        ("partner_id", "=", request.env.user.commercial_partner_id.id)
+                        ], limit=1)
+            if crm_lead_exists:
+                return Response(
+                    json.dumps({'error': 'Usted ya se ha acreditado, para volver a acreditarse debe hacerlo con un usuario nuevo que no esté acreditado'}),
+                    status=400,
+                    headers={'Content-Type': 'application/json'}
+                )
+            
+            partner_data = self._get_partner_data(kwargs)
             partner = request.env["res.partner"].sudo().create(partner_data)
             public_user.partner_id.write({"name": kwargs["partner_name"], "parent_id": partner.id})
             request.params.update({'partner_id': partner.id, 'email_from': kwargs.get("parent_company_email"), 'partner_name': kwargs.get("parent_company_name")})
