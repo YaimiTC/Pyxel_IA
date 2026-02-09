@@ -148,15 +148,18 @@
         <field name="inherit_id" ref="sale.view_sales_order_filter"/>
         <field name="arch" type="xml">
             <xpath expr="//filter[@name='order_month']" position="after">
+                <filter string="Año (Proceso)" name="group_by_process_year" context="{'group_by': 'process_year'}"/>
                 <filter string="Sequence" name="group_by_process_id" context="{'group_by': 'process_id'}"/>
                 <filter string="Order type" name="group_by_order_type" context="{'group_by': 'order_type'}"/>
                 <filter string="Evaluación Final" name="filter_final_evaluation" domain="[('order_type', '=', 'evaluation_final')]"/>
+
+
             </xpath>
         </field>
     </record>
 
     <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
-        <field name="context" eval="{'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>
+        <field name="context" eval="{'search_default_group_by_process_year': 1,'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>
 <!--        <field name="context" eval="{ 'search_default_customer': 1, 'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>-->
     </record>
 

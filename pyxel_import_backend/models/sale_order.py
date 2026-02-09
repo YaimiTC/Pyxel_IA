@@ -27,6 +27,13 @@ class SaleOrder(models.Model):
         compute='_compute_has_applicable_evaluations'
     )
 
+    process_year = fields.Integer(
+        string="Año proceso",
+        related="process_id.year",
+        store=True,
+        index=True,
+    )
+
     order_type = fields.Selection([
         ('ordinary', 'Ordinary'),
         ('evaluation_initial', 'Initial Evaluation'),
