@@ -65,7 +65,8 @@
         "report/sale_order_report_template.xml",
         "views/po_line_import_wizard_views.xml",
         "views/import_container_billing_wizard_view.xml",
-        "views/so_line_import_wizard_views.xml"
+        "views/so_line_import_wizard_views.xml",
+        "views/mail_message_user_assigned_inherit.xml"
 
 
      ],
