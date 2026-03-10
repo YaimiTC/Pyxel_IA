@@ -3,23 +3,22 @@
     <template id="mail_message_user_assigned_inherit_process"
               inherit_id="mail.message_user_assigned">
 
-        <xpath expr="//span[contains(., 'You have been assigned to the')]" position="replace">
-            <span style="margin-top: 8px;">
-                <t t-if="object._name == 'sale.order'">
-                    Has sido asignado al
-                    <t t-esc="model_description or 'documento'"/>
-                    <t t-esc="object.display_name"/>.
-                    <t t-if="object.process_id">
-                        Secuencia:
-                        <strong t-esc="object.process_id.name"/>
-                    </t>
-                </t>
-                <t t-else="">
+        <xpath expr="//span[@style='margin-top: 8px;']" position="replace">
+            <t>
+                <span style="margin-top: 8px;">
                     You have been assigned to the
                     <t t-esc="model_description or 'document'"/>
                     <t t-esc="object.display_name"/>.
+                </span>
+
+                <t t-if="object._name == 'sale.order' and object.process_id">
+                    <br/>
+                    <span>
+                        Process number:
+                        <strong t-esc="object.process_id.name"/>
+                    </span>
                 </t>
-            </span>
+            </t>
         </xpath>
 
     </template>
