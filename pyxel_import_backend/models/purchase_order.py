@@ -18,6 +18,13 @@ class PurchaseOrder(models.Model):
     )
 
     sale_order_id = fields.Many2one('sale.order', string='Related Quotation')
+    process_id = fields.Many2one(
+        'sale.order.process',
+        string='Proceso',
+        related='sale_order_id.process_id',
+        store=True,
+        readonly=True,
+    )
     evaluation_id = fields.Many2one('purchase.provider.evaluation', string='Evaluation')
     is_third_party_contract = fields.Boolean(string='Third-Party Contract')
 
