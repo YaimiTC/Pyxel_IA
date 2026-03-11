@@ -56,8 +56,8 @@
                                                         <th class="text-center" scope="col" style="width: 10%;"><strong>Otros Gastos (CUP)</strong></th>
                                                         <th class="text-center" scope="col" style="width: 10%;"><strong>No. Factura FruxelImport(USD)</strong></th>
                                                         <th class="text-center" scope="col" style="width: 10%;"><strong>Valor Factura (USD)</strong></th>
-                                                        <th class="text-center" scope="col" style="width: 10%;"><strong>Valor Frutas Selectas (MLC)</strong></th>
-                                                        <th class="text-center" scope="col" style="width: 10%;"><strong>Valor Pyxel (MLC)</strong></th>
+                                                        <th class="text-center" scope="col" style="width: 10%;"><strong>Valor Frutas Selectas (USD)</strong></th>
+                                                        <th class="text-center" scope="col" style="width: 10%;"><strong>Valor Pyxel (USD)</strong></th>
                                                     </tr>
                                                    </thead>
                                                    <tbody>
