@@ -45,8 +45,8 @@ class PyxelImportConciliationXlsExporter(models.AbstractModel):
             ("Gastos Especiales (CUP)", 22),
             ("No. Factura (FX)", 40),
             ("Total FX (USD)", 18),
-            ("Valor Frutas (MLC)", 18),
-            ("Valor Pyxel (MLC)", 18),
+            ("Valor Frutas (USD)", 18),
+            ("Valor Pyxel (USD)", 18),
         ]
 
         fd, tmp_path = tempfile.mkstemp()

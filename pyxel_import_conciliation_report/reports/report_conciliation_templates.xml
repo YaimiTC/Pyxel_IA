@@ -39,8 +39,8 @@
                 <th style="text-align:center;">No. Factura (FX)</th>
                 <th style="text-align:center;">Total FX (USD)</th>
 
-                <th style="text-align:center;">Valor Frutas (MLC)</th>
-                <th style="text-align:center;">Valor Pyxel (MLC)</th>
+                <th style="text-align:center;">Valor Frutas (USD)</th>
+                <th style="text-align:center;">Valor Pyxel (USD)</th>
               </tr>
             </thead>
 
