@@ -223,12 +223,12 @@ msgstr ""
 
 #. module: pyxel_import_conciliation_report
 #: model_terms:ir.ui.view,arch_db:pyxel_import_conciliation_report.r_sales
-msgid "Valor Frutas (MLC)"
+msgid "Valor Frutas (USD)"
 msgstr ""
 
 #. module: pyxel_import_conciliation_report
 #: model_terms:ir.ui.view,arch_db:pyxel_import_conciliation_report.r_sales
-msgid "Valor Pyxel (MLC)"
+msgid "Valor Pyxel (USD)"
 msgstr ""
 
 #. module: pyxel_import_conciliation_report
