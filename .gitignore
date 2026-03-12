@@ -5,3 +5,5 @@ venv
 .vscode
 .rar
 __pycache__/
+docs/
+*.md
