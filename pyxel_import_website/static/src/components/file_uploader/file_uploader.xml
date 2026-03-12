@@ -57,13 +57,13 @@
           t-on-change="onFileChange"
           class="file-input"
           t-ref="fileInput"
-          t-att-disabled="cannotUpload"
         />
         <!-- Custom styled button with click handler -->
         <button 
           type="button" 
           class="btn btn-sm btn-outline-primary px-2 file-upload-button"
           t-on-click="triggerFileInput"
+          t-att-disabled="cannotUpload"
         >
           Seleccionar archivo
         </button>
