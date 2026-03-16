@@ -51,6 +51,10 @@
                                         <span t-field="record.provider_id" />
                                     </div>
                                     <div>
+                                        <span>Cliente:</span>
+                                        <span t-field="record.customer_id" />
+                                    </div>
+                                    <div>
                                         <span>Origen:</span>
                                         <span t-field="record.country_origin_id" />
                                     </div>
