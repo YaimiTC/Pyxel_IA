@@ -17,5 +17,6 @@ from . import import_error_line
 from . import account_payment
 from . import sale_order_process
 from . import import_container_billing_log
+from . import res_company
 
 

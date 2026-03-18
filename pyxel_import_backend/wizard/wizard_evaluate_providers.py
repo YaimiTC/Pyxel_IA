@@ -9,7 +9,8 @@ class WizardEvaluateProviders(models.TransientModel):
 
     sale_order_id = fields.Many2one('sale.order', required=True)
     apply_supplier_id = fields.Many2one('res.partner', string="Supplier to apply",
-                                        domain="[('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]")
+                                        domain="[('contact_type_id.type_of_contact', '=', 'Supplier'), "
+                                               "('is_accredited', '=', True)]")
     evaluation_line_ids = fields.One2many('wizard.evaluate.providers.line', 'wizard_id')
 
     def default_get(self, fields_list):
@@ -31,7 +32,7 @@ class WizardEvaluateProviders(models.TransientModel):
                     'product_id': line.product_id.id,
                     'quantity': line.product_uom_qty,
                     'product_uom': line.product_uom.id,
-                    'estimated_price':estimated_price
+                    'estimated_price': estimated_price
                 }))
 
         if not lines:
