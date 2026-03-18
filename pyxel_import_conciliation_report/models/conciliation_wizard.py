@@ -11,6 +11,8 @@ class PyxelImportConciliationWizard(models.TransientModel):
     end_date = fields.Date(required=True)
     partner_id = fields.Many2one("res.partner", string="Cliente")
 
+    supplier_id = fields.Many2one('res.partner', string='Proveedor')
+
     contract_to_third = fields.Selection(
         selection=[("all", "Todos"), ("yes", "Sí"), ("no", "No")],
         default="all",
@@ -41,6 +43,7 @@ class PyxelImportConciliationWizard(models.TransientModel):
             "start_date": self.start_date.isoformat() if self.start_date else False,
             "end_date": self.end_date.isoformat() if self.end_date else False,
             "partner_id": self.partner_id.id or False,
+            "supplier_id": self.supplier_id.id or False,
             "contract_to_third": self.contract_to_third,
             "type_conciliation": self.type_conciliation,
         }

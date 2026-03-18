@@ -59,6 +59,40 @@ class PyxelImportConciliationService(models.AbstractModel):
 
         return round(total_usd, 2)
 
+    @api.model
+    def _process_matches_supplier(self, proc, supplier_id, strict=False):
+        """
+        True si el proceso tiene POs con ese proveedor.
+        - strict=False: con que EXISTA al menos una PO del proveedor => OK (recomendado)
+        - strict=True: TODAS las POs del proceso deben ser de ese proveedor
+        """
+        if not supplier_id:
+            return True
+
+        pos = getattr(proc, "purchase_order_ids", False)
+        if not pos:
+            return False
+
+        if strict:
+            return all(po.partner_id and po.partner_id.id == supplier_id for po in pos)
+        return any(po.partner_id and po.partner_id.id == supplier_id for po in pos)
+
+    @api.model
+    def _filter_by_supplier_on_process(self, invoices, supplier_id, strict=False):
+        """
+        Filtra facturas dejando solo aquellas cuyo proceso tenga POs del proveedor.
+        """
+        if not supplier_id:
+            return invoices
+
+        supplier_id = int(supplier_id)
+
+        def _ok(mv):
+            proc = getattr(mv, "importation_process_id", False)
+            return bool(proc) and self._process_matches_supplier(proc, supplier_id, strict=strict)
+
+        return invoices.filtered(_ok)
+
     # -----------------------------
     # Public
     # -----------------------------
@@ -68,6 +102,7 @@ class PyxelImportConciliationService(models.AbstractModel):
         date_from = data.get("start_date")
         date_to = data.get("end_date")
         partner_id = data.get("partner_id")
+        supplier_id = data.get("supplier_id")
         contract_to_third = data.get("contract_to_third", "all")
 
         usd = self._get_currency("USD")
@@ -89,6 +124,11 @@ class PyxelImportConciliationService(models.AbstractModel):
 
         invoices = self.env["account.move"].search(domain, order="invoice_date,id")
         invoices = self._filter_contract_to_third_from_import(invoices, contract_to_third)
+
+        # ✅ NUEVO: filtro por proveedor usando POs del proceso
+        if supplier_id:
+            # strict=False => si existe al menos 1 PO del proveedor en el proceso
+            invoices = self._filter_by_supplier_on_process(invoices, supplier_id, strict=False)
 
         # agrupar por proceso
         by_process = {}

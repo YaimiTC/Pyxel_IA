@@ -10,6 +10,7 @@
                     <field name="start_date"/>
                     <field name="end_date"/>
                     <field name="partner_id"/>
+                    <field name="supplier_id"/>
                     <field name="contract_to_third"/>
                     <field name="type_conciliation"/>
                     <field name="format_of_report"/>
