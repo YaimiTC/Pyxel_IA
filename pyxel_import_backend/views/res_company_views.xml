@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_company_form_inherit_importadora_name" model="ir.ui.view">
+            <field name="name">res.company.form.inherit.importadora.name</field>
+            <field name="model">res.company</field>
+            <field name="inherit_id" ref="base.view_company_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Imports" name="imports_settings">
+                        <group>
+                            <group>
+                                <field name="importadora_name" placeholder="Ej. IMPORTADORA"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
