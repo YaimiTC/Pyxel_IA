@@ -56,6 +56,7 @@
           accept="application/pdf" 
           t-on-change="onFileChange"
           class="file-input"
+          t-att-disabled="cannotUpload"
           t-ref="fileInput"
         />
         <!-- Custom styled button with click handler -->
