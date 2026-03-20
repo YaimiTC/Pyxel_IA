@@ -51,15 +51,26 @@ class ImportationsController(BaseController):
         current_stage = record.stage_id
         commercial_partner = request.env.user.commercial_partner_id
         contact_type = commercial_partner.contact_type_id.type_of_contact if commercial_partner.contact_type_id.id else False  
+        _logger.info(f"Contact Type: {contact_type}")
         
         cannot_upload = True if current_stage.cannot_upload or contact_type == "Client" else False
+        _logger.info("Can Not Upload %s", cannot_upload)
+        
+        if cannot_upload:
+            if current_stage.cannot_upload:
+                upload_disable_message = f"La etapa actual '{current_stage.name}' no permite la carga de archivos."
+            elif contact_type == "Client":
+                upload_disable_message = "Su tipo de contacto no tiene permisos para cargar archivos."
+        else:
+            upload_disable_message = ""
         
         # Renderizar la plantilla y pasar el registro
         return request.render(
             "pyxel_import_website.update_files",
             {
                 "record": record,
-                "cannot_upload": cannot_upload
+                "cannot_upload": cannot_upload,
+                "upload_disable_message": upload_disable_message,
             },
         )
 

@@ -64,10 +64,17 @@
           type="button" 
           class="btn btn-sm btn-outline-primary px-2 file-upload-button"
           t-on-click="triggerFileInput"
-          t-att-disabled="cannotUpload"
+          t-att-class="cannotUpload ? 'btn-secondary':'btn-outline-primary'"
         >
           Seleccionar archivo
         </button>
+        <!--Info Icon-->
+         <t t-if="cannotUpload">
+            <i class="fa fa-info-circle text-warning ms-2"
+            t-ref="infoIcon"
+            t-att-title="disableMessage"
+            />
+          </t>
         <!-- Status label -->
         <span 
           t-if="!state.selectedFile" 
