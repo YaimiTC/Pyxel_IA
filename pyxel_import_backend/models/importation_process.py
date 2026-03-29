@@ -517,6 +517,58 @@ class ImportationProcess(models.Model):
                     raise ValidationError(
                         f"La orden de compra {po.name} tiene el incoterm {po.incoterm_id.name} y la importación solo admite {record.incoterm_id.name}")
 
+    # “En plaza”
+    def _plaza_is_en_plaza(self):
+        self.ensure_one()
+        return (getattr(getattr(self, "import_type_id", False), "name", "") or "").strip() == "En plaza"
+
+    def _plaza_get_target_stage(self):
+        return self.env["importation.stage"].search([("name", "=", "DEVOLUCION DEL CONTENEDOR")], limit=1)
+
+    def _plaza_get_invoices(self):
+        """
+        Facturas asociadas al proceso.
+        Ajusta si tu relación real es diferente.
+        """
+        if "invoice_ids" in self._fields:
+            return self.invoice_ids
+        # si el vínculo es desde account.move.importation_process_id, usa search:
+        return self.env["account.move"].search([
+            ("importation_process_id", "=", self.id),
+            ("move_type", "=", "out_invoice"),
+        ])
+
+    def action_plaza_try_close_single_invoice(self):
+        """
+        En plaza: si la factura de servicios de importación está posted,
+        mover importación a 'DEVOLUCION DEL CONTENEDOR' y contenedores a 'returned'.
+        """
+        for rec in self:
+            if not rec._plaza_is_en_plaza():
+                continue
+
+            moves = rec._plaza_get_invoices().filtered(lambda m: m.move_type == "out_invoice")
+
+            # ✅ Si tienes el campo nuevo de clasificación:
+            if moves and "invoice_type" in moves._fields:
+                moves = moves.filtered(lambda m: m.invoice_type == "import_service")
+
+            if not any(m.state == "posted" for m in moves):
+                continue  # aún no se cumple condición
+
+            stage = rec._plaza_get_target_stage()
+            if not stage:
+                raise UserError(_("No se encontró la etapa 'DEVOLUCION DEL CONTENEDOR' en importation.stage."))
+
+            # 1) etapa
+            if "stage_id" in rec._fields and rec.stage_id != stage:
+                rec.stage_id = stage
+
+            # 2) contenedores
+            if "load_tracking_ids" in rec._fields and rec.load_tracking_ids:
+                if "state" in rec.load_tracking_ids._fields:
+                    rec.load_tracking_ids.write({"state": "returned"})
+
 
 class ImportationCostLine(models.Model):
     _name = 'importation.cost.line'
