@@ -70,6 +70,19 @@ class AccountMove(models.Model):
 
         return res
 
+    def action_post(self):
+        res = super().action_post()
+
+        for move in self:
+            if move.move_type != "out_invoice":
+                continue
+
+            proc = getattr(move, "importation_process_id", False)
+            if proc:
+                proc.action_plaza_try_close_single_invoice()
+
+        return res
+
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
