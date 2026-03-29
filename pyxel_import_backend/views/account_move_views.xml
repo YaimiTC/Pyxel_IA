@@ -14,5 +14,17 @@
             </field>
         </record>
 
+        <record id="view_move_form_inherit_conciliation_type" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.conciliation.type</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+              <!-- Lo ponemos en la pestaña "Other Info" o cerca de invoice_date -->
+              <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="invoice_type"/>
+              </xpath>
+            </field>
+          </record>
+
     </data>
 </odoo>
