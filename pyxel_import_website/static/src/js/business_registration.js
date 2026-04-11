@@ -542,16 +542,13 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         if(!this._validateFileType('legal_documentation'))
             valid = false
 
-        const nationalClient = document.getElementById('acreditationis_client_nacional');
-        const nationalProvider = document.getElementById('acreditationis_provider_nacional');
-        const foreignClient = document.getElementById('acreditationis_client_extranjero');
-        const foreignProvider = document.getElementById('acreditationis_provider_extranjero');
+        const contact_type = document.getElementById('contact_type');
 
         const phone = document.querySelector('input[name="phone"]');
         const phoneError = document.getElementById("phone-error")
          if (phone && phoneError) {
             // If there is no radio button selected or it is a national client/provider
-            if ((!nationalClient?.checked && !nationalProvider?.checked && !foreignClient?.checked && !foreignProvider?.checked) || (nationalClient?.checked || nationalProvider?.checked)) {
+            if (['Cliente nacional', 'Proveedor nacional'].includes(this.contact_type)) {
                 if(!/^\+53\d{8}$/.test(phone.value)){
                     valid = false
                     phoneError.style.display = "block";
