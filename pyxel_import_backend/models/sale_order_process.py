@@ -14,6 +14,12 @@ class SaleOrderProcess(models.Model):
     importation_id = fields.Many2one('importation.process', string="Importación Cerrada", readonly=True)
 
     year = fields.Integer(string="Año", compute="_compute_year", store=True, index=True)
+    
+    evaluation_initial_count = fields.Integer(
+        string="Proceso",
+        compute="_compute_evaluation_initial_count",
+        store=False
+    )
 
     # ---------- helpers ----------
     def _extract_year_from_name(self, name):
@@ -53,6 +59,23 @@ class SaleOrderProcess(models.Model):
             if rec.year:
                 continue
             rec.year = rec._extract_year_from_name(rec.name)
+
+    @api.depends('sale_order_ids.order_type')
+    def _compute_evaluation_initial_count(self):
+        for rec in self:
+            rec.evaluation_initial_count = len(
+                rec.sale_order_ids.filtered(lambda so: so.order_type == 'evaluation_initial')
+            )
+
+    def name_get(self):
+        """Personaliza la representación del nombre para mostrar contadores en agrupaciones"""
+        result = []
+        for rec in self:
+            total_orders = len(rec.sale_order_ids)
+            initial_count = rec.evaluation_initial_count
+            display_name = f"{rec.name} ({total_orders}) Proceso ({initial_count})"
+            result.append((rec.id, display_name))
+        return result
 
     # ---------- create ----------
     @api.model

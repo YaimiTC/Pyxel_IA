@@ -89,6 +89,24 @@ class SaleOrder(models.Model):
 
     process_id = fields.Many2one("sale.order.process", string="Secuencia", ondelete="set null", index=True)
 
+    importation_process_count = fields.Integer(
+        string="Proceso",
+        related='process_id.evaluation_initial_count',
+        store=False,
+        readonly=True
+    )
+
+    evaluation_initial_count = fields.Integer(
+        string="Proceso (cant.)",
+        compute="_compute_evaluation_initial_count",
+        store=True,
+    )
+
+    @api.depends('order_type')
+    def _compute_evaluation_initial_count(self):
+        for order in self:
+            order.evaluation_initial_count = 1 if order.order_type == 'evaluation_initial' else 0
+
     @api.onchange('import_progress_id')
     def _check_importation_and_close_process(self):
         for order in self:
