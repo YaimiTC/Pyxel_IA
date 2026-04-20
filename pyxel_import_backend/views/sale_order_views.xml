@@ -113,6 +113,7 @@
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="process_id"/>
                 <field name="order_type" string="Order Type"/>
+                <field name="evaluation_initial_count" sum="Proceso (count)" optional="show"/>
                 <field name="provider_names" string="Providers"/>
                 <field name="invoice_names" string="Invoices"/>
                 <field name="is_third_party_contract" string="Is third party contract"/>
@@ -132,6 +133,7 @@
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="process_id"/>
                 <field name="order_type" string="Order Type"/>
+                <field name="evaluation_initial_count" sum="Proceso (count)" optional="show"/>
                 <field name="provider_names" string="Providers"/>
                 <field name="invoice_names" string="Invoices"/>
                 <field name="is_third_party_contract" string="Is third party contract"/>
