@@ -517,10 +517,12 @@ class ImportationProcess(models.Model):
                     raise ValidationError(
                         f"La orden de compra {po.name} tiene el incoterm {po.incoterm_id.name} y la importación solo admite {record.incoterm_id.name}")
 
-    # “En plaza”
+    # "En plaza" - Verifica si el tipo de importación NO requiere contenedor
     def _plaza_is_en_plaza(self):
         self.ensure_one()
-        return (getattr(getattr(self, "import_type_id", False), "name", "") or "").strip() == "En plaza"
+        import_type = getattr(self, "import_type_id", False)
+        flag = import_type and getattr(import_type, "no_container", False)
+        return flag
 
     def _plaza_get_target_stage(self):
         return self.env["importation.stage"].search([("name", "=", "DEVOLUCION DEL CONTENEDOR")], limit=1)

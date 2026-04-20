@@ -32,3 +32,6 @@ class ImportType(models.Model):
     show_shipping_company = fields.Boolean(string='Show Shipping Company')
     show_airline = fields.Boolean(string='Show Airline')
     show_transit_agency = fields.Boolean(string='Show Transit Agency')
+
+    no_container = fields.Boolean(string='No Container', default=True,
+                                  help='Indica si este tipo de importación no requiere contenedor (ej: En plaza)')

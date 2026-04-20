@@ -8,6 +8,7 @@
                     <field name="name"/>
                     <field name="use_port"/>
                     <field name="use_airport"/>
+                    <field name="no_container"/>
                 </tree>
             </field>
         </record>
@@ -24,6 +25,7 @@
                             <group name="right_group">
                                 <field name="use_port"/>
                                 <field name="use_airport"/>
+                                <field name="no_container"/>
                             </group>
                         </group>
                         <notebook>
