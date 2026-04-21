@@ -553,6 +553,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                     valid = false
                     phoneError.style.display = "block";
                     phoneError.style.margin = "10px 0px 10px";
+                    phoneError.textContent = "El número de teléfono debe comenzar con +53 y tener 8 dígitos adicionales.";
                 } else {
                     phoneError.style.display = "none";
                 }
@@ -561,6 +562,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                     valid = false
                     phoneError.style.display = "block";
                     phoneError.style.margin = "10px 0px 10px";
+                    phoneError.textContent = "El número de teléfono debe comenzar con + y tener hasta 17 dígitos adicionales.";
                 } else {
                     phoneError.style.display = "none";
                 }
