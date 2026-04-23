@@ -1,7 +1,4 @@
 /** @odoo-module **/
-import { browser } from "@web/core/browser/browser";
-import { Tooltip } from "@web/core/tooltip/tooltip";
-import { usePopover } from "@web/core/popover/popover_hook";
 import { useService } from "@web/core/utils/hooks";
 import { Component, useState, useRef, onMounted } from "@odoo/owl";
 import { registry } from "@web/core/registry";
@@ -12,12 +9,10 @@ export class FileUploader extends Component {
   setup() {
     // Inits
     this.fileInputRef = useRef("fileInput");
-    this.infoIconRef = useRef("infoIcon");
     this.state = useState({
       uploading: false,
       selectedFile: null,
     });
-    this.popover = usePopover(Tooltip);
     this.notification = useService("notification");
 
     // Checking for permissions onMounted
@@ -25,6 +20,7 @@ export class FileUploader extends Component {
       if (this.cannotUpload) {
         const notificationKey = `disabled_${this.props.recordId}`;
         const alreadyNotified = FileUploader.notificationShown.has(notificationKey);
+        console.info(`Already notified: ${alreadyNotified}!!`)
         if (!alreadyNotified) {
           this.triggerNotifications();
           FileUploader.notificationShown.add(notificationKey);
@@ -140,13 +136,6 @@ export class FileUploader extends Component {
         title: "Acción no permitida",
       },
     );
-    if (this.infoIconRef.el) {
-      // Triggering temporal popover
-      this.popover.open(this.infoIconRef.el, {
-        tooltip: this.disableMessage,
-      });
-      browser.setTimeout(this.popover.close, 3500);
-    }
   }
 }
 

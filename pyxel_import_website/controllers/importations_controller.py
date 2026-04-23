@@ -31,39 +31,57 @@ class ImportationsController(BaseController):
             "name": "Importaciones",
             "href": "/model/imports",
         }
-        
+
         current_stage = record.stage_id
         commercial_partner = request.env.user.commercial_partner_id
-        contact_type = commercial_partner.contact_type_id.type_of_contact if commercial_partner.contact_type_id.id else False
-        
-        upload_file_link_label = "Ver Información" if current_stage.cannot_upload or contact_type == "Client" else "Adicionar Información"
-        
-        values['upload_file_link_label'] = upload_file_link_label
+        contact_type = (
+            commercial_partner.contact_type_id.type_of_contact
+            if commercial_partner.contact_type_id.id
+            else False
+        )
+
+        upload_file_link_label = (
+            "Ver Información"
+            if current_stage.cannot_upload or contact_type == "Client"
+            else "Adicionar Información"
+        )
+
+        values["upload_file_link_label"] = upload_file_link_label
         return request.render("pyxel_import_website.importation_view", values)
 
-    @http.route(["/update_files/<int:record_id>"], type="http", auth="user", website=True)
+    @http.route(
+        ["/update_files/<int:record_id>"], type="http", auth="user", website=True
+    )
     def update_files(self, record_id, **kwargs):
         # Recuperar el registro importation.process por su ID
         record = request.env["importation.process"].sudo().browse(record_id)
         if not record.exists():
             raise werkzeug.exceptions.NotFound()
-        
+
         current_stage = record.stage_id
         commercial_partner = request.env.user.commercial_partner_id
-        contact_type = commercial_partner.contact_type_id.type_of_contact if commercial_partner.contact_type_id.id else False  
+        contact_type = (
+            commercial_partner.contact_type_id.type_of_contact
+            if commercial_partner.contact_type_id.id
+            else False
+        )
         _logger.info(f"Contact Type: {contact_type}")
-        
-        cannot_upload = True if current_stage.cannot_upload or contact_type == "Client" else False
+
+        cannot_upload = (
+            True if current_stage.cannot_upload or contact_type == "Client" else False
+        )
         _logger.info("Can Not Upload %s", cannot_upload)
-        
+
         if cannot_upload:
             if current_stage.cannot_upload:
-                upload_disable_message = f"La etapa actual '{current_stage.name}' no permite la carga de archivos."
+                upload_disable_message = f"En la etapa '{current_stage.name}' de la importación no está permitida la carga de documentos."
             elif contact_type == "Client":
-                upload_disable_message = "Su tipo de contacto no tiene permisos para cargar archivos."
+                upload_disable_message = (
+                    "Tu tipo de usuario no tiene permitido subir documentos en esta sección."
+                )
         else:
             upload_disable_message = ""
-        
+
         # Renderizar la plantilla y pasar el registro
         return request.render(
             "pyxel_import_website.update_files",
