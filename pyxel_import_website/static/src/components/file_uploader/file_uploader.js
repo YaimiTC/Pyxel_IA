@@ -18,7 +18,7 @@ export class FileUploader extends Component {
     // Checking for permissions onMounted
     onMounted(() => {
       if (this.cannotUpload) {
-        const notificationKey = `disabled_${this.props.recordId}`;
+        const notificationKey = `disabled_${this.props.model}_${this.props.recordId}`;
         const alreadyNotified = FileUploader.notificationShown.has(notificationKey);
         console.info(`Already notified: ${alreadyNotified}!!`)
         if (!alreadyNotified) {
@@ -117,10 +117,6 @@ export class FileUploader extends Component {
   }
 
   triggerFileInput(ev) {
-    // Fallback: If user still manages to interact (via tab navigation), notify
-    if (this.cannotUpload) {
-      this.triggerNotifications();
-    }
     ev.preventDefault(); // Prevent any default button behavior
     if (this.fileInputRef.el) {
       this.fileInputRef.el.click();
