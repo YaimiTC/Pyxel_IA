@@ -15,10 +15,10 @@ export class FileUploader extends Component {
     });
     this.notification = useService("notification");
 
-    // Checking for permissions onMounted
+    // Checking for permissions onMounted (Only one notification should be triggered accross all models and records)
     onMounted(() => {
       if (this.cannotUpload) {
-        const notificationKey = `disabled_${this.props.model}_${this.props.recordId}`;
+        const notificationKey = `disabled_global_upload`; 
         const alreadyNotified = FileUploader.notificationShown.has(notificationKey);
         console.info(`Already notified: ${alreadyNotified}!!`)
         if (!alreadyNotified) {
