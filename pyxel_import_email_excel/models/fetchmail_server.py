@@ -165,9 +165,10 @@ class FetchmailServer(models.Model):
                         count += 1
                     _logger.info("Fetched %d email(s) on %s server %s; %d succeeded, %d failed.", count,
                                  server.server_type, server.name, (count - failed), failed)
-                except Exception:
+                except Exception as e:
                     _logger.info("General failure when trying to fetch mail from %s server %s.", server.server_type,
                                  server.name, exc_info=True)
+                    _logger.info("[GENERAL FAILURE REASON]: %s", str(e))
                 finally:
                     if imap_server:
                         try:
