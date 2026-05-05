@@ -17,7 +17,7 @@ class AverageContainer(models.TransientModel):
 
     start_date = fields.Date('Fecha de Inicio')
     end_date = fields.Date('Fecha Fin')
-    partner_id = fields.Many2one('res.partner', string='Cliente')
+    partner_id = fields.Many2one('res.partner', string='Cliente',  domain="[('is_company', '=', True)]",)
     purchase_condition = fields.Selection(
         selection=[
             ('(B/L)', 'Importación marítima con contenedor lleno (FCL)'),
