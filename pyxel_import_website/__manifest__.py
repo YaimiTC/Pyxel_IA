@@ -27,6 +27,7 @@
         'pyxel_import_backend',
     ],
     "data": [
+        'security/portal_purchase_order_rules.xml',
         'data/ir_model_data.xml',
         'views/business_registration.xml',
         'views/import_registration.xml',
