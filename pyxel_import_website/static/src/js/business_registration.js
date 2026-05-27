@@ -10,6 +10,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         'click .register_business_button': 'validateForm',
         'keyup .is-invalid': '_removeInvalid',
         'click .is-invalid': '_removeInvalid',
+        'change input[name="nit"]': '_checkDuplicateNit',
         'change input[name="deed_input_date"]': '_onchangeDeedInputDate',
         'change input[name="parent_company_name"]': '_onchangeParentCompanyName',
         'change input[name="legal_documentation"]': '_onchangeFile',
@@ -531,6 +532,26 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
         $('.o_wizard_circle_progress').css({"--leftProgress": left_degree.concat("deg")});
         $('.o_wizard_circle_progress').css({"--rightProgress": right_degree.concat("deg")});
         $('.step_counter').text("2 de 2");
+    },
+     _checkDuplicateNit: async function(ev) {
+        let nit = ev?.target;
+        let error_message = document.getElementById('nit_duplicate_error');
+        if(nit.value.length == 11){
+            let valid = await this.rpc('/check_duplicate_nit', { nit: nit.value });
+    
+            if (!valid) {
+                nit.classList.add("is-invalid");
+                error_message.style.display = 'inline';
+            } 
+            else {
+                nit.classList.remove("is-invalid");
+                error_message.style.display = 'none';
+            }
+        }
+        else{
+            nit.classList.remove("is-invalid");
+            error_message.style.display = 'none';
+        }
     },
     validateForm: function(ev) {
         // This function deals with validation of the form fields
