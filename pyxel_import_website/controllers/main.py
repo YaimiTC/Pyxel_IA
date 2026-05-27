@@ -81,6 +81,11 @@ def loged_in():
 
 class WebsiteForm(form.WebsiteForm):
 
+    @http.route('/check_duplicate_nit', type="json", auth="public", website=True)
+    def check_duplicate_nit(self, nit, **kw):
+        partner = request.env['res.partner'].sudo().search([('vat', '=', nit), ('is_company', '=', True)])
+        return not bool(partner)
+
     @http.route('/check_file_type', type="json", auth="public", website=True)
     def check_file_type(self, config_param, file_type, **kw):
         attachment_id_str = request.env['ir.config_parameter'].sudo().get_param(f'{config_param}.attachment_id')
@@ -174,7 +179,14 @@ class WebsiteForm(form.WebsiteForm):
                     status=400,
                     headers={'Content-Type': 'application/json'}
                 )
-            
+            valid_nit = self.check_duplicate_nit(kwargs.get("nit", False))
+            if not valid_nit:
+                return Response(
+                        json.dumps({'error': 'El NIT ingresado ya existe. Verifique la información antes de continuar'}),
+                        status=400,
+                        headers={'Content-Type': 'application/json'}
+                    )
+
             partner_data = self._get_partner_data(kwargs)
             partner = request.env["res.partner"].sudo().create(partner_data)
             public_user.partner_id.write({"name": kwargs["partner_name"], "parent_id": partner.id})

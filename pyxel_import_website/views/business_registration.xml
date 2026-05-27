@@ -417,6 +417,10 @@
                                                                         style="color:red; display:none;">El
                                                                         NIT debe contener
                                                                         exactamente 11 dígitos.</span>
+                                                                    <span id="nit_duplicate_error"
+                                                                          style="color:red; display:none;">El NIT ingresado ya existe. Verifique la
+                                                                         información antes de continuar.
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
