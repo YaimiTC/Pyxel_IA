@@ -1,0 +1,414 @@
+.oe_login_buttons a {
+  color: #F37021 !important;
+}
+
+.oe_login_buttons a:hover {
+  color: #F37021 !important;
+
+}
+
+.oe_login_buttons .btn-link {
+  color: #F37021 !important;
+}
+
+.o_auth_oauth_providers a {
+
+  color: #F37021 !important;
+  border-radius: 30px;
+  margin-top: 5vh;
+
+}
+
+#navBlue {
+  background-color: #1590FF !important;
+}
+
+div.d-flex.justify-content-between.align-items-center.small.mt-2 a {
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
+
+.navbar-nav.mx-auto .nav-item {
+  margin: 0 1.25rem;
+}
+
+.navbar-nav.mx-auto .nav-item .nav-link {
+  color: white !important;
+}
+
+li#notification-bell-desktop a.nav-link.notification-toggle,
+li#notification-bell-mobile a.nav-link.notification-toggle{
+  color: #212529b3 !important;
+}
+
+
+.dropdown-menu.js_usermenu a.dropdown-item {
+  color: #212529b3 !important;
+  font-size: .875em;
+  font-weight: 400;
+}
+
+.dropdown-menu.js_usermenu a.dropdown-item i {
+  color: #1590FF !important;
+  font-size: .900em;
+  font-weight: 400;
+}
+
+.dropdown-menu.js_usermenu a.dropdown-item:hover,
+.dropdown-menu.dropdown-menu-end a.dropdown-item:hover,
+.dropdown-menu.js_usermenu a.dropdown-item:focus,
+.dropdown-menu.dropdown-menu-end a.dropdown-item:focus,
+.dropdown-menu.js_usermenu a.dropdown-item:active,
+.dropdown-menu.dropdown-menu-end a.dropdown-item:active,
+.dropdown-menu.dropdown-menu-end a.dropdown-item.active {
+  color: #fff !important;
+  text-decoration: none;
+  background-color: #1590FF !important;
+}
+
+/* Styling the icon INSIDE those states */
+.dropdown-menu.js_usermenu a.dropdown-item:hover i,
+.dropdown-menu.js_usermenu a.dropdown-item:focus i,
+.dropdown-menu.js_usermenu a.dropdown-item:active i {
+  color: #fff !important;
+}
+
+/* --- Service section layout --- */
+.service-section {
+  min-height: 622px;
+  /* image height target */
+  position: relative;
+  overflow: visible;
+}
+
+/* image wrapper sits centered across the halves */
+.service-section .service-image {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* the actual image container that keeps fixed size */
+.service-section .service-image-wrapper {
+  width: 100%;
+  max-width: 1920px;
+  height: 622px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* image fills the wrapper and keeps aspect (cover) */
+.service-section .service-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* caption placed at bottom inside the image */
+.service-section .service-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  z-index: 3;
+  pointer-events: none;
+  /* let clicks go to child elements only */
+}
+
+.service-section .service-caption .bg-primary {
+  background-color: #1590FF !important;
+}
+
+.service-section .service-caption .btn-outline-dark {
+  pointer-events: auto;
+  /* enable clicks on the button inside */
+}
+
+footer .fa {
+  font-size: 1rem;
+}
+
+footer hr {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Custom About page Tabs */
+.custom-tabs {
+  /*Ensuring the tab list is scrollable but hiding the scrollbar for a cleaner look*/
+  border-bottom: 2px solid #F37021;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  /* smoother scrolling on iOS */
+  scroll-behavior: smooth;
+  /* enables smooth native scrolling */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.custom-tabs::-webkit-scrollbar {
+  display: none;
+  /* Hide scrollbar in WebKit */
+}
+
+.custom-tabs .nav-link {
+  border: none !important;
+  color: #333 !important;
+  font-weight: 500;
+  margin: 0 0.5rem;
+  padding-bottom: 0.75rem;
+}
+
+/* Active state: orange bottom + text */
+.custom-tabs .nav-link.active {
+  border-bottom: 3px solid #F37021 !important;
+  color: #F37021 !important;
+  background: transparent !important;
+}
+
+.custom-tabs .nav-link:hover {
+  color: #F37021 !important;
+}
+
+/* Arrow buttons */
+.nav-arrow {
+  border: none;
+  background: transparent;
+  color: #333 !important;
+  padding: 0.25rem 0.5rem;
+}
+
+.nav-arrow:hover,
+.nav-arrow:focus {
+  color: #F37021 !important;
+  outline: none;
+}
+
+/* Everything will be centered nicely on small screens */
+@media (max-width: 991.98px) {
+  .custom-tabs .nav-link {
+    margin: 0 0.25rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/*Custom cards styles*/
+.o_portal_category .o_portal_index_card a {
+  background-color: #f8f9fa !important;
+  /* light gray */
+  border-radius: 1rem;
+  /* rounded corners */
+  padding: 0.5rem;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+/* Hover effect */
+.o_portal_category .o_portal_index_card:hover a {
+  background-color: #e9f5ff !important;
+  /* lighter blue shade */
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Icon inside portal cards */
+.o_portal_category .o_portal_index_card img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+}
+
+/*Importation Details*/
+ol.breadcrumb.p-0.my-2 {
+  background-color: unset !important;
+}
+
+li.breadcrumb-item a {
+  color: #212529b3 !important;
+}
+
+li.breadcrumb-item.o_not_editable a {
+  color: #212529b3 !important;
+}
+
+a.text-decoration-none.text-primary-custom.d-flex.align-items-center {
+  color: #212529b3 !important;
+}
+
+span.fw-bold.text-black {
+  color: #1590FF !important;
+}
+
+li.breadcrumb-item.active {
+  color: #1590FF !important;
+}
+
+li.breadcrumb-item.active span {
+  color: #1590FF !important;
+}
+
+div.o_inner_group.grid.col-lg-12 {
+  color: #212529b3 !important;
+}
+
+/*Homepage Sections linked buttons*/
+div.col-auto a.btn.btn-outline-orange {
+  border-color: #F37021 !important;
+  color: #F37021 !important;
+}
+
+div.col-auto a.btn.btn-outline-orange:hover {
+  background-color: #F37021 !important;
+  color: white !important;
+}
+
+div.col-auto a.btn.btn-outline-orange:active {
+  border-color: #F37021 !important;
+  background-color: #F37021 !important;
+  color: white !important;
+}
+
+div.col-auto a.btn.btn-outline-orange:focus {
+  box-shadow: 0 0 0 .2rem rgba(243, 112, 33, 1) !important;
+}
+
+
+/*My Account Form Custom Discard button*/
+div.clearfix.text-end.mb-5 a.btn.btn-outline-danger {
+  border-color: #F37021 !important;
+  color: #F37021 !important;
+}
+
+div.clearfix.text-end.mb-5 a.btn.btn-outline-danger:hover {
+  background-color: #F37021 !important;
+  color: white !important;
+}
+
+div.clearfix.text-end.mb-5 a.btn.btn-outline-danger:active {
+  border-color: #F37021 !important;
+  background-color: #F37021 !important;
+  color: white !important;
+}
+
+div.clearfix.text-end.mb-5 a.btn.btn-outline-danger:focus {
+  box-shadow: 0 0 0 .2rem rgba(243, 112, 33, 1) !important;
+}
+
+/*Importations Table Button */
+.btn.btn-outline-info {
+  border-color: #1590FF !important;
+  color: #1590FF !important;
+}
+
+.btn.btn-outline-info:hover {
+  background-color: #1590FF !important;
+  color: white !important;
+}
+
+.btn.btn-outline-info:active {
+  border-color: #1590FF !important;
+  background-color: #1590FF !important;
+  color: white !important;
+}
+
+.btn.btn-outline-info:focus {
+  box-shadow: 0 0 0 .2rem rgba(21, 144, 255, 1) !important;
+}
+
+.btn.boton_secondary_import.o_arrow_button.o_arrow_button_current {
+  background-color: #F37021 !important;
+  color: white !important;
+  opacity: unset !important;
+}
+
+div.mb-3.col-12 a {
+  color: #F37021 !important;
+}
+
+.btn.boton_secondary_import.o_arrow_button {
+  background-color: #EEEDED !important;
+  color: black !important;
+}
+
+/*Default btn-primary and text-primary style changed*/
+i.text-primary {
+  color: #1590FF !important;
+}
+
+.btn.btn-primary {
+  background-color: #1590FF !important;
+  border-color: #1590FF !important;
+  color: white !important;
+}
+
+.btn.btn-outline-primary {
+  background-color: transparent !important;
+  border-color: #1590FF !important;
+  color: #1590FF !important;
+}
+
+.btn.btn-primary:hover, .btn.btn-outline-primary:hover {
+  background-color: #1590FF !important;
+  color: white !important;
+}
+
+.btn.btn-primary:active, .btn.btn-outline-primary:active {
+  border-color: #1590FF !important;
+  background-color: #1590FF !important;
+  color: white !important;
+}
+
+.btn.btn-primary:focus, .btn.btn-outline-primary:focus {
+  box-shadow: 0 0 0 .2rem rgba(21, 144, 255, 1) !important;
+}
+
+
+/*Importations Table Button */
+
+/*Importation Register Buttons*/
+a.btn.btn-primary.add-btn {
+  background-color: #1590FF !important;
+  color: white !important;
+}
+
+a.btn.btn-primary.add-btn:hover {
+  background-color: #1590FF !important;
+  color: white !important;
+}
+
+a.btn.btn-primary.add-btn:active {
+  border-color: #1590FF !important;
+  background-color: #1590FF !important;
+  color: white !important;
+}
+
+a.btn.btn-primary.add-btn:focus {
+  box-shadow: 0 0 0 .2rem rgba(21, 144, 255, 1) !important;
+}
+
+/*Importation Register*/
+
+/*Nomenclator-Onure Form Buttons*/
+button.btn.btn-info {
+  background-color: #1590FF !important;
+  color: white !important;
+}
+
+button.btn.btn-info:hover {
+  background-color: #1590FF !important;
+}
+
+button.btn.btn-info:active {
+  border-color: #1590FF !important;
+  background-color: #1590FF !important
+}
+
+/*Nomenclator-Onure Forms Buttons*/

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="page_new_home" name="Ceimpex New Home" inherit_id="website.homepage" priority="20">
+        <!-- Replace the simple wrapper that website.homepage provides -->
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="oe_structure">
+                <!-- === SECTION 5: ¿LISTO PARA IMPORTAR CON SEGURIDAD? === -->
+                <section class="pt-5 pb-5" style="background-color: #f8f9fa;">
+                    <div class="container">
+
+                        <div class="row g-4">
+
+                            <!-- CARD 1: ¿LISTO PARA IMPORTAR CON SEGURIDAD? -->
+                            <div class="col-md-6 col-lg-4">
+                                <div
+                                    class="card h-100 border-0 shadow-lg rounded-4 position-relative overflow-hidden"
+                                    style="background-color: #fff; color: #f58231; z-index: 2;">
+                                    <div class="d-block align-items-start pt-4 px-4">
+                                        <img
+                                            src="/pyxel_import_website_interface/static/src/img/homepage/blue_ship.png"
+                                            class="card-img-top" alt="Blue ship"
+                                            style="width: 22%; height:auto; object-fit: contain;" />
+                                        <h3 class="dosis-extrabold mt-3 px-2 display-6"> ¿LISTO PARA<br />
+                                            IMPORTAR CON<br /> SEGURIDAD? </h3>
+                                    </div>
+                                    <div class="position-absolute text-end end-0 bottom-0"
+                                        style="z-index:-1;">
+                                        <!-- Ship image (bottom-left, overlapping circle) -->
+                                        <img
+                                            src="/pyxel_import_website_interface/static/src/img/homepage/card01.png"
+                                            class="w-50 w-md-75" alt="Cargo Ship" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CARD 2: IMPORTAMOS -->
+                            <div class="col-md-6 col-lg-8">
+                                <div class="row g-4">
+                                    <!-- Top-right card -->
+                                    <div class="col-12">
+                                        <div
+                                            class="card border-0 shadow-lg rounded-4 p-4 position-relative overflow-hidden"
+                                            style="background-color: #fff; z-index: 2;">
+                                            <div class="d-block align-items-start mb-2">
+                                                <img
+                                                    src="/pyxel_import_website_interface/static/src/img/homepage/orange_ship.png"
+                                                    class="card-img-top" alt="Orange ship"
+                                                    style="width: 10%; height:auto; object-fit: contain;" />
+                                                <div class="mt-2 p-2">
+                                                    <h3
+                                                        class="dosis-extrabold text-primary display-6">
+                                                        IMPORTAMOS</h3>
+                                                    <p
+                                                        class="dosis-bold text-primary display-7 mb-2">LO
+                                                        QUE TU
+                                                        NEGOCIO NECESITA</p>
+                                                    <p class="dosis-regular text-muted display-8">Soluciones
+                                                        de
+                                                        abastecimiento
+                                                        seguras y eficientes</p>
+                                                </div>
+                                            </div>
+                                            <div class="position-absolute text-end end-0 bottom-0"
+                                                style="z-index:-1;">
+                                                <!-- Truck + Ship image (right side, overlapping
+                                                    circle) -->
+                                                <img
+                                                    src="/pyxel_import_website_interface/static/src/img/homepage/card02.png"
+                                                    class="img-fluid" style="width:50%;"
+                                                    alt="Ship  &#38; Truck" />
+                                            </div>
+                                            <span class="text-start px-2 position-relative">
+                                                <a href="/business-register?type=import"
+                                                    class="dosis-medium btn btn-outline-secondary rounded px-2">Solicitar
+                                                    Servicio →</a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <!-- Bottom card: 1000+ Productos -->
+                                    <div class="col-12">
+                                        <div
+                                            class="card border-0 shadow-lg rounded-4 p-4 position-relative overflow-hidden"
+                                            style="background-color: #fff; z-index: 2;">
+                                            <div class="d-block align-items-start mb-2">
+                                                <img
+                                                    src="/pyxel_import_website_interface/static/src/img/homepage/warehouse01.png"
+                                                    class="card-img-top" alt="Volúmenes Mayoristas"
+                                                    style="width: 10%; height:auto; object-fit: contain;" />
+                                                <div class="mt-2 px-2">
+                                                    <h3 class="dosis-extrabold text-primary"> más de<br />
+                                                <span
+                                                            class="display-6 dosis-extrabold">1000
+                                                        PRODUCTOS</span>
+                                                    </h3>
+                                                    <p class="dosis-bold text-primary small mb-2">EN
+                                                        NUESTRO
+                                                        NOMENCLADOR</p>
+                                                </div>
+                                            </div>
+                                            <div class="position-absolute text-end end-0 bottom-0"
+                                                style="z-index:-1;">
+                                                <!-- Product collage image (right side) -->
+                                                <img
+                                                    src="/pyxel_import_website_interface/static/src/img/homepage/card03.png"
+                                                    class="img-fluid" style="width:40%;"
+                                                    alt="Products: Fridge, Solar Kit, Induction Cooker" />
+                                            </div>
+                                            <!--<span class="text-start px-2 position-relative">
+                                                <a href="/nomenclador"
+                                                    class="dosis-medium btn btn-outline-secondary rounded px-2">Solicitar
+                                                    Productos →</a>
+                                            </span>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- === SECTION 2: PRINCIPALES SERVICIOS === -->
+                <section class="s_text_block pt-5 pb-5" style="background-color: #fafafa;">
+                    <div class="container">
+                        <div class="row mb-4">
+                            <div class="col text-start">
+                                <h2 class="dosis-extrabold text-primary display-5">PRINCIPALES
+                                    SERVICIOS</h2>
+                                <p class="dosis-medium text-muted lead">Conoce nuestros principales
+                                    servicios.</p>
+                            </div>
+                        </div>
+                        <div class="row g-4 justify-content-center">
+                            <!-- CARD 1: IMPORTACIONES -->
+                            <div class="col-md-2"></div>
+                            <div class="col-md-4">
+                                <div
+                                    class="card h-100 border-0 shadow-sm rounded-4 py-4 d-flex flex-column"
+                                    style="background-color: #1987d6; color: white;">
+                                    <h3 class="dosis-bold mb-3 px-4">IMPORTACIÓN</h3>
+                                    <p class="dosis-medium mb-4 flex-grow-1 text-end px-4">
+                                        En Pyxel Solutions, te ayudamos con tus importaciones. Solicita la
+                                        operación aportando la información requerida. Luego, podrá
+                                        chequear el estado de los servicios en tiempo real y hacer
+                                        un seguimiento de tus mercancías según el estado.
+                                    </p>
+                                    <div class="position-absolute bottom-0 start-0">
+                                        <img
+                                            src="/pyxel_import_website_interface/static/src/img/homepage/imp01.png"
+                                            class="img-fluid rounded-bottom" alt="Cargo Ship"
+                                            style="width: 40%; height: auto; object-fit: cover;" />
+                                    </div>
+                                    <span class="text-end px-4 position-relative">
+                                        <a href="/business-register?type=import"
+                                            class="dosis-medium btn btn-outline-light w-50 rounded mt-3 px-2">Solicitar
+                                            Servicio →</a>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- CARD 2: ACREDITACIÓN -->
+                            <div class="col-md-4">
+                                <div
+                                    class="card h-100 border-0 shadow-sm rounded-4 py-4 d-flex flex-column"
+                                    style="background-color: #fff; color: #f58231;">
+                                    <h3 class="dosis-bold mb-3 px-4">ACREDITACIÓN</h3>
+                                    <p
+                                        class="dosis-medium mb-4 flex-grow-1 text-muted text-end px-4">
+                                        Necesaria para que tu empresa pueda operar legalmente en
+                                        procesos de importación.
+                                    </p>
+                                    <div class="position-relative mt-auto">
+                                        <img
+                                            src="/pyxel_import_website_interface/static/src/img/homepage/acred02.png"
+                                            class="img-fluid" alt="Laptop &#38; Documents"
+                                            style="width: 100%; height: auto;" />
+                                    </div>
+                                    <span class="text-end px-4">
+                                        <a href="/business-register?type=accreditation"
+                                            class="dosis-medium btn btn-outline-secondary w-50 rounded mt-3 px-2">Iniciar
+                                            Proceso →</a>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </xpath>
+    </template>
+    <record id="import_page_new_home" model="website.page">
+        <field name="url">/</field>
+        <field name="is_published">True</field>
+        <field name="view_id" ref="pyxel_import_website_interface.page_new_home" />
+        <field name="track">True</field>
+        <field name="website_meta_description">This is the homepage of Pyxel Solutions website services</field>
+    </record>
+</odoo>

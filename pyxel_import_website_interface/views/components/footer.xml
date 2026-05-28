@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="footer" name="Ceimpex Footer">
+        <t t-set="is_logged_in" t-value="not request.env.user._is_public()" />
+        <footer class="bg-dark text-white py-4">
+            <div class="container px-4">
+                <div class="row text-center">
+
+                    <div class="col-12 mb-2 text-start">
+                        <!-- Logo -->
+                        <img src="/pyxel_import_website_interface/static/src/img/pyxel_logo.png" alt="Pyxel Logo" class="img-fluid mb-3" style="max-height: 60px;" />
+
+                        <!-- Location -->
+                        <a class="text-white nav-link fs-6" href="/" style="pointer-events: none;">
+                            <i class="fa fa-map-marker mx-1"></i> Edificio FOCSA, Vedado, La Habana </a>
+                    </div>
+
+                    <!-- Column 1: Logo + Location -->
+                    <div class="col-12 col-md-6 col-lg-3 mb-4">
+
+                        <!-- Divider -->
+                        <hr class="border-secondary my-3" style="opacity: 0.5;" />
+
+                        <!-- Contact Section -->
+                        <h6 class="text-start font-weight-bold text-white mb-3">Contáctenos</h6>
+                        <div class="mb-2 text-start">
+                            <i class="text-primary fa fa-comment mx-1"></i> Chat en línea </div>
+                        <div class="mb-2 text-start">
+                            <i class="text-primary fa fa-phone mx-1"></i> +05 0927509</div>
+                        <div class="text-start">
+                            <i class="text-primary fa fa-envelope mx-1"></i>pyxelsolutions@gmail.com</div>
+                    </div>
+
+                    <!-- Column 2 -->
+                    <div class="col-12 col-md-6 col-lg-3 mb-4">
+
+                        <!-- Divider -->
+                        <hr class="border-secondary my-3 invisible" />
+
+                        <div class="mt-4 mb-0">
+                            <h6 class="text-start font-weight-bold text-white mb-0">Síguenos</h6>
+                            <div class="text-start p-1 text-white">
+                                <a href="https://www.facebook.com/PyxelSolutions/" class="m-0 p-0 text-white text-decoration-none" target="_blank" aria-label="Facebook">
+                                    <i class="fa fa-facebook fa-stack p-1" />
+                                </a>
+                                <a href="https://cu.linkedin.com/company/pyxel-solutions" class="m-0 p-0 text-white text-decoration-none" target="_blank" aria-label="LinkedIn">
+                                    <i class="fa fa-linkedin fa-stack p-1" />
+                                </a>
+                                <a href="https://www.instagram.com/pyxelsolutions/" class="m-0 p-0 text-white text-decoration-none" target="_blank" aria-label="Instagram">
+                                    <i class="fa fa-instagram fa-stack p-1" />
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 3 -->
+                    <div class="col-12 col-md-6 col-lg-3 mb-4">
+
+                        <!-- Divider -->
+                        <hr class="border-secondary my-3 invisible" />
+                        <h6 class="text-start font-weight-bold text-white mb-3">Servicios</h6>
+                        <ul class="mb-2 text-start">
+                            <li>
+                                <a class="text-decoration-none text-white" href="/business-register?type=import">
+                                    Importación
+                                </a>
+                            </li>
+                            <li>
+                                <a class="text-decoration-none text-white" href="/business-register?type=accreditation">
+                                    Acreditación
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Column 4: Subscribe -->
+                    <div class="col-12 col-md-6 col-lg-3 mb-4">
+
+                        <!-- Divider -->
+                        <hr class="border-secondary my-3 invisible" />
+                        <h6 class="text-start text-white font-weight-bold mb-3">Suscríbete</h6>
+                        <!--Taked from odoo\addons\website_mass_mailing\views\snippets_templates.xml-->
+                        <div class="s_newsletter_subscribe_form s_newsletter_list js_subscribe w-100" data-vxml="001" data-list-id="1" data-name="Newsletter Form">
+                            <div class="input-group">
+                                <input type="email" name="email" class="js_subscribe_value form-control" placeholder="Tu correo.." />
+                                <div class="input-group-append">
+                                    <a role="button" href="#" class="btn btn-primary rounded-end js_subscribe_btn o_submit" style="margin-left:-1px;border-bottom-left-radius: 0px !important; border-top-left-radius:0px !important">
+                                        <i class="fa fa-send"></i>
+                                    </a>
+                                    <a role="button" href="#" class="btn btn-success js_subscribed_btn d-none o_submit" style="margin-left:-1px;border-bottom-left-radius: 0px !important; border-top-left-radius:0px !important" disabled="disabled">Thanks</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </footer>
+    </template>
+</odoo>
