@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="navbar" name="Ceimpex Navbar">
+        <t t-set="is_logged_in" t-value="not request.env.user._is_public()" />
+        <t t-set="current_path" t-value="request.httprequest.path" />
+        <div class="sticky-top">
+            <nav class="navbar navbar-expand-lg bg-white shadow-sm px-lg-5">
+                <div class="container">
+                    <a class="navbar-brand" href="/">
+                        <img src="/pyxel_import_website_interface/static/src/img/pyxel_logo.png" class="img-fluid mb-3" style="max-height: 50px;" />
+                    </a>
+                    <ul class="navbar-nav flex-row gap-2 me-auto mb-2 mb-lg-0 ">
+                        <li class="nav-item">
+                            <a class="text-muted nav-link fs-6" aria-current="page" href="/">
+                                <span class="d-none d-lg-block">
+                                    <i class="fa fa-map-marker mx-1"/>
+                                    Vedado, La Habana</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav mb-2 mb-lg-0 ">
+                        <!-- User Dropdown -->
+                        <t t-if="is_logged_in">
+                            <t t-call="portal.user_dropdown">
+                                <t t-set="_icon" t-value="true" />
+                                <t t-set="_user_name" t-value="true" />
+                                <t t-set="_user_name_class" t-valuef="me-auto small text-muted" />
+                                <t t-set="_link_class" t-valuef="btn btn-outline d-flex align-items-center text-muted border-0 px-5" />
+                                <t t-set="_icon_class" t-valuef="me-2 text-muted" />
+                                <t t-set="_item_class" t-valuef="dropdown text-muted" />
+                                <t t-set="_dropdown_menu_class" t-valuef="w-100" />
+                            </t>
+                        </t>
+                        <!-- Botón de login si no está autenticado -->
+                        <li class="nav-item" t-if="not is_logged_in and current_path != '/web/login'" t-else="">
+                            <a class="text-muted fs-6 nav-link" href="/web/login">
+                                <i class="fas fa-sign-in-alt mr-1"></i>Entrar</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <nav id="navBlue" class="navbar navbar-expand-lg navbar-dark shadow-sm">
+                <a class="navbar-brand" href="/"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <!-- Menú principal centrado -->
+                    <ul class="navbar-nav mx-auto">
+                        <!-- Private Links -->
+                        <t t-if="is_logged_in">
+                            <li class="nav-item">
+                                <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'home' else '' }}" href="/">
+                                    Inicio</a>
+                            </li>
+                            <li class="nav-item">
+                                <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'imports' else '' }}" href="/business-register?type=import">
+                                    Importaciones</a>
+                            </li>
+                            <li class="nav-item">
+                                <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'accreditations' else '' }}" href="/business-register?type=accreditation">
+                                    Acreditación</a>
+                            </li>
+                            <li class="nav-item">
+                                <a t-attf-class="nav-link fs-6{{ 'active' if page_name == 'shop' else '' }}" href="/shop">
+                                    Tienda</a>
+                            </li>
+                            <li class="nav-item">
+                                <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'contactus' else '' }}" href="/contactus">
+                                    Contáctenos</a>
+                            </li>
+                        </t>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </template>
+</odoo>

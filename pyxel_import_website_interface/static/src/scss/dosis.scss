@@ -1,0 +1,64 @@
+// Defining Dosis font faces
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 200;
+  src: url('/pyxel_import_website_interface/static/src/fonts/google/dosis/Dosis-ExtraLight.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/pyxel_import_website_interface/static/src/fonts/google/dosis/Dosis-Light.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/pyxel_import_website_interface/static/src/fonts/google/dosis/Dosis-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/pyxel_import_website_interface/static/src/fonts/google/dosis/Dosis-Medium.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 600;
+  src: url('/pyxel_import_website_interface/static/src/fonts/google/dosis/Dosis-SemiBold.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/pyxel_import_website_interface/static/src/fonts/google/dosis/Dosis-Bold.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Dosis';
+  font-style: normal;
+  font-weight: 800;
+  src: url('/pyxel_import_website_interface/static/src/fonts/google/dosis/Dosis-ExtraBold.woff2') format('woff2');
+  font-display: swap;
+}
+
+// Utility classes
+.dosis {
+  font-family: "Dosis", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+.dosis-extralight { @extend .dosis; font-weight: 200; }
+.dosis-light       { @extend .dosis; font-weight: 300; }
+.dosis-regular     { @extend .dosis; font-weight: 400; }
+.dosis-medium      { @extend .dosis; font-weight: 500; }
+.dosis-semibold    { @extend .dosis; font-weight: 600; }
+.dosis-bold        { @extend .dosis; font-weight: 700; }
+.dosis-extrabold   { @extend .dosis; font-weight: 800; }

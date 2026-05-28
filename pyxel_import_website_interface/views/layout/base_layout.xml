@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="base_layout" name="Ceimpex Base Layout" inherit_id="web.frontend_layout">
+        <!-- Reemplazar el head para agregar nuestros estilos -->
+        <xpath expr="//head" position="inside">
+
+            <!-- Font Awesome -->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+            
+            <!-- CSS Personalizado -->
+            <link rel="stylesheet" href="/pyxel_import_website_interface/static/src/css/custom_styles.css"/>
+            <link rel="stylesheet" href="/pyxel_import_website_interface/static/src/scss/dosis.scss"/>
+            
+            <style>
+                .main-wrapper {
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                }
+                .content-wrap {
+                    flex: 1;
+                }
+            </style>
+        </xpath>
+        
+        <!-- Reemplazando el header con el navbar personalizado-->
+        <xpath expr="//header" position="replace">
+        <header>
+            <t t-call="pyxel_import_website_interface.navbar"/>
+        </header>
+        </xpath>
+        
+        <!-- Reemplazar el main content -->
+        <xpath expr="//main" position="replace">
+            <main class="container-fluid m-0 px-0 pt-4">
+                <!-- Breadcrumbs -->
+                <!-- <t t-if="is_logged_in">
+                    <t t-call="pyxel_ceimpex_integration_web_theme.breadcrumbs"/>
+                </t> -->
+    
+                <!-- Contenido Principal -->
+                <t t-out="0"/>
+            </main>
+        </xpath>
+        
+        <!-- Reemplazando el footer -->
+        <xpath expr="//footer" position="replace">
+            <footer class="mt-auto">
+                <t t-call="pyxel_import_website_interface.footer"/>
+            </footer>
+        </xpath>
+        
+        <!-- Agregando scripts al final del body por rendimiento-->
+        <xpath expr="//body" position="inside">
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        </xpath>
+    </template>
+</odoo>
