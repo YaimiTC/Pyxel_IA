@@ -47,29 +47,27 @@
                 <div class="collapse navbar-collapse" id="mainNav">
                     <!-- Menú principal centrado -->
                     <ul class="navbar-nav mx-auto">
-                        <!-- Private Links -->
-                        <t t-if="is_logged_in">
-                            <li class="nav-item">
-                                <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'home' else '' }}" href="/">
+                        <!-- Prublic Links -->
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'home' else '' }}" href="/">
                                     Inicio</a>
-                            </li>
-                            <li class="nav-item">
-                                <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'imports' else '' }}" href="/business-register?type=import">
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'imports' else '' }}" href="/business-register?type=import">
                                     Importaciones</a>
-                            </li>
-                            <li class="nav-item">
-                                <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'accreditations' else '' }}" href="/business-register?type=accreditation">
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'accreditations' else '' }}" href="/business-register?type=accreditation">
                                     Acreditación</a>
-                            </li>
-                            <li class="nav-item">
-                                <a t-attf-class="nav-link fs-6{{ 'active' if page_name == 'shop' else '' }}" href="/shop">
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link fs-6{{ 'active' if page_name == 'shop' else '' }}" href="/shop">
                                     Tienda</a>
-                            </li>
-                            <li class="nav-item">
-                                <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'contactus' else '' }}" href="/contactus">
+                        </li>
+                        <li class="nav-item">
+                            <a t-attf-class="nav-link fs-6 {{ 'active' if page_name == 'contactus' else '' }}" href="/contactus">
                                     Contáctenos</a>
-                            </li>
-                        </t>
+                        </li>
                     </ul>
                 </div>
             </nav>
