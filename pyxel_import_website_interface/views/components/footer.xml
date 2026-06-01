@@ -2,7 +2,7 @@
 <odoo>
     <template id="footer" name="Ceimpex Footer">
         <t t-set="is_logged_in" t-value="not request.env.user._is_public()" />
-        <footer class="bg-dark opacity text-white py-4">
+        <footer class="bg-dark opacity-100 text-white py-4">
             <div class="container px-4">
                 <div class="row text-center">
 
