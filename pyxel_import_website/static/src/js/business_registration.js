@@ -536,7 +536,11 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
      _checkDuplicateNit: async function(ev) {
         let nit = ev?.target;
         let error_message = document.getElementById('nit_duplicate_error');
-        if(nit.value.length == 11){
+        if (!error_message) {
+            console.warn('nit_duplicate_error element not found');
+            return;
+        }
+        if(nit && nit.value.length == 11){
             let valid = await this.rpc('/check_duplicate_nit', { nit: nit.value });
     
             if (!valid) {
@@ -548,7 +552,7 @@ export const BusinessRegistrationForm = publicWidget.Widget.extend({
                 error_message.style.display = 'none';
             }
         }
-        else{
+        else if (nit){
             nit.classList.remove("is-invalid");
             error_message.style.display = 'none';
         }

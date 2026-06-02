@@ -93,7 +93,7 @@ class WebsiteForm(form.WebsiteForm):
             try:
                 attachment_id = int(attachment_id_str)
             except ValueError:
-                return 
+                return
             attachment = request.env['ir.attachment'].sudo().browse(attachment_id)
             if attachment and attachment.mimetype:
                 return attachment.mimetype == file_type
