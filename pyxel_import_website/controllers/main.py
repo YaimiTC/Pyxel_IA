@@ -91,14 +91,14 @@ class WebsiteForm(form.WebsiteForm):
 
     @http.route("/check_duplicate_nit", type="json", auth="public", website=True)
     def check_duplicate_nit(self, nit, **kw):
-        """Verifica si hay duplicados de NIT solo en socios nacionales."""
-
-        domain = [
-            ("vat", "=", nit),
-            ("is_company", "=", True),
-            ("contact_type_id.nationality_type", "!=", "foreign"),
-        ]
-        partner = request.env["res.partner"].sudo().search(domain, limit=1)
+        """Verifica si hay duplicados de NIT entre los clientes."""
+        if not nit:
+            return True
+        partner = (
+            request.env["res.partner"]
+            .sudo()
+            .search([("vat", "=", nit), ("is_company", "=", True)])
+        )
         return not bool(partner)
 
     @http.route("/check_file_type", type="json", auth="public", website=True)
@@ -216,17 +216,37 @@ class WebsiteForm(form.WebsiteForm):
                     status=400,
                     headers={"Content-Type": "application/json"},
                 )
-            valid_nit = self.check_duplicate_nit(kwargs.get("nit", False))
-            if not valid_nit:
-                return Response(
-                    json.dumps(
-                        {
-                            "error": "El NIT ingresado ya existe. Verifique la información antes de continuar"
-                        }
-                    ),
-                    status=400,
-                    headers={"Content-Type": "application/json"},
-                )
+            contact_type_id = kwargs.get("contact_type")
+            is_foreign_client = False
+            if contact_type_id:
+                try:
+                    # Fetching the contact type record using the ID submitted by the form
+                    contact_type_rec = (
+                        request.env["res.partner.contact.type"]
+                        .sudo()
+                        .browse(int(contact_type_id))
+                    )
+                    if (
+                        contact_type_rec.exists()
+                        and contact_type_rec.nationality_type == "foreign"
+                    ):
+                        is_foreign_client = True
+                except (ValueError, TypeError):
+                    pass
+            # Only validate NIT if it's a national client AND a NIT was actually provided
+            nit_value = kwargs.get("nit")
+            if not is_foreign_client and nit_value:
+                valid_nit = self.check_duplicate_nit(nit_value)
+                if not valid_nit:
+                    return Response(
+                        json.dumps(
+                            {
+                                "error": "El NIT ingresado ya existe. Verifique la información antes de continuar"
+                            }
+                        ),
+                        status=400,
+                        headers={"Content-Type": "application/json"},
+                    )
 
             partner_data = self._get_partner_data(kwargs)
             partner = request.env["res.partner"].sudo().create(partner_data)
