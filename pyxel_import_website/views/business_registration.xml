@@ -442,7 +442,7 @@
                                                                 <div class="col-sm">
                                                                     <div class="form-check">
                                                                         <input type="checkbox"
-                                                                            value="true"
+                                                                            value="Yes"
                                                                             class="s_website_form_input form-check-input"
                                                                             name="need_mincex_code"
                                                                             id="need_mincex_code" />
@@ -1247,7 +1247,7 @@
                 <t name="Proceso completado" t-name="pyxel_import_website.business_register_thanks">
                     <t t-call="website.layout">
                         <div id="wrap" class="oe_structure oe_empty">
-                            <section class="s_text_block pt40 pb40 o_colored_level "
+                            <section class="s_text_block pt40 pb40 o_colored_level"
                                 data-snippet="s_text_block">
                                 <div class="container s_allow_columns">
                                     <div class="row">
