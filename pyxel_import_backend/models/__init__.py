@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import tipo_envase
 from . import import_type
 from . import incoterm_import_type
 from . import res_partner

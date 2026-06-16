@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_tipo_envase_tree" model="ir.ui.view">
+        <field name="name">pyxel.tipo.envase.tree</field>
+        <field name="model">pyxel.tipo.envase</field>
+        <field name="arch" type="xml">
+            <tree string="Tipos de Envase" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_tipo_envase_form" model="ir.ui.view">
+        <field name="name">pyxel.tipo.envase.form</field>
+        <field name="model">pyxel.tipo.envase</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de Envase">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tipo_envase" model="ir.actions.act_window">
+        <field name="name">Tipos de Envase</field>
+        <field name="res_model">pyxel.tipo.envase</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_tipo_envase"
+              name="Tipos de Envase"
+              parent="menu_importation_config"
+              action="action_tipo_envase"
+              sequence="50"/>
+
+</odoo>

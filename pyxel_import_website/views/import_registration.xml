@@ -55,69 +55,202 @@
                                                 <div class="s_website_form_rows s_col_no_bgcolor">
                                                     <div class="tab"
                                                         t-if="register_type in ['import']">
-                                                        <div id="error_envolt" class="error_envolt"
-                                                            style="border-radius: 10px;">
-                                                            <div
-                                                                class="mb-0 py-2 col-12 s_website_form_field s_website_form_custom s_website_form_required"
-                                                                data-type="many2many"
-                                                                data-name="Field">
-                                                                <div
-                                                                    class="row s_col_no_resize s_col_no_bgcolor">
-                                                                    <label
-                                                                        class="col-form-label col-sm-auto s_website_form_label"
-                                                                        style="width: 200px"
-                                                                        for="productRequired">
-                                                                        <span
-                                                                            class="s_website_form_label_content">Nuestros
-                                                                            Productos
-                                                                        </span>
-                                                                        <span
-                                                                            class="s_website_form_mark">
-                                                                            *</span>
-                                                                    </label>
-                                                                    <div class="col-sm">
-                                                                        <!-- Enlaces externos a
-                                                                            las
-                                                                        librerias fueron movidos al
-                                                                        manifest-->
-                                                                        <div
-                                                                            class="d-flex align-items-center w-100">
-                                                                            <select
-                                                                                id="productRequired"
-                                                                                class="js-example-basic-multiple flex-grow-1"
-                                                                                name="productRequired"
-                                                                                multiple="multiple"
-                                                                                required=""
-                                                                                t-att-data-alimentos="alimentos_de_importacion"
-                                                                                t-att-data-alimentos-selected="productos_seleccionados_ids"
-                                                                                style="min-width: 0;">
-                                                                                <!-- Este Select
-                                                                                    se
-                                                                                llenara
-                                                                                dinámicamente    -->
-                                                                            </select>
-                                                                            <a
-                                                                                href="/nomenclador?from=import_registration"
-                                                                                class="btn btn-primary add-btn"
-                                                                                style="flex-shrink: 0; white-space: nowrap; margin-left: 0 !important;">
-                                                                                <span
-                                                                                    class="btn-text">Buscar
-                                                                                    Producto
-                                                                                </span>
-                                                                            </a>
-                                                                            <input
-                                                                                id="hiddenTestInput"
-                                                                                type="hidden"
-                                                                                value="1" />
-                                                                        </div>
+
+                                                        <!-- Hidden: lista de productos del nomenclador (usada por JS para construir los dropdowns) -->
+                                                        <select id="productRequired" name="productRequired"
+                                                            multiple="multiple"
+                                                            style="display:none"
+                                                            t-att-data-alimentos="alimentos_de_importacion"
+                                                            t-att-data-alimentos-selected="productos_seleccionados_ids">
+                                                        </select>
+                                                        <!-- Hidden: filas en JSON para el preview y el submit -->
+                                                        <input type="hidden" name="product_rows_json"
+                                                            id="product_rows_json" value="[]" />
+                                                        <input id="hiddenTestInput" type="hidden" value="1" />
+                                                        <input type="hidden" id="fromNomenclador"
+                                                            t-att-value="'1' if from_nomenclador else '0'" />
+                                                        <!-- Tipos de envase disponibles para el JS -->
+                                                        <input type="hidden" id="tipos_envase_json"
+                                                            t-att-data-tipos="tipos_envase_json" />
+
+                                                        <!-- Productos dinámicos (producto + cantidad + tipo envase por fila) -->
+                                                        <div class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
+                                                            data-name="Field" data-type="many2many">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label
+                                                                    class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px">
+                                                                    <span class="s_website_form_label_content">Productos</span>
+                                                                    <span class="s_website_form_mark"> *</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <div id="product-rows-container" class="mb-2">
+                                                                        <!-- Filas pre-seleccionadas desde nomenclador (renderizadas por servidor) -->
+                                                                        <t t-foreach="initially_selected_products" t-as="sel_prod">
+                                                                            <t t-set="row_data" t-value="saved_product_rows.get(str(sel_prod.id), {})"/>
+                                                                            <div class="product-row d-flex align-items-center gap-1 mb-2">
+                                                                                <select class="form-select product-row-product flex-grow-1" style="min-width:0">
+                                                                                    <option value="">-- Seleccione producto --</option>
+                                                                                    <t t-foreach="alimentos_list" t-as="p">
+                                                                                        <option t-att-value="p.id" t-att-selected="'selected' if p.id == sel_prod.id else False">
+                                                                                            <t t-out="p.name"/>
+                                                                                        </option>
+                                                                                    </t>
+                                                                                </select>
+                                                                                <input type="number" class="form-control product-row-cantidad" min="1" step="1" placeholder="Cant." style="width:75px;flex-shrink:0"
+                                                                                    t-att-value="row_data.get('cantidad', '')"/>
+                                                                                <select class="form-select product-row-tipo_envase" style="width:160px;flex-shrink:0">
+                                                                                    <option value="">-- Tipo Envase --</option>
+                                                                                    <t t-foreach="tipos_envase" t-as="te">
+                                                                                        <option t-att-value="te.id"
+                                                                                                t-att-selected="'selected' if str(te.id) == row_data.get('tipo_envase', '') else False">
+                                                                                            <t t-out="te.name"/>
+                                                                                        </option>
+                                                                                    </t>
+                                                                                </select>
+                                                                                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-row flex-shrink-0" title="Eliminar fila">×</button>
+                                                                            </div>
+                                                                        </t>
                                                                     </div>
+                                                                    <div class="d-flex gap-2 mt-1 flex-wrap">
+                                                                        <button type="button"
+                                                                            id="btn-add-product-row"
+                                                                            class="btn btn-outline-secondary btn-sm">
+                                                                            + Agregar producto
+                                                                        </button>
+                                                                        <a href="/nomenclador?from=import_registration"
+                                                                            class="btn btn-primary add-btn btn-sm"
+                                                                            style="flex-shrink:0; white-space:nowrap;">
+                                                                            <span class="btn-text">Buscar Producto</span>
+                                                                        </a>
+                                                                    </div>
+                                                                    <span id="product-error"
+                                                                        class="text-danger mt-1"
+                                                                        style="display:none;">
+                                                                        Debe seleccionar al menos un producto
+                                                                    </span>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <span id="product-error" class="text-danger"
-                                                            style="display: none;">
-                                                            Debe seleccionar al menos un producto
-                                                        </span>
+
+                                                        <!-- Fecha de entrega deseada -->
+                                                        <div data-name="Field"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
+                                                            data-type="char">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label
+                                                                    class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px"
+                                                                    for="commitment_date">
+                                                                    <span class="s_website_form_label_content">Fecha de entrega deseada</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <input type="date"
+                                                                        class="form-control s_website_form_input"
+                                                                        name="commitment_date"
+                                                                        id="commitment_date"
+                                                                        t-att-value="saved_header.get('commitment_date', '')"
+                                                                        required="" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Forma de Pago -->
+                                                        <div data-name="Field"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
+                                                            data-type="many2one">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label
+                                                                    class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px"
+                                                                    for="forma_pago">
+                                                                    <span class="s_website_form_label_content">Forma de Pago</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <select
+                                                                        class="form-select s_website_form_input"
+                                                                        name="forma_pago"
+                                                                        id="forma_pago"
+                                                                        required="">
+                                                                        <option value="">-- Seleccione --</option>
+                                                                        <t t-foreach="payment_methods" t-as="pm">
+                                                                            <option t-att-value="pm.id"
+                                                                                t-att-selected="'selected' if str(pm.id) == saved_header.get('forma_pago', '') else False"
+                                                                                t-out="pm.name"/>
+                                                                        </t>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Presupuesto disponible -->
+                                                        <div data-name="Field"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required"
+                                                            data-type="float">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label
+                                                                    class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px"
+                                                                    for="presupuesto_disponible">
+                                                                    <span class="s_website_form_label_content">Presupuesto disponible (USD)</span>
+                                                                    <span class="s_website_form_mark">*</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <input type="number"
+                                                                        class="form-control s_website_form_input"
+                                                                        name="presupuesto_disponible"
+                                                                        id="presupuesto_disponible"
+                                                                        min="0"
+                                                                        step="any"
+                                                                        t-att-value="saved_header.get('presupuesto_disponible', '')"
+                                                                        required="" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Especificaciones -->
+                                                        <div data-name="Field"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom"
+                                                            data-type="text">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label
+                                                                    class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px"
+                                                                    for="note">
+                                                                    <span class="s_website_form_label_content">Especificaciones</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <textarea
+                                                                        class="form-control s_website_form_input"
+                                                                        name="note"
+                                                                        id="note"
+                                                                        rows="4"><t t-out="saved_header.get('note', '')"/></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Observaciones -->
+                                                        <div data-name="Field"
+                                                            class="s_website_form_field mb-3 col-12 s_website_form_custom"
+                                                            data-type="text">
+                                                            <div class="row s_col_no_resize s_col_no_bgcolor">
+                                                                <label
+                                                                    class="col-form-label col-sm-auto s_website_form_label"
+                                                                    style="width: 200px"
+                                                                    for="observaciones_solicitud">
+                                                                    <span class="s_website_form_label_content">Observaciones</span>
+                                                                </label>
+                                                                <div class="col-sm">
+                                                                    <textarea
+                                                                        class="form-control s_website_form_input"
+                                                                        name="observaciones_solicitud"
+                                                                        id="observaciones_solicitud"
+                                                                        rows="4"><t t-out="saved_header.get('observaciones_solicitud', '')"/></textarea>
+                                                                </div>
+                                                            </div>
+                                                        </div>
 
                                                         <div data-name="Field" name="solicitud"
                                                             class="s_website_form_field mb-0 col-12 s_website_form_custom s_website_form_required"
@@ -239,6 +372,10 @@
                                                             Siguiente
                                                         </button>
 
+                                                        <a href="#" id="btn-preview" role="button"
+                                                            class="btn btn-outline-secondary rounded-pill px-4 d-none">
+                                                            Previsualizar
+                                                        </a>
                                                         <a href="#" id="button-submit" role="button"
                                                             class="btn btn-outline-info rounded-pill px-4 s_website_form_send register_business_button d-none">
                                                             Solicitar servicio

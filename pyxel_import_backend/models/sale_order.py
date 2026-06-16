@@ -80,6 +80,11 @@ class SaleOrder(models.Model):
         help='Reference of the contract between the supplier and the importer'
     )
 
+    forma_pago = fields.Many2one('pos.payment.method', string='Forma de Pago')
+
+    presupuesto_disponible = fields.Float(string='Presupuesto Disponible', digits=(16, 3))
+    observaciones_solicitud = fields.Text(string='Observaciones')
+
     @api.depends('purchase_provider_evaluation_ids.has_evaluations_to_apply')
     def _compute_has_applicable_evaluations(self):
         for order in self:
@@ -271,6 +276,8 @@ class SaleOrder(models.Model):
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
+
+    tipo_envase = fields.Many2one('pyxel.tipo.envase', string='Tipo de Envase/Embalaje')
 
     is_cost_special = fields.Boolean(string="Special Cost", default=False)
 

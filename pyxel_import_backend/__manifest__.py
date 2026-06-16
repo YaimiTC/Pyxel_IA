@@ -4,7 +4,7 @@
 {
     "name": "Import",
     "summary": """""",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "author": "Pyxel Solutions",
     'contributors': [
         'Adnielys Abday Rojas Tadeo <adnielys.rojas89@gmail.com>',
@@ -27,6 +27,7 @@
     ],
     "data": [
         # 'data/crm_stage_data.xml',
+        'data/tipo_envase_data.xml',
         'data/res_partner_management_type_data.xml',
         'data/res_partner_category_data.xml',
         'data/res_partner_contact_type_data.xml',
@@ -67,7 +68,8 @@
         "views/import_container_billing_wizard_view.xml",
         "views/so_line_import_wizard_views.xml",
         "views/mail_message_user_assigned_inherit.xml",
-        "views/res_company_views.xml"
+        "views/res_company_views.xml",
+        "views/tipo_envase_views.xml"
 
 
      ],
