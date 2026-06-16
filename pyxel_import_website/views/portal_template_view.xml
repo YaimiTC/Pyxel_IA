@@ -31,8 +31,159 @@
                     <t t-set="url" t-value="'/model/imports'"/>
                     <t t-set="config_card" t-value="True"/>
                 </t>
+                <t t-if="accreditation_count" t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/solicitudes.png'"/>
+                    <t t-set="title">
+                        Mi acreditación
+                    </t>
+                    <t t-set="text">Documentos de su expediente</t>
+                    <t t-set="url" t-value="'/my/acreditacion'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
             </div>
         </xpath>
+    </template>
+
+    <template id="portal_my_accreditation" name="Mi acreditación">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Mi expediente de acreditación</t>
+            </t>
+
+            <t t-if="not documents">
+                <div class="alert alert-info mt-3" role="alert">
+                    Aún no tiene un expediente de acreditación activo.
+                </div>
+            </t>
+
+            <t t-if="documents">
+                <!-- Resumen -->
+                <div class="row g-2 mt-1 mb-3">
+                    <div class="col-6 col-md-3">
+                        <div class="card text-center h-100">
+                            <div class="card-body py-2">
+                                <h4 class="mb-0" t-esc="lead.accreditation_doc_count"/>
+                                <small class="text-muted">Requeridos</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card text-center h-100">
+                            <div class="card-body py-2">
+                                <h4 class="mb-0 text-success" t-esc="lead.accreditation_approved_count"/>
+                                <small class="text-muted">Aprobados</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card text-center h-100">
+                            <div class="card-body py-2">
+                                <h4 class="mb-0 text-warning" t-esc="lead.accreditation_review_count"/>
+                                <small class="text-muted">En revisión</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="card text-center h-100">
+                            <div class="card-body py-2">
+                                <h4 class="mb-0 text-danger" t-esc="lead.accreditation_pending_count"/>
+                                <small class="text-muted">Pendientes</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentos -->
+                <t t-foreach="documents" t-as="doc">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0" t-esc="doc.document_label"/>
+                                <t t-set="st" t-value="doc.portal_state"/>
+                                <span t-if="st == 'approved'" class="badge bg-success">Aprobado</span>
+                                <span t-if="st == 'in_review'" class="badge bg-warning text-dark">En revisión</span>
+                                <span t-if="st == 'validating'" class="badge bg-info text-dark">Validando…</span>
+                                <span t-if="st == 'rejected'" class="badge bg-danger">Rechazado</span>
+                                <span t-if="st == 'pending'" class="badge bg-secondary">Pendiente</span>
+                                <span t-if="st == 'optional'" class="badge bg-light text-muted">Opcional</span>
+                            </div>
+
+                            <t t-if="doc.portal_state == 'rejected' and doc.portal_reason">
+                                <div class="alert alert-danger py-2 px-3 mb-2" style="font-size:0.875rem;">
+                                    <i class="fa fa-exclamation-triangle me-1"/>
+                                    <t t-esc="doc.portal_reason"/>
+                                </div>
+                            </t>
+                            <t t-if="doc.portal_state == 'in_review'">
+                                <div class="alert alert-light py-2 px-3 mb-2" style="font-size:0.875rem;">
+                                    <i class="fa fa-robot me-1"/>
+                                    La validación automática fue superada. Ahora lo revisa nuestro equipo.
+                                </div>
+                            </t>
+
+                            <!-- Decisión comercial visible al cliente: solo cuando aprobado -->
+                            <t t-if="doc.portal_state == 'approved'">
+                                <div class="alert alert-success py-2 px-3 mb-2" style="font-size:0.875rem;">
+                                    <i class="fa fa-check-circle me-1"/>
+                                    Documento aprobado por nuestro equipo. No requiere cambios.
+                                </div>
+                            </t>
+
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div class="text-muted" style="font-size:0.85rem;">
+                                    <t t-if="doc.attachment_id">
+                                        <i class="fa fa-file-pdf-o me-1"/>
+                                        <t t-esc="doc.attachment_id.name"/>
+                                        <t t-if="doc.upload_date">
+                                            · Subido el <span t-field="doc.upload_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        </t>
+                                    </t>
+                                    <t t-else="">
+                                        <span class="fst-italic">Ningún archivo subido</span>
+                                    </t>
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <!-- Descargar -->
+                                    <a t-if="doc.attachment_id"
+                                       t-attf-href="/my/acreditacion/download/{{ doc.id }}"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fa fa-download me-1"/>Descargar
+                                    </a>
+
+                                    <!-- Eliminar: solo si NO está aprobado ni en revisión (aprobado = solo ver) -->
+                                    <form t-if="doc.attachment_id and doc.portal_state not in ('in_review', 'approved')"
+                                          t-attf-action="/my/acreditacion/delete/{{ doc.id }}"
+                                          method="post" class="d-inline">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fa fa-trash me-1"/>Eliminar
+                                        </button>
+                                    </form>
+
+                                    <!-- Subir / Resubir -->
+                                    <t t-if="doc.portal_state in ('pending', 'rejected', 'optional')">
+                                        <form t-attf-action="/my/acreditacion/upload/{{ doc.id }}"
+                                              method="post" enctype="multipart/form-data"
+                                              class="d-inline d-flex gap-1">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="file" name="document" accept="application/pdf"
+                                                   class="form-control form-control-sm" style="max-width:200px;" required="required"/>
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                <i class="fa fa-upload me-1"/>
+                                                <t t-if="doc.portal_state == 'rejected'">Subir otro</t>
+                                                <t t-else="">Subir</t>
+                                            </button>
+                                        </form>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
     </template>
 
     <template id="portal_side_content_inherit" inherit_id="portal.side_content">

@@ -10,6 +10,32 @@ class CrmLead(models.Model):
 
     can_create_quotation = fields.Boolean(compute='_compute_can_create_quotation')
 
+    # Expediente de acreditación
+    accreditation_document_ids = fields.One2many(
+        'pyxel.lead.document', 'lead_id', string='Documentos de acreditación')
+    accreditation_doc_count = fields.Integer(
+        compute='_compute_accreditation_counts', string='Documentos')
+    accreditation_approved_count = fields.Integer(
+        compute='_compute_accreditation_counts', string='Aprobados')
+    accreditation_review_count = fields.Integer(
+        compute='_compute_accreditation_counts', string='En revisión')
+    accreditation_pending_count = fields.Integer(
+        compute='_compute_accreditation_counts', string='Pendientes')
+
+    @api.depends('accreditation_document_ids.portal_state',
+                 'accreditation_document_ids.is_required')
+    def _compute_accreditation_counts(self):
+        for lead in self:
+            docs = lead.accreditation_document_ids
+            required = docs.filtered('is_required')
+            lead.accreditation_doc_count = len(required)
+            lead.accreditation_approved_count = len(
+                required.filtered(lambda d: d.portal_state == 'approved'))
+            lead.accreditation_review_count = len(
+                required.filtered(lambda d: d.portal_state in ('in_review', 'validating')))
+            lead.accreditation_pending_count = len(
+                required.filtered(lambda d: d.portal_state in ('pending', 'rejected')))
+
     def write(self, vals):
         if 'stage_id' in vals:
             accreditation_stage = self.env['crm.stage'].search([('is_accreditation_stage', '=', True,)], limit=1)

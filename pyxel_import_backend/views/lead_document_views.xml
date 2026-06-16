@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Ficha de revisión del documento: previsualizador + dictamen IA + notas -->
+        <record id="view_pyxel_lead_document_form" model="ir.ui.view">
+            <field name="name">pyxel.lead.document.form</field>
+            <field name="model">pyxel.lead.document</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <!-- Paso 2: abogada -->
+                        <button name="action_lawyer_approve" type="object"
+                                string="Aprobar (legal)" class="btn-success"
+                                invisible="ai_state != 'passed' or lawyer_state == 'approved'"/>
+                        <button name="action_lawyer_reject" type="object"
+                                string="Rechazar (legal)" class="btn-danger"
+                                invisible="ai_state != 'passed' or lawyer_state == 'rejected'"/>
+                        <button name="action_lawyer_reopen" type="object"
+                                string="Reabrir (legal)"
+                                invisible="lawyer_state not in ('approved', 'rejected')"/>
+                        <!-- Paso 3: comercial -->
+                        <button name="action_commercial_approve" type="object"
+                                string="Aprobar (comercial)" class="btn-success"
+                                invisible="lawyer_state != 'approved' or commercial_state == 'approved'"/>
+                        <button name="action_commercial_reject" type="object"
+                                string="Rechazar (comercial)" class="btn-danger"
+                                invisible="lawyer_state != 'approved' or commercial_state == 'rejected'"/>
+                        <button name="action_commercial_reopen" type="object"
+                                string="Reabrir (comercial)"
+                                invisible="commercial_state not in ('approved', 'rejected')"/>
+                        <button name="action_send_notes_email" type="object"
+                                string="Enviar notas por correo" icon="fa-envelope"
+                                invisible="not attachment_id"/>
+                    </header>
+                    <sheet>
+                        <field name="attachment_id" invisible="1"/>
+                        <field name="document_filename" invisible="1"/>
+                        <div class="oe_title mb-2">
+                            <span class="text-muted">Concepto documental</span>
+                            <h1 class="mt-0"><field name="document_label" readonly="1"/></h1>
+                            <span class="text-muted">Tipo de cliente: </span>
+                            <field name="client_type" readonly="1" class="oe_inline fw-bold"/>
+                        </div>
+                        <div class="row mt-3">
+                            <!-- Izquierda: previsualizador -->
+                            <div class="col-lg-7">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span><i class="fa fa-file-pdf-o text-danger me-1"/>Documento subido</span>
+                                        <button name="action_view_document" type="object"
+                                                string="Abrir en pestaña" icon="fa-external-link"
+                                                class="btn btn-sm btn-link p-0"
+                                                invisible="not attachment_id"/>
+                                    </div>
+                                    <div class="card-body p-1" style="min-height:420px;">
+                                        <field name="document_file" filename="document_filename"
+                                               widget="pdf_viewer" nolabel="1"
+                                               invisible="not attachment_id"/>
+                                        <div invisible="attachment_id" class="text-center text-muted p-5">
+                                            <i class="fa fa-inbox fa-3x mb-2 d-block"/>
+                                            Aún no se ha subido ningún archivo para este concepto.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Derecha: IA + notas -->
+                            <div class="col-lg-5">
+                                <div class="card mb-3">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span><i class="fa fa-magic me-1"/>Análisis de la IA</span>
+                                        <field name="ai_state" widget="badge"
+                                               decoration-success="ai_state == 'passed'"
+                                               decoration-warning="ai_state == 'doubt'"
+                                               decoration-danger="ai_state == 'rejected'"
+                                               decoration-info="ai_state == 'validating'"/>
+                                    </div>
+                                    <div class="card-body">
+                                        <label for="ai_confidence" class="text-muted small mb-0">Confianza</label>
+                                        <field name="ai_confidence" widget="progressbar" readonly="1"/>
+                                        <label for="ai_quality" class="text-muted small mb-0 mt-2">Calidad de imagen</label>
+                                        <field name="ai_quality" widget="progressbar" readonly="1"/>
+                                        <!-- Reporte destacado cuando la IA NO pasa o pasa dudoso -->
+                                        <div class="alert alert-danger mt-3 mb-2 py-2" invisible="ai_state != 'rejected'">
+                                            <i class="fa fa-times-circle me-1"/><strong>La IA rechazó el documento</strong>
+                                            <div class="small">Probablemente no es el documento correcto. El cliente debe volver a subirlo.</div>
+                                        </div>
+                                        <div class="alert alert-warning mt-3 mb-2 py-2" invisible="ai_state != 'doubt'">
+                                            <i class="fa fa-exclamation-triangle me-1"/><strong>La IA lo marcó como dudoso</strong>
+                                            <div class="small">Calidad o coincidencia baja. Revise con cuidado o pida resubir.</div>
+                                        </div>
+                                        <!-- Lo que reporta la IA (motivo) -->
+                                        <div class="mt-2" invisible="not ai_reason">
+                                            <span class="text-muted small d-block mb-1">Lo que reporta la IA</span>
+                                            <field name="ai_reason" readonly="1" nolabel="1"/>
+                                        </div>
+                                        <div class="mt-2" invisible="not ai_extracted_data">
+                                            <span class="text-muted small d-block mb-1">Datos extraídos (OCR)</span>
+                                            <field name="ai_extracted_data" readonly="1" nolabel="1"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Paso 2: Abogada -->
+                                <div class="card mb-3" invisible="ai_state != 'passed'">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span><i class="fa fa-balance-scale me-1"/>Revisión de la abogada</span>
+                                        <field name="lawyer_state" widget="badge"
+                                               decoration-success="lawyer_state == 'approved'"
+                                               decoration-danger="lawyer_state == 'rejected'"
+                                               decoration-warning="lawyer_state == 'to_review'"
+                                               decoration-muted="lawyer_state == 'blocked'"/>
+                                    </div>
+                                    <div class="card-body">
+                                        <span class="text-muted small d-block mb-1">Notas internas (el cliente NO las ve)</span>
+                                        <field name="lawyer_notes" nolabel="1"
+                                               placeholder="Observaciones internas…"/>
+                                        <span class="text-muted small d-block mb-1 mt-3">Motivo de rechazo (lo ve el cliente)</span>
+                                        <field name="lawyer_reason" nolabel="1"
+                                               placeholder="Obligatorio para rechazar…"/>
+                                    </div>
+                                </div>
+                                <!-- Paso 3: Comercial -->
+                                <div class="card" invisible="lawyer_state != 'approved'">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span><i class="fa fa-briefcase me-1"/>Revisión comercial</span>
+                                        <field name="commercial_state" widget="badge"
+                                               decoration-success="commercial_state == 'approved'"
+                                               decoration-danger="commercial_state == 'rejected'"
+                                               decoration-warning="commercial_state == 'to_review'"
+                                               decoration-muted="commercial_state == 'blocked'"/>
+                                    </div>
+                                    <div class="card-body">
+                                        <span class="text-muted small d-block mb-1">Motivo de rechazo (lo ve el cliente)</span>
+                                        <field name="commercial_reason" nolabel="1"
+                                               placeholder="Obligatorio para rechazar…"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_crm_lead_form_accreditation_docs" model="ir.ui.view">
+            <field name="name">crm.lead.form.accreditation.documents</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Documentación de acreditación"
+                          name="accreditation_documents"
+                          invisible="accreditation_doc_count == 0">
+                        <group>
+                            <group>
+                                <field name="accreditation_doc_count" string="Documentos requeridos"/>
+                                <field name="accreditation_approved_count" string="Aprobados"/>
+                            </group>
+                            <group>
+                                <field name="accreditation_review_count" string="En revisión / validando"/>
+                                <field name="accreditation_pending_count" string="Pendientes o rechazados"/>
+                            </group>
+                        </group>
+                        <field name="accreditation_document_ids">
+                            <tree create="0" delete="0" editable="bottom">
+                                <field name="sequence" widget="handle"/>
+                                <field name="document_label" readonly="1"/>
+                                <field name="client_type" readonly="1" optional="hide"/>
+                                <field name="attachment_id" readonly="1"/>
+                                <field name="ai_state" readonly="1"
+                                       decoration-success="ai_state == 'passed'"
+                                       decoration-warning="ai_state == 'doubt'"
+                                       decoration-danger="ai_state == 'rejected'"
+                                       decoration-info="ai_state == 'validating'"/>
+                                <field name="ai_confidence" readonly="1" optional="show"/>
+                                <field name="ai_quality" readonly="1" optional="hide"/>
+                                <field name="lawyer_state" readonly="1" string="Abogada"
+                                       decoration-success="lawyer_state == 'approved'"
+                                       decoration-danger="lawyer_state == 'rejected'"
+                                       decoration-warning="lawyer_state == 'to_review'"
+                                       decoration-muted="lawyer_state == 'blocked'"/>
+                                <field name="commercial_state" readonly="1" string="Comercial"
+                                       decoration-success="commercial_state == 'approved'"
+                                       decoration-danger="commercial_state == 'rejected'"
+                                       decoration-warning="commercial_state == 'to_review'"
+                                       decoration-muted="commercial_state == 'blocked'"/>
+                                <field name="portal_state" readonly="1" string="Estado cliente" optional="show"
+                                       decoration-success="portal_state == 'approved'"
+                                       decoration-danger="portal_state == 'rejected'"
+                                       decoration-warning="portal_state in ('in_review', 'validating')"
+                                       decoration-muted="portal_state in ('pending', 'optional')"/>
+                                <button name="action_open_review" type="object"
+                                        string="Revisar" icon="fa-search-plus" class="text-info"
+                                        invisible="not attachment_id"/>
+                                <button name="action_view_document" type="object"
+                                        string="Ver" icon="fa-eye"
+                                        invisible="not attachment_id"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

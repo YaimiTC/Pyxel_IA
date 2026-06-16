@@ -62,6 +62,17 @@
                     <t t-set="url" t-value="'/model/imports'" />
                     <t t-set="config_card" t-value="True" />
                 </t>
+
+                <!-- Accreditation expediente -->
+                <t t-if="accreditation_count" t-call="portal.portal_docs_entry">
+                    <t t-set="icon"
+                        t-value="'/pyxel_import_website_interface/static/src/img/solicitudes.png'" />
+                    <t t-set="title">
+                        <t t-esc="accreditation_count or ''" /> Mi acreditación </t>
+                    <t t-set="text">Documentos de su expediente</t>
+                    <t t-set="url" t-value="'/my/acreditacion'" />
+                    <t t-set="config_card" t-value="True" />
+                </t>
             </div>
         </xpath>
     </template>
@@ -137,6 +148,11 @@
                     <a role="button" href="/my/quotes"
                         class="text-decoration-none text-dark p-0 mb-1"><i class="fa fa-list" />
                         Historial de pedidos</a>
+                    <!-- Divider -->
+                    <hr t-if="accreditation_count" class="border-secondary my-1" style="opacity: 0.5;" />
+                    <a t-if="accreditation_count" role="button" href="/my/acreditacion"
+                        class="text-decoration-none text-dark p-0 mb-1"><i class="fa fa-folder-open" />
+                        Mi acreditación</a>
                     <!-- Divider -->
                     <hr class="border-secondary my-1" style="opacity: 0.5;" />
                     <a role="button" href="/my/notifications"

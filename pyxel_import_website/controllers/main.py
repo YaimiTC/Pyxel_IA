@@ -347,6 +347,8 @@ class WebsiteForm(form.WebsiteForm):
             if kwargs.get("cuban_partner[0][0]"):
                 file_keys.append("cuban_partner[0][0]")
 
+            # Mapeo {clave_doc -> attachment_id} para construir el expediente tras crear el lead
+            accreditation_docs = {}
             for file_key in file_keys:
                 file = kwargs.get(file_key)
                 if not file or not hasattr(file, 'seek'):
@@ -354,7 +356,7 @@ class WebsiteForm(form.WebsiteForm):
                 file.seek(0)
                 base_key = file_key.split('[')[0]
                 attachment_name = DOC_FIELD_LABELS.get(base_key, file.filename)
-                request.env["ir.attachment"].sudo().create(
+                attachment = request.env["ir.attachment"].sudo().create(
                     {
                         "name": attachment_name,
                         "datas": base64.b64encode(file.read()),
@@ -364,6 +366,12 @@ class WebsiteForm(form.WebsiteForm):
                         "mimetype": file.mimetype,
                     }
                 )
+                if base_key.startswith("doc_") and base_key != "doc_adicional":
+                    accreditation_docs[base_key] = attachment.id
+
+            # Guardar en sesión para generar el expediente después de crear el lead
+            request.session['accreditation_docs'] = accreditation_docs
+            request.session['accreditation_partner_id'] = partner.id
 
         elif model_name == "sale.order" and tipo_registro == "import":
             # Parse per-row data (product + cantidad + tipo_envase)
@@ -411,7 +419,34 @@ class WebsiteForm(form.WebsiteForm):
 
         request.session["product_selected"] = []
 
+        # Construir el expediente de acreditación sobre el lead recién creado
+        if model_name == "crm.lead" and tipo_registro == "accreditation":
+            self._build_accreditation_expediente()
+
         return res
+
+    def _build_accreditation_expediente(self):
+        """Genera las líneas del expediente (pyxel.lead.document) para el lead
+        de acreditación recién creado, a partir de los documentos subidos."""
+        docs_map = request.session.pop('accreditation_docs', {})
+        partner_id = request.session.pop('accreditation_partner_id', False)
+        if not partner_id:
+            return
+        lead = (
+            request.env["crm.lead"].sudo()
+            .search([("partner_id", "=", partner_id)], order="id desc", limit=1)
+        )
+        if not lead:
+            return
+        Doc = request.env["pyxel.lead.document"].sudo()
+        client_type = Doc.get_client_type_for_keys(list(docs_map.keys()))
+        if not client_type:
+            return
+        uploaded = {
+            key: request.env["ir.attachment"].sudo().browse(att_id)
+            for key, att_id in docs_map.items()
+        }
+        Doc.build_expediente(lead, client_type, uploaded)
 
     def insert_record(self, request, model, values, custom, meta=None):
         is_lead_model = model.model == "crm.lead"

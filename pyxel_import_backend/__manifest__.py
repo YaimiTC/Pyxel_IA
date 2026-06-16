@@ -69,7 +69,8 @@
         "views/so_line_import_wizard_views.xml",
         "views/mail_message_user_assigned_inherit.xml",
         "views/res_company_views.xml",
-        "views/tipo_envase_views.xml"
+        "views/tipo_envase_views.xml",
+        "views/lead_document_views.xml"
 
 
      ],

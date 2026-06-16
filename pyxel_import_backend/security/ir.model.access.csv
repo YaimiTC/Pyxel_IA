@@ -33,3 +33,5 @@ access_import_container_billing_wizard,pyxel_import.import_container_billing_wiz
 access_so_line_import_wizard,pyxel_import.so_line_import_wizard,model_so_line_import_wizard,base.group_user,1,1,1,1
 access_pyxel_tipo_envase_user,pyxel_import.pyxel_tipo_envase,model_pyxel_tipo_envase,base.group_user,1,1,1,1
 access_pyxel_tipo_envase_portal,pyxel_import.pyxel_tipo_envase_portal,model_pyxel_tipo_envase,base.group_portal,1,0,0,0
+access_pyxel_lead_document_user,pyxel_import.pyxel_lead_document,model_pyxel_lead_document,base.group_user,1,1,1,1
+access_pyxel_lead_document_portal,pyxel_import.pyxel_lead_document_portal,model_pyxel_lead_document,base.group_portal,1,1,0,1
