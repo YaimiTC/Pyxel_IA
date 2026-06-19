@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="homepage_custom" inherit_id="website.homepage" priority="20">
+        <xpath expr="//div[@id='wrap']" position="replace">
+            <div id="wrap" class="oe_structure">
+
+                <t t-set="is_logged_in" t-value="not request.env.user._is_public()" />
+
+                <!-- ====================================================
+                     HERO — Conectamos energía con oportunidades
+                     ==================================================== -->
+                <section class="ag-hero-banner">
+                    <div class="ag-hero-banner-img"
+                         style="background-image:url('/pyxel_enetradex_custom_web_theme/static/src/img/en_hero.jpg?v=3');"></div>
+                    <div class="container">
+                        <div class="ag-hero-banner-text">
+                            <span class="ag-kicker ag-kicker-dark"><i class="fa fa-bolt"></i> ENETRADEX</span>
+                            <h1 class="ag-hero-banner-title">Conectamos energía con <span>oportunidades</span></h1>
+                            <p class="ag-hero-banner-sub">
+                                Plataforma de importación de combustibles y comercialización
+                                de productos energéticos.
+                            </p>
+                            <div class="ag-hero-cta">
+                                <a href="/en/wizard" class="ag-btn-primary">
+                                    <i class="fa fa-check-circle"></i> Acreditarme
+                                </a>
+                                <a href="/shop" class="ag-btn-outline-dark">
+                                    <i class="fa fa-th-large"></i> Explorar Marketplace
+                                </a>
+                            </div>
+                            <div class="ag-hero-feats">
+                                <span><i class="fa fa-tint"></i> Combustibles de calidad</span>
+                                <span><i class="fa fa-globe"></i> Red global confiable</span>
+                                <span><i class="fa fa-shield"></i> Operaciones seguras</span>
+                                <span><i class="fa fa-line-chart"></i> Información en tiempo real</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     BLOQUE DUAL — Importar / Marketplace energético
+                     ==================================================== -->
+                <section class="ag-section ag-dual-wrap">
+                    <div class="container">
+                        <div class="ag-dual">
+                            <div class="ag-dual-card">
+                                <div class="ag-dual-content">
+                                    <div class="ag-dual-icon"><i class="fa fa-ship"></i></div>
+                                    <h3>Importar</h3>
+                                    <p>Importación integral de combustibles y derivados energéticos,
+                                       gestionando todo el proceso logístico y documental.</p>
+                                    <div class="ag-dual-cta">
+                                        <a href="/en/wizard?op=1" class="ag-pill-green"><i class="fa fa-download"></i> Importar ahora</a>
+                                    </div>
+                                </div>
+                                <div class="ag-dual-img"
+                                     style="background-image:url('/pyxel_enetradex_custom_web_theme/static/src/img/en_card_import.jpg?v=2');"></div>
+                            </div>
+                            <div class="ag-dual-card">
+                                <div class="ag-dual-content">
+                                    <div class="ag-dual-icon"><i class="fa fa-shopping-cart"></i></div>
+                                    <h3>Marketplace energético</h3>
+                                    <p>Compra productos y suministros para el sector energético:
+                                       combustibles, lubricantes, aditivos y más.</p>
+                                    <div class="ag-dual-cta">
+                                        <a href="/shop" class="ag-pill-green">Comprar productos <i class="fa fa-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                                <div class="ag-dual-img ag-dual-img-shop"
+                                     style="background-image:url('/pyxel_enetradex_custom_web_theme/static/src/img/en_card_market.jpg?v=2');"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     BANNER CTA — Comience a operar con ENETRADEX
+                     ==================================================== -->
+                <section class="ag-cta-band">
+                    <div class="container">
+                        <div class="ag-cta-band-inner">
+                            <div class="ag-cta-band-text">
+                                <div class="ag-cta-band-icon"><i class="fa fa-id-card-o"></i></div>
+                                <div>
+                                    <h3>Comience a operar con ENETRADEX</h3>
+                                    <p>Acceda a importaciones, marketplace y servicios especializados.</p>
+                                </div>
+                            </div>
+                            <a href="/en/wizard" class="ag-btn-primary">
+                                <i class="fa fa-check-circle"></i> Acreditarme ahora
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     NUESTROS SERVICIOS
+                     ==================================================== -->
+                <section class="ag-section">
+                    <div class="container">
+                        <div class="ag-head"><h2 class="ag-head-title">Nuestros Servicios</h2></div>
+                        <div class="ag-solutions">
+                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-ship"></i></div><h4>Importación</h4><p>Gestión integral de importación de combustibles y derivados energéticos.</p></div>
+                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-exchange"></i></div><h4>Trading</h4><p>Operaciones internacionales eficientes y ágiles en el mercado energético.</p></div>
+                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-th-large"></i></div><h4>Marketplace energético</h4><p>Plataforma digital para compra y venta de productos del sector energético.</p></div>
+                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-truck"></i></div><h4>Logística internacional</h4><p>Transporte, almacenamiento y custodia a nivel global.</p></div>
+                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-bar-chart"></i></div><h4>Inteligencia comercial</h4><p>Información y análisis del mercado para decisiones estratégicas.</p></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     PRODUCTOS MÁS VENDIDOS
+                     ==================================================== -->
+                <section class="ag-section ag-section-alt">
+                    <div class="container">
+                        <div class="ag-head ag-head-row">
+                            <h2 class="ag-head-title">Productos más vendidos</h2>
+                            <a href="/shop" class="ag-link-more">Ver todos <i class="fa fa-arrow-right"></i></a>
+                        </div>
+                        <div class="ag-products-wrap">
+                            <div class="ag-products">
+                                <div class="ag-product">
+                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_1.jpg" alt="Gasoil EN590"/></div>
+                                    <div class="ag-product-body">
+                                        <h5>Gasoil EN590</h5>
+                                        <span class="ag-product-meta">Combustible diésel de alta calidad</span>
+                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
+                                    </div>
+                                </div>
+                                <div class="ag-product">
+                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_2.jpg" alt="Gasolina RON 95"/></div>
+                                    <div class="ag-product-body">
+                                        <h5>Gasolina RON 95</h5>
+                                        <span class="ag-product-meta">Gasolina de alto rendimiento</span>
+                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
+                                    </div>
+                                </div>
+                                <div class="ag-product">
+                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_3.jpg" alt="Fuel Oil 180 CST"/></div>
+                                    <div class="ag-product-body">
+                                        <h5>Fuel Oil 180 CST</h5>
+                                        <span class="ag-product-meta">Combustible para uso industrial</span>
+                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
+                                    </div>
+                                </div>
+                                <div class="ag-product">
+                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_4.jpg" alt="Jet Fuel A1"/></div>
+                                    <div class="ag-product-body">
+                                        <h5>Jet Fuel A1</h5>
+                                        <span class="ag-product-meta">Combustible para aviación</span>
+                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
+                                    </div>
+                                </div>
+                                <div class="ag-product">
+                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_5.jpg" alt="Lubricantes"/></div>
+                                    <div class="ag-product-body">
+                                        <h5>Lubricantes</h5>
+                                        <span class="ag-product-meta">Aceites y lubricantes de alta calidad</span>
+                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
+                                    </div>
+                                </div>
+                                <div class="ag-product">
+                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_6.jpg" alt="Aditivos"/></div>
+                                    <div class="ag-product-body">
+                                        <h5>Aditivos</h5>
+                                        <span class="ag-product-meta">Aditivos para mejorar el rendimiento</span>
+                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     CÓMO FUNCIONA ENETRADEX
+                     ==================================================== -->
+                <section class="ag-section">
+                    <div class="container">
+                        <div class="ag-head"><h2 class="ag-head-title">Cómo funciona ENETRADEX</h2></div>
+                        <div class="ag-steps">
+                            <div class="ag-step"><span class="ag-step-num">1</span><div class="ag-step-ico"><i class="fa fa-file-text-o"></i></div><h4>Solicitud</h4><p>Indique sus requerimientos de importación o compra.</p></div>
+                            <div class="ag-step"><span class="ag-step-num">2</span><div class="ag-step-ico"><i class="fa fa-calculator"></i></div><h4>Cotización</h4><p>Reciba cotizaciones de nuestros proveedores verificados.</p></div>
+                            <div class="ag-step"><span class="ag-step-num">3</span><div class="ag-step-ico"><i class="fa fa-ship"></i></div><h4>Importación</h4><p>Gestionamos todo el proceso logístico y documental.</p></div>
+                            <div class="ag-step"><span class="ag-step-num">4</span><div class="ag-step-ico"><i class="fa fa-check-circle"></i></div><h4>Entrega</h4><p>Reciba su carga en el destino final de manera segura.</p></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     ACTUALIDAD DE LOS MERCADOS
+                     ==================================================== -->
+                <section class="ag-section ag-section-alt">
+                    <div class="container">
+                        <div class="ag-head ag-head-row">
+                            <h2 class="ag-head-title">Actualidad de los mercados</h2>
+                            <a href="/about?tab=who" class="ag-link-more">Ver todas <i class="fa fa-arrow-right"></i></a>
+                        </div>
+                        <div class="ag-news ag-news-4">
+                            <a href="/about?tab=who" class="ag-news-card">
+                                <div class="ag-news-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_news_1.jpg" alt="Mercado global de combustibles"/></div>
+                                <div class="ag-news-body">
+                                    <span class="ag-news-date"><i class="fa fa-calendar-o"></i> 30 Abr 2024</span>
+                                    <h5>Mercado global de combustibles: perspectivas para 2024</h5>
+                                    <span class="ag-news-more">Leer más <i class="fa fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+                            <a href="/about?tab=who" class="ag-news-card">
+                                <div class="ag-news-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_news_2.jpg" alt="Regulaciones IMO 2024"/></div>
+                                <div class="ag-news-body">
+                                    <span class="ag-news-date"><i class="fa fa-calendar-o"></i> 28 Abr 2024</span>
+                                    <h5>Nuevas regulaciones IMO 2024 y su impacto en el sector</h5>
+                                    <span class="ag-news-more">Leer más <i class="fa fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+                            <a href="/about?tab=who" class="ag-news-card">
+                                <div class="ag-news-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_news_3.jpg" alt="Precios del diésel"/></div>
+                                <div class="ag-news-body">
+                                    <span class="ag-news-date"><i class="fa fa-calendar-o"></i> 25 Abr 2024</span>
+                                    <h5>Precios internacionales del diésel y derivados</h5>
+                                    <span class="ag-news-more">Leer más <i class="fa fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+                            <a href="/about?tab=who" class="ag-news-card">
+                                <div class="ag-news-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_news_4.jpg" alt="Comercio energético global"/></div>
+                                <div class="ag-news-body">
+                                    <span class="ag-news-date"><i class="fa fa-calendar-o"></i> 22 Abr 2024</span>
+                                    <h5>Tendencias del comercio energético global</h5>
+                                    <span class="ag-news-more">Leer más <i class="fa fa-arrow-right"></i></span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     FILA DE CONFIANZA
+                     ==================================================== -->
+                <section class="ag-trust">
+                    <div class="container">
+                        <div class="ag-trust-grid">
+                            <div class="ag-trust-item">
+                                <div class="ag-trust-ico"><i class="fa fa-globe"></i></div>
+                                <div class="ag-trust-txt"><h5>Red global</h5><p>Proveedores y clientes en todo el mundo.</p></div>
+                            </div>
+                            <div class="ag-trust-item">
+                                <div class="ag-trust-ico"><i class="fa fa-eye"></i></div>
+                                <div class="ag-trust-txt"><h5>Transparencia</h5><p>Procesos claros, seguros y auditables.</p></div>
+                            </div>
+                            <div class="ag-trust-item">
+                                <div class="ag-trust-ico"><i class="fa fa-cogs"></i></div>
+                                <div class="ag-trust-txt"><h5>Tecnología</h5><p>Plataforma digital avanzada y confiable.</p></div>
+                            </div>
+                            <div class="ag-trust-item">
+                                <div class="ag-trust-ico"><i class="fa fa-shield"></i></div>
+                                <div class="ag-trust-txt"><h5>Seguridad</h5><p>Información protegida con los más altos estándares.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </xpath>
+    </template>
+</odoo>

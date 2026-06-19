@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Formas de pago de la solicitud de importación (administrables en backend) -->
+    <record id="en_payment_method_transfer" model="en.payment.method">
+        <field name="name">Transferencia bancaria</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="en_payment_method_lc" model="en.payment.method">
+        <field name="name">Carta de crédito</field>
+        <field name="sequence">20</field>
+    </record>
+    <record id="en_payment_method_advance" model="en.payment.method">
+        <field name="name">Pago anticipado</field>
+        <field name="sequence">30</field>
+    </record>
+    <record id="en_payment_method_collection" model="en.payment.method">
+        <field name="name">Cobranza documentaria</field>
+        <field name="sequence">40</field>
+    </record>
+    <record id="en_payment_method_on_delivery" model="en.payment.method">
+        <field name="name">Pago contra entrega</field>
+        <field name="sequence">50</field>
+    </record>
+
+</odoo>

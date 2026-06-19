@@ -1,0 +1,76 @@
+{
+  "_descripcion": "Reglas de CUMPLIMIENTO para acreditacion de PYMEs (MIPYME Cuba). Calibradas con documentos reales y base legal (Ley Notariado, DL226 Reg.Mercantil, Decreto 308, MIPYME DL46/47). severidad: critico=rojo (nulidad/no apto), alto/medio=amarillo (revisar), imagen=requiere verificacion visual del cuño/firma.",
+  "no_adeudo_vigencia_dias": 90,
+
+  "campos": {
+    "nit": "\\b\\d{11}\\b",
+    "fecha": "\\b(\\d{1,2}\\s+de\\s+[a-zA-Z%]+\\s+de\\s+\\d{4}|\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4})\\b",
+    "tomo": "tomo[:\\s]*([0-9]{1,6})",
+    "folio": "folio[:\\s]*([0-9]{1,6})",
+    "asiento": "asiento[:\\s]*([0-9]{1,6})",
+    "escritura_num": "n[uú]mero[:\\s]*([0-9]{1,6})",
+    "cuenta": "\\b\\d{10,16}\\b"
+  },
+
+  "tipos": {
+    "registro_mercantil": {
+      "label": "Certifico de Registro Mercantil",
+      "checks": [
+        {"id": "tipo", "label": "Es certificacion de Registro Mercantil", "type": "keyword", "any": ["registro mercantil"], "severity": "critico", "base": "DL 226"},
+        {"id": "organo", "label": "Membrete Ministerio de Justicia / Republica de Cuba", "type": "keyword", "any": ["ministerio de justicia", "republica de cuba"], "severity": "medio", "base": "Res 230/2002"},
+        {"id": "certifico", "label": "Formula CERTIFICO", "type": "keyword", "any": ["certifico", "certifica"], "severity": "alto", "base": "Res 230/2002"},
+        {"id": "asiento", "label": "Datos registrales (tomo/folio/asiento/hoja)", "type": "keyword", "any": ["tomo", "folio", "asiento", "hoja"], "severity": "critico", "base": "DL 226"},
+        {"id": "nit", "label": "NIT (11 digitos)", "type": "field", "field": "nit", "severity": "critico", "base": "ONAT"},
+        {"id": "cuno", "label": "Cuño del registro", "type": "imagen", "severity": "critico", "base": "Res 230/2002"},
+        {"id": "firma_registrador", "label": "Firma del registrador", "type": "imagen", "severity": "critico", "base": "Res 230/2002"}
+      ]
+    },
+
+    "escritura_notarial": {
+      "label": "Escritura notarial (constitucion)",
+      "checks": [
+        {"id": "tipo", "label": "Es una escritura notarial", "type": "keyword", "any": ["escritura", "numero"], "severity": "critico", "base": "Ley Notariado"},
+        {"id": "notario", "label": "Identificacion del notario", "type": "keyword", "any": ["notari"], "severity": "critico", "base": "Ley Notariado"},
+        {"id": "protocolo", "label": "Numero / protocolo / folio", "type": "keyword", "any": ["protocolo", "numero", "folio"], "severity": "alto", "base": "Ley Notariado"},
+        {"id": "fe", "label": "Fe de conocimiento / DOY FE", "type": "keyword", "any": ["doy fe", "dan fe", "fe de", "conocimiento"], "severity": "alto", "base": "Ley Notariado"},
+        {"id": "comparecientes", "label": "Comparecientes / otorgamiento", "type": "keyword", "any": ["comparec", "otorga", "concurren"], "severity": "alto", "base": "Ley Notariado"},
+        {"id": "firma_notario", "label": "Firma y signo del notario", "type": "imagen", "severity": "critico", "base": "Ley Notariado (nulidad)"},
+        {"id": "cuno", "label": "Cuño de la notaria", "type": "imagen", "severity": "critico", "base": "Ley Notariado"},
+        {"id": "firmas_socios", "label": "Firmas de los comparecientes (socios)", "type": "imagen", "severity": "critico", "base": "Ley Notariado (nulidad)"}
+      ]
+    },
+
+    "identificacion_fiscal": {
+      "label": "Identificacion Fiscal (NIT)",
+      "checks": [
+        {"id": "tipo", "label": "Es identificacion fiscal", "type": "keyword", "any": ["identificacion fiscal", "identificación fiscal", "rc-05", "rc 05"], "severity": "critico", "base": "ONAT / Decreto 308"},
+        {"id": "organo", "label": "Registro de Contribuyentes / ONAT-ONEI", "type": "keyword", "any": ["contribuyente", "onat", "onei", "tributaria"], "severity": "medio", "base": "Decreto 308"},
+        {"id": "nit", "label": "NIT (11 digitos)", "type": "field", "field": "nit", "severity": "critico", "base": "ONAT"}
+      ]
+    },
+
+    "no_adeudo": {
+      "label": "Certificacion de No Adeudo (ONAT)",
+      "checks": [
+        {"id": "organo", "label": "ONAT / Oficina Nacional de la Administracion Tributaria", "type": "keyword", "any": ["onat", "administracion tributaria", "administración tributaria", "registro de contribuyente"], "severity": "alto", "base": "Decreto 308 art.56"},
+        {"id": "no_adeuda", "label": "Declara NO adeudo / no presenta deudas", "type": "keyword", "any": ["no adeudo", "no presenta", "no adeuda", "no tiene deuda", "sin deuda"], "severity": "critico", "base": "Decreto 308 art.56"},
+        {"id": "nit", "label": "NIT (11 digitos)", "type": "field", "field": "nit", "severity": "critico", "base": "ONAT"},
+        {"id": "fecha", "label": "Fecha de emision", "type": "field", "field": "fecha", "severity": "critico", "base": "vigencia"},
+        {"id": "vigencia", "label": "Dentro de vigencia", "type": "vigencia", "field": "fecha", "severity": "critico", "base": "entidad acreditadora"},
+        {"id": "cuno", "label": "Cuño de la ONAT", "type": "imagen", "severity": "critico", "base": "Decreto 308"},
+        {"id": "firma_director", "label": "Firma del director municipal", "type": "imagen", "severity": "critico", "base": "Decreto 308"}
+      ]
+    },
+
+    "contrato_cuentas": {
+      "label": "Contrato de cuenta bancaria",
+      "checks": [
+        {"id": "tipo", "label": "Es un contrato de cuenta", "type": "keyword", "any": ["contrato", "cuenta"], "severity": "critico", "base": "documento bancario"},
+        {"id": "banco", "label": "Banco (BANDEC / BPA / Metropolitano)", "type": "keyword", "any": ["bandec", "bpa", "metropolitano", "banco"], "severity": "alto", "base": "documento bancario"},
+        {"id": "num_cuenta", "label": "Numero de cuenta", "type": "field", "field": "cuenta", "severity": "alto", "base": "documento bancario"},
+        {"id": "moneda", "label": "Moneda (CUP / USD / MLC)", "type": "keyword", "any": ["cup", "usd", "mlc", "mn"], "severity": "medio", "base": "documento bancario"},
+        {"id": "firma_cuno", "label": "Firmas y cuño del banco", "type": "imagen", "severity": "alto", "base": "documento bancario"}
+      ]
+    }
+  }
+}

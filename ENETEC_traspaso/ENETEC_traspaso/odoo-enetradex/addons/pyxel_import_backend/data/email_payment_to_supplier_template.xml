@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="email_template_payment_registered" model="mail.template">
+            <field name="name">Notificación: Pago Registrado y Solicitud de Embarque</field>
+            <field name="model_id" ref="account.model_account_payment"/>
+            <field name="subject">¡Pago Registrado! Ya puede solicitar el embarque - {{ object.partner_id.name }}</field>
+            <field name="email_from">{{ object.company_id.email_formatted or object.company_id.email }}</field>
+            <field name="email_to">{{ object.partner_id.email }}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Estimado/a <t t-out="object.partner_id.name or ''"/>, </p>
+                    <p>Le confirmamos que hemos registrado el pago por <span style="font-weight:bold;" t-out="format_amount(object.amount_total, object.currency_id) or ''"/>, con la referencia <strong><t t-out="object.name or ''"/></strong>, correspondiente a su proceso de importación.</p>
+                    <p>Con este pago ya procesado, le informamos que <strong>puede proceder con la solicitud de embarque</strong> para su pedido.</p>
+                    <p>Agradecemos su colaboración.</p>
+                    <p>Saludos cordiales,</p>
+                    <p><t t-out="object.company_id.name or ''"/></p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+        </record>
+    </data>
+</odoo>

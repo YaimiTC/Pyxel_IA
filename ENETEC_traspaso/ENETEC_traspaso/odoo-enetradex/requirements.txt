@@ -1,0 +1,11 @@
+# Manipulación de datos
+pandas
+numpy
+
+# Lectura/escritura de Excel
+openpyxl
+xlrd
+xlsxwriter
+
+# Lectura de CSVs raros y encodings
+chardet

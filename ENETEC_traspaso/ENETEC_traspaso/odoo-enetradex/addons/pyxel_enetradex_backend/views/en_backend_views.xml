@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ Relación de contraparte ============ -->
+    <record id="en_relation_tree" model="ir.ui.view">
+        <field name="name">en.counterparty.relation.tree</field>
+        <field name="model">en.counterparty.relation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="client_id"/>
+                <field name="supplier_id"/>
+                <field name="initiated_by"/>
+                <field name="source"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-warning="state in ('invited','self_accrediting','pending')"
+                       decoration-danger="state == 'rejected'"/>
+                <field name="process_id" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+    <record id="en_relation_form" model="ir.ui.view">
+        <field name="name">en.counterparty.relation.form</field>
+        <field name="model">en.counterparty.relation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="client_id"/>
+                            <field name="supplier_id"/>
+                            <field name="state"/>
+                        </group>
+                        <group>
+                            <field name="initiated_by"/>
+                            <field name="source"/>
+                            <field name="process_id"/>
+                        </group>
+                    </group>
+                    <field name="invitation_ids">
+                        <tree><field name="email"/><field name="expected_role"/><field name="state"/></tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="en_relation_action" model="ir.actions.act_window">
+        <field name="name">Relaciones de contraparte</field>
+        <field name="res_model">en.counterparty.relation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============ Invitaciones ============ -->
+    <record id="en_invitation_tree" model="ir.ui.view">
+        <field name="name">en.accreditation.invitation.tree</field>
+        <field name="model">en.accreditation.invitation</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="email"/>
+                <field name="expected_role"/>
+                <field name="inviter_partner_id"/>
+                <field name="expiry"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'accepted'"
+                       decoration-warning="state in ('sent','opened')"
+                       decoration-danger="state in ('expired','cancelled')"/>
+            </tree>
+        </field>
+    </record>
+    <record id="en_invitation_form" model="ir.ui.view">
+        <field name="name">en.accreditation.invitation.form</field>
+        <field name="model">en.accreditation.invitation</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="email"/>
+                            <field name="expected_role"/>
+                            <field name="expected_management_type_id"/>
+                            <field name="inviter_partner_id"/>
+                        </group>
+                        <group>
+                            <field name="state"/>
+                            <field name="expiry"/>
+                            <field name="token" readonly="1"/>
+                            <field name="accepted_partner_id"/>
+                            <field name="accepted_lead_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="en_invitation_action" model="ir.actions.act_window">
+        <field name="name">Invitaciones</field>
+        <field name="res_model">en.accreditation.invitation</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============ Ofertas de suministro ============ -->
+    <record id="en_offer_tree" model="ir.ui.view">
+        <field name="name">en.supply.offer.tree</field>
+        <field name="model">en.supply.offer</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="supplier_id"/>
+                <field name="validity"/>
+                <field name="total"/>
+                <field name="currency_id" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'published'"/>
+            </tree>
+        </field>
+    </record>
+    <record id="en_offer_form" model="ir.ui.view">
+        <field name="name">en.supply.offer.form</field>
+        <field name="model">en.supply.offer</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="supplier_id"/>
+                            <field name="state"/>
+                            <field name="validity"/>
+                            <field name="valid_until"/>
+                        </group>
+                        <group>
+                            <field name="incoterm_id"/>
+                            <field name="port"/>
+                            <field name="payment_term"/>
+                            <field name="currency_id"/>
+                        </group>
+                    </group>
+                    <field name="line_ids">
+                        <tree editable="bottom">
+                            <field name="product_id"/>
+                            <field name="packaging"/>
+                            <field name="qty"/>
+                            <field name="unit_price"/>
+                            <field name="amount"/>
+                        </tree>
+                    </field>
+                    <group class="oe_subtotal_footer">
+                        <field name="subtotal"/>
+                        <field name="flete"/>
+                        <field name="seguro"/>
+                        <field name="total" class="oe_subtotal_footer_separator"/>
+                    </group>
+                    <field name="note" placeholder="Observaciones…"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="en_offer_action" model="ir.actions.act_window">
+        <field name="name">Ofertas de suministro</field>
+        <field name="res_model">en.supply.offer</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============ Pliegos de concurrencia ============ -->
+    <record id="en_tender_tree" model="ir.ui.view">
+        <field name="name">en.tender.tree</field>
+        <field name="model">en.tender</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="client_id"/>
+                <field name="product_id"/>
+                <field name="qty"/>
+                <field name="state" widget="badge" decoration-success="state == 'awarded'"/>
+            </tree>
+        </field>
+    </record>
+    <record id="en_tender_form" model="ir.ui.view">
+        <field name="name">en.tender.form</field>
+        <field name="model">en.tender</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group><field name="client_id"/><field name="product_id"/><field name="qty"/></group>
+                        <group><field name="state"/><field name="process_id"/><field name="awarded_line_id"/></group>
+                    </group>
+                    <field name="line_ids">
+                        <tree editable="bottom">
+                            <field name="supplier_id"/>
+                            <field name="offer_id"/>
+                            <field name="price"/>
+                            <field name="note"/>
+                        </tree>
+                    </field>
+                    <field name="note" placeholder="Observaciones…"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="en_tender_action" model="ir.actions.act_window">
+        <field name="name">Pliegos de concurrencia</field>
+        <field name="res_model">en.tender</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============ Solicitudes de acreditación (todos los leads) ============ -->
+    <record id="en_accreditation_leads_action" model="ir.actions.act_window">
+        <field name="name">Solicitudes de acreditación</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="domain">[('type', '=', 'opportunity')]</field>
+        <field name="context">{'default_type': 'opportunity', 'search_default_en_group_party': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay solicitudes de acreditación todavía.</p>
+            <p>Aquí llegan TODAS las acreditaciones enviadas desde el sitio (clientes y proveedores), sin filtro de comercial.</p>
+        </field>
+    </record>
+
+    <!-- ============ Eventos de seguimiento (auditoría) ============ -->
+    <record id="en_tracking_event_tree" model="ir.ui.view">
+        <field name="name">en.tracking.event.tree</field>
+        <field name="model">en.tracking.event</field>
+        <field name="arch" type="xml">
+            <tree create="false" default_order="date desc">
+                <field name="date"/>
+                <field name="phase"/>
+                <field name="stage_name"/>
+                <field name="partner_id"/>
+                <field name="source" widget="badge"
+                       decoration-success="source == 'auto'"
+                       decoration-info="source == 'manual'"/>
+                <field name="user_id"/>
+                <field name="lead_id" optional="hide"/>
+                <field name="operation_id" optional="show"/>
+            </tree>
+        </field>
+    </record>
+    <record id="en_tracking_event_action" model="ir.actions.act_window">
+        <field name="name">Eventos de seguimiento</field>
+        <field name="res_model">en.tracking.event</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ============ Menú ENETEC ============ -->
+    <menuitem id="en_menu_root" name="ENETEC" sequence="5"/>
+    <menuitem id="en_menu_leads" name="Solicitudes de acreditación" parent="en_menu_root" action="en_accreditation_leads_action" sequence="5"/>
+    <menuitem id="en_menu_relations" name="Relaciones de contraparte" parent="en_menu_root" action="en_relation_action" sequence="10"/>
+    <menuitem id="en_menu_invitations" name="Invitaciones" parent="en_menu_root" action="en_invitation_action" sequence="20"/>
+    <menuitem id="en_menu_offers" name="Ofertas de suministro" parent="en_menu_root" action="en_offer_action" sequence="30"/>
+    <menuitem id="en_menu_tenders" name="Pliegos de concurrencia" parent="en_menu_root" action="en_tender_action" sequence="40"/>
+    <menuitem id="en_menu_tracking" name="Eventos de seguimiento" parent="en_menu_root" action="en_tracking_event_action" sequence="50"/>
+
+    <!-- Formas de pago (catálogo administrable para la solicitud de importación) -->
+    <record id="en_payment_method_action" model="ir.actions.act_window">
+        <field name="name">Formas de pago</field>
+        <field name="res_model">en.payment.method</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Crea una forma de pago</p>
+            <p>Estas formas de pago aparecen en la solicitud de importación del cliente.</p>
+        </field>
+    </record>
+    <record id="en_payment_method_tree" model="ir.ui.view">
+        <field name="name">en.payment.method.tree</field>
+        <field name="model">en.payment.method</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="note"/>
+                <field name="active" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+    <record id="en_payment_method_form" model="ir.ui.view">
+        <field name="name">en.payment.method.form</field>
+        <field name="model">en.payment.method</field>
+        <field name="arch" type="xml">
+            <form string="Forma de pago">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="note"/>
+                        <field name="sequence"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <menuitem id="en_menu_config" name="Configuración" parent="en_menu_root" sequence="90"/>
+    <menuitem id="en_menu_payment_methods" name="Formas de pago" parent="en_menu_config" action="en_payment_method_action" sequence="10"/>
+
+    <!-- ============ Proceso de importación: mostrar CLIENTE solicitante + estado de acreditación ============ -->
+    <record id="en_importation_process_kanban" model="ir.ui.view">
+        <field name="name">importation.process.kanban.enetec.accred</field>
+        <field name="model">importation.process</field>
+        <field name="inherit_id" ref="pyxel_import_backend.view_importation_process_kanban"/>
+        <field name="arch" type="xml">
+            <!-- El cliente que HIZO la solicitud, encabezando la tarjeta -->
+            <xpath expr="//field[@name='provider_id']" position="before">
+                <div><strong>Cliente: </strong><field name="customer_id"/></div>
+            </xpath>
+            <xpath expr="//field[@name='provider_id']" position="replace">
+                <div><strong>Proveedor: </strong><field name="provider_id"/></div>
+            </xpath>
+            <!-- Badge con quién falta por acreditar (decoration carga en_both_accredited) -->
+            <xpath expr="//field[@name='country_origin_id']/.." position="after">
+                <div class="mt-1">
+                    <field name="en_both_accredited" invisible="1"/>
+                    <field name="en_accreditation_status" widget="badge"
+                           decoration-success="en_both_accredited"
+                           decoration-danger="not en_both_accredited"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="en_importation_process_form" model="ir.ui.view">
+        <field name="name">importation.process.form.enetec.accred</field>
+        <field name="model">importation.process</field>
+        <field name="inherit_id" ref="pyxel_import_backend.view_importation_process_form"/>
+        <field name="arch" type="xml">
+            <!-- Botón del comercial: aprobar la solicitud y generar órdenes -->
+            <xpath expr="//header" position="inside">
+                <button name="action_en_approve_request" type="object" string="Aprobar solicitud"
+                        class="btn-primary" invisible="not en_can_approve_request"
+                        help="Crea la orden de compra al proveedor y la oferta de venta al cliente, y pasa a SOLICITUDES APROBADAS."/>
+                <field name="en_can_approve_request" invisible="1"/>
+                <field name="en_request_approved" invisible="1"/>
+            </xpath>
+            <!-- Aviso destacado del estado de acreditación arriba del formulario -->
+            <xpath expr="//sheet/group[@name='main_group']" position="before">
+                <div class="alert alert-warning d-flex align-items-center" role="alert"
+                     invisible="en_both_accredited">
+                    <i class="fa fa-lock me-2" title="Pendiente de acreditación"/>
+                    <field name="en_accreditation_status" nolabel="1" readonly="1"/>
+                </div>
+                <div class="alert alert-success d-flex align-items-center" role="alert"
+                     invisible="not en_both_accredited">
+                    <i class="fa fa-check me-2" title="Acreditación completa"/>
+                    <span>Cliente y proveedor acreditados. La operación puede avanzar.</span>
+                </div>
+            </xpath>
+            <!-- Indicadores de acreditación de cada parte junto a cliente/proveedor -->
+            <xpath expr="//group[@name='info_group']/field[@name='customer_id']" position="after">
+                <field name="en_customer_accredited" widget="boolean_toggle" readonly="1"/>
+                <field name="en_provider_accredited" widget="boolean_toggle" readonly="1"/>
+                <field name="en_both_accredited" invisible="1"/>
+            </xpath>
+            <!-- Datos de la solicitud que llenó el cliente en el wizard -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Solicitud del cliente" name="en_request_data">
+                    <div class="alert alert-info d-flex align-items-center justify-content-between" role="alert"
+                         invisible="not en_can_approve_request">
+                        <span>Revisa los datos y, si todo está conforme, aprueba la solicitud para generar la orden de compra y la oferta al cliente.</span>
+                        <button name="action_en_approve_request" type="object" string="Aprobar solicitud"
+                                class="btn-primary"/>
+                    </div>
+                    <div class="alert alert-success" role="alert" invisible="not en_request_approved">
+                        <i class="fa fa-check me-2" title="Aprobada"/>
+                        <span>Solicitud aprobada — órdenes generadas.</span>
+                    </div>
+                    <group>
+                        <group string="Entrega">
+                            <field name="en_packaging_type"/>
+                            <field name="en_delivery_date"/>
+                        </group>
+                        <group string="Condiciones">
+                            <field name="en_payment_method_id"/>
+                            <field name="en_currency_usd_id" invisible="1"/>
+                            <field name="en_budget_usd"/>
+                        </group>
+                    </group>
+                    <separator string="Productos solicitados"/>
+                    <field name="en_request_line_ids" readonly="en_request_approved">
+                        <tree editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="product_id"/>
+                            <field name="product_name" optional="hide"/>
+                            <field name="qty"/>
+                            <field name="packaging"/>
+                        </tree>
+                    </field>
+                    <group>
+                        <group string="Aprobación / órdenes">
+                            <field name="en_operation_currency_id"/>
+                            <field name="en_margin_percent"/>
+                            <field name="en_client_sale_order_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Especificaciones">
+                        <field name="en_specifications" nolabel="1" placeholder="Especificaciones técnicas del producto solicitado"/>
+                    </group>
+                    <group string="Observaciones">
+                        <field name="en_observations" nolabel="1" placeholder="Observaciones del cliente"/>
+                    </group>
+                </page>
+            </xpath>
+            <!-- Documentos del embarque (adjuntos genéricos heredados) — oculta,
+                 reemplazada por la pestaña Expediente de documentos. -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Documentos del embarque" name="en_shipment_docs"
+                      invisible="1">
+                    <div class="alert alert-info" role="alert">
+                        Documentos del embarque subidos por el cliente para la revisión
+                        comercial. La validación automática con DocValidator y el cruce
+                        lista de empaque ↔ factura se activarán próximamente.
+                    </div>
+                    <field name="en_shipment_doc_count" invisible="1"/>
+                    <separator string="Documentos comerciales"/>
+                    <field name="en_shipment_doc_ids" readonly="1">
+                        <tree create="0" delete="0">
+                            <field name="name"/>
+                            <field name="create_date"/>
+                            <field name="datas" string="Archivo" filename="name" widget="binary"/>
+                        </tree>
+                    </field>
+                    <separator string="Documentación de la carga"/>
+                    <group>
+                        <field name="documentation_file" filename="documentation_file_filename"/>
+                        <field name="documentation_file_filename" invisible="1"/>
+                        <field name="export_certificate" filename="export_certificate_filename"/>
+                        <field name="export_certificate_filename" invisible="1"/>
+                        <field name="quality_certificate" filename="quality_certificate_filename"/>
+                        <field name="quality_certificate_filename" invisible="1"/>
+                        <field name="origin_certificate" filename="origin_certificate_filename"/>
+                        <field name="origin_certificate_filename" invisible="1"/>
+                        <field name="packing_list" filename="packing_list_filename"/>
+                        <field name="packing_list_filename" invisible="1"/>
+                    </group>
+                </page>
+            </xpath>
+            <!-- Moneda por línea de costo (para facturar en CUP / USD por separado). -->
+            <xpath expr="//field[@name='cost_line_ids']/tree/field[@name='amount']" position="before">
+                <field name="currency_id" options="{'no_create': True}"/>
+            </xpath>
+            <!-- La pestaña base "Documentos" es redundante con "Documentos del
+                 embarque" (mismos campos nativos) y queda casi vacía en este flujo
+                 (depende del tipo de envío). Se oculta. -->
+            <xpath expr="//page[@name='documents']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Orden de las pestañas: Solicitud del cliente, Órdenes de compra,
+                 Carga de importación, Costos de importación, Documentos del embarque. -->
+            <xpath expr="//page[@name='en_request_data']" position="after">
+                <xpath expr="//page[@name='purchase_orders']" position="move"/>
+            </xpath>
+            <xpath expr="//page[@name='purchase_orders']" position="after">
+                <xpath expr="//page[@name='importation_load']" position="move"/>
+            </xpath>
+            <xpath expr="//page[@name='importation_load']" position="after">
+                <xpath expr="//page[@name='import_costs']" position="move"/>
+            </xpath>
+            <xpath expr="//page[@name='import_costs']" position="after">
+                <xpath expr="//page[@name='en_shipment_docs']" position="move"/>
+            </xpath>
+            <!-- Expediente estructurado: IA + comercial por documento -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Expediente de documentos" name="en_import_expediente">
+                    <field name="en_import_doc_count" invisible="1"/>
+                    <field name="en_import_doc_approved" invisible="1"/>
+                    <div class="alert alert-info d-flex align-items-center justify-content-between"
+                         role="alert" invisible="en_import_doc_count != 0">
+                        <span>El expediente se crea automáticamente al registrar la solicitud de importación desde el portal.</span>
+                        <button name="action_create_import_expediente" type="object"
+                                string="Crear expediente" class="btn btn-sm btn-primary ms-3"/>
+                    </div>
+                    <div class="alert alert-success d-flex align-items-center" role="alert"
+                         invisible="en_import_doc_count == 0 or en_import_doc_approved != en_import_doc_count">
+                        <i class="fa fa-check me-2"/>
+                        <span>Todos los documentos del expediente han sido aprobados.</span>
+                    </div>
+                    <!-- Sección 1: Documentos propios del proceso de importación -->
+                    <separator string="Documentos de la importación"/>
+                    <field name="en_import_process_doc_ids" create="0" delete="0">
+                        <tree create="0" delete="0"
+                              decoration-success="portal_state == 'approved'"
+                              decoration-danger="portal_state == 'rejected'"
+                              decoration-warning="portal_state == 'in_review'"
+                              decoration-muted="portal_state in ('pending','optional')">
+                            <field name="document_label" string="Documento" readonly="1"/>
+                            <field name="attachment_id" column_invisible="1"/>
+                            <field name="ai_state" string="Dictamen IA" readonly="1" widget="badge"
+                                   decoration-success="ai_state == 'passed'"
+                                   decoration-warning="ai_state == 'doubt'"
+                                   decoration-danger="ai_state == 'rejected'"
+                                   decoration-info="ai_state == 'validating'"/>
+                            <field name="ai_confidence" string="Confianza (%)" readonly="1"/>
+                            <field name="commercial_state" string="Comercial" readonly="1" widget="badge"
+                                   decoration-success="commercial_state == 'approved'"
+                                   decoration-danger="commercial_state == 'rejected'"
+                                   decoration-warning="commercial_state == 'to_review'"
+                                   decoration-muted="commercial_state == 'blocked'"/>
+                            <field name="portal_state" string="Estado proveedor" readonly="1" widget="badge"
+                                   decoration-success="portal_state == 'approved'"
+                                   decoration-danger="portal_state == 'rejected'"
+                                   decoration-warning="portal_state == 'in_review'"
+                                   decoration-info="portal_state == 'validating'"/>
+                            <button name="action_open_review" type="object" string="Revisar"
+                                    class="btn-link"/>
+                            <button name="action_view_document" type="object" string="Ver"
+                                    class="btn-link" invisible="not attachment_id"/>
+                        </tree>
+                    </field>
+
+                    <!-- Sección 2: Documentos por Orden de Compra (agrupados por OC) -->
+                    <separator string="Documentos por Orden de Compra"/>
+                    <field name="en_import_oc_doc_ids" create="0" delete="0">
+                        <tree create="0" delete="0"
+                              decoration-bf="display_type == 'line_section'"
+                              decoration-success="portal_state == 'approved' and not display_type"
+                              decoration-danger="portal_state == 'rejected' and not display_type"
+                              decoration-warning="portal_state == 'in_review' and not display_type"
+                              decoration-muted="portal_state in ('pending','optional') and not display_type">
+                            <field name="display_type" column_invisible="1"/>
+                            <field name="purchase_order_id" column_invisible="1"/>
+                            <field name="attachment_id" column_invisible="1"/>
+                            <field name="document_label" string="Documento / OC" readonly="1"/>
+                            <field name="ai_state" string="Dictamen IA" readonly="1" widget="badge"
+                                   invisible="display_type == 'line_section'"
+                                   decoration-success="ai_state == 'passed'"
+                                   decoration-warning="ai_state == 'doubt'"
+                                   decoration-danger="ai_state == 'rejected'"
+                                   decoration-info="ai_state == 'validating'"/>
+                            <field name="ai_confidence" string="Confianza (%)" readonly="1"
+                                   invisible="display_type == 'line_section'"/>
+                            <field name="commercial_state" string="Comercial" readonly="1" widget="badge"
+                                   invisible="display_type == 'line_section'"
+                                   decoration-success="commercial_state == 'approved'"
+                                   decoration-danger="commercial_state == 'rejected'"
+                                   decoration-warning="commercial_state == 'to_review'"
+                                   decoration-muted="commercial_state == 'blocked'"/>
+                            <field name="portal_state" string="Estado proveedor" readonly="1" widget="badge"
+                                   invisible="display_type == 'line_section'"
+                                   decoration-success="portal_state == 'approved'"
+                                   decoration-danger="portal_state == 'rejected'"
+                                   decoration-warning="portal_state == 'in_review'"
+                                   decoration-info="portal_state == 'validating'"/>
+                            <button name="action_open_review" type="object" string="Revisar"
+                                    class="btn-link" invisible="display_type == 'line_section'"/>
+                            <button name="action_view_document" type="object" string="Ver"
+                                    class="btn-link"
+                                    invisible="display_type == 'line_section' or not attachment_id"/>
+                        </tree>
+                    </field>
+                    <!-- Datos de la DM (rellenados por el apoderado de aduana) -->
+                    <separator string="Declaración de Mercancía (DM)"/>
+                    <group>
+                        <group>
+                            <field name="en_dm_number"/>
+                            <field name="en_dm_container_number"/>
+                            <field name="en_dm_extraction_state" widget="badge"
+                                   decoration-info="en_dm_extraction_state == 'extracted'"
+                                   decoration-warning="en_dm_extraction_state == 'manual'"/>
+                        </group>
+                        <group>
+                            <field name="en_dm_cif_value"/>
+                            <field name="en_dm_arancel_total"/>
+                            <field name="en_dm_impuesto_circulacion"/>
+                        </group>
+                    </group>
+                    <group string="Notas arancelarias">
+                        <field name="en_dm_arancel_notes" nolabel="1"/>
+                    </group>
+                    <group string="Estado despacho">
+                        <field name="en_ready_for_customs" readonly="1" widget="boolean_toggle"/>
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='en_shipment_docs']" position="after">
+                <xpath expr="//page[@name='en_import_expediente']" position="move"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

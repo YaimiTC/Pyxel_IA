@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "enetradex",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["C:\\odoo_enetradex\\.claude\\preview_proxy.py"],
+      "port": 8470,
+      "autoPort": false
+    }
+  ]
+}

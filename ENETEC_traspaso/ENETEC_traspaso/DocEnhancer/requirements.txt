@@ -1,0 +1,10 @@
+# DocEnhancer - servicio local de realce de imagen
+fastapi
+uvicorn[standard]
+python-multipart
+pydantic
+numpy
+opencv-contrib-python
+# Opcionales:
+#   PyMuPDF  -> soporte de PDF (rasteriza la 1a pagina)
+PyMuPDF

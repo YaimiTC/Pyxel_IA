@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="navbar" name="Enetradex Navbar">
+        <t t-set="is_logged_in" t-value="not request.env.user._is_public()" />
+        <t t-set="ag_order" t-value="request.website.sale_get_order()" />
+
+        <header class="ag-header" id="ag-header">
+
+            <!-- ===== Barra superior ===== -->
+            <div class="ag-topbar">
+                <div class="container">
+                    <div class="ag-topbar-left">
+                        <span class="ag-topbar-item"><i class="fa fa-headphones"></i> Atención Comercial</span>
+                        <span class="ag-topbar-sep">|</span>
+                        <a class="ag-topbar-item" href="tel:+5352807765"><i class="fa fa-phone"></i> +53 5280 7765</a>
+                    </div>
+                    <div class="ag-topbar-right">
+                        <a class="ag-topbar-item" href="/my/orders"><i class="fa fa-truck"></i> Rastrear Pedido</a>
+                        <span class="ag-topbar-sep">|</span>
+                        <a class="ag-topbar-item" href="/about?tab=who"><i class="fa fa-newspaper-o"></i> Noticias</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Fila principal ===== -->
+            <div class="ag-header-main">
+                <div class="container">
+
+                    <a class="ag-logo" href="/">
+                        <img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_logo.png?v=3"
+                             alt="ENETRADEX"/>
+                    </a>
+
+                    <!-- Buscador -->
+                    <form action="/shop" method="get" class="ag-search">
+                        <select class="ag-search-cat" name="category" aria-label="Categoría">
+                            <option value="">Todo el catálogo</option>
+                        </select>
+                        <input class="ag-search-input" type="search" name="search"
+                               placeholder="Buscar productos, proveedores, destinos..." aria-label="Buscar"/>
+                        <button class="ag-search-btn" type="submit" aria-label="Buscar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </form>
+
+                    <!-- Acciones -->
+                    <div class="ag-actions">
+
+                        <!-- Mi cuenta -->
+                        <t t-if="is_logged_in">
+                            <div class="dropdown">
+                                <a href="#" class="ag-icon-link" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-user-circle-o"></i>
+                                    <span class="ag-icon-label">Mi ENETRADEX <small>Mi cuenta</small></span>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                                    <li><a class="dropdown-item" href="/my"><i class="fa fa-fw fa-id-card-o me-2"/> Mi cuenta</a></li>
+                                    <li><a class="dropdown-item" href="/my/orders"><i class="fa fa-fw fa-shopping-bag me-2"/> Mis pedidos</a></li>
+                                    <li><hr class="dropdown-divider"/></li>
+                                    <li><a class="dropdown-item" href="/web/session/logout?redirect=/"><i class="fa fa-fw fa-sign-out me-2"/> Cerrar sesión</a></li>
+                                </ul>
+                            </div>
+                        </t>
+                        <t t-if="not is_logged_in">
+                            <a href="/web/login" class="ag-icon-link">
+                                <i class="fa fa-user-circle-o"></i>
+                                <span class="ag-icon-label">Mi ENETRADEX <small>Iniciar sesión</small></span>
+                            </a>
+                        </t>
+
+                        <!-- Carrito -->
+                        <a href="/shop/cart" class="ag-icon-link" aria-label="Carrito">
+                            <i class="fa fa-shopping-cart"></i>
+                            <span class="ag-cart-badge" t-esc="ag_order.cart_quantity if ag_order else 0"/>
+                        </a>
+
+                        <!-- Acreditarse -->
+                        <a href="/en/wizard" class="ag-btn-acreditar">
+                            <i class="fa fa-check-circle"></i> Acreditarme
+                        </a>
+
+                        <!-- Burger móvil -->
+                        <button class="ag-burger" type="button"
+                                onclick="document.getElementById('ag-nav').classList.toggle('show')"
+                                aria-label="Menú">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Fila de menú ===== -->
+            <nav class="ag-nav" id="ag-nav">
+                <div class="container">
+                    <a t-attf-class="ag-nav-link {{ 'active' if page_name == 'home' else '' }}" href="/">Inicio</a>
+                    <a class="ag-nav-link" href="/en/wizard?op=1">Importar</a>
+
+                    <div class="dropdown">
+                        <a class="ag-nav-link" href="/shop" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                            Marketplace <i class="fa fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/shop">Ver catálogo</a></li>
+                            <li><a class="dropdown-item" href="/shop">Lubricantes y aditivos</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="dropdown">
+                        <a class="ag-nav-link" href="/shop" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                            Combustibles <i class="fa fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/shop">Gasoil / Diésel</a></li>
+                            <li><a class="dropdown-item" href="/shop">Gasolinas</a></li>
+                            <li><a class="dropdown-item" href="/shop">Fuel Oil</a></li>
+                            <li><a class="dropdown-item" href="/shop">Jet Fuel A1</a></li>
+                        </ul>
+                    </div>
+
+                    <a class="ag-nav-link" href="/about?tab=services">Trading</a>
+                    <a class="ag-nav-link" href="/en/wizard">Proveedores</a>
+
+                    <div class="dropdown">
+                        <a class="ag-nav-link" href="/about?tab=services" data-bs-toggle="dropdown" role="button" aria-expanded="false">
+                            Servicios <i class="fa fa-chevron-down"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/about?tab=services">Importación</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Trading</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Logística internacional</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Inteligencia comercial</a></li>
+                        </ul>
+                    </div>
+
+                    <a t-attf-class="ag-nav-link {{ 'active' if page_name == 'contactus' else '' }}" href="/contactus">Contacto</a>
+                </div>
+            </nav>
+
+        </header>
+    </template>
+</odoo>

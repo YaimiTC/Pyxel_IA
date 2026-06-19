@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="purchase_order_tree_inherit_provider_evaluation" model="ir.ui.view">
+    <field name="name">purchase.order.tree.inherit.provider.evaluation</field>
+    <field name="model">purchase.order</field>
+    <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+    <field name="arch" type="xml">
+      <xpath expr="//tree/field[@name='name']" position="after">
+        <field name="evaluation_id" />
+      </xpath>
+    </field>
+  </record>
+
+
+  <record id="purchase_order_form_inherit_provider_evaluation" model="ir.ui.view">
+    <field name="name">purchase.order.form.inherit.provider.evaluation</field>
+    <field name="model">purchase.order</field>
+    <field name="inherit_id" ref="purchase.purchase_order_form" />
+    <field name="arch" type="xml">
+      <xpath expr="//group" position="inside">
+        <field name="evaluation_id" readonly="1"/>
+      </xpath>
+
+      <xpath expr="//field[@name='partner_id']" position="attributes">
+        <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]</attribute>
+      </xpath>
+
+       <xpath expr="//page[@name='purchase_delivery_invoice']" position="inside">
+            <group>
+                <field name="is_third_party_contract"/>
+                <field name="commercial_invoice" filename="commercial_invoice_filename"/>
+                <field name="signed_offer" filename="signed_offer_filename"/>
+            </group>
+        </xpath>
+        <!-- Árbol en la pestaña de líneas -->
+        <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="before">
+            <field name="line_number" readonly="1" string="N°" width="40"/>
+        </xpath>
+        <xpath expr="//field[@name='order_line']/tree//field[@name='name']" position="before">
+          <field name="product_uom" optional="show"/>
+        </xpath>
+        <!-- Form de línea -->
+         <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="before">
+            <field name="line_number" readonly="1" string="N°" width="40"/>
+         </xpath>
+        <xpath expr="//field[@name='order_line']/form//field[@name='name']" position="before">
+          <field name="product_uom"/>
+        </xpath>
+    </field>
+  </record>
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_pyxel_enetradex_conciliation_wizard_form" model="ir.ui.view">
+    <field name="name">pyxel.enetradex.conciliation.wizard.form</field>
+    <field name="model">pyxel.enetradex.conciliation.wizard</field>
+    <field name="arch" type="xml">
+      <form string="Conciliación ENETEC (CE-PCT) - Excel">
+        <group>
+          <field name="start_date"/>
+          <field name="end_date"/>
+          <field name="partner_id"/>
+          <field name="supplier_id"/>
+          <field name="contract_to_third"/>
+          <field name="platform_name" placeholder="Si no eliges partner, escribe el nombre."/>
+          <field name="provider_import_name"/>
+          <field name="pyxel_name"/>
+        </group>
+        <footer>
+          <button name="action_generate_excel" type="object" string="Generar Excel" class="oe_highlight"/>
+          <button special="cancel" string="Cancelar"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+</odoo>

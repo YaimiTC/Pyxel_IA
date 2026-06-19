@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Activar el peso cubano (CUP) para poder facturar costos locales. -->
+    <record id="base.CUP" model="res.currency">
+        <field name="active">True</field>
+    </record>
+</odoo>

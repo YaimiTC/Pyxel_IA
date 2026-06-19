@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.env
+.venv/
+
+# Odoo
+*.pyc
+.odoo_history
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backups / temporales
+backup/
+*.zip
+tmp_*/
+*.sql
+screenshots/
+
+# Documentos generados (PDFs y scripts de generación)
+documentos/*.pdf
+documentos/generar_*.py
+documentos/capturar_*.py
+documentos/msedgedriver.exe
+
+# Node / npm
+node_modules/
+
+# Datasets e imágenes de entrenamiento (archivos grandes)
+ENETEC_traspaso/ENETEC_traspaso/DocValidator/dataset_pyme/
+ENETEC_traspaso/ENETEC_traspaso/DocValidator/dataset/
+ENETEC_traspaso/ENETEC_traspaso/DocValidator/Pyme/
+ENETEC_traspaso/ENETEC_traspaso/DocValidator/models/
+*.jpg
+*.jpeg
+*.png
+*.pdf

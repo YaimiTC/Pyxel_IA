@@ -1,0 +1,211 @@
+/* ════════════════════════════════════════════════════════════
+   ENETRADEX BACKEND THEME — azul corporativo (antes verde Agrimpex)
+   Navbar azul navy + acentos azul ENETRADEX. Solo /web y /odoo.
+   ════════════════════════════════════════════════════════════ */
+
+$en-navy:       #16233f;   // franja superior (navbar)
+$en-navy-dark:  #0e1a30;
+$en-blue:       #0f44ce;   // acentos, botones, links activos
+$en-blue-dark:  #0a338f;
+
+/* === Navbar superior === */
+.o_main_navbar {
+    background-color: $en-navy !important;
+
+    .o_navbar_apps_menu .dropdown-toggle,
+    .o_menu_brand,
+    > .o_menu_sections > .o_nav_entry,
+    > .o_menu_systray > .dropdown > .dropdown-toggle {
+        color: #fff !important;
+    }
+
+    .o_menu_sections > .o_nav_entry:hover,
+    .o_menu_sections > .show > .o_nav_entry {
+        background-color: $en-navy-dark !important;
+    }
+
+    .o_menu_sections,
+    .o_menu_sections > li,
+    .o_menu_sections > .o_nav_entry,
+    .o_menu_sections > .dropdown > .o_nav_entry,
+    .o_menu_sections > .dropdown > .dropdown-toggle {
+        background-color: $en-navy !important;
+        color: #fff !important;
+
+        &:hover, &:focus, &.show {
+            background-color: $en-navy-dark !important;
+        }
+    }
+
+    .o_menu_sections a,
+    .o_menu_sections .dropdown-toggle {
+        color: #fff !important;
+    }
+}
+
+/* === Botones primarios === */
+.o_list_button_add,
+.o_kanban_button_new,
+.btn-primary {
+    background-color: $en-blue !important;
+    border-color: $en-blue !important;
+
+    &:hover, &:focus, &:active {
+        background-color: $en-blue-dark !important;
+        border-color: $en-blue-dark !important;
+    }
+}
+
+/* === Menú de apps (9 puntos) hover === */
+.o_navbar_apps_menu .dropdown-toggle:hover {
+    background-color: $en-navy-dark !important;
+}
+
+/* === Pestañas seleccionadas === */
+.o_form_view .o_notebook .nav-tabs .nav-link.active {
+    border-color: $en-blue !important;
+    color: $en-blue !important;
+}
+
+/* === Checkboxes y radios marcados === */
+.o_field_boolean .o_checkbox input:checked + span,
+.o_checkbox input:checked ~ label::before {
+    background-color: $en-blue !important;
+    border-color: $en-blue !important;
+}
+
+/* === Barra de estado del formulario — botón activo === */
+.o_statusbar_buttons .btn-primary {
+    background-color: $en-blue !important;
+    border-color: $en-blue !important;
+}
+
+/* === Breadcrumb / botón atrás === */
+.o_breadcrumb .o_back_button,
+.o_back_button {
+    color: $en-blue !important;
+}
+
+/* === Apps home — icono activo === */
+.o_apps .o_app:hover .o_app_icon {
+    outline-color: $en-blue !important;
+}
+
+/* === Focus rings === */
+:focus-visible {
+    outline-color: $en-blue !important;
+}
+
+/* === Selección de lista === */
+.o_list_table thead th.o_list_record_selector input:checked {
+    accent-color: $en-blue;
+}
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+    accent-color: $en-blue;
+}
+
+/* ════════════════════════════════════════════════════════════
+   Recorrido de acreditación en el CRM — misma estética del portal
+   (banner acreditado/pendiente + línea de tiempo). Clase .en-track.
+   ════════════════════════════════════════════════════════════ */
+.en-track {
+    --en-blue: #{$en-blue};
+    --en-ink: #14233f;
+    --en-muted: #5b6b85;
+    --en-line: #dde5f0;
+    --en-bg: #f1f5fb;
+
+    &.en-track-backend { margin: 6px 0 14px; }
+
+    .en-card {
+        background: #fff;
+        border: 1px solid var(--en-line);
+        border-radius: 14px;
+        box-shadow: 0 2px 14px rgba(0, 0, 0, .06);
+        padding: 18px 20px;
+        margin-bottom: 16px;
+    }
+    .en-card h4 { color: var(--en-ink); font-weight: 700; margin: 0 0 14px; font-size: 1.1rem; }
+
+    .en-action {
+        display: flex; align-items: center; gap: 14px;
+        border-radius: 14px; padding: 14px 18px; margin-bottom: 14px;
+        font-weight: 600; line-height: 1.35;
+        .ico { width: 34px; height: 34px; border-radius: 50%; display: flex;
+               align-items: center; justify-content: center; flex: 0 0 34px; color: #fff; }
+        &.success { background: #e7f6ec; color: #155e38; .ico { background: #15803d; } }
+        &.warning { background: #fff5e6; color: #8a5800; .ico { background: #e08a00; } }
+        &.info    { background: #eaf1ff; color: #143b8f; .ico { background: var(--en-blue); } }
+    }
+
+    .en-tl { list-style: none; margin: 0; padding: 0; position: relative; }
+    .en-tl::before { content: ""; position: absolute; left: 7px; top: 6px; bottom: 10px;
+                     width: 2px; background: var(--en-line); }
+    .en-tl li { position: relative; padding: 0 0 18px 30px; }
+    .en-tl li:last-child { padding-bottom: 0; }
+    .en-dot { position: absolute; left: 0; top: 2px; width: 16px; height: 16px;
+              border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1.5px var(--en-line); }
+    .en-dot.auto { background: #15803d; }
+    .en-dot.manual { background: var(--en-blue); }
+    .en-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .t-title { font-weight: 700; color: var(--en-ink); }
+    .en-tag { font-size: .72rem; font-weight: 600; padding: 2px 9px; border-radius: 999px;
+              background: var(--en-bg); color: var(--en-muted); }
+    .en-meta { color: var(--en-muted); font-size: .82rem; margin-top: 3px; }
+
+    /* Datos de la empresa (clave/valor) */
+    .en-kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px 18px; }
+    .en-kv > div, .en-kv-full { display: flex; flex-direction: column; }
+    .en-kv-full { margin-top: 12px; }
+    .en-kv .k, .en-kv-full .k { font-size: .72rem; font-weight: 600; text-transform: uppercase;
+              letter-spacing: .4px; color: var(--en-muted); }
+    .en-kv .v, .en-kv-full .v { color: var(--en-ink); font-weight: 600; }
+
+    /* Pipeline de etapas de acreditación */
+    .en-pipeline { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .en-pipeline .pstep { display: flex; align-items: center; gap: 6px; padding: 6px 12px;
+              border: 1px solid var(--en-line); border-radius: 999px; background: #fff;
+              font-size: .78rem; font-weight: 600; color: var(--en-muted); }
+    .en-pipeline .pstep .pdot { width: 9px; height: 9px; border-radius: 50%; background: var(--en-line); }
+    .en-pipeline .pstep.done { color: var(--en-ink); border-color: #cfe0bd; background: #f1f7e9; }
+    .en-pipeline .pstep.done .pdot { background: #63991F; }
+    .en-pipeline .pstep.cur { color: #fff; background: var(--en-blue); border-color: var(--en-blue); }
+    .en-pipeline .pstep.cur .pdot { background: #fff; }
+
+    /* Vínculo entre acreditaciones + nota de la regla */
+    .en-link { display: flex; align-items: center; gap: 8px; font-size: .88rem; color: var(--en-ink); padding: 6px 0; }
+    .en-link a { color: var(--en-blue); text-decoration: none; }
+    .en-link > i { color: var(--en-muted); }
+    .en-note { display: flex; align-items: flex-start; gap: 9px; background: #eaf1ff; color: #143b8f;
+               border-radius: 12px; padding: 12px 15px; font-size: .85rem; line-height: 1.45; margin-bottom: 16px; }
+    .en-note > i { margin-top: 2px; color: var(--en-blue); }
+}
+
+/* ════════════════════════════════════════════════════════════
+   Tarjeta de acreditación en el kanban del CRM (Pipeline)
+   Diferenciación gráfica cliente (azul) / proveedor (ámbar).
+   ════════════════════════════════════════════════════════════ */
+.en_acc_kard {
+    margin-top: 8px; padding: 9px 11px; border-radius: 9px;
+    border: 1px solid #e6eaf1; border-left: 4px solid #dde5f0; background: #f8fafc;
+
+    &.is-cli { border-left-color: #0f44ce; }
+    &.is-sup { border-left-color: #e08a00; }
+
+    .en_acc_head { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
+    .en_acc_chip { display: inline-flex; align-items: center; gap: 5px; font-size: .72rem;
+                   font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+    &.is-cli .en_acc_chip { background: #eaf1ff; color: #0f44ce; }
+    &.is-sup .en_acc_chip { background: #fff5e6; color: #b5730a; }
+
+    .en_acc_state { font-size: .7rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+    .en_acc_state.ok { background: #e7f6ec; color: #15803d; }
+    .en_acc_state.wait { background: #eef0f3; color: #5b6b85; }
+
+    .en_acc_meta { font-size: .76rem; color: #5b6b85; margin-top: 4px; }
+    .en_acc_meta > i { width: 14px; text-align: center; }
+    .en_acc_link { font-size: .76rem; color: #0f44ce; margin-top: 6px; padding-top: 6px;
+                   border-top: 1px dashed #d5deec; }
+    .en_acc_link > i { margin-right: 4px; }
+}

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Ficha de revisión del documento de importación -->
+    <record id="view_pyxel_import_document_form" model="ir.ui.view">
+        <field name="name">pyxel.import.document.form</field>
+        <field name="model">pyxel.import.document</field>
+        <field name="arch" type="xml">
+            <form string="Revisión de documento de importación">
+                <header>
+                    <button name="action_commercial_approve" type="object" string="Aprobar"
+                            class="btn-primary"
+                            invisible="ai_state not in ('passed','doubt') or commercial_state == 'approved'"/>
+                    <button name="action_commercial_reject" type="object" string="Rechazar"
+                            invisible="ai_state not in ('passed','doubt') or commercial_state == 'rejected'"/>
+                    <button name="action_commercial_reopen" type="object" string="Reabrir revisión"
+                            invisible="commercial_state not in ('approved','rejected')"/>
+                    <field name="portal_state" widget="badge"
+                           decoration-success="portal_state == 'approved'"
+                           decoration-warning="portal_state in ('in_review','validating')"
+                           decoration-danger="portal_state == 'rejected'"/>
+                </header>
+                <sheet>
+                    <div class="en-track en-track-backend">
+                        <div class="en-action success" invisible="portal_state != 'approved'">
+                            <span class="ico"><i class="fa fa-check" title="Aprobado"/></span>
+                            <span>Documento aprobado.</span>
+                        </div>
+                        <div class="en-action warning" invisible="portal_state != 'rejected'">
+                            <span class="ico"><i class="fa fa-times" title="Rechazado"/></span>
+                            <span>Documento rechazado — el proveedor debe reemplazarlo.</span>
+                        </div>
+                        <div class="en-action warning"
+                             invisible="portal_state not in ('in_review','validating','pending','optional')">
+                            <span class="ico"><i class="fa fa-clock-o" title="En revisión"/></span>
+                            <span>Documento en proceso de revisión.</span>
+                        </div>
+
+                        <div class="oe_title">
+                            <h1><field name="document_label" readonly="1"/></h1>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-7">
+                                <div class="en-card">
+                                    <h4>Documento subido</h4>
+                                    <field name="attachment_id" invisible="1"/>
+                                    <field name="document_file" filename="document_filename"
+                                           widget="pdf_viewer" invisible="not attachment_id"/>
+                                    <div invisible="attachment_id" class="text-muted">Sin documento subido.</div>
+                                    <button name="action_view_document" type="object"
+                                            string="Abrir en pestaña nueva"
+                                            class="btn btn-link p-0 mt-2"
+                                            invisible="not attachment_id"/>
+                                    <div class="mt-3">
+                                        <div class="fw-bold mb-1">Subir / reemplazar archivo:</div>
+                                        <field name="document_upload" widget="camera_capture"
+                                               filename="document_upload_filename"/>
+                                        <field name="document_upload_filename" invisible="1"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="en-card">
+                                    <h4>1 · Análisis de la IA</h4>
+                                    <group>
+                                        <field name="ai_state" widget="badge"
+                                               decoration-success="ai_state == 'passed'"
+                                               decoration-warning="ai_state == 'doubt'"
+                                               decoration-danger="ai_state == 'rejected'"
+                                               decoration-info="ai_state == 'validating'"/>
+                                        <field name="ai_confidence" widget="progressbar" readonly="1"/>
+                                        <field name="ai_quality" widget="progressbar" readonly="1"/>
+                                    </group>
+                                    <field name="ai_reason" readonly="1" invisible="not ai_reason"/>
+                                    <field name="ai_extracted_data" readonly="1"
+                                           invisible="not ai_extracted_data"/>
+                                </div>
+                                <div class="en-card" invisible="ai_state not in ('passed','doubt')">
+                                    <h4>2 · Revisión comercial</h4>
+                                    <group>
+                                        <field name="commercial_state" widget="badge"
+                                               decoration-success="commercial_state == 'approved'"
+                                               decoration-danger="commercial_state == 'rejected'"/>
+                                        <field name="commercial_reason"
+                                               placeholder="Motivo de rechazo (lo ve el proveedor)"/>
+                                    </group>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

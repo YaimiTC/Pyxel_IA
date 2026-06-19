@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_transport_hub_tree" model="ir.ui.view">
+            <field name="name">transport.hub.tree</field>
+            <field name="model">transport.hub</field>
+            <field name="arch" type="xml">
+                <tree string="Transport Hubs">
+                    <field name="name"/>
+                    <field name="hub_type"/>
+                    <field name="country_id"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_transport_hub_form" model="ir.ui.view">
+            <field name="name">transport.hub.form</field>
+            <field name="model">transport.hub</field>
+            <field name="arch" type="xml">
+                <form string="Transport Hub">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name" required="True"/>
+                                <field name="hub_type" required="True"/>
+                                <field name="country_id" required="True"/>
+                                <field name="code" string="Code"/>
+                                <field name="iata_code" invisible="hub_type == 'Port'"/>
+                                <field name="icao_code" invisible="hub_type == 'Port'"/>
+                                <field name="un_locode" invisible="hub_type == 'Airport'"/>
+                            </group>
+                            <group>
+                                <field name="latitude"/>
+                                <field name="longitude"/>
+                                <button name="open_google_maps"
+                                        type="object"
+                                        string="Open in Google Maps"
+                                        class="btn btn-primary"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_transport_hub_kanban" model="ir.ui.view">
+            <field name="name">transport.hub.kanban</field>
+            <field name="model">transport.hub</field>
+            <field name="arch" type="xml">
+                <kanban>
+                    <field name="name"/>
+                    <field name="hub_type"/>
+                    <field name="country_id"/>
+                    <field name="code"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card" t-attf-class="oe_kanban_color_{{record.hub_type.raw_value}}">
+                                <div class="oe_kanban_details">
+                                    <strong>
+                                        <t t-esc="record.name.value"/>
+                                    </strong>
+                                    <br/>
+                                    <span>
+                                        <t t-esc="record.country_id.value"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="transport_hub_search_view" model="ir.ui.view">
+            <field name="name">transport.hub.search.view</field>
+            <field name="model">transport.hub</field>
+            <field name="arch" type="xml">
+                <search>
+                    <!-- Campo de búsqueda directo -->
+                    <field name="name" string="Name"/>
+                    <field name="country_id" string="Country"/>
+
+                    <!-- Filtros personalizados por tipo -->
+                    <filter string="Airport" name="filter_airport" domain="[('hub_type','=','Airport')]"/>
+                    <filter string="Port" name="filter_port" domain="[('hub_type','=','Port')]"/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Hub Type" name="group_by_type" domain="[]" context="{'group_by': 'hub_type'}"/>
+                        <filter string="Country" name="group_by_country" domain="[]"
+                                context="{'group_by': 'country_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

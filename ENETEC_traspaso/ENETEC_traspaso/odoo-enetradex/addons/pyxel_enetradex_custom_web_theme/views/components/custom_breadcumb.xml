@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="agrimpex_importation_view_custom_breadcumb" inherit_id="pyxel_import_website.importation_view" name="Importations Details View Custom Breadcumb" priority="20">
+    <!-- Target the <ol class="breadcrumb ..."> block -->
+    <xpath expr="//ol[@class='breadcrumb bg-transparent p-0 my-2']" position="replace">
+      <ol class="breadcrumb bg-transparent p-0 my-2">
+
+        <!-- Home -->
+        <li class="breadcrumb-item o_not_editable">
+          <a href="/my/home">
+            <span>Mi Cuenta</span>
+          </a>
+        </li>
+
+        <!-- Listing -->
+        <li class="breadcrumb-item o_not_editable">
+          <a t-att-href="listing['href']">
+            <span t-out="listing['name']"/>
+          </a>
+        </li>
+
+        <!-- Current record -->
+        <li class="breadcrumb-item active">
+          <span t-field="record.display_name"/>
+        </li>
+      </ol>
+    </xpath>
+  </template>
+  
+  <template id="portal_breadcrumbs_inherit" inherit_id="portal.portal_breadcrumbs" name="Agrimpex Portal Breadcrumbs Inheritance" priority="20">
+    <xpath expr="//ol[@class='o_portal_submenu breadcrumb mb-0 flex-grow-1 px-0']" position="replace">
+      <ol t-if="page_name != 'home'" class="o_portal_submenu breadcrumb mb-0 flex-grow-1 px-0">
+        <li class="breadcrumb-item ms-1">
+          <a href="/my/home" aria-label="Home" title="Home">
+            <span>Mi Cuenta</span>
+          </a>
+        </li>
+        <li t-if="page_name == 'my_details'" t-attf-class="breadcrumb-item #{'active ' if page_name == 'my_details' else ''}">Editar Contacto</li>
+        <li id="portal_breadcrumbs_sale" t-if="page_name == 'quote' or sale_order and sale_order.state in ('sent', 'cancel')" t-attf-class="breadcrumb-item #{'active ' if not sale_order else ''}">
+          <a t-if="sale_order" t-attf-href="/my/quotes?{{ keep_query() }}">Pedidos</a>
+          <t t-else="">Pedidos</t>
+        </li>
+        <li t-elif="page_name == 'order' or sale_order and sale_order.state not in ('sent', 'cancel')" t-attf-class="breadcrumb-item #{'active ' if not sale_order else ''}">
+          <a t-if="sale_order" t-attf-href="/my/orders?{{ keep_query() }}">Solicitudes</a>
+          <t t-else="">Solicitudes</t>
+        </li>
+        <li t-if="sale_order" class="breadcrumb-item active">
+          <span t-field="sale_order.type_name"/>
+          <t t-out="sale_order.name"/>
+        </li>
+      </ol>
+    </xpath>
+  </template>
+</odoo>

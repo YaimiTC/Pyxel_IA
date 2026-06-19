@@ -1,0 +1,196 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* transport_hub
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 17.0+e-20240327\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-08-05 22:14+0000\n"
+"PO-Revision-Date: 2025-08-05 22:14+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: transport_hub
+#: model:ir.model.fields.selection,name:transport_hub.selection__transport_hub__hub_type__airport
+#: model_terms:ir.ui.view,arch_db:transport_hub.transport_hub_search_view
+msgid "Airport"
+msgstr "Aeropuerto"
+
+#. module: transport_hub
+#: model:ir.actions.server,name:transport_hub.ir_cron_airport_sync_weekly_ir_actions_server
+msgid "Airport Sync Weekly"
+msgstr "Sincronización semanal de Aeropuertos"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub_import_wizard__csv_file
+msgid "CSV File"
+msgstr "Archivo .CSV"
+
+#. module: transport_hub
+#: model_terms:ir.ui.view,arch_db:transport_hub.view_transport_hub_import_wizard_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: transport_hub
+#: model_terms:ir.ui.view,arch_db:transport_hub.view_transport_hub_form
+msgid "Code"
+msgstr "Código"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__country_id
+#: model_terms:ir.ui.view,arch_db:transport_hub.transport_hub_search_view
+msgid "Country"
+msgstr "País"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__create_uid
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub_import_wizard__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__create_date
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub_import_wizard__create_date
+msgid "Created on"
+msgstr "Creado el"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__display_name
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub_import_wizard__display_name
+msgid "Display Name"
+msgstr "Mostrar Nombre"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub_import_wizard__filename
+msgid "File Name"
+msgstr "Nombre de archivo"
+
+#. module: transport_hub
+#: model_terms:ir.ui.view,arch_db:transport_hub.transport_hub_search_view
+msgid "Group By"
+msgstr "Agrupar por"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__hub_type
+#: model_terms:ir.ui.view,arch_db:transport_hub.transport_hub_search_view
+msgid "Hub Type"
+msgstr "Tipo"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__iata_code
+msgid "IATA Code"
+msgstr "Código IATA"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__icao_code
+msgid "ICAO Code"
+msgstr "Código ICAO"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__id
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub_import_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: transport_hub
+#: model:ir.ui.menu,name:transport_hub.menu_import_ports_csv
+#: model_terms:ir.ui.view,arch_db:transport_hub.view_transport_hub_import_wizard_form
+msgid "Import Ports"
+msgstr "Importar Puertos"
+
+#. module: transport_hub
+#: model:ir.actions.act_window,name:transport_hub.action_transport_hub_import_csv
+#: model:ir.model,name:transport_hub.model_transport_hub_import_wizard
+#: model_terms:ir.ui.view,arch_db:transport_hub.view_transport_hub_import_wizard_form
+msgid "Import Ports from CSV"
+msgstr "Importar puertos desde un CSV"
+
+#. module: transport_hub
+#. odoo-python
+#: code:addons/transport_hub/models/transport_hub.py:0
+#, python-format
+msgid "Incomplete coordinates: unable to open in Google Maps."
+msgstr "Cooredenadas incompletas: no es posible abrir la ubicación en Google Maps."
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__write_uid
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub_import_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Ultima actualización por"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__write_date
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub_import_wizard__write_date
+msgid "Last Updated on"
+msgstr "Ultima actualización el"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__latitude
+msgid "Latitude"
+msgstr "Latitud"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__code
+msgid "Local Code"
+msgstr "Código (IATA/UNLOCODE)"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__longitude
+msgid "Longitude"
+msgstr "Longitud"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__name
+#: model_terms:ir.ui.view,arch_db:transport_hub.transport_hub_search_view
+msgid "Name"
+msgstr "Nombre"
+
+#. module: transport_hub
+#: model_terms:ir.ui.view,arch_db:transport_hub.view_transport_hub_form
+msgid "Open in Google Maps"
+msgstr "Abrir en Google Maps"
+
+#. module: transport_hub
+#. odoo-python
+#: code:addons/transport_hub/wizards/ports_import_wizard.py:0
+#, python-format
+msgid "Please upload a CSV file."
+msgstr "Por favor suba un fichero .csv"
+
+#. module: transport_hub
+#: model:ir.model.fields.selection,name:transport_hub.selection__transport_hub__hub_type__port
+#: model_terms:ir.ui.view,arch_db:transport_hub.transport_hub_search_view
+msgid "Port"
+msgstr "Puerto"
+
+#. module: transport_hub
+#: model:ir.actions.act_window,name:transport_hub.action_transport_hub
+#: model:ir.model,name:transport_hub.model_transport_hub
+msgid "Ports and Airports"
+msgstr "Puertos y Aeropuertos"
+
+#. module: transport_hub
+#: model_terms:ir.actions.act_window,help:transport_hub.action_transport_hub
+msgid "Start by creating a Transport Hub."
+msgstr "Comience creando un Centro de Transporte"
+
+#. module: transport_hub
+#: model_terms:ir.ui.view,arch_db:transport_hub.view_transport_hub_form
+msgid "Transport Hub"
+msgstr "Centro de Transporte"
+
+#. module: transport_hub
+#: model:ir.ui.menu,name:transport_hub.menu_transport_hub_root
+#: model_terms:ir.ui.view,arch_db:transport_hub.view_transport_hub_tree
+msgid "Transport Hubs"
+msgstr "Centros de Transporte"
+
+#. module: transport_hub
+#: model:ir.model.fields,field_description:transport_hub.field_transport_hub__un_locode
+msgid "UN/LOCODE"
+msgstr "Código UN/LOCODE"

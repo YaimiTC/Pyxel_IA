@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+     <template id="logistic_internal_layout" inherit_id="web.internal_layout" primary="True">
+        <xpath expr="//div[hasclass('header')]" position="replace">
+            <div class="header">
+                 <div class="row">
+                    <div class="col-2">
+                        <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                    </div>
+                      <t t-if="contract_to_third == 'yes'">
+                        <div class="col-5 offset-1 text-center">
+                            <!-- Agrega aquí tu contenido de encabezado personalizad o -->
+                            <span class="text-center; font-size:16px"> ACTA DE CONCILIACION DE VENTAS DEL SERVICIO LOGISTICO </span> <span t-if="contract_to_third == 'yes'"> DE CONTRATOS A TERCEROS</span>
+                            <span> Desde: </span><span t-esc="start_date"/> <span>Hasta: </span><span t-esc="end_date"/>
+                        </div>
+                    </t>
+                    <t t-else="">
+                         <div class="col-3 offset-3 text-center">
+                            <!-- Agrega aquí tu contenido de encabezado personalizad o -->
+                            <span class="text-center; font-size:16px"> ACTA DE CONCILIACION DE VENTAS DEL SERVICIO LOGISTICO</span>
+                            <span> Desde: </span><span t-esc="start_date"/> <span>Hasta: </span><span t-esc="end_date"/>
+                        </div>
+                    </t>
+                    <div class="col-2 offset-2 text-end">
+                        <ul class="list-inline">
+                            <li class="list-inline-item"><span class="page"/></li>
+                            <li class="list-inline-item">/</li>
+                            <li class="list-inline-item"><span class="topage"/></li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </xpath>
+
+    </template>
+        <template id="invoice_logistics_template">
+            <t t-set="data_report_landscape" t-value="True"/>
+             <t t-call="pyxel_fruxelimport.logistic_internal_layout">
+                <t t-call="web.html_container">
+
+                    <div class="page">
+
+                                   <table style="width: 100%; table-layout:fixed; font-size:11px" class="table table-condensed">
+                                                    <thead>
+                                                     <tr>
+                                                        <th class="text-left" scope="col" style="width: 2% !important; flex-wrap:wrap"><strong>No</strong></th>
+                                                        <th class="text-left" scope="col" style="width: 8% !important; flex-wrap:wrap"><strong>Contenedor</strong></th>
+                                                        <th class="text-center" scope="col" style="width: 10%;"><strong>Valor de la mercancía</strong></th>
+                                                        <th class="text-center" scope="col"  style="width: 10%;"><strong>No. Importación</strong></th>
+                                                        <th class="text-center" scope="col"  style="width: 10%;"><strong>Estado del contendor</strong></th>
+                                                        <th class="text-center" scope="col" style="width: 10%;"><strong>Fecha extracción</strong></th>
+                                                        <th class="text-center" scope="col" style="width: 10%;"><strong>Fecha devolución</strong></th>
+                                                        <th class="text-center" scope="col" style="width: 10%;"><strong>Valor Factura (USD)</strong></th>
+                                                         </tr>
+                                                   </thead>
+                                                   <tbody>
+                                                        <t t-set="index" t-value="1"/>
+                                                        <tr t-foreach="docs" t-as="o">
+                                                             <td class="text-left" style="width: 2% !important; flex-wrap:wrap" scope="col"><span t-esc="index"/></td>
+                                                             <td class="text-left" style="width: 8% !important; flex-wrap:wrap" scope="col"><span t-esc="o['container_by_import']"/></td>
+                                                             <td class="text-center" scope="col"><span t-esc="round(o['merchandise_value'],2)"/></td>
+                                                             <td class="text-center" scope="col"><span t-esc="o['no_import']"/></td>
+                                                             <td class="text-center" scope="col"><span t-esc="o['container_state']"/></td>
+                                                             <td class="text-center" scope="col"><span t-esc="o['container_extract']"/></td>
+                                                             <td class="text-center" scope="col"><span t-esc="o['container_return']"/></td>
+                                                             <td class="text-center" scope="col"><span t-esc="round(o['amount_total'],2)"/></td>
+                                                             <t t-set="index" t-value="index + 1"/>
+                                                        </tr>
+                                                        <tr style="font-weight:bold">
+                                                            <td/>
+                                                            <td class="text-left" ><strong>Total</strong></td>
+                                                            <td class="text-center"  t-esc="round(sum(record['merchandise_value'] for record in docs),2)"/>
+                                                            <td/>
+                                                            <td/>
+                                                            <td/>
+                                                            <td/>
+                                                            <td class="text-center"  t-esc="round(sum(record['amount_total'] for record in docs),2)"/>
+
+                                                        </tr>
+                                                  </tbody>
+                                   </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+        <record id="paperformat_consolidator_logistic" model="report.paperformat">
+            <field name="name">Invoice consolidator logistic</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">297</field>
+            <field name="page_width">210</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">30</field>
+            <field name="margin_bottom">23</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">20</field>
+            <field name="dpi">90</field>
+        </record>
+
+
+        <record id="report_invoice_consolidator_logistic" model="ir.actions.report">
+            <field name="name">Invoice consolidator logistic</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pyxel_fruxelimport.invoice_logistics_template</field>
+            <field name="report_file">pyxel_fruxelimport.invoice_logistics_template</field>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="pyxel_fruxelimport.paperformat_consolidator_logistic"/>
+        </record>
+
+
+    </data>
+</odoo>

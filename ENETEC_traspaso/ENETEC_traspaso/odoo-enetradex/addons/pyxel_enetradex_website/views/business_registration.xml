@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="business_registration_agrimpex" inherit_id="pyxel_import_website.business_registration">
+
+            <!-- ENETEC: se ELIMINA el campo DPA del formulario -->
+            <xpath expr="//label[@for='dap']//span[hasclass('s_website_form_mark')]" position="replace">
+            </xpath>
+            <xpath expr="//input[@name='dap']" position="replace">
+                <input id="dap" type="text" class="form-control s_website_form_input" name="dap" pattern="\d{4}" maxlength="4" oninput="this.value = this.value.replace(/\D/g, '')"/>
+            </xpath>
+            <xpath expr="//div[@name='dap']" position="attributes">
+                <attribute name="style">display:none !important;</attribute>
+            </xpath>
+
+            <!-- ENETEC: se ELIMINA el descargar/subir de la "Ficha de cliente".
+                 El formulario recoge sus datos (incluido "Objeto social") y el
+                 backend generará la ficha. Se oculta el campo y el JS lo deshabilita. -->
+            <xpath expr="//div[@name='ficha_cliente']" position="attributes">
+                <attribute name="style">display:none !important;</attribute>
+            </xpath>
+
+            <!-- ENETEC: campo "Objeto social" (lo pide la Ficha de Cliente) -->
+            <xpath expr="//div[contains(@class,'s_website_form_field')][.//input[@name='address']]" position="after">
+                <div data-name="Field" name="objeto_social"
+                     class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required" data-type="char">
+                    <div class="row s_col_no_resize s_col_no_bgcolor">
+                        <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="objeto_social">
+                            <span class="s_website_form_label_content">Objeto social</span>
+                            <span class="s_website_form_mark"> *</span>
+                        </label>
+                        <div class="col-sm">
+                            <textarea class="form-control s_website_form_input" name="objeto_social" id="objeto_social"
+                                      rows="2" required="" placeholder="Describa el objeto social de la entidad"/>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+
+            <!-- ENETEC: Documentación requerida en GRID de tarjetas (fiel al diseño).
+                 Una subida (PDF) por documento. El input real va oculto y se dispara
+                 con el botón "Subir documento". El controlador guarda todo lo que
+                 empieza por 'legal_documentation' como adjunto. -->
+            <xpath expr="//div[@name='legal_documentation']" position="replace">
+                <div name="legal_documentation" data-name="Field"
+                     class="s_website_form_field mb-3 col-12 s_website_form_custom en-docsection" data-type="binary">
+
+                    <style>
+                        .en-docsection { text-align: left; }
+                        .en-docsection .en-sec-head { display:flex; align-items:center; gap:12px; margin: 4px 0 6px; }
+                        .en-docsection .en-sec-num { width:30px; height:30px; flex:0 0 30px; border-radius:50%; background:#0f44ce; color:#fff; font-weight:700; display:flex; align-items:center; justify-content:center; }
+                        .en-docsection .en-sec-title { font-size:1.15rem; font-weight:800; color:#14233f; margin:0; }
+                        .en-docsection .en-sec-sub { color:#5b6b85; font-size:.9rem; margin:0 0 16px 42px; }
+
+                        .en-doc-set { display:none; }
+                        .en-doc-set.en-active { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; }
+                        @media (max-width: 992px) { .en-doc-set.en-active { grid-template-columns:repeat(2,1fr); } }
+                        @media (max-width: 576px) { .en-doc-set.en-active { grid-template-columns:1fr; } }
+
+                        .en-doc-card { background:#fff; border:1px solid #dde5f0; border-radius:12px; padding:16px; display:flex; flex-direction:column; transition:border-color .15s, box-shadow .15s; }
+                        .en-doc-card.is-done { border-color:#16a34a; background:#f3fbf6; }
+                        .en-doc-card .en-doc-ico { color:#0f44ce; font-size:1.5rem; margin-bottom:8px; }
+                        .en-doc-card.is-done .en-doc-ico { color:#16a34a; }
+                        .en-doc-card .en-doc-name { font-weight:700; color:#14233f; font-size:.95rem; line-height:1.3; }
+                        .en-doc-card .en-doc-fmt { color:#8a97ad; font-size:.78rem; margin:2px 0 12px; }
+                        .en-doc-card .en-doc-btn { margin-top:auto; display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; background:#fff; color:#0f44ce; border:1.5px solid #0f44ce; border-radius:9px; padding:8px 12px; font-weight:600; font-size:.85rem; transition:background .15s, color .15s; margin-bottom:0; }
+                        .en-doc-card .en-doc-btn:hover { background:#0f44ce; color:#fff; }
+                        .en-doc-card.is-done .en-doc-btn { border-color:#16a34a; color:#16a34a; }
+                        .en-doc-card.is-done .en-doc-btn:hover { background:#16a34a; color:#fff; }
+                        .en-doc-input { position:absolute; width:1px; height:1px; opacity:0; overflow:hidden; }
+                        .en-doc-fname { font-size:.78rem; color:#16a34a; margin-top:6px; word-break:break-all; }
+
+                        .en-doc-optional { background:#f7f9fc; border:1px dashed #b9c7de; border-radius:12px; padding:16px 18px; margin-top:18px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+                        .en-doc-optional .en-opt-txt h6 { margin:0 0 2px; font-weight:700; color:#14233f; }
+                        .en-doc-optional .en-opt-txt p { margin:0; color:#5b6b85; font-size:.85rem; }
+                        .en-doc-optional .en-doc-btn { display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:#0f44ce; color:#fff; border:0; border-radius:9px; padding:9px 16px; font-weight:600; font-size:.88rem; margin:0; }
+                        .en-doc-optional .en-doc-btn:hover { background:#0d3cc9; }
+                    </style>
+
+                    <div class="en-sec-head">
+                        <span class="en-sec-num">3</span>
+                        <h5 class="en-sec-title">Documentación requerida</h5>
+                    </div>
+                    <p class="en-sec-sub">Adjunte los documentos solicitados según el tipo de entidad seleccionada.</p>
+
+                    <t t-set="fmt" t-value="'Formato PDF · Máx. 6 MB'"/>
+
+                    <!-- ===== PYMES ===== -->
+                    <div class="en-doc-set" name="endoc_Pymes">
+                        <t t-foreach="[('Escritura notarial', 1, True), ('Registro mercantil', 2, True), ('Carnet con el NIT', 3, True), ('Contrato de banco (CUP/MLC/USD) o certifico bancario', 4, True), ('Certifico de no adeudo o comprobante del último pago', 5, True)]" t-as="d">
+                            <div class="en-doc-card">
+                                <i class="fa fa-file-text-o en-doc-ico"/>
+                                <div class="en-doc-name"><t t-esc="d[0]"/> <span t-if="d[2]" class="text-danger">*</span></div>
+                                <div class="en-doc-fmt"><t t-esc="fmt"/></div>
+                                <label class="en-doc-btn" t-att-for="'legal_documentation_pyme_%s' % d[1]"><i class="fa fa-upload"/> Subir documento</label>
+                                <input type="file" class="en-doc-input" t-att-id="'legal_documentation_pyme_%s' % d[1]" t-att-name="'legal_documentation_pyme_%s' % d[1]" accept=".pdf" t-att-data-doc-req="'1' if d[2] else None"/>
+                                <span class="en-doc-fname"/>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- ===== SUCURSAL EXTRANJERA ===== -->
+                    <div class="en-doc-set" name="endoc_Sucursal Extranjera">
+                        <t t-foreach="[('Escrituras de constitución y modificaciones', 1, True), ('Inscripción en el registro mercantil', 2, True), ('Licencia de la cámara comercial', 3, True), ('Carnet de ACORE o PALCO', 4, False), ('Planilla de inscripción/actualización en el registro de contribuyente', 5, True), ('Contrato de banco (CUP/MLC/USD) o certifico bancario', 6, True), ('Resolución del MINCEX', 7, True)]" t-as="d">
+                            <div class="en-doc-card">
+                                <i class="fa fa-file-text-o en-doc-ico"/>
+                                <div class="en-doc-name"><t t-esc="d[0]"/> <span t-if="d[2]" class="text-danger">*</span></div>
+                                <div class="en-doc-fmt"><t t-esc="fmt"/></div>
+                                <label class="en-doc-btn" t-att-for="'legal_documentation_suc_%s' % d[1]"><i class="fa fa-upload"/> Subir documento</label>
+                                <input type="file" class="en-doc-input" t-att-id="'legal_documentation_suc_%s' % d[1]" t-att-name="'legal_documentation_suc_%s' % d[1]" accept=".pdf" t-att-data-doc-req="'1' if d[2] else None"/>
+                                <span class="en-doc-fname"/>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- ===== ESTATAL ===== -->
+                    <div class="en-doc-set" name="endoc_Estatal">
+                        <t t-foreach="[('Resoluciones constitutivas', 1, True), ('Código REUP', 2, True), ('NIT', 3, True), ('Contrato de banco (CUP/MLC/USD) o certifico bancario', 4, True)]" t-as="d">
+                            <div class="en-doc-card">
+                                <i class="fa fa-file-text-o en-doc-ico"/>
+                                <div class="en-doc-name"><t t-esc="d[0]"/> <span t-if="d[2]" class="text-danger">*</span></div>
+                                <div class="en-doc-fmt"><t t-esc="fmt"/></div>
+                                <label class="en-doc-btn" t-att-for="'legal_documentation_est_%s' % d[1]"><i class="fa fa-upload"/> Subir documento</label>
+                                <input type="file" class="en-doc-input" t-att-id="'legal_documentation_est_%s' % d[1]" t-att-name="'legal_documentation_est_%s' % d[1]" accept=".pdf" t-att-data-doc-req="'1' if d[2] else None"/>
+                                <span class="en-doc-fname"/>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- ===== CNA ===== -->
+                    <div class="en-doc-set" name="endoc_CNA">
+                        <t t-foreach="[('ONAT', 1, True), ('Código REANE', 2, True), ('Escritura notarial', 3, True), ('Registro mercantil', 4, True), ('Carnet con el NIT', 5, True), ('Contrato de banco (CUP/MLC/USD) o certifico bancario', 6, True), ('Certifico de no adeudo o comprobante del último pago', 7, True)]" t-as="d">
+                            <div class="en-doc-card">
+                                <i class="fa fa-file-text-o en-doc-ico"/>
+                                <div class="en-doc-name"><t t-esc="d[0]"/> <span t-if="d[2]" class="text-danger">*</span></div>
+                                <div class="en-doc-fmt"><t t-esc="fmt"/></div>
+                                <label class="en-doc-btn" t-att-for="'legal_documentation_cna_%s' % d[1]"><i class="fa fa-upload"/> Subir documento</label>
+                                <input type="file" class="en-doc-input" t-att-id="'legal_documentation_cna_%s' % d[1]" t-att-name="'legal_documentation_cna_%s' % d[1]" accept=".pdf" t-att-data-doc-req="'1' if d[2] else None"/>
+                                <span class="en-doc-fname"/>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- ===== PROVEEDOR ===== -->
+                    <div class="en-doc-set" name="endoc_proveedor">
+                        <t t-foreach="[('Escritura de constitución y modificaciones', 1, True), ('Inscripción en el registro mercantil', 2, True), ('Poder acreditativo de legitimación de representantes', 3, True), ('Certifico de cuenta bancaria con la que operará el contrato', 4, True), ('Código MINCEX', 5, True)]" t-as="d">
+                            <div class="en-doc-card">
+                                <i class="fa fa-file-text-o en-doc-ico"/>
+                                <div class="en-doc-name"><t t-esc="d[0]"/> <span t-if="d[2]" class="text-danger">*</span></div>
+                                <div class="en-doc-fmt"><t t-esc="fmt"/></div>
+                                <label class="en-doc-btn" t-att-for="'legal_documentation_prov_%s' % d[1]"><i class="fa fa-upload"/> Subir documento</label>
+                                <input type="file" class="en-doc-input" t-att-id="'legal_documentation_prov_%s' % d[1]" t-att-name="'legal_documentation_prov_%s' % d[1]" accept=".pdf" t-att-data-doc-req="'1' if d[2] else None"/>
+                                <span class="en-doc-fname"/>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- ===== DOCUMENTACIÓN ADICIONAL (OPCIONAL) ===== -->
+                    <div class="en-doc-optional">
+                        <div class="en-opt-txt">
+                            <h6>Documentación adicional (Opcional)</h6>
+                            <p>Adjunte cualquier documento adicional que considere relevante.</p>
+                        </div>
+                        <label class="en-doc-btn" for="legal_documentation_optional"><i class="fa fa-upload"/> Subir archivo</label>
+                        <input type="file" class="en-doc-input" id="legal_documentation_optional" name="legal_documentation_optional" accept=".pdf" multiple="true"/>
+                    </div>
+
+                    <span id="endoc_error" style="color:red; display:none;">Debe adjuntar todos los documentos obligatorios (*) en formato PDF.</span>
+                </div>
+            </xpath>
+
+        </template>
+    </data>
+</odoo>

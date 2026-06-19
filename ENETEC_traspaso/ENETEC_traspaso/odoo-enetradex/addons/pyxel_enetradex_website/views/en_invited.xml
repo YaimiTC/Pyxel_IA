@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="en_invited_invalid" name="Invitación no válida">
+        <t t-call="website.layout">
+            <div class="container" style="max-width:620px;margin:2rem auto">
+                <div style="background:#fdeef0;color:#a32d2d;border-radius:12px;padding:1.25rem">
+                    Esta invitación no es válida o ya expiró. Solicita una nueva al cliente o proveedor que te invitó.
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="en_invited_page" name="Acreditación del invitado">
+        <t t-call="website.layout">
+            <div class="container" style="max-width:680px;margin:1.5rem auto 3rem">
+                <div style="background:#f6f8fc;border-radius:12px;padding:1.5rem">
+                    <p style="font-size:12px;color:#5b6b85;margin:0 0 10px">
+                        Enlace de invitación · Te invitó:
+                        <b style="color:#16233f"><t t-esc="inv.inviter_partner_id.name or 'ENETEC'"/></b>
+                    </p>
+                    <h3 style="font-size:18px;font-weight:500;color:#16233f;margin:0 0 4px">
+                        Acredítate como <t t-esc="'proveedor' if inv.expected_role=='supplier' else 'cliente'"/>
+                    </h3>
+                    <div style="background:#eef3fc;color:#0f44ce;border-radius:8px;padding:10px 12px;font-size:12.5px;margin:12px 0 16px">
+                        Este enlace es solo para tu acreditación. Completa tus datos y, al enviar, notificamos a quien te
+                        invitó y tu solicitud entra al CRM para que el abogado la revise. No necesitas hacer nada más.
+                    </div>
+                    <form t-attf-action="/en/accredit/#{inv.token}/submit" method="post">
+                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                        <div style="margin-bottom:12px">
+                            <label style="display:block;font-size:12.5px;color:#5b6b85;margin-bottom:4px">Razón social</label>
+                            <input name="company_name" required="required" placeholder="Nombre de la empresa"
+                                   style="width:100%;padding:8px 10px;border:1px solid #c9d4e6;border-radius:8px"/>
+                        </div>
+                        <div t-if="inv.expected_role == 'client'" style="margin-bottom:12px">
+                            <label style="display:block;font-size:12.5px;color:#5b6b85;margin-bottom:4px">Tipo de empresa</label>
+                            <select name="management_type_id" style="width:100%;padding:8px 10px;border:1px solid #c9d4e6;border-radius:8px">
+                                <t t-foreach="mtypes" t-as="mt">
+                                    <option t-att-value="mt.id"><t t-esc="mt.name"/></option>
+                                </t>
+                            </select>
+                        </div>
+                        <p style="font-size:12.5px;color:#5b6b85">Adjunta tus documentos por correo o en el siguiente paso indicado por ENETEC.</p>
+                        <button type="submit" style="background:#0f44ce;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer">
+                            Enviar mi acreditación
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="en_wizard_done" name="Solicitud enviada">
+        <t t-call="website.layout">
+            <div class="container" style="max-width:640px;margin:2.5rem auto 4rem">
+                <div style="background:#effaf3;border-radius:12px;padding:1.6rem;text-align:center">
+                    <div style="font-size:40px;line-height:1;color:#16a34a">✓</div>
+                    <t t-if="wz_op">
+                        <h3 style="font-weight:500;margin:8px 0 4px;color:#16a34a">Solicitud de importación enviada</h3>
+                        <p style="color:#3a6b4f;margin:0;font-size:14px">Tu solicitud entró como una nueva operación. Síguela en tus operaciones; el comercial la pondrá en marcha.</p>
+                    </t>
+                    <t t-else="">
+                        <h3 style="font-weight:500;margin:8px 0 4px;color:#16a34a">Solicitud enviada para acreditación</h3>
+                        <p style="color:#3a6b4f;margin:0;font-size:14px">El abogado revisará tus documentos. Tu operación queda pendiente hasta que ambas partes estén acreditadas.</p>
+                    </t>
+                </div>
+                <p style="font-size:13px;font-weight:500;color:#16233f;margin:18px 0 6px"><t t-esc="'Proceso de importación:' if wz_op else 'Proceso de acreditación:'"/></p>
+                <div style="display:flex;gap:6px" t-if="wz_op">
+                    <div style="flex:1;text-align:center;font-size:11px;padding:9px 4px;border-radius:8px;background:#eef3fc;color:#0f44ce">Solicitud enviada</div>
+                    <div style="flex:1;text-align:center;font-size:11px;padding:9px 4px;border-radius:8px;background:#fff;border:1px solid #e3e9f2;color:#5b6b85">Solicitudes para atender</div>
+                    <div style="flex:1;text-align:center;font-size:11px;padding:9px 4px;border-radius:8px;background:#fff;border:1px solid #e3e9f2;color:#5b6b85">En operación</div>
+                </div>
+                <div style="display:flex;gap:6px" t-else="">
+                    <div style="flex:1;text-align:center;font-size:11px;padding:9px 4px;border-radius:8px;background:#fff;border:1px solid #e3e9f2;color:#5b6b85">Borrador</div>
+                    <div style="flex:1;text-align:center;font-size:11px;padding:9px 4px;border-radius:8px;background:#eef3fc;color:#0f44ce">En revisión · abogado</div>
+                    <div style="flex:1;text-align:center;font-size:11px;padding:9px 4px;border-radius:8px;background:#fff;border:1px solid #e3e9f2;color:#5b6b85">Contratos aprobados</div>
+                    <div style="flex:1;text-align:center;font-size:11px;padding:9px 4px;border-radius:8px;background:#fff;border:1px solid #e3e9f2;color:#5b6b85">Solicitudes para atender</div>
+                </div>
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:22px">
+                    <a t-att-href="'/model/imports' if wz_op else '/my'" style="background:#0f44ce;color:#fff;border-radius:8px;padding:10px 20px;text-decoration:none;font-size:13px"><t t-esc="'Ver mis operaciones' if wz_op else 'Ir a mi cuenta'"/></a>
+                    <a href="/" style="background:#fff;color:#16233f;border:1px solid #c9d4e6;border-radius:8px;padding:10px 20px;text-decoration:none;font-size:13px">Volver al inicio</a>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="en_invited_done" name="Acreditación enviada">
+        <t t-call="website.layout">
+            <div class="container" style="max-width:620px;margin:2rem auto">
+                <div style="background:#effaf3;color:#16a34a;border-radius:12px;padding:1.25rem">
+                    <p style="font-weight:500;margin:0 0 4px">Acreditación enviada</p>
+                    Notificamos a <b><t t-esc="inviter.name or 'quien te invitó'"/></b> que ya enviaste tu información.
+                    El abogado de ENETEC revisará tus documentos para acreditarte. No tienes que hacer nada más.
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

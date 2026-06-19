@@ -1,0 +1,45 @@
+<templates xml:space="preserve">
+    <t t-name="childcare_management.TableBodyMobileTemplate">
+        <div class="d-flex flex-column gap-3 p-3">
+            <t t-if="props.rows and props.rows.length > 0">
+                <t t-foreach="props.rows" t-as="row" t-key="row.id">
+                    <div class="d-flex flex-column border border-light rounded p-3 bg-white shadow-sm position-relative">
+                        <t t-foreach="props.columns" t-as="col" t-key="col.name">
+                            <t t-if='col.isAction'>
+                                <span class="position-absolute" style="top: 5px; right: 5px;">
+                                    <t t-if="col.cell">
+                                        <t t-raw="col.cell(row[col.name], row)"/>
+                                    </t>
+                                    <t t-else="">
+                                        <t t-esc="row[col.name]"/>
+                                    </t>
+                                </span>
+                            </t>
+                            <div class="d-flex align-items-center mb-2" style="font-size: 12px; line-height: 1.5;">
+                                 <t t-if='!col.isAction'>
+                                    <span class="font-weight-bold mr-2 text-muted" t-esc="col.header + ':'"/>
+                                    <span class="text-muted">
+                                        <t t-if="col.cell">
+                                            <t t-raw="col.cell(row[col.name], row)"/>
+                                        </t>
+                                        <t t-else="">
+                                            <t t-esc="row[col.name]"/>
+                                        </t>
+                                    </span>
+                                </t>
+                            </div>
+                        </t>
+                    </div>
+                </t>
+            </t>
+            
+            <t t-else="">
+                <div class="d-flex justify-content-center align-items-center py-4">
+                    <span class="text-muted font-weight-bold">
+                        No se encontraron resultados
+                    </span>
+                </div>
+            </t>
+        </div>
+    </t>
+</templates>

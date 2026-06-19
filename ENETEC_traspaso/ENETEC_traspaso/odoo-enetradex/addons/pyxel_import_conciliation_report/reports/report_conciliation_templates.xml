@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="r_sales">
+    <t t-call="web.basic_layout">
+      <main class="o_report_layout">
+        <div class="page">
+
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+              <t t-esc="printed_at"/>
+            </div>
+
+            <div style="text-align:center;">
+              <div style="font-weight:700; font-size:14px;">ACTA DE CONCILIACION DE VENTAS</div>
+              <div>Desde: <t t-esc="date_from"/> Hasta: <t t-esc="date_to"/></div>
+            </div>
+
+            <div style="text-align:right;">
+              <span t-esc="page_number"/> / <span t-esc="page_count"/>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;"/>
+
+          <table class="table table-sm" style="width:100%; border-collapse:collapse; font-size:10.5px;">
+            <thead>
+              <tr style="border-bottom:2px solid #000;">
+                <th style="text-align:center;">No</th>
+                <th style="text-align:center;">Contenedor</th>
+                <th style="text-align:center;">Cliente</th>
+                <th style="text-align:center;">Valor mercancia (USD)</th>
+                <th style="text-align:center;">No. Importación</th>
+                <th style="text-align:center;">Fecha</th>
+
+                <th style="text-align:center;">No. Factura (CUP)</th>
+                <th style="text-align:center;">Total (CUP)</th>
+                <th style="text-align:center;">Gastos Especiales (CUP)</th>
+
+                <th style="text-align:center;">No. Factura (FX)</th>
+                <th style="text-align:center;">Total FX (USD)</th>
+
+                <th style="text-align:center;">Valor Frutas (USD)</th>
+                <th style="text-align:center;">Valor Pyxel (USD)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <t t-set="i" t-value="0"/>
+              <t t-foreach="docs" t-as="l">
+                <t t-set="i" t-value="i + 1"/>
+                <tr style="border-bottom:1px solid #ddd;">
+                  <td style="text-align:center;"><t t-esc="i"/></td>
+                  <td style="text-align:center;"><t t-esc="l.get('container')"/></td>
+                  <td style="text-align:center;"><t t-esc="l.get('client')"/></td>
+
+                  <td style="text-align:center;">
+                    <t t-esc="'{:,.2f}'.format(l.get('merchandise_value_usd') or 0.0)"/>
+                  </td>
+                  <td style="text-align:center;"><t t-esc="l.get('no_import')"/></td>
+                  <td style="text-align:center;"><t t-esc="l.get('account_date')"/></td>
+
+                  <td style="text-align:center;"><t t-esc="l.get('no_factura_cup')"/></td>
+                  <td style="text-align:center;">
+                    <t t-esc="'{:,.2f}'.format(l.get('total_cup') or 0.0)"/>
+                  </td>
+                  <td style="text-align:center;">
+                    <t t-esc="'{:,.2f}'.format(l.get('special_cost_cup') or 0.0)"/>
+                  </td>
+
+                  <td style="text-align:center;"><t t-esc="l.get('no_factura_fx')"/></td>
+                  <td style="text-align:center;">
+                    <t t-esc="'{:,.2f}'.format(l.get('total_fx_usd') or 0.0)"/>
+                  </td>
+
+                  <td style="text-align:center;">
+                    <t t-esc="'{:,.2f}'.format(l.get('total_fruta') or 0.0)"/>
+                  </td>
+                  <td style="text-align:center;">
+                    <t t-esc="'{:,.2f}'.format(l.get('total_pyxel') or 0.0)"/>
+                  </td>
+                </tr>
+              </t>
+
+              <tr style="border-top:2px solid #000; font-weight:700;">
+                <td/>
+                <td/>
+                <td style="text-align:center;">Total</td>
+
+                <td style="text-align:center;">
+                  <t t-esc="'{:,.2f}'.format(totals.get('merchandise_value_usd') or 0.0)"/>
+                </td>
+                <td/>
+                <td/>
+
+                <td/>
+                <td style="text-align:center;">
+                  <t t-esc="'{:,.2f}'.format(totals.get('total_cup') or 0.0)"/>
+                </td>
+                <td style="text-align:center;">
+                  <t t-esc="'{:,.2f}'.format(totals.get('special_cost_cup') or 0.0)"/>
+                </td>
+
+                <td/>
+                <td style="text-align:center;">
+                  <t t-esc="'{:,.2f}'.format(totals.get('total_fx_usd') or 0.0)"/>
+                </td>
+
+                <td style="text-align:center;">
+                  <t t-esc="'{:,.2f}'.format(totals.get('total_fruta') or 0.0)"/>
+                </td>
+                <td style="text-align:center;">
+                  <t t-esc="'{:,.2f}'.format(totals.get('total_pyxel') or 0.0)"/>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+        </div>
+      </main>
+    </t>
+  </template>
+</odoo>

@@ -1,0 +1,45 @@
+# ═══════════════════════════════════════════════════════════
+#  .gitignore — Proyecto ENETEC / ODIN 2.0 (Odoo 17 + Docker)
+#  Lo listado aquí NO se sube a git.
+# ═══════════════════════════════════════════════════════════
+
+# ── Datos vivos (NUNCA a git; la BD se respalda con pg_dump) ──
+/postgres-data/
+/odoo-data/
+
+# ── Backups, dumps y snapshots (se gestionan aparte) ──
+/backup/
+*.dump
+*.sql
+*.zip
+*.tar
+*.tar.gz
+*.gz
+
+# ── Imágenes/capturas de trabajo ──
+/images/
+
+# ── Documentos del cliente (sensibles) ──
+#   Quita la línea siguiente si quieres sincronizar estos docs
+#   entre tus PCs a través del repo privado.
+/ENETEC SA/
+
+# ── Python / Odoo ──
+__pycache__/
+*.py[cod]
+*.pyo
+*.log
+
+# ── Sistema operativo / editores ──
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+
+# Carpeta temporal de migración (no versionar)
+/tmp_migracion/
+/tmp_e2e/

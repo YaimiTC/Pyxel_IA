@@ -1,0 +1,229 @@
+2026-06-18 13:40:15,734 203 INFO ? odoo: Odoo version 17.0-20260609 
+2026-06-18 13:40:15,736 203 INFO ? odoo: Using configuration file at /etc/odoo/odoo.conf 
+2026-06-18 13:40:15,736 203 INFO ? odoo: addons paths: ['/usr/lib/python3/dist-packages/odoo/addons', '/var/lib/odoo/addons/17.0', '/mnt/extra-addons'] 
+2026-06-18 13:40:15,737 203 INFO ? odoo: database: odoo@db:5432 
+2026-06-18 13:40:16,239 203 INFO ? odoo.addons.base.models.ir_actions_report: Will use the Wkhtmltopdf binary at /usr/local/bin/wkhtmltopdf 
+2026-06-18 13:40:17,499 203 INFO enetradex_dev odoo.modules.loading: loading 1 modules... 
+2026-06-18 13:40:17,506 203 INFO enetradex_dev odoo.modules.loading: 1 modules loaded in 0.01s, 0 queries (+0 extra) 
+2026-06-18 13:40:17,590 203 INFO enetradex_dev odoo.modules.loading: updating modules list 
+2026-06-18 13:40:17,668 203 INFO enetradex_dev odoo.addons.base.models.ir_module: ALLOW access to module.update_list on [] to user __system__ #1 via n/a 
+2026-06-18 13:40:20,813 203 WARNING enetradex_dev odoo.modules.module: Missing `license` key in manifest for 'pyxel_custom_invoice_format', defaulting to LGPL-3 
+2026-06-18 13:40:20,918 203 WARNING enetradex_dev odoo.modules.module: Missing `license` key in manifest for 'pyxel_enetradex_conciliation_report', defaulting to LGPL-3 
+2026-06-18 13:40:21,426 203 WARNING enetradex_dev odoo.modules.module: Missing `license` key in manifest for 'pyxel_sale_available_budget', defaulting to LGPL-3 
+2026-06-18 13:40:21,489 203 WARNING enetradex_dev odoo.modules.module: Missing `license` key in manifest for 'pyxel_sale_process_sequence', defaulting to LGPL-3 
+2026-06-18 13:40:23,482 203 INFO enetradex_dev odoo.addons.base.models.ir_module: ALLOW access to module.button_upgrade on ['ENETRADEX backend'] to user __system__ #1 via n/a 
+2026-06-18 13:40:23,482 203 INFO enetradex_dev odoo.addons.base.models.ir_module: ALLOW access to module.update_list on ['ENETRADEX backend'] to user __system__ #1 via n/a 
+2026-06-18 13:40:25,204 203 INFO enetradex_dev odoo.addons.base.models.ir_module: ALLOW access to module.button_install on [] to user __system__ #1 via n/a 
+2026-06-18 13:40:26,085 203 INFO enetradex_dev odoo.modules.loading: loading 121 modules... 
+2026-06-18 13:40:29,474 203 WARNING enetradex_dev odoo.api.create: The model odoo.addons.pyxel_sale_available_budget.models.sale_order is not overriding the create method in batch 
+2026-06-18 13:40:29,985 203 WARNING enetradex_dev odoo.api.create: The model odoo.addons.pyxel_import_backend.models.purchase_provider_evaluation is not overriding the create method in batch 
+2026-06-18 13:40:30,114 203 WARNING enetradex_dev odoo.api.create: The model odoo.addons.pyxel_import_backend.models.importation_process is not overriding the create method in batch 
+2026-06-18 13:40:30,169 203 WARNING enetradex_dev odoo.api.create: The model odoo.addons.pyxel_import_backend.models.sale_order is not overriding the create method in batch 
+2026-06-18 13:40:30,219 203 WARNING enetradex_dev odoo.api.create: The model odoo.addons.pyxel_import_backend.models.importation_load is not overriding the create method in batch 
+2026-06-18 13:40:30,448 203 WARNING enetradex_dev odoo.api.create: The model odoo.addons.pyxel_import_backend.models.sale_order_process is not overriding the create method in batch 
+2026-06-18 13:40:31,812 203 WARNING enetradex_dev odoo.models: The model wizard.evaluate.providers has no _description 
+2026-06-18 13:40:31,812 203 WARNING enetradex_dev odoo.models: The model wizard.evaluate.providers.line has no _description 
+2026-06-18 13:40:31,898 203 INFO enetradex_dev odoo.modules.loading: Loading module pyxel_enetradex_backend (112/121) 
+2026-06-18 13:40:32,086 203 WARNING enetradex_dev odoo.fields: Field sale.order.process.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it 
+2026-06-18 13:40:33,222 203 WARNING enetradex_dev odoo.fields: Field sale.order.process.state: unknown parameter 'tracking', if this is an actual parameter you may want to override the method _valid_field_parameter on the relevant model in order to allow it 
+2026-06-18 13:40:33,299 203 INFO enetradex_dev odoo.modules.registry: module pyxel_enetradex_backend: creating or updating database tables 
+2026-06-18 13:40:35,120 203 INFO enetradex_dev odoo.models: Prepare computation of importation.process.en_ready_for_customs 
+2026-06-18 13:40:35,216 203 WARNING enetradex_dev odoo.addons.base.models.ir_model: Two fields (legal_activity_ids, activity_ids) of res.partner() have the same label: Activities. [Modules: pyxel_import_backend and mail] 
+2026-06-18 13:40:35,217 203 WARNING enetradex_dev odoo.addons.base.models.ir_model: Two fields (containers_salespersons_emails, salespersons_emails) of res.config.settings() have the same label: Salespersons emails. [Modules: pyxel_import_email_excel and pyxel_import_email_excel] 
+2026-06-18 13:40:35,218 203 WARNING enetradex_dev odoo.addons.base.models.ir_model: Two fields (has_packing_list, packing_list) of importation.process() have the same label: Packing List. [Modules: pyxel_import_backend and pyxel_import_backend] 
+2026-06-18 13:40:35,219 203 WARNING enetradex_dev odoo.addons.base.models.ir_model: Two fields (has_quality_certificate, quality_certificate) of importation.process() have the same label: Quality Certificate. [Modules: pyxel_import_backend and pyxel_import_backend] 
+2026-06-18 13:40:35,219 203 WARNING enetradex_dev odoo.addons.base.models.ir_model: Two fields (has_export_certificate, export_certificate) of importation.process() have the same label: Export Certificate. [Modules: pyxel_import_backend and pyxel_import_backend] 
+2026-06-18 13:40:35,219 203 WARNING enetradex_dev odoo.addons.base.models.ir_model: Two fields (legal_activity_ids, activity_ids) of res.users() have the same label: Activities. [Modules: None and None] 
+2026-06-18 13:40:35,902 203 WARNING enetradex_dev py.warnings: /usr/lib/python3/dist-packages/odoo/modules/registry.py:357: UserWarning: res.partner: inconsistent 'compute_sudo' for computed fields is_accredited, is_accredited2. Either set 'compute_sudo' to the same value on all those fields, or use distinct compute methods for sudoed and non-sudoed fields.
+  File "/usr/bin/odoo", line 8, in <module>
+    odoo.cli.main()
+  File "/usr/lib/python3/dist-packages/odoo/cli/command.py", line 76, in main
+    o.run(args)
+  File "/usr/lib/python3/dist-packages/odoo/cli/server.py", line 186, in run
+    main(args)
+  File "/usr/lib/python3/dist-packages/odoo/cli/server.py", line 179, in main
+    rc = odoo.service.server.start(preload=preload, stop=stop)
+  File "/usr/lib/python3/dist-packages/odoo/service/server.py", line 1474, in start
+    rc = server.run(preload, stop)
+  File "/usr/lib/python3/dist-packages/odoo/service/server.py", line 640, in run
+    rc = preload_registries(preload)
+  File "/usr/lib/python3/dist-packages/odoo/service/server.py", line 1374, in preload_registries
+    registry = Registry.new(dbname, update_module=update_module)
+  File "<decorator-gen-16>", line 2, in new
+  File "/usr/lib/python3/dist-packages/odoo/tools/func.py", line 87, in locked
+    return func(inst, *args, **kwargs)
+  File "/usr/lib/python3/dist-packages/odoo/modules/registry.py", line 110, in new
+    odoo.modules.load_modules(registry, force_demo, status, update_module)
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 481, in load_modules
+    processed_modules += load_marked_modules(env, graph,
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 366, in load_marked_modules
+    loaded, processed = load_module_graph(
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 207, in load_module_graph
+    registry.init_models(env.cr, model_names, {'module': package.name}, new_install)
+  File "/usr/lib/python3/dist-packages/odoo/modules/registry.py", line 582, in init_models
+    func()
+  File "/usr/lib/python3/dist-packages/odoo/addons/base/models/ir_model.py", line 1958, in _reflect_relation
+    self.env.invalidate_all()
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 727, in invalidate_all
+    self.flush_all()
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 737, in flush_all
+    self._recompute_all()
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 733, in _recompute_all
+    self[field.model_name]._recompute_field(field)
+  File "/usr/lib/python3/dist-packages/odoo/models.py", line 6977, in _recompute_field
+    field.recompute(records)
+  File "/usr/lib/python3/dist-packages/odoo/fields.py", line 1379, in recompute
+    apply_except_missing(self.compute_value, recs)
+  File "/usr/lib/python3/dist-packages/odoo/fields.py", line 1352, in apply_except_missing
+    func(records)
+  File "/usr/lib/python3/dist-packages/odoo/fields.py", line 1388, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3/dist-packages/odoo/tools/func.py", line 28, in __get__
+    value = self.fget(obj)
+  File "/usr/lib/python3/dist-packages/odoo/modules/registry.py", line 357, in field_computed
+    warnings.warn(
+ 
+2026-06-18 13:40:35,903 203 WARNING enetradex_dev py.warnings: /usr/lib/python3/dist-packages/odoo/modules/registry.py:372: UserWarning: res.partner: inconsistent 'store' for computed fields, accessing is_accredited2 may recompute and update is_accredited. Use distinct compute methods for stored and non-stored fields.
+  File "/usr/bin/odoo", line 8, in <module>
+    odoo.cli.main()
+  File "/usr/lib/python3/dist-packages/odoo/cli/command.py", line 76, in main
+    o.run(args)
+  File "/usr/lib/python3/dist-packages/odoo/cli/server.py", line 186, in run
+    main(args)
+  File "/usr/lib/python3/dist-packages/odoo/cli/server.py", line 179, in main
+    rc = odoo.service.server.start(preload=preload, stop=stop)
+  File "/usr/lib/python3/dist-packages/odoo/service/server.py", line 1474, in start
+    rc = server.run(preload, stop)
+  File "/usr/lib/python3/dist-packages/odoo/service/server.py", line 640, in run
+    rc = preload_registries(preload)
+  File "/usr/lib/python3/dist-packages/odoo/service/server.py", line 1374, in preload_registries
+    registry = Registry.new(dbname, update_module=update_module)
+  File "<decorator-gen-16>", line 2, in new
+  File "/usr/lib/python3/dist-packages/odoo/tools/func.py", line 87, in locked
+    return func(inst, *args, **kwargs)
+  File "/usr/lib/python3/dist-packages/odoo/modules/registry.py", line 110, in new
+    odoo.modules.load_modules(registry, force_demo, status, update_module)
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 481, in load_modules
+    processed_modules += load_marked_modules(env, graph,
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 366, in load_marked_modules
+    loaded, processed = load_module_graph(
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 207, in load_module_graph
+    registry.init_models(env.cr, model_names, {'module': package.name}, new_install)
+  File "/usr/lib/python3/dist-packages/odoo/modules/registry.py", line 582, in init_models
+    func()
+  File "/usr/lib/python3/dist-packages/odoo/addons/base/models/ir_model.py", line 1958, in _reflect_relation
+    self.env.invalidate_all()
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 727, in invalidate_all
+    self.flush_all()
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 737, in flush_all
+    self._recompute_all()
+  File "/usr/lib/python3/dist-packages/odoo/api.py", line 733, in _recompute_all
+    self[field.model_name]._recompute_field(field)
+  File "/usr/lib/python3/dist-packages/odoo/models.py", line 6977, in _recompute_field
+    field.recompute(records)
+  File "/usr/lib/python3/dist-packages/odoo/fields.py", line 1379, in recompute
+    apply_except_missing(self.compute_value, recs)
+  File "/usr/lib/python3/dist-packages/odoo/fields.py", line 1352, in apply_except_missing
+    func(records)
+  File "/usr/lib/python3/dist-packages/odoo/fields.py", line 1388, in compute_value
+    fields = records.pool.field_computed[self]
+  File "/usr/lib/python3/dist-packages/odoo/tools/func.py", line 28, in __get__
+    value = self.fget(obj)
+  File "/usr/lib/python3/dist-packages/odoo/modules/registry.py", line 372, in field_computed
+    warnings.warn(
+ 
+2026-06-18 13:40:39,982 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/security/ir.model.access.csv 
+2026-06-18 13:40:40,813 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/security/portal_rules.xml 
+2026-06-18 13:40:40,998 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/data/res_partner_management_type_data.xml 
+2026-06-18 13:40:41,027 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/data/en_currency_data.xml 
+2026-06-18 13:40:41,069 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/data/en_importation_stage_data.xml 
+2026-06-18 13:40:41,119 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/data/en_payment_method_data.xml 
+2026-06-18 13:40:41,159 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/data/en_import_products_data.xml 
+2026-06-18 13:40:41,249 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/views/crm_lead_views.xml 
+2026-06-18 13:40:41,739 203 INFO enetradex_dev odoo.modules.loading: loading pyxel_enetradex_backend/views/en_backend_views.xml 
+2026-06-18 13:40:42,534 203 WARNING enetradex_dev odoo.addons.base.models.ir_ui_view: Using active_id, active_ids and active_model in expressions is deprecated, found active_id 
+2026-06-18 13:40:42,599 203 WARNING enetradex_dev odoo.modules.loading: Transient module states were reset 
+2026-06-18 13:40:42,599 203 ERROR enetradex_dev odoo.modules.registry: Failed to load registry 
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/odoo/modules/registry.py", line 110, in new
+    odoo.modules.load_modules(registry, force_demo, status, update_module)
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 481, in load_modules
+    processed_modules += load_marked_modules(env, graph,
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 366, in load_marked_modules
+    loaded, processed = load_module_graph(
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 229, in load_module_graph
+    load_data(env, idref, mode, kind='data', package=package)
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 73, in load_data
+    tools.convert_file(env, package.name, filename, idref, mode, noupdate, kind)
+  File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 682, in convert_file
+    convert_xml_import(env, module, fp, idref, mode, noupdate)
+  File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 748, in convert_xml_import
+    obj.parse(doc.getroot())
+  File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 668, in parse
+    self._tag_root(de)
+  File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 621, in _tag_root
+    raise ParseError(msg) from None  # Restart with "--log-handler odoo.tools.convert:DEBUG" for complete traceback
+odoo.tools.convert.ParseError: while parsing /mnt/extra-addons/pyxel_enetradex_backend/views/en_backend_views.xml:315
+Error while validating view near:
+
+<form __validate__="1">
+                <header>
+                    <field name="final_sale_order_id" invisible="1"/>
+
+Field 'attachment_id' used in modifier 'invisible' (not attachment_id) must be present in view but is missing.
+
+View error context:
+{'file': '/mnt/extra-addons/pyxel_enetradex_backend/views/en_backend_views.xml',
+ 'line': 1,
+ 'name': 'importation.process.form.enetec.accred',
+ 'view': ir.ui.view(2791,),
+ 'view.model': 'importation.process',
+ 'view.parent': ir.ui.view(2446,),
+ 'xmlid': 'en_importation_process_form'}
+
+2026-06-18 13:40:42,602 203 CRITICAL enetradex_dev odoo.service.server: Failed to initialize database `enetradex_dev`. 
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/odoo/service/server.py", line 1374, in preload_registries
+    registry = Registry.new(dbname, update_module=update_module)
+  File "<decorator-gen-16>", line 2, in new
+  File "/usr/lib/python3/dist-packages/odoo/tools/func.py", line 87, in locked
+    return func(inst, *args, **kwargs)
+  File "/usr/lib/python3/dist-packages/odoo/modules/registry.py", line 110, in new
+    odoo.modules.load_modules(registry, force_demo, status, update_module)
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 481, in load_modules
+    processed_modules += load_marked_modules(env, graph,
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 366, in load_marked_modules
+    loaded, processed = load_module_graph(
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 229, in load_module_graph
+    load_data(env, idref, mode, kind='data', package=package)
+  File "/usr/lib/python3/dist-packages/odoo/modules/loading.py", line 73, in load_data
+    tools.convert_file(env, package.name, filename, idref, mode, noupdate, kind)
+  File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 682, in convert_file
+    convert_xml_import(env, module, fp, idref, mode, noupdate)
+  File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 748, in convert_xml_import
+    obj.parse(doc.getroot())
+  File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 668, in parse
+    self._tag_root(de)
+  File "/usr/lib/python3/dist-packages/odoo/tools/convert.py", line 621, in _tag_root
+    raise ParseError(msg) from None  # Restart with "--log-handler odoo.tools.convert:DEBUG" for complete traceback
+odoo.tools.convert.ParseError: while parsing /mnt/extra-addons/pyxel_enetradex_backend/views/en_backend_views.xml:315
+Error while validating view near:
+
+<form __validate__="1">
+                <header>
+                    <field name="final_sale_order_id" invisible="1"/>
+
+Field 'attachment_id' used in modifier 'invisible' (not attachment_id) must be present in view but is missing.
+
+View error context:
+{'file': '/mnt/extra-addons/pyxel_enetradex_backend/views/en_backend_views.xml',
+ 'line': 1,
+ 'name': 'importation.process.form.enetec.accred',
+ 'view': ir.ui.view(2791,),
+ 'view.model': 'importation.process',
+ 'view.parent': ir.ui.view(2446,),
+ 'xmlid': 'en_importation_process_form'}
+
+2026-06-18 13:40:42,603 203 INFO enetradex_dev odoo.service.server: Initiating shutdown 
+2026-06-18 13:40:42,603 203 INFO enetradex_dev odoo.service.server: Hit CTRL-C again or send a second signal to force the shutdown. 
+2026-06-18 13:40:42,605 203 INFO enetradex_dev odoo.sql_db: ConnectionPool(used=0/count=0/max=64): Closed 1 connections  

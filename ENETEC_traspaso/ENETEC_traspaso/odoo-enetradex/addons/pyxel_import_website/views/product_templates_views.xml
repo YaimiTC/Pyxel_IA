@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Vista (tree) -->
+    <record id="view_product_tree_inherit" model="ir.ui.view">
+        <field name="name">product.template.tree.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="de_importacion"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Vista (form) -->
+    <record id="view_product_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='detailed_type']" position="after">
+                <field name="product_type" invisible="de_importacion != True"/>
+                <field name="de_importacion"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

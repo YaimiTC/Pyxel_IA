@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mi_modelo_view_tree" model="ir.ui.view">
+        <field name="name">mi_modulo.mi_modelo.tree</field>
+        <field name="model">mi_modulo.mi_modelo</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="mi_modelo_view_form" model="ir.ui.view">
+        <field name="name">mi_modulo.mi_modelo.form</field>
+        <field name="model">mi_modulo.mi_modelo</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="date"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="mi_modelo_action" model="ir.actions.act_window">
+        <field name="name">Mi Modelo</field>
+        <field name="res_model">mi_modulo.mi_modelo</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="mi_modulo_menu_root" name="Mi Módulo" sequence="10"/>
+    <menuitem id="mi_modulo_menu_modelo" name="Mis Registros"
+              parent="mi_modulo_menu_root" action="mi_modelo_action" sequence="10"/>
+</odoo>

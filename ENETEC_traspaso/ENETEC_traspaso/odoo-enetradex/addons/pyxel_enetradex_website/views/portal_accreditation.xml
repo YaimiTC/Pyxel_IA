@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Página del expediente para el cliente -->
+    <template id="portal_my_accreditation" name="Mi acreditación">
+        <t t-call="portal.portal_layout">
+            <t t-set="bcls" t-value="{'approved':'success','in_review':'warning','validating':'info','rejected':'danger','pending':'secondary','optional':'light'}"/>
+            <t t-set="blbl" t-value="{'approved':'Aprobado','in_review':'En revisión','validating':'Validando','rejected':'Rechazado','pending':'Pendiente','optional':'Opcional'}"/>
+            <div class="row mt-3 mb-2">
+                <div class="col">
+                    <h3 class="mb-0">Mi acreditación</h3>
+                    <p class="text-muted">Estado de los documentos de tu expediente.</p>
+                </div>
+            </div>
+
+            <div t-if="not docs" class="alert alert-info">Aún no tienes un expediente de acreditación.</div>
+
+            <t t-else="">
+                <div class="row g-2 mb-4">
+                    <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body py-3">
+                        <h4 class="mb-0" t-out="c_total"/><small class="text-muted">Requeridos</small></div></div></div>
+                    <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body py-3">
+                        <h4 class="mb-0 text-success" t-out="c_approved"/><small class="text-muted">Aprobados</small></div></div></div>
+                    <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body py-3">
+                        <h4 class="mb-0 text-warning" t-out="c_review"/><small class="text-muted">En revisión</small></div></div></div>
+                    <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body py-3">
+                        <h4 class="mb-0 text-secondary" t-out="c_pending"/><small class="text-muted">Pendientes</small></div></div></div>
+                </div>
+
+                <t t-foreach="docs" t-as="d">
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <b t-out="d.document_label"/>
+                                <span t-attf-class="badge text-bg-#{bcls.get(d.portal_state,'secondary')}"
+                                      t-out="blbl.get(d.portal_state, d.portal_state)"/>
+                            </div>
+                            <div t-if="d.portal_state == 'rejected' and d.portal_reason"
+                                 class="alert alert-danger mt-2 mb-0 py-2">
+                                <i class="fa fa-times-circle"/> <span t-out="d.portal_reason"/>
+                            </div>
+                            <div t-if="d.portal_state == 'in_review'" class="alert alert-warning mt-2 mb-0 py-2">
+                                Documento recibido: ahora lo revisa nuestro equipo.
+                            </div>
+                            <div t-if="d.portal_state == 'approved'" class="alert alert-success mt-2 mb-0 py-2">
+                                <i class="fa fa-check-circle"/> Documento aprobado.
+                            </div>
+                            <div class="mt-2 d-flex gap-2 flex-wrap">
+                                <a t-if="d.attachment_id" t-attf-href="/my/acreditacion/download/#{d.id}"
+                                   class="btn btn-sm btn-outline-secondary">Descargar</a>
+                                <form t-if="d.portal_state in ('pending','rejected','optional')"
+                                      t-attf-action="/my/acreditacion/upload/#{d.id}" method="post"
+                                      enctype="multipart/form-data" class="d-flex gap-2 align-items-center mb-0">
+                                    <input type="file" name="document" accept=".pdf" class="form-control form-control-sm" style="max-width:240px"/>
+                                    <button class="btn btn-sm btn-primary" type="submit">
+                                        <t t-if="d.attachment_id">Subir otro</t><t t-else="">Subir</t>
+                                    </button>
+                                </form>
+                                <form t-if="d.attachment_id and d.portal_state not in ('in_review','approved')"
+                                      t-attf-action="/my/acreditacion/delete/#{d.id}" method="post" class="mb-0">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

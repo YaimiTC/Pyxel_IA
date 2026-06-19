@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_en_cuban_partner" model="ir.actions.report">
+        <field name="name">Socio de nacionalidad cubana</field>
+        <field name="model">en.cuban.partner</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">pyxel_enetradex_backend.report_en_cuban_partner_doc</field>
+        <field name="report_file">pyxel_enetradex_backend.report_en_cuban_partner_doc</field>
+        <field name="binding_model_id" ref="model_en_cuban_partner"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_en_cuban_partner_doc">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h3 style="text-align:center">DATOS A APORTAR PARA LOS CUBANOS RESIDENTES EN EL EXTERIOR Y QUE QUIERAN HACER NEGOCIOS CON EMPRESAS EN CUBA — NEGOCIOS CUBA</h3>
+                        <p t-if="o.partner_id"><strong>Empresa proveedora:</strong> <span t-field="o.partner_id.name"/></p>
+                        <table class="table table-sm o_main_table" style="width:100%">
+                            <tbody>
+                                <tr><td style="width:45%"><strong>Nombre y apellidos</strong></td><td><span t-field="o.name"/></td></tr>
+                                <tr><td><strong>No. Pasaporte</strong></td><td><span t-field="o.passport_no"/></td></tr>
+                                <tr><td><strong>No. Pasaporte extranjero</strong></td><td><span t-field="o.foreign_passport_no"/></td></tr>
+                                <tr><td><strong>Fecha de nacimiento</strong></td><td><span t-field="o.birth_date"/></td></tr>
+                                <tr><td><strong>Lugar de nacimiento</strong></td><td><span t-field="o.birth_place"/></td></tr>
+                                <tr><td><strong>Nombre, apellidos y fecha de nacimiento del padre</strong></td><td><span t-field="o.father_info"/></td></tr>
+                                <tr><td><strong>Nombre, apellidos y fecha de nacimiento de la madre</strong></td><td><span t-field="o.mother_info"/></td></tr>
+                                <tr><td><strong>Dirección de residencia actual</strong></td><td><span t-field="o.current_address"/></td></tr>
+                                <tr><td><strong>No. teléfono móvil</strong></td><td><span t-field="o.mobile"/></td></tr>
+                                <tr><td><strong>No. teléfono fijo</strong></td><td><span t-field="o.landline"/></td></tr>
+                                <tr><td><strong>Correo electrónico</strong></td><td><span t-field="o.email"/></td></tr>
+                                <tr><td><strong>Fecha de salida de Cuba</strong></td><td><span t-field="o.exit_date"/></td></tr>
+                                <tr><td><strong>Última dirección en Cuba</strong></td><td><span t-field="o.last_address_cuba"/></td></tr>
+                                <tr><td><strong>Graduado de</strong></td><td><span t-field="o.graduated_of"/></td></tr>
+                                <tr><td><strong>Fecha de graduado</strong></td><td><span t-field="o.graduation_date"/></td></tr>
+                                <tr><td><strong>Labor desempeñada en Cuba</strong></td><td><span t-field="o.work_in_cuba"/></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

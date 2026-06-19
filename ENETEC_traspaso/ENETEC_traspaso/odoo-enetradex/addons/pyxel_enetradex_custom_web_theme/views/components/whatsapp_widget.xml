@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="whatsapp_widget" name="Cupet WhatsApp Floating Widget">
+        <div class="cx-wa-widget" id="cxWaWidget" data-number="5355555555">
+
+            <div class="cx-wa-panel" id="cxWaPanel">
+                <div class="cx-wa-header">
+                    <div class="cx-wa-avatar">
+                        <i class="fa fa-whatsapp"></i>
+                    </div>
+                    <div class="cx-wa-header-text">
+                        <div class="cx-wa-title">Atención CUPET</div>
+                        <div class="cx-wa-status">
+                            <span class="cx-wa-dot"></span> En línea ahora
+                        </div>
+                    </div>
+                    <button class="cx-wa-close" id="cxWaClose" aria-label="Cerrar">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+                <div class="cx-wa-body">
+                    <div class="cx-wa-greeting">
+                        Hola <span class="cx-wa-wave">👋</span><br/>
+                        ¿En qué te podemos ayudar?
+                    </div>
+                    <div class="cx-wa-questions">
+                        <button class="cx-wa-question" data-msg="Hola, quisiera solicitar una cotización de combustibles">
+                            <i class="fa fa-paper-plane"></i>
+                            <span>Solicitar cotización</span>
+                        </button>
+                        <button class="cx-wa-question" data-msg="Hola, tengo dudas sobre los métodos de pago para empresas">
+                            <i class="fa fa-credit-card"></i>
+                            <span>Métodos de pago</span>
+                        </button>
+                        <button class="cx-wa-question" data-msg="Hola, quisiera información sobre entregas y zonas de cobertura">
+                            <i class="fa fa-truck"></i>
+                            <span>Entregas y cobertura</span>
+                        </button>
+                        <button class="cx-wa-question" data-msg="Hola, necesito ayuda con el registro y la acreditación como cliente">
+                            <i class="fa fa-user-plus"></i>
+                            <span>Registro y acreditación</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="cx-wa-footer">
+                    <i class="fa fa-lock"></i> Conversación segura por WhatsApp
+                </div>
+            </div>
+
+            <button class="cx-wa-btn" id="cxWaToggle" aria-label="Abrir chat de WhatsApp">
+                <i class="fa fa-whatsapp"></i>
+                <span class="cx-wa-pulse"></span>
+            </button>
+        </div>
+    </template>
+</odoo>

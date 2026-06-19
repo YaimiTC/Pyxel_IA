@@ -1,0 +1,52 @@
+﻿# ══════════════════════════════════════════════════════════
+#  ODOO 17 + POSTGRESQL — ENTORNO LOCAL DE DESARROLLO
+#  Proyecto: ENETEC — Sistema de Gestión Comercial ODIN 2.0
+# ══════════════════════════════════════════════════════════
+services:
+  # ───────── Base de datos PostgreSQL ─────────
+  db:
+    image: postgres:15
+    container_name: enetradex_postgres
+    environment:
+      - POSTGRES_USER=odoo
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_DB=postgres
+      # Necesario para que Odoo pueda crear bases de datos
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  # ───────── Servidor Odoo 17 (imagen custom con pandas) ─────────
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: enetradex/odoo:17
+    container_name: enetradex_odoo
+    # El DNS publico de mail.pyxelsolution.com apunta a Cloudflare (proxy web, sin
+    # SMTP). El servidor de correo real (Postfix) esta en 51.75.242.31. Fijamos
+    # aqui la resolucion para que Odoo alcance el SMTP real manteniendo el hostname
+    # correcto del certificado TLS. Puerto de envio: 587 (STARTTLS).
+    extra_hosts:
+      - "mail.pyxelsolution.com:51.75.242.31"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8469:8069"   # interfaz web principal (host 8469 -> contenedor 8069)
+      - "8472:8072"   # longpolling (chat, notificaciones live)
+    environment:
+      - HOST=db
+      - USER=odoo
+      - PASSWORD=odoo
+    volumes:
+      - ./config:/etc/odoo
+      - ./addons:/mnt/extra-addons
+      - ./odoo-data:/var/lib/odoo
+    restart: unless-stopped
+    command: odoo --config=/etc/odoo/odoo.conf -d enetradex_dev --max-cron-threads=0

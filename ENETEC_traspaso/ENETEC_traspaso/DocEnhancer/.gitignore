@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.pyc
+# Modelos de super-resolucion (se descargan aparte, ver README)
+models/*.pb
+# Artefactos temporales de prueba
+_enhanced*.png

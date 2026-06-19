@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="base_layout" name="Agrimpex Base Layout" inherit_id="web.frontend_layout">
+        <xpath expr="//head" position="inside">
+            <!-- Fuentes: stack del sistema (sin descargas externas, render inmediato).
+                 Iconos: se usa el Font Awesome 4.7 que Odoo ya incluye localmente en su
+                 bundle (sin CDN externo, sin conflicto de versiones). -->
+
+            <style>
+                .main-wrapper { min-height: 100vh; display: flex; flex-direction: column; }
+                .content-wrap { flex: 1; }
+            </style>
+        </xpath>
+
+        <!-- Header personalizado -->
+        <xpath expr="//header" position="replace">
+            <header>
+                <t t-call="pyxel_enetradex_custom_web_theme.navbar"/>
+            </header>
+        </xpath>
+
+        <!-- Main content -->
+        <xpath expr="//main" position="replace">
+            <main class="container-fluid m-0 px-0 pt-4">
+                <t t-out="0"/>
+            </main>
+        </xpath>
+
+        <!-- Footer personalizado -->
+        <xpath expr="//footer" position="replace">
+            <footer class="mt-auto">
+                <t t-call="pyxel_enetradex_custom_web_theme.footer"/>
+            </footer>
+            <t t-call="pyxel_enetradex_custom_web_theme.whatsapp_widget"/>
+        </xpath>
+
+    </template>
+</odoo>

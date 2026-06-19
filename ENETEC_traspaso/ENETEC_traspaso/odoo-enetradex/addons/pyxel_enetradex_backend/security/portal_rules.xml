@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- El cliente del portal solo ve SUS operaciones de importación
+         (como cliente o como proveedor de la operación). -->
+    <record id="en_importation_process_portal_rule" model="ir.rule">
+        <field name="name">Portal: solo sus operaciones de importación</field>
+        <field name="model_id" ref="pyxel_import_backend.model_importation_process"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">['|',
+            ('customer_id', '=', user.partner_id.commercial_partner_id.id),
+            ('provider_id', '=', user.partner_id.commercial_partner_id.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- El portal solo ve los eventos de seguimiento de su propia empresa. -->
+    <record id="en_tracking_event_portal_rule" model="ir.rule">
+        <field name="name">Portal: solo sus eventos de seguimiento</field>
+        <field name="model_id" ref="model_en_tracking_event"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="domain_force">[('partner_id', '=', user.partner_id.commercial_partner_id.id)]</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

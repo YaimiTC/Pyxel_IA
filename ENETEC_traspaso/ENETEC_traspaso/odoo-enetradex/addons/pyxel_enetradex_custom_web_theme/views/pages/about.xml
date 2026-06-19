@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="page_about" name="Cupet About Page">
+        <t t-call="pyxel_enetradex_custom_web_theme.base_layout">
+
+            <div id="wrap">
+
+                <!-- Nav-tabs ocultos: necesarios para activación JS por URL (?tab=xxx) -->
+                <div class="d-none" aria-hidden="true">
+                    <ul class="nav" id="aboutTabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="who-tab" data-bs-toggle="tab" href="#who" role="tab">¿Quienes Somos?</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="services-tab" data-bs-toggle="tab" href="#services" role="tab">Nuestros Servicios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="vision-tab" data-bs-toggle="tab" href="#vision" role="tab">Visión General</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="policy-tab" data-bs-toggle="tab" href="#policy" role="tab">Política y Términos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="faq-tab" data-bs-toggle="tab" href="#faqs" role="tab">Preguntas frecuentes</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-content" id="aboutTabsContent">
+                    <div class="tab-pane fade show active" id="who" role="tabpanel"
+                        aria-labelledby="who-tab">
+                        <section class="cx-srv-hero">
+                            <div class="container">
+                                <h1 class="cx-srv-hero-title">QUIÉNES SOMOS</h1>
+                                <p class="cx-srv-hero-sub">NUESTRA HISTORIA Y COMPROMISO</p>
+                            </div>
+                        </section>
+                        <section class="cx-srv-intro">
+                            <div class="container">
+                                <p><strong>CUPET</strong> es la empresa cubana referente en el sector energético, dedicada a la importación, distribución y comercialización de combustibles para el desarrollo del país. Combinamos décadas de experiencia con un equipo técnico altamente calificado y alianzas estratégicas internacionales que nos permiten ofrecer soluciones confiables a empresas estatales, MiPymes y entidades cubanas.</p>
+                            </div>
+                        </section>
+                        <section class="cx-who-history">
+                            <div class="container">
+                                <div class="row align-items-center g-4">
+                                    <div class="col-12 col-lg-7">
+                                        <h2 class="cx-srv-section-title text-start">Nuestra historia</h2>
+                                        <div class="cx-srv-divider ms-0 me-auto"></div>
+                                        <p class="mt-3">Con una trayectoria de más de cuatro décadas en el sector petrolero cubano, CUPET ha sido protagonista del desarrollo energético nacional, asegurando el suministro de combustibles esenciales para la economía, el transporte y la industria del país.</p>
+                                        <p>A lo largo de los años hemos consolidado relaciones estratégicas con proveedores internacionales de primer nivel y modernizado nuestros procesos logísticos, técnicos y comerciales para responder a las nuevas demandas del mercado.</p>
+                                        <p>Hoy ofrecemos a empresas estatales, MiPymes y entidades cubanas una plataforma especializada para gestionar sus operaciones de importación con transparencia, seguridad y acompañamiento experto.</p>
+                                    </div>
+                                    <div class="col-12 col-lg-5">
+                                        <div class="cx-who-history-card">
+                                            <i class="fa fa-quote-left"></i>
+                                            <p>"Energía que mueve a Cuba: comprometidos con el desarrollo del país, con responsabilidad, transparencia y excelencia en cada operación."</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="cx-who-mv">
+                            <div class="container">
+                                <div class="row g-4">
+                                    <div class="col-12 col-md-6">
+                                        <div class="cx-who-mv-card">
+                                            <div class="cx-who-mv-icon"><i class="fa fa-bullseye"></i></div>
+                                            <h3>Misión</h3>
+                                            <p>Garantizar el suministro confiable y eficiente de combustibles a empresas y entidades cubanas, mediante operaciones transparentes, productos de alta calidad y un servicio especializado que contribuya al desarrollo del país.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <div class="cx-who-mv-card">
+                                            <div class="cx-who-mv-icon"><i class="fa fa-eye"></i></div>
+                                            <h3>Visión</h3>
+                                            <p>Ser la empresa líder en importación y comercialización de combustibles en Cuba, reconocida por la confianza de nuestros clientes, la excelencia operativa y la capacidad de innovar.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="cx-who-values">
+                            <div class="container">
+                                <div class="text-center">
+                                    <h2 class="cx-srv-section-title">NUESTROS VALORES</h2>
+                                    <div class="cx-srv-divider"></div>
+                                </div>
+                                <div class="row g-4 mt-2">
+                                    <div class="col-12 col-md-6 col-lg-3">
+                                        <div class="cx-who-value-card">
+                                            <div class="cx-who-value-icon"><i class="fa fa-handshake-o"></i></div>
+                                            <h6>Compromiso</h6>
+                                            <p>Asumimos cada operación como propia, con dedicación y responsabilidad hasta el cierre.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-3">
+                                        <div class="cx-who-value-card">
+                                            <div class="cx-who-value-icon"><i class="fa fa-shield"></i></div>
+                                            <h6>Integridad</h6>
+                                            <p>Operamos con transparencia, honestidad y apego a las normas legales y éticas.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-3">
+                                        <div class="cx-who-value-card">
+                                            <div class="cx-who-value-icon"><i class="fa fa-lightbulb-o"></i></div>
+                                            <h6>Innovación</h6>
+                                            <p>Mejoramos continuamente nuestros procesos para ofrecer soluciones más ágiles y eficientes.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg-3">
+                                        <div class="cx-who-value-card">
+                                            <div class="cx-who-value-icon"><i class="fa fa-users"></i></div>
+                                            <h6>Trabajo en equipo</h6>
+                                            <p>Sumamos talento, experiencia y disciplina para alcanzar resultados extraordinarios.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="cx-who-stats">
+                            <div class="container">
+                                <div class="cx-who-stats-wrap">
+                                    <div class="row g-3 text-center">
+                                        <div class="col-6 col-md-3">
+                                            <div class="cx-who-stat">
+                                                <div class="cx-who-stat-num">40+</div>
+                                                <div class="cx-who-stat-label">Años de experiencia</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="cx-who-stat">
+                                                <div class="cx-who-stat-num">500+</div>
+                                                <div class="cx-who-stat-label">Clientes atendidos</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="cx-who-stat">
+                                                <div class="cx-who-stat-num">25+</div>
+                                                <div class="cx-who-stat-label">Países proveedores</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <div class="cx-who-stat">
+                                                <div class="cx-who-stat-num">1M+</div>
+                                                <div class="cx-who-stat-label">Litros importados</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="cx-who-team">
+                            <div class="container">
+                                <div class="text-center">
+                                    <h2 class="cx-srv-section-title">NUESTRO EQUIPO</h2>
+                                    <div class="cx-srv-divider"></div>
+                                    <p class="cx-who-team-intro">Profesionales con experiencia y compromiso, dedicados a brindarte el mejor servicio.</p>
+                                </div>
+                                <div class="row g-4 mt-2 justify-content-center">
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <div class="cx-who-team-card">
+                                            <div class="cx-who-team-avatar"><i class="fa fa-user-circle"></i></div>
+                                            <h6>Director General</h6>
+                                            <p class="cx-who-team-role">Estrategia y liderazgo</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <div class="cx-who-team-card">
+                                            <div class="cx-who-team-avatar"><i class="fa fa-user-circle"></i></div>
+                                            <h6>Director Comercial</h6>
+                                            <p class="cx-who-team-role">Atención a clientes</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <div class="cx-who-team-card">
+                                            <div class="cx-who-team-avatar"><i class="fa fa-user-circle"></i></div>
+                                            <h6>Director de Operaciones</h6>
+                                            <p class="cx-who-team-role">Logística e importaciones</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <div class="cx-who-team-card">
+                                            <div class="cx-who-team-avatar"><i class="fa fa-user-circle"></i></div>
+                                            <h6>Director Técnico</h6>
+                                            <p class="cx-who-team-role">Calidad y procesos</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="cx-who-cta">
+                            <div class="container">
+                                <div class="cx-who-cta-inner">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-md-8">
+                                            <h3>¿Listo para iniciar tu importación?</h3>
+                                            <p>Únete a las empresas que confían en CUPET para sus operaciones de combustible.</p>
+                                        </div>
+                                        <div class="col-12 col-md-4 text-md-end">
+                                            <a href="/en/wizard" class="btn cx-who-cta-btn">
+                                                <i class="fa fa-paper-plane me-2"></i> Empezar ahora
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="tab-pane fade" id="services" role="tabpanel"
+                        aria-labelledby="services-tab">
+
+                        <section class="cx-srv-hero">
+                            <div class="container">
+                                <h1 class="cx-srv-hero-title">NUESTROS SERVICIOS</h1>
+                                <p class="cx-srv-hero-sub">IMPORTACIÓN DE COMBUSTIBLES</p>
+                            </div>
+                        </section>
+
+                        <section class="cx-srv-intro">
+                            <div class="container">
+                                <p>Ofrecemos soluciones confiables y eficientes para la importación de combustibles, garantizando calidad, seguridad y cumplimiento normativo para empresas y entidades en Cuba.</p>
+                            </div>
+                        </section>
+
+                        <section class="cx-srv-values">
+                            <div class="container">
+                                <div class="row g-4">
+                                    <div class="col-12 col-md-4">
+                                        <div class="cx-srv-value">
+                                            <div class="cx-srv-value-icon"><i class="fa fa-shield"></i></div>
+                                            <div class="cx-srv-value-body">
+                                                <h5>CONFIANZA</h5>
+                                                <p>Operamos con altos estándares de seguridad y cumplimiento internacional.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="cx-srv-value">
+                                            <div class="cx-srv-value-icon"><i class="fa fa-tint"></i></div>
+                                            <div class="cx-srv-value-body">
+                                                <h5>CALIDAD GARANTIZADA</h5>
+                                                <p>Combustibles certificados que cumplen con las especificaciones internacionales.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-4">
+                                        <div class="cx-srv-value">
+                                            <div class="cx-srv-value-icon"><i class="fa fa-handshake-o"></i></div>
+                                            <div class="cx-srv-value-body">
+                                                <h5>ATENCIÓN ESPECIALIZADA</h5>
+                                                <p>Asesoría personalizada en cada etapa del proceso de importación.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="cx-srv-offerings">
+                            <div class="container">
+                                <div class="text-center">
+                                    <h2 class="cx-srv-section-title">¿QUÉ SERVICIOS OFRECEMOS?</h2>
+                                    <div class="cx-srv-divider"></div>
+                                </div>
+                                <div class="row g-4 mt-2">
+                                    <div class="col-12 col-md-6 col-lg">
+                                        <div class="cx-srv-offer">
+                                            <div class="cx-srv-offer-icon"><i class="fa fa-ship"></i></div>
+                                            <h6>Importación de Combustibles</h6>
+                                            <p>Gestionamos la importación de gasolina, diésel y otros combustibles especiales desde mercados internacionales.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg">
+                                        <div class="cx-srv-offer">
+                                            <div class="cx-srv-offer-icon"><i class="fa fa-file-text-o"></i></div>
+                                            <h6>Gestión Documental y Aduanera</h6>
+                                            <p>Nos encargamos de toda la documentación y trámites aduaneros para asegurar un proceso ágil y sin contratiempos.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg">
+                                        <div class="cx-srv-offer">
+                                            <div class="cx-srv-offer-icon"><i class="fa fa-shield"></i></div>
+                                            <h6>Control de Calidad</h6>
+                                            <p>Verificamos la calidad de cada producto bajo estrictos estándares internacionales antes de su entrega.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg">
+                                        <div class="cx-srv-offer">
+                                            <div class="cx-srv-offer-icon"><i class="fa fa-archive"></i></div>
+                                            <h6>Logística y Entrega Segura</h6>
+                                            <p>Coordinamos el transporte y la entrega en Cuba de forma segura, eficiente y puntual.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 col-lg">
+                                        <div class="cx-srv-offer">
+                                            <div class="cx-srv-offer-icon"><i class="fa fa-headphones"></i></div>
+                                            <h6>Asesoría y Soporte Especializado</h6>
+                                            <p>Brindamos acompañamiento personalizado y soporte técnico en todo el proceso.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="cx-srv-cta-banner">
+                            <div class="container">
+                                <div class="cx-srv-cta-content">
+                                    <h3>¿QUÉ PUEDES COMPRAR CON NOSOTROS?</h3>
+                                    <p>Puedes importar gasolina, diésel y combustibles especiales adaptados a tus necesidades operativas. Trabajamos con productos de alta calidad y proveedores confiables para garantizar el mejor rendimiento.</p>
+                                    <div class="cx-srv-cta-tags">
+                                        <span class="cx-srv-tag"><i class="fa fa-tint"></i> Gasolina Especial</span>
+                                        <span class="cx-srv-tag"><i class="fa fa-fire"></i> Diésel B5</span>
+                                        <span class="cx-srv-tag"><i class="fa fa-flask"></i> Combustibles Especiales</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="cx-srv-why">
+                            <div class="container">
+                                <div class="text-center">
+                                    <h2 class="cx-srv-section-title">¿POR QUÉ ELEGIRNOS?</h2>
+                                    <div class="cx-srv-divider"></div>
+                                </div>
+                                <div class="row g-4 mt-2">
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <div class="cx-srv-why-card">
+                                            <div class="cx-srv-why-icon"><i class="fa fa-trophy"></i></div>
+                                            <h6>Experiencia Comprobada</h6>
+                                            <p>Años de experiencia en el sector energético internacional.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <div class="cx-srv-why-card">
+                                            <div class="cx-srv-why-icon"><i class="fa fa-globe"></i></div>
+                                            <h6>Red Internacional Confiable</h6>
+                                            <p>Alianzas estratégicas con proveedores y operadores logísticos de primer nivel.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <div class="cx-srv-why-card">
+                                            <div class="cx-srv-why-icon"><i class="fa fa-clock-o"></i></div>
+                                            <h6>Eficiencia y Puntualidad</h6>
+                                            <p>Cumplimos los tiempos acordados para que tu operación no se detenga.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-lg-3">
+                                        <div class="cx-srv-why-card">
+                                            <div class="cx-srv-why-icon"><i class="fa fa-users"></i></div>
+                                            <h6>Compromiso con Cuba</h6>
+                                            <p>Contribuimos al desarrollo energético del país con responsabilidad y seriedad.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                    <div class="tab-pane fade" id="vision" role="tabpanel"
+                        aria-labelledby="vision-tab">
+                        <div class="container">
+                            <div class="row justify-content-center p-5">
+                                <h4 class="mb-3 text-dark">
+                                    Experiencia
+                                </h4>
+                                <p class="mb-2 px-5">
+                                    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+                                    faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+                                    mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+                                    urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum
+                                    egestas. Iaculis massa nisl malesuada lacinia integer nunc
+                                    posuere. Ut hendrerit semper vel class aptent taciti sociosqu.
+                                    Ad litora torquent per conubia nostra inceptos himenaeos.
+                                </p>
+                            </div>
+                            <div class="row justify-content-center p-5">
+                                <h4 class="mb-3 text-dark">
+                                    Alcance
+                                </h4>
+                                <p class="mb-2 px-5">
+                                    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+                                    faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+                                    mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+                                    urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum
+                                    egestas. Iaculis massa nisl malesuada lacinia integer nunc
+                                    posuere. Ut hendrerit semper vel class aptent taciti sociosqu.
+                                    Ad litora torquent per conubia nostra inceptos himenaeos.
+                                </p>
+                            </div>
+                            <div class="row justify-content-center p-5">
+                                <h4 class="mb-3 text-dark">
+                                    Eficiencia
+                                </h4>
+                                <p class="mb-2 px-5">
+                                    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+                                    faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+                                    mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+                                    urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum
+                                    egestas. Iaculis massa nisl malesuada lacinia integer nunc
+                                    posuere. Ut hendrerit semper vel class aptent taciti sociosqu.
+                                    Ad litora torquent per conubia nostra inceptos himenaeos.
+                                </p>
+                            </div>
+                            <div class="row justify-content-center p-5">
+                                <h4 class="mb-3 text-dark">
+                                    Variedad
+                                </h4>
+                                <p class="mb-2 px-5">
+                                    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+                                    faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+                                    mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+                                    urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum
+                                    egestas. Iaculis massa nisl malesuada lacinia integer nunc
+                                    posuere. Ut hendrerit semper vel class aptent taciti sociosqu.
+                                    Ad litora torquent per conubia nostra inceptos himenaeos.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="policy" role="tabpanel"
+                        aria-labelledby="policy-tab">
+                        <div class="container">
+                            <div class="row justify-content-center p-5">
+                                <h4 class="mb-3 text-dark">
+                                    Términos y Condiciones de Uso
+                                </h4>
+                                <p class="mb-2 px-5">
+                                    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+                                    faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+                                    mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+                                    urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum
+                                    egestas. Iaculis massa nisl malesuada lacinia integer nunc
+                                    posuere. Ut hendrerit semper vel class aptent taciti sociosqu.
+                                    Ad litora torquent per conubia nostra inceptos himenaeos.
+                                </p>
+                            </div>
+                            <div class="row justify-content-center p-5">
+                                <h4 class="mb-3 text-dark">
+                                    Política de Privacidad
+                                </h4>
+                                <p class="mb-2 px-5">
+                                    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+                                    faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+                                    mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+                                    urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum
+                                    egestas. Iaculis massa nisl malesuada lacinia integer nunc
+                                    posuere. Ut hendrerit semper vel class aptent taciti sociosqu.
+                                    Ad litora torquent per conubia nostra inceptos himenaeos.
+                                </p>
+                            </div>
+                            <div class="row justify-content-center p-5">
+                                <h4 class="mb-3 text-dark">
+                                    Política de Reembolso y Devolución
+                                </h4>
+                                <p class="mb-2 px-5">
+                                    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+                                    faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+                                    mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+                                    urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum
+                                    egestas. Iaculis massa nisl malesuada lacinia integer nunc
+                                    posuere. Ut hendrerit semper vel class aptent taciti sociosqu.
+                                    Ad litora torquent per conubia nostra inceptos himenaeos.
+                                </p>
+                            </div>
+                            <div class="row justify-content-center p-5">
+                                <h4 class="mb-3 text-dark">
+                                    Política de Entrega
+                                </h4>
+                                <p class="mb-2 px-5">
+                                    Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque
+                                    faucibus ex sapien vitae pellentesque sem placerat. In id cursus
+                                    mi pretium tellus duis convallis. Tempus leo eu aenean sed diam
+                                    urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum
+                                    egestas. Iaculis massa nisl malesuada lacinia integer nunc
+                                    posuere. Ut hendrerit semper vel class aptent taciti sociosqu.
+                                    Ad litora torquent per conubia nostra inceptos himenaeos.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="faqs" role="tabpanel" aria-labelledby="faqs-tab">
+                        <section class="cx-srv-hero">
+                            <div class="container">
+                                <h1 class="cx-srv-hero-title">PREGUNTAS FRECUENTES</h1>
+                                <p class="cx-srv-hero-sub">RESPUESTAS A TUS DUDAS MÁS COMUNES</p>
+                            </div>
+                        </section>
+                        <section class="cx-srv-intro">
+                            <div class="container">
+                                <p>Resolvemos las dudas más comunes sobre nuestro proceso de importación de combustibles, requisitos de acreditación y operaciones con clientes. Si tu pregunta no está en esta lista, contáctanos directamente y te respondemos en menos de 24 horas.</p>
+                            </div>
+                        </section>
+                        <div class="container py-4">
+                            <h2 class="text-center mb-2">Preguntas más consultadas</h2>
+                            <div class="cx-srv-divider mx-auto mb-4"></div>
+
+                            <div class="accordion cx-faq-accordion" id="cxFaqAccordion">
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                            ¿Cómo me registro en CUPET?
+                                        </button>
+                                    </h2>
+                                    <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#cxFaqAccordion">
+                                        <div class="accordion-body">
+                                            Puedes registrarte directamente desde nuestro sitio web haciendo clic en el botón <strong>Entrar</strong> o <strong>Mi cuenta</strong>, en la esquina superior derecha. Completa el formulario con tus datos personales o los de tu empresa, valida el correo electrónico y comienza a navegar nuestro catálogo de combustibles. El proceso es 100% gratuito y toma menos de 5 minutos.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                            ¿Qué ventajas tiene registrarse como cliente?
+                                        </button>
+                                    </h2>
+                                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#cxFaqAccordion">
+                                        <div class="accordion-body">
+                                            Al registrarte obtienes acceso a precios especiales para empresas y MiPymes, posibilidad de solicitar cotizaciones personalizadas, seguimiento en tiempo real de tus operaciones de importación, gestión documental simplificada y atención preferente de nuestro equipo de especialistas. Además, los clientes registrados acceden a beneficios exclusivos como contratos de suministro continuo y planes corporativos adaptados.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                            ¿Qué tiempo demora la acreditación de un cliente?
+                                        </button>
+                                    </h2>
+                                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#cxFaqAccordion">
+                                        <div class="accordion-body">
+                                            El proceso estándar de acreditación toma entre <strong>3 y 7 días hábiles</strong> desde la recepción completa de la documentación. En casos prioritarios o trámites express, podemos acelerar el proceso a 48 horas. Una vez acreditado, recibirás un correo de confirmación con tus credenciales y podrás operar inmediatamente desde la plataforma.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                            ¿Tienen costo las solicitudes de registro y acreditación?
+                                        </button>
+                                    </h2>
+                                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#cxFaqAccordion">
+                                        <div class="accordion-body">
+                                            <strong>No.</strong> El registro de cuenta y el trámite de acreditación como cliente son completamente <strong>gratuitos</strong>. Solo se aplican tarifas cuando inicias una operación real de importación o servicio, y todos los costos se acuerdan previamente y por escrito antes de proceder.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                            ¿Qué tipo de productos puedo importar?
+                                        </button>
+                                    </h2>
+                                    <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#cxFaqAccordion">
+                                        <div class="accordion-body">
+                                            Trabajamos principalmente con <strong>combustibles líquidos</strong>: gasolina especial (90 octanos), gasolina premium (95 octanos), diésel B5 estándar, combustible Jet A-1 para aviación y combustibles especiales bajo pedido. También gestionamos lubricantes, aditivos y productos derivados del petróleo. Para necesidades específicas, contáctanos y evaluamos la operación.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                                            ¿De qué países puedo importar?
+                                        </button>
+                                    </h2>
+                                    <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#cxFaqAccordion">
+                                        <div class="accordion-body">
+                                            Contamos con una red internacional de proveedores en mercados estables y confiables, principalmente de <strong>América Latina, Europa y Asia</strong>. La elección del país de origen depende del tipo de combustible, especificaciones técnicas requeridas, volumen y plazos de entrega. Nuestro equipo te asesora para escoger la mejor opción técnica y económica.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq7">
+                                            ¿Cómo solicito una cotización?
+                                        </button>
+                                    </h2>
+                                    <div id="faq7" class="accordion-collapse collapse" data-bs-parent="#cxFaqAccordion">
+                                        <div class="accordion-body">
+                                            Tienes tres formas: (1) desde el botón <strong>Solicitar cotización</strong> en el menú superior del sitio, (2) escribiéndonos directamente al WhatsApp con el widget verde de la esquina inferior derecha, o (3) enviando un correo a nuestro equipo comercial con tus requerimientos (tipo de combustible, cantidad, fecha estimada y destino). Te respondemos en menos de 24 horas hábiles.
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <section class="cx-who-cta">
+                            <div class="container">
+                                <div class="cx-who-cta-inner">
+                                    <div class="row align-items-center">
+                                        <div class="col-12 col-md-8">
+                                            <h3>¿No encuentras tu respuesta?</h3>
+                                            <p>Nuestro equipo está listo para ayudarte. Contáctanos por WhatsApp o correo y resolvemos tu duda al momento.</p>
+                                        </div>
+                                        <div class="col-12 col-md-4 text-md-end">
+                                            <a href="/contactus" class="btn cx-who-cta-btn">
+                                                <i class="fa fa-envelope me-2"></i> Contactar ahora
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+            </div>
+        </t>
+    </template>
+</odoo>

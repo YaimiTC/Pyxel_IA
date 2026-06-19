@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <template id="purchase_report_purchaseorder_document_currency_inherit"
+              inherit_id="purchase.report_purchaseorder_document">
+        <xpath expr="//div[@id='total']" position="replace">
+            <div id="total" class="row justify-content-end">
+                <div class="col-4">
+                    <table class="table table-sm table-borderless">
+                        <t t-set="tax_totals" t-value="o.tax_totals"/>
+                        <t t-call="pyxel_po_so_report_currency.purchase_document_tax_totals_currency"/>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="purchase_document_tax_totals_currency">
+        <tr>
+            <td class="text-end">
+                <strong>
+                    Total
+                    <t t-if="o.currency_id">
+                        (<t t-esc="o.currency_id.name"/>)
+                    </t>:
+                </strong>
+                <span t-field="o.amount_total"
+                      t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+            </td>
+        </tr>
+    </template>
+
+    <template id="sale_report_saleorder_document_currency_inherit"
+              inherit_id="sale.report_saleorder_document">
+        <xpath expr="//div[@id='total']" position="replace">
+            <div id="total" class="row justify-content-end">
+                <div class="col-4">
+                    <table class="table table-sm table-borderless">
+                        <t t-set="tax_totals" t-value="doc.tax_totals"/>
+                        <t t-call="pyxel_po_so_report_currency.sale_document_tax_totals_currency"/>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="sale_document_tax_totals_currency">
+        <tr>
+            <td class="text-end">
+                <strong>
+                    Total
+                    <t t-if="doc.currency_id">
+                        (<t t-esc="doc.currency_id.name"/>)
+                    </t>:
+                </strong>
+                <span t-field="doc.amount_total"
+                      t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+            </td>
+        </tr>
+    </template>
+
+</odoo>

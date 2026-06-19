@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ============================================================
+         CARRITO — rediseño sobre website_sale.cart
+         ============================================================ -->
+    <template id="cart_agrimpex" inherit_id="website_sale.cart" name="Carrito Agrimpex (rediseño)">
+        <xpath expr="//h3[hasclass('mb-4')]" position="replace">
+            <div class="ag-cart-head">
+                <h2>Carrito de compras</h2>
+                <span class="ag-cart-count" t-if="website_sale_order and website_sale_order.cart_quantity">
+                    <t t-esc="int(website_sale_order.cart_quantity)"/> producto(s)
+                </span>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

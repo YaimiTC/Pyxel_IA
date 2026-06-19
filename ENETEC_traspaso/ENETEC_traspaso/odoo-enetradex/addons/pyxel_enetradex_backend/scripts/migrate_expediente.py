@@ -1,0 +1,5 @@
+procs = env['importation.process'].search([('en_import_document_ids', '=', False)])
+print('Procesos sin expediente:', len(procs))
+env['pyxel.import.document'].build_expediente(procs)
+env.cr.commit()
+print('Hecho')

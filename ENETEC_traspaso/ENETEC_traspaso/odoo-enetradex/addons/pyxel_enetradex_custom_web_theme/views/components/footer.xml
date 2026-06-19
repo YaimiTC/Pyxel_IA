@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="footer" name="Enetradex Footer">
+        <footer class="ag-footer">
+            <div class="container">
+                <div class="ag-footer-grid">
+
+                    <!-- Marca -->
+                    <div class="ag-footer-brand">
+                        <a href="/" style="display:inline-block;margin-bottom:12px">
+                            <img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_logo.png?v=3"
+                                 alt="ENETRADEX" style="height:44px;width:auto;max-width:230px;filter:brightness(0) invert(1)"/>
+                        </a>
+                        <p>Conectamos energía con oportunidades. Plataforma de importación de combustibles y comercio energético online.</p>
+                        <div class="ag-social">
+                            <a href="#" aria-label="LinkedIn"><i class="fa fa-linkedin"></i></a>
+                            <a href="#" aria-label="Twitter/X"><i class="fa fa-twitter"></i></a>
+                            <a href="#" aria-label="Facebook"><i class="fa fa-facebook"></i></a>
+                            <a href="#" aria-label="YouTube"><i class="fa fa-youtube-play"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Plataforma -->
+                    <div class="ag-footer-col">
+                        <h6>Plataforma</h6>
+                        <a href="/en/wizard?op=1">Importar</a>
+                        <a href="/shop">Marketplace</a>
+                        <a href="/shop">Combustibles</a>
+                        <a href="/about?tab=services">Trading</a>
+                        <a href="/en/wizard">Proveedores</a>
+                    </div>
+
+                    <!-- Empresa -->
+                    <div class="ag-footer-col">
+                        <h6>Empresa</h6>
+                        <a href="/about?tab=who">Nosotros</a>
+                        <a href="/about?tab=services">Servicios</a>
+                        <a href="/about?tab=who">Noticias</a>
+                        <a href="/contactus">Contacto</a>
+                    </div>
+
+                    <!-- Recursos -->
+                    <div class="ag-footer-col">
+                        <h6>Recursos</h6>
+                        <a href="/contactus">Centro de ayuda</a>
+                        <a href="/about?tab=policy">Términos y condiciones</a>
+                        <a href="/about?tab=policy">Política de privacidad</a>
+                        <a href="/about?tab=who">Reportes de mercado</a>
+                    </div>
+
+                    <!-- Contacto -->
+                    <div class="ag-footer-col ag-footer-contact">
+                        <h6>Contáctanos</h6>
+                        <div class="ag-contact-item"><i class="fa fa-phone"></i><span>+53 5280 7765</span></div>
+                        <div class="ag-contact-item"><i class="fa fa-envelope"></i><span>comercial@enetec.telmark.com.cu</span></div>
+                        <div class="ag-contact-item"><i class="fa fa-map-marker"></i><span>Calle 30 Nº 512 e/ 5ta y 7ma, Miramar, Playa, La Habana, Cuba</span></div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="ag-footer-bottom">
+                <div class="container">
+                    <span>© 2026 ENETRADEX. Todos los derechos reservados.</span>
+                    <div class="ag-footer-legal">
+                        <a href="/about?tab=policy">Política de Privacidad</a>
+                        <span class="ag-dot">·</span>
+                        <a href="/about?tab=policy">Términos y Condiciones</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </template>
+</odoo>

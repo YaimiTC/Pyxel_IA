@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "odoo",
+      "runtimeExecutable": "C:\\Proyectos\\DocValidator\\.venv\\Scripts\\python.exe",
+      "runtimeArgs": ["C:\\Proyectos\\scripts\\odoo_proxy.py"],
+      "autoPort": true
+    },
+    {
+      "name": "enetradex",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["C:\\Proyectos\\odoo-enetradex\\.claude\\preview_proxy.py"],
+      "port": 8470,
+      "autoPort": false
+    }
+  ]
+}

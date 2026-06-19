@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+
+<t t-name="pyxel_enetradex_backend.CameraCaptureField">
+    <div class="o_field_widget o_camera_capture_field">
+
+        <!-- Botones principales -->
+        <div class="d-flex gap-2 flex-wrap mb-2">
+            <button class="btn btn-sm btn-outline-secondary" t-on-click="openCamera"
+                    t-att-disabled="loading">
+                📷 Tomar foto
+            </button>
+            <label class="btn btn-sm btn-outline-primary mb-0" style="cursor:pointer;"
+                   t-att-class="loading ? 'disabled' : ''">
+                📁 Subir archivo
+                <input type="file" accept=".pdf,image/*" t-on-change="onFileChange"
+                       style="display:none;"/>
+            </label>
+        </div>
+
+        <!-- Miniaturas de páginas acumuladas -->
+        <t t-if="pages.length">
+            <div class="d-flex flex-wrap gap-2 mb-2">
+                <t t-foreach="pages" t-as="pg" t-key="pg_index">
+                    <div class="position-relative border rounded"
+                         style="width:72px;height:72px;overflow:hidden;background:#f8f9fa;
+                                display:flex;align-items:center;justify-content:center;">
+                        <t t-if="pg.preview">
+                            <img t-att-src="pg.preview"
+                                 style="width:100%;height:100%;object-fit:cover;"/>
+                        </t>
+                        <t t-else="">
+                            <span style="font-size:2rem;">📄</span>
+                        </t>
+                        <button class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                                style="padding:0 4px;line-height:1.2;font-size:.7rem;"
+                                t-on-click="() => this.removePage(pg_index)">✕</button>
+                        <span class="position-absolute bottom-0 start-0 w-100 text-center"
+                              style="font-size:.65rem;background:rgba(0,0,0,.4);color:#fff;">
+                            <t t-esc="pg_index + 1"/>
+                        </span>
+                    </div>
+                </t>
+            </div>
+
+            <button class="btn btn-sm btn-primary" t-on-click="buildPdf"
+                    t-att-disabled="loading">
+                <t t-if="loading">⏳ Generando...</t>
+                <t t-else="">📄 Generar PDF y aplicar</t>
+            </button>
+        </t>
+
+        <!-- Overlay de cámara -->
+        <t t-if="cameraOpen">
+            <div class="o_camera_overlay"
+                 style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;
+                        display:flex;flex-direction:column;align-items:center;
+                        justify-content:center;gap:12px;">
+                <video t-ref="video" autoplay="" playsinline=""
+                       style="max-width:90vw;max-height:60vh;border-radius:8px;"></video>
+                <canvas t-ref="canvas" style="display:none;"></canvas>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary" t-on-click="shoot">📷 Capturar</button>
+                    <button class="btn btn-secondary" t-on-click="closeCamera">✖ Cerrar</button>
+                </div>
+                <div style="color:#fff;font-size:.9rem;">
+                    <t t-if="pages.length">
+                        <t t-esc="pages.length"/> foto(s) — cierra y pulsa "Generar PDF"
+                    </t>
+                </div>
+            </div>
+        </t>
+    </div>
+</t>
+
+</templates>

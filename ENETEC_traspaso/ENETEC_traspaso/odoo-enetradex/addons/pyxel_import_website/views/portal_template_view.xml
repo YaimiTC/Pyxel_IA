@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="portal_my_home_inherit" inherit_id="portal.portal_my_home" priority="1000">
+        <xpath expr="//div[@id='portal_alert_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+
+        <xpath expr="//div[@id='portal_vendor_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+
+        <xpath expr="//div[@id='portal_common_category']" position="replace">
+            <div class="o_portal_category row g-2 mt-3" id="portal_common_category">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/facturas.png'"/>
+                    <t t-set="title">
+                        <t t-esc="new_invoices_count or ''"/>
+                        Facturas
+                    </t>
+                    <t t-set="text">Vea sus facturas</t>
+                    <t t-set="url" t-value="'/my/invoices'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/importaciones.png'"/>
+                    <t t-set="title">
+                        <t t-esc="new_importaciones_count or ''"/>
+                        Importaciones
+                    </t>
+                    <t t-set="text">Vea sus importaciones</t>
+                    <t t-set="url" t-value="'/model/imports'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_side_content_inherit" inherit_id="portal.side_content">
+        <xpath expr="//div[@class='o_portal_my_details']" position="inside">
+            <t t-if="contract_status != False">
+                <div>
+                    <br/>
+                    <span t-esc="contract_status"/>
+                    <t t-if="days_in_process != 'False'">
+                    <br/>
+                        <span>Días en proceso: <t t-out="days_in_process"/></span>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="sale_portal_my_home_inherit" inherit_id="sale.portal_my_home_sale" priority="1000">
+        <xpath expr="//div[@id='portal_alert_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='portal_client_category']" position="replace">
+            <div class="o_portal_category row g-2 mt-3" id="portal_client_category">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/pedidos.png'"/>
+                    <t t-set="title">
+                        <t t-esc="new_quotations_count or ''"/>
+                        Pedidos
+                    </t>
+                    <t t-set="text">Vea sus cotizaciones</t>
+                    <t t-set="url" t-value="'/my/quotes'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/solicitudes.png'"/>
+                    <t t-set="title">
+                        <t t-esc="new_orders_count or ''"/>
+                        Solicitudes
+                    </t>
+                    <t t-set="text">Vea sus órdenes</t>
+                    <t t-set="url" t-value="'/my/orders'"/>
+                    <t t-set="config_card" t-value="True"/>
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <record id="payment.portal_my_home_payment" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+    <record id="account.portal_my_home_invoice" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+    <record id="purchase.portal_my_home_purchase" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+    <record id="project.portal_my_home" model="ir.ui.view">
+        <field name="active">False</field>
+    </record>
+<!--    <record id="knowledge.portal_my_home_knowledge" model="ir.ui.view">-->
+<!--        <field name="active">False</field>-->
+<!--    </record>-->
+
+    <!-- Comentadas. Nuevo Flujo -->
+
+    <template id="portal_my_quotations_inherit" inherit_id="sale.portal_my_quotations">
+        <xpath expr="//t[@t-foreach='quotations']/tr" position="attributes">
+            <attribute name="class">
+                <t t-if="not quotation.quotation_supplier_approved">bg-info</t>
+            </attribute>
+        </xpath>
+        <xpath expr="//t[@t-foreach='quotations']/tr" position="inside">
+            <td class="text-end">
+                <t t-if="quotation.state == 'sent' and not quotation.is_expired">
+                    <span class="badge badge-primary">Pendiente</span>
+                </t>
+                <t t-if="quotation.is_expired">
+                    <span class="badge badge-warning">Vencida</span>
+                </t>
+                <t t-if="quotation.state == 'sale'">
+                    <span class="badge badge-success">Aceptada</span>
+                </t>
+                <t t-if="quotation.state == 'cancel'">
+                    <span class="badge badge-danger">Cancelada</span>
+                </t>
+            </td>
+        </xpath>
+    </template>
+
+    <template id="marketplace_user_needed">
+        <t t-call="website.layout">
+            <div class="alert alert-info text-center" role="alert">
+                <h1>Atención:</h1>
+                <h3>
+                    El acceso a la tienda solo está permitido a clientes acreditados.
+                </h3>
+                <br/>
+                <p>Por favor
+                    <a href="/web/login">
+                        <span class="badge badge-success">Inicie Sesión</span>
+                    </a>
+                    o cree su
+                    <a href="/web/signup">
+                        <span class="badge badge-success">Usuario</span>
+                    </a>
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <template id="marketplace_onboard_needed">
+        <t t-call="website.layout">
+            <div class="alert alert-info text-center" role="alert">
+                <h1>Atención:</h1>
+                <h3>
+                    El acceso a la tienda solo está permitido a clientes acreditados.
+                </h3>
+                <br/>
+                <p>Por favor inicie su proceso de
+                    <a href="/en/wizard">
+                        <span class="badge badge-success">Acreditación</span>
+                    </a>
+                </p>
+            </div>
+        </t>
+    </template>
+
+    <template id="services_onboard_needed">
+        <t t-call="website.layout">
+            <div class="alert alert-info text-center" role="alert">
+                <h1>Atención:</h1>
+                <h3>
+                    El acceso a nuestros servicios solo está permitido a clientes acreditados y con un contrato activo.
+                </h3>
+                <br/>
+                <p>Si aun no lo ha hecho, por favor inicie su proceso de
+                    <a href="/en/wizard">
+                        <span class="badge badge-success">Acreditación</span>
+                    </a>.
+                </p>
+            </div>
+        </t>
+    </template>
+</odoo>

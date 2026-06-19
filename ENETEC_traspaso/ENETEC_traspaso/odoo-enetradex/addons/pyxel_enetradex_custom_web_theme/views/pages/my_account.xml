@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Heredar portal.portal_my_details: banner arriba + CTA al final -->
+    <template id="portal_my_details_inherit_cupet" name="Cupet Portal My Details" inherit_id="portal.portal_my_details">
+
+        <!-- Banner verde ANTES del formulario -->
+        <xpath expr="//form[@action='/my/account']" position="before">
+            <section class="cx-srv-hero">
+                <div class="container">
+                    <h1 class="cx-srv-hero-title">MI CUENTA</h1>
+                    <p class="cx-srv-hero-sub">EDITAR INFORMACIÓN DE CONTACTO</p>
+                </div>
+            </section>
+            <section class="cx-srv-intro">
+                <div class="container">
+                    <p>Actualiza tu información personal y de contacto. Los campos como nombre de empresa, NIF y país no se pueden modificar una vez emitidos documentos asociados a tu cuenta. Para esos casos contáctanos directamente.</p>
+                </div>
+            </section>
+        </xpath>
+
+        <!-- CTA verde DESPUÉS del formulario -->
+        <xpath expr="//form[@action='/my/account']" position="after">
+            <section class="cx-who-cta mt-4">
+                <div class="container">
+                    <div class="cx-who-cta-inner">
+                        <div class="row align-items-center">
+                            <div class="col-12 col-md-8">
+                                <h3>¿Necesitas ayuda con tu cuenta?</h3>
+                                <p>Si tienes dudas sobre cómo actualizar tus datos o requieres modificar campos bloqueados, nuestro equipo está listo para ayudarte.</p>
+                            </div>
+                            <div class="col-12 col-md-4 text-md-end">
+                                <a href="/contactus" class="btn cx-who-cta-btn">
+                                    <i class="fa fa-headphones me-2"></i> Contactar soporte
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+
+    </template>
+
+    <!-- Heredar portal.portal_my_details_fields: ocultar mensaje en inglés sobre campos no editables -->
+    <template id="portal_my_details_fields_inherit_cupet" name="Cupet Portal My Details Fields" inherit_id="portal.portal_my_details_fields">
+
+        <xpath expr="//div[contains(@class, 'd-xl-block')]" position="attributes">
+            <attribute name="style">display: none !important;</attribute>
+        </xpath>
+
+    </template>
+
+</odoo>

@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="en_wizard_page" name="Asistente de acreditación ENETEC">
+        <t t-call="website.layout">
+            <div class="ag-breadcrumb-bar">
+                <div class="container">
+                    <nav class="ag-breadcrumb">
+                        <a href="/">Inicio</a>
+                        <span class="ag-breadcrumb-sep">/</span>
+                        <span class="ag-breadcrumb-cur">Acreditación</span>
+                    </nav>
+                </div>
+            </div>
+            <div class="container" style="max-width:760px;margin-top:1.5rem;margin-bottom:3rem">
+                <style>
+.enwz{--cbg:#ffffff;--cbg2:#f6f8fc;--cinfo:#eef3fc;--csucc:#effaf3;--cwarn:#fff7db;--ctp:#16233f;--cts:#5b6b85;--cti:#0f44ce;--ctsu:#16a34a;--ctw:#a8650c;--cb3:#e3e9f2;--cb2:#c9d4e6;--rmd:8px;--rlg:12px;background:var(--cbg2);border-radius:var(--rlg);padding:1.25rem}
+.enwz *{box-sizing:border-box}
+.en-stepper{display:flex;gap:4px;margin-bottom:1.25rem}
+.en-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;background:none;border:none}
+.en-step .dot{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid var(--cb2);background:var(--cbg);color:var(--cts)}
+.en-step.active .dot{background:var(--cti);color:#fff;border-color:transparent}
+.en-step.done .dot{background:var(--cinfo);color:var(--cti);border-color:transparent}
+.en-step .lbl{font-size:11px;color:var(--cts);text-align:center}
+.en-step.active .lbl{color:var(--ctp)}
+.en-rolecard,.en-typecard{cursor:pointer;text-align:left;width:100%}
+.en-rolecard{background:var(--cbg);border:1px solid var(--cb3);border-radius:var(--rlg);padding:1rem;display:flex;flex-direction:column;gap:6px}
+.en-rolecard.sel,.en-typecard.sel{border:2px solid var(--cti)}
+.en-typecard{background:var(--cbg);border:1px solid var(--cb3);border-radius:var(--rmd);padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.en-chip{background:var(--cbg);border:1px solid var(--cb2);border-radius:var(--rmd);padding:6px 12px;font-size:13px;cursor:pointer}
+.en-chip.sel{background:var(--cinfo);color:var(--cti);border-color:transparent}
+.en-row{display:flex;align-items:center;justify-content:space-between;background:var(--cbg);border:1px solid var(--cb3);border-radius:var(--rmd);padding:9px 12px;margin-bottom:6px;cursor:pointer}
+.en-row.sel{border:2px solid var(--cti)}
+.en-offer{background:var(--cbg);border:1px solid var(--cb3);border-radius:var(--rmd);padding:11px 12px;margin-bottom:6px;cursor:pointer}
+.en-offer.sel{border:2px solid var(--cti)}
+.en-offer .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:8px}
+.en-offer .meta{font-size:12px;color:var(--cts);display:flex;gap:12px;flex-wrap:wrap}
+.en-badge{font-size:11.5px;padding:2px 9px;border-radius:var(--rmd)}
+.en-ok{background:var(--csucc);color:var(--ctsu)}.en-pend{background:var(--cwarn);color:var(--ctw)}.en-pub{background:var(--cinfo);color:var(--cti)}
+.en-note{border-radius:var(--rmd);padding:10px 12px;font-size:13px;display:flex;gap:8px;align-items:center;margin-top:10px;background:var(--cinfo);color:var(--cti)}
+.en-fld{margin-bottom:10px}.en-fld label{display:block;font-size:12.5px;color:var(--cts);margin-bottom:4px}
+.en-grid2>.en-fld{display:flex;flex-direction:column;margin-bottom:0}
+.en-grid2>.en-fld>input,.en-grid2>.en-fld>select,.en-grid2>.en-fld>textarea{margin-top:auto}
+.enwz input,.enwz select,.enwz textarea{width:100%;padding:7px 9px;border:1px solid var(--cb2);border-radius:var(--rmd);font-size:13px}
+.en-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.en-cotiza{background:var(--cbg);border:1px solid var(--cti);border-radius:var(--rlg);padding:14px;display:flex;gap:12px;align-items:flex-start}
+.en-h{font-size:16px;font-weight:500;margin:0 0 3px;color:var(--ctp)}.en-sub{font-size:13px;color:var(--cts);margin:0 0 14px}
+.en-hint{background:var(--cinfo);color:var(--cti);border-radius:var(--rmd);padding:7px 11px;font-size:12.5px;margin:6px 0 12px}
+.en-sechead{font-size:13px;font-weight:500;color:var(--ctp);margin:14px 0 4px}
+.en-tag{display:inline-flex;align-items:center;gap:6px;margin:0 6px 6px 0;font-size:12px;padding:4px 10px;border-radius:var(--rmd);background:var(--csucc);color:var(--ctsu)}
+.en-tag button{border:none;background:none;cursor:pointer;padding:0;color:inherit}
+.ot{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:4px}
+.ot th{padding:6px 8px;font-weight:500;color:var(--cts);text-align:left;border-bottom:1px solid var(--cb2)}
+.ot td{padding:7px 8px;border-bottom:1px solid var(--cb3)}
+.ot .num{text-align:right}.ot .imp{text-align:right;color:var(--ctsu);font-weight:500}
+.totbox{margin:14px 0 0 auto;max-width:330px;background:var(--cbg);border:1px solid var(--cb3);border-radius:var(--rmd);padding:12px}
+.totrow{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:7px}.totrow input{width:130px}
+.totend{display:flex;justify-content:space-between;font-size:14px;border-top:1px solid var(--cb3);padding-top:9px}
+.addbar{display:grid;grid-template-columns:1.2fr 1fr .8fr .9fr auto;gap:8px;align-items:end;margin-top:6px}
+.en-pipe{display:flex;gap:6px;margin-top:14px}
+.en-pipe div{flex:1;text-align:center;font-size:11px;padding:8px 4px;border-radius:var(--rmd);background:var(--cbg);border:1px solid var(--cb3);color:var(--cts)}
+.en-pipe div.on{background:var(--cinfo);color:var(--cti);border-color:transparent}
+.en-foot{display:flex;justify-content:space-between;margin-top:1.25rem;border-top:1px solid var(--cb3);padding-top:1rem}
+.en-btn{background:var(--cti);color:#fff;border:none;border-radius:var(--rmd);padding:8px 16px;font-size:13px;cursor:pointer}
+.en-btn.ghost{background:var(--cbg);color:var(--ctp);border:1px solid var(--cb2)}
+.en-docgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:10px;margin-top:6px}
+.en-doccard{background:var(--cbg);border:1px solid var(--cb3);border-radius:var(--rmd);padding:12px;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.en-doccard.is-done{border-color:var(--ctsu);background:var(--csucc)}
+.en-doc-ic{width:32px;height:32px;border-radius:8px;background:var(--cinfo);color:var(--cti);display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto}
+.en-doc-ic.ok{background:#dcfce7;color:var(--ctsu)}
+.en-doc-name{font-size:12.5px;font-weight:500;color:var(--ctp);line-height:1.25;min-height:31px}
+.en-doc-hint{font-size:11px;color:var(--cts)}
+.en-doc-file{font-size:11px;color:var(--ctsu);font-weight:500;word-break:break-word}
+.en-doc-btn{margin-top:auto;align-self:stretch;text-align:center;background:var(--cti);color:#fff;border-radius:var(--rmd);padding:7px 10px;font-size:12px;cursor:pointer}
+.en-doc-btn.done{background:var(--cbg);color:var(--cti);border:1px solid var(--cb2)}
+                </style>
+                <div class="enwz"
+                     t-att-data-op="'1' if wz_op else '0'"
+                     t-att-data-accredited="'1' if wz_accredited else '0'"
+                     t-att-data-role="wz_role"
+                     t-att-data-company="wz_company"
+                     t-att-data-contact="wz_contact"
+                     t-att-data-email="wz_email"
+                     t-att-data-phone="wz_phone"
+                     t-att-data-paymethods="wz_pay_methods">
+                    <div class="en-stepper" id="en-stepper"></div>
+                    <div id="en-body" style="min-height:260px"></div>
+                    <div class="en-foot">
+                        <button id="en-back" class="en-btn ghost">Atrás</button>
+                        <button id="en-next" class="en-btn">Siguiente</button>
+                    </div>
+                </div>
+                <script><![CDATA[
+(function(){
+  var S={role:null,ctype:null,cpHas:null,cp:'cartera',cpCtype:null,cpSel:null,clients:[],diffused:[],offerLines:[],vigencia:'3 meses',flete:0,seguro:0,solProduct:'Diésel',search:'',offers:[],offersLoaded:false,inviteEmail:'',cpName:'',cpCountry:'',cpMincex:'',docFiles:{},docVerdict:{},coName:'',coNit:'',coObjeto:'',contactName:'',coEmail:'',coPhone:'',coAddress:'',coState:'',coCity:'',provinces:[],provincesLoaded:false,cities:[],provClass:'',provCountry:'',reqMincex:false,socio:false,socioData:{},socioFiles:{},shipFiles:{},shipNatFiles:{},shipCountry:'',portfolio:[],portfolioLoaded:false,solLines:[{prod:'Diésel',qty:'',env:'isotanque'}],solDelivery:'',solPay:'',solBudget:'',solSpecs:'',solObs:'',payMethods:[],mincex:'',countries:[],countriesLoaded:false,nitDup:false,solQty:'',sent:false,result:null};
+  var cur=0;
+  var DOCS={'Pymes':['Escritura notarial','Registro mercantil','Carnet con el NIT','Contrato de banco','Certifico de no adeudo'],'Estatal':['Resoluciones constitutivas','Código REUP','NIT','Contrato de banco'],'CNA':['ONAT','Código REANE','Escritura notarial','Registro mercantil','Carnet con el NIT','Contrato de banco','Certifico de no adeudo'],'Sucursal Extranjera':['Escrituras de constitución','Inscripción registro mercantil','Licencia de la cámara comercial','Carnet de ACORE o PALCO','Planilla de contribuyente','Contrato de banco','Resolución del MINCEX'],'Proveedor':['Escritura de constitución','Inscripción registro mercantil','Poder acreditativo','Certifico de cuenta bancaria','Código MINCEX']};
+  var docState={};
+  var body=document.getElementById('en-body'),stepper=document.getElementById('en-stepper'),back=document.getElementById('en-back'),next=document.getElementById('en-next');
+  var EN=document.querySelector('.enwz');
+  if(EN&&EN.getAttribute('data-op')==='1'&&EN.getAttribute('data-accredited')==='1'&&EN.getAttribute('data-role')==='cliente'){
+    S.role='cliente';S.importOnly=true;S.coName=EN.getAttribute('data-company')||'';
+  }
+  if(EN){S.contactName=EN.getAttribute('data-contact')||'';S.coEmail=EN.getAttribute('data-email')||'';S.coPhone=EN.getAttribute('data-phone')||'';if(!S.coName)S.coName=EN.getAttribute('data-company')||'';try{S.payMethods=JSON.parse(EN.getAttribute('data-paymethods')||'[]');}catch(e){S.payMethods=[];}}
+  function rpc(url,params){return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',method:'call',params:params||{}})}).then(function(r){return r.json();}).then(function(j){return j.result;});}
+  function checkNit(v){var box=document.getElementById('en-nit-dup');v=(v||'').trim();if(!v){S.nitDup=false;if(box)box.style.display='none';return;}rpc('/check_duplicate_nit',{nit:v}).then(function(free){S.nitDup=!free;if(box)box.style.display=free?'none':'block';}).catch(function(){});}
+  function fmt(n){return '$'+(Math.round((+n||0)*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  function subtotal(){return S.offerLines.reduce(function(a,l){return a+(+l.qty||0)*(+l.price||0);},0);}
+  function grandTotal(){return subtotal()+(+S.flete||0)+(+S.seguro||0);}
+  function paintTotals(){var a=document.getElementById('of-subtotal');if(a)a.textContent=fmt(subtotal());var b=document.getElementById('of-total');if(b)b.textContent=fmt(grandTotal());}
+  function field(l,e){return '<div class="en-fld"><label>'+l+'</label>'+e+'</div>';}
+  function contactFields(){return '<p class="en-sechead">Datos del contacto</p>'+field('Nombre y apellido del contacto','<input id="en-contact" placeholder="Nombre y apellido de la persona"/>')+'<div class="en-grid2">'+field('Correo electrónico','<input id="en-email" type="email" placeholder="correo@empresa.com"/>')+field('Teléfono','<input id="en-phone" placeholder="Teléfono"/>')+'</div>';}
+  function loadProvinces(cb){if(S.provincesLoaded){cb&&cb();return;}rpc('/get_form_states',{country_code:'CU'}).then(function(d){S.provinces=Object.keys(d||{}).map(function(k){return [k,d[k]];});S.provincesLoaded=true;cb&&cb();}).catch(function(){S.provinces=[];S.provincesLoaded=true;cb&&cb();});}
+  function loadCities(sid,cb){if(!sid){S.cities=[];cb&&cb();return;}rpc('/get_form_cities',{state_id:sid}).then(function(d){S.cities=Object.keys(d||{}).map(function(k){return [k,d[k]];});cb&&cb();}).catch(function(){S.cities=[];cb&&cb();});}
+  function loadPortfolio(cb){if(S.portfolioLoaded){cb&&cb();return;}rpc('/en/wizard/portfolio',{}).then(function(list){S.portfolio=list||[];S.portfolioLoaded=true;cb&&cb();}).catch(function(){S.portfolio=[];S.portfolioLoaded=true;cb&&cb();});}
+  function loadCountries(cb){if(S.countriesLoaded){cb&&cb();return;}rpc('/get_form_countries',{}).then(function(d){S.countries=Object.keys(d||{}).map(function(k){return [k,d[k]];}).sort(function(a,b){return a[1].localeCompare(b[1]);});S.countriesLoaded=true;cb&&cb();}).catch(function(){S.countries=[];S.countriesLoaded=true;cb&&cb();});}
+  function providerAddress(){
+    if(!S.countriesLoaded){loadCountries(function(){render();});}
+    var co='<option value="">País…</option>'+(S.countries||[]).map(function(c){return '<option value="'+c[0]+'"'+(String(S.provCountry)===String(c[0])?' selected':'')+'>'+c[1]+'</option>';}).join('');
+    return '<p class="en-sechead">Dirección de la empresa</p><div class="en-grid2">'+field('Dirección','<input id="en-address" placeholder="Dirección"/>')+field('País','<select id="en-country">'+co+'</select>')+'</div>';
+  }
+  function mincexBlock(){
+    var mincex=field('Código MINCEX','<input id="en-mincex" placeholder="Código MINCEX"/>');
+    var chk='<label style="display:flex;gap:8px;align-items:center;font-size:13px;margin:8px 0"><input type="checkbox" id="en-req-mincex" style="width:auto"'+(S.reqMincex?' checked':'')+'/> ¿Requiere código MINCEX?</label>';
+    var extra=S.reqMincex?'<div id="en-reqmincex-extra" class="en-hint">Campos adicionales (al requerir MINCEX) — pendiente de definir.</div>':'';
+    return mincex+chk+extra;
+  }
+  var SOCIO_FIELDS=[['nombre','Nombre y apellidos','text'],['pasaporte','No. Pasaporte','text'],['pasaporte_ext','No. Pasaporte extranjero','text'],['nacimiento','Fecha de nacimiento','date'],['lugar_nac','Lugar de nacimiento','text'],['padre','Nombre, apellidos y fecha de nacimiento del padre','text'],['madre','Nombre, apellidos y fecha de nacimiento de la madre','text'],['direccion','Dirección de residencia actual','text'],['movil','No. teléfono móvil','text'],['fijo','No. teléfono fijo','text'],['correo','Correo electrónico','text'],['salida','Fecha de salida de Cuba','date'],['ult_dir_cuba','Última dirección en Cuba','text'],['graduado','Graduado de','text'],['fecha_grad','Fecha de graduado','date'],['labor','Labor desempeñada en Cuba','text']];
+  var SOCIO_DOCS=['Foto copia del Pasaporte','Foto copia del Carnet de Identidad','Curriculum'];
+  function socioBlock(){
+    var box='<div style="border:1px solid var(--cb2);border-left:4px solid var(--cti);background:var(--cinfo);border-radius:var(--rlg);padding:14px 16px;margin:16px 0">';
+    box+='<label style="display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:500;margin:0;color:var(--ctp)"><input type="checkbox" id="en-socio" style="width:auto"'+(S.socio?' checked':'')+'/> ¿La empresa tiene socio de nacionalidad cubana?</label>';
+    if(S.socio){
+      var f='<div id="en-socio-extra" style="margin-top:12px"><p class="en-sechead" style="margin-top:0;text-transform:uppercase;font-size:12px;color:var(--cti)">Datos a aportar para los cubanos residentes en el exterior y que quieran hacer negocios con empresas en Cuba — Negocios Cuba</p><div class="en-grid2">';
+      f+=SOCIO_FIELDS.map(function(x){return field(x[1],'<input data-socio="'+x[0]+'" type="'+(x[2]==='date'?'date':'text')+'"/>');}).join('');
+      f+='</div><p class="en-sechead">Adjuntos del socio</p><div class="en-docgrid">';
+      f+=SOCIO_DOCS.map(function(n){return docCard(n,S.socioFiles[n],'data-sociof="'+encodeURIComponent(n)+'"');}).join('');
+      f+='</div></div>';
+      box+=f;
+    }
+    box+='</div>';
+    return box;
+  }
+  function companyAddress(){
+    if(!S.provincesLoaded){loadProvinces(function(){render();});}
+    var prov='<option value="">Provincia…</option>'+(S.provinces||[]).map(function(p){return '<option value="'+p[0]+'"'+(String(S.coState)===String(p[0])?' selected':'')+'>'+p[1]+'</option>';}).join('');
+    var city='<option value="">Municipio…</option>'+(S.cities||[]).map(function(c){return '<option value="'+c[0]+'"'+(String(S.coCity)===String(c[0])?' selected':'')+'>'+c[1]+'</option>';}).join('');
+    return '<p class="en-sechead">Dirección de la empresa</p>'+field('Dirección','<input id="en-address" placeholder="Calle, número, reparto"/>')+'<div class="en-grid2">'+field('Provincia','<select id="en-state">'+prov+'</select>')+field('Municipio','<select id="en-city">'+city+'</select>')+'</div>';
+  }
+  function bigcard(a,v,t,d,c){return '<button class="en-rolecard" '+a+'="'+v+'"><span style="font-weight:500">'+t+'</span><span style="font-size:12.5px;color:var(--cts)">'+d+'</span><span style="font-size:12px;color:var(--cti);margin-top:2px">'+c+' →</span></button>';}
+  function iaBadge(v){
+    if(!v||!v.ai_state) return '';
+    var map={validating:['🕓 Validando IA…','#eef3fc','#0f44ce'],passed:['✓ IA: Apto','#effaf3','#16a34a'],doubt:['! IA: Dudoso','#fff7db','#a8650c'],rejected:['✕ IA: Rechazado — sube otro','#fdeef0','#d33a4b']};
+    var m=map[v.ai_state]; if(!m) return '';
+    var conf=(v.ai_state!=='validating'&&v.ai_confidence)?(' '+Math.round(v.ai_confidence)+'%'):'';
+    var rsn=(v.ai_reason&&v.ai_state!=='passed')?('<div style="font-size:10.5px;color:#a8650c;margin-top:3px;line-height:1.25">'+v.ai_reason+'</div>'):'';
+    var note=(v.ai_state==='rejected')?'<div style="font-size:10.5px;color:#d33a4b;margin-top:2px">La IA lo rechazó: este archivo no se enviará. Sube uno válido.</div>':'';
+    return '<div style="margin-top:5px"><span style="font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;background:'+m[1]+';color:'+m[2]+'">'+m[0]+conf+'</span>'+rsn+note+'</div>';
+  }
+  function hasRejected(){return Object.keys(S.docVerdict).some(function(k){var v=S.docVerdict[k];return v&&v.ai_state==='rejected'&&S.docFiles[k];});}
+  function docCard(name,file,attr,verdict){
+    var done=!!file;
+    var rej=!!(verdict&&verdict.ai_state==='rejected');
+    var fname=done?(file.name.length>26?file.name.slice(0,24)+'…':file.name):'';
+    var icCls=rej?'':(done?' ok':''); var icIco=rej?'fa-times':(done?'fa-check':'fa-file-pdf-o');
+    var ic='<span class="en-doc-ic'+icCls+'"'+(rej?' style="background:#fdeef0;color:#d33a4b"':'')+'><i class="fa '+icIco+'"></i></span>';
+    var status=done?('<div class="en-doc-file"'+(rej?' style="color:#d33a4b"':'')+'>'+fname+'</div>'):'<div class="en-doc-hint">Formato PDF · máx. 6&#160;MB</div>';
+    var btn='<label class="en-doc-btn'+(done?' done':'')+'">'+(done?'Cambiar archivo':'Subir documento')+'<input type="file" accept=".pdf" '+attr+' style="display:none"/></label>';
+    var cardStyle=rej?' style="border-color:#d33a4b;background:#fdeef0"':'';
+    return '<div class="en-doccard'+(done&&!rej?' is-done':'')+'"'+cardStyle+'>'+ic+'<div class="en-doc-name">'+name+'</div>'+status+iaBadge(verdict)+btn+'</div>';
+  }
+  function docGrid(type,label){return '<p class="en-sechead">'+(label||('Documentos de '+type))+'</p><div class="en-docgrid">'+DOCS[type].map(function(n){var k=type+'|'+n;return docCard(n,S.docFiles[k],'data-docf="'+encodeURIComponent(k)+'"',S.docVerdict[k]);}).join('')+'</div>';}
+  function typeCards(a,c){var t=[['Pymes','5 docs'],['Estatal','4 docs'],['CNA','7 docs'],['Sucursal Extranjera','7 docs']];return '<div class="en-grid2">'+t.map(function(x){return '<button class="en-typecard'+(c===x[0]?" sel":"")+'" '+a+'="'+x[0]+'"><span style="font-weight:500;font-size:13.5px">'+x[0]+'</span><span style="font-size:11.5px;color:var(--cts)">'+x[1]+'</span></button>';}).join('')+'</div>';}
+  function tagsOf(arr,attr,label){if(!arr.length)return '';return '<p class="en-sechead">'+label+' ('+arr.length+')</p><div>'+arr.map(function(n,i){return '<span class="en-tag">'+n+' <button '+attr+'="'+i+'">✕</button></span>';}).join('')+'</div>';}
+  function rowG(r,attr,sel,chk,extra){var badge=extra?extra:(r[2]?'<span class="en-badge en-ok">Acreditado</span>':'<span class="en-badge en-pend">Pendiente</span>');var c=chk?(sel?'☑ ':'☐ '):'';return '<div class="en-row'+(sel?' sel':'')+'" '+attr+'="'+r[0]+'"><span>'+c+'<span style="font-weight:500">'+r[0]+'</span> · NIT '+r[1]+'</span>'+badge+'</div>';}
+  function needRole(){return '<div class="en-hint">Primero elige tu rol.</div><button class="en-btn" data-go="0">Ir al paso 1 →</button>';}
+  function panelRol(){return '<p class="en-h">¿Cómo te vas a acreditar?</p><p class="en-sub">Elige tu rol.</p><div class="en-grid2">'+bigcard('data-role','cliente','Cliente nacional','Empresa cubana que recibe el servicio de importación de combustible.','Entrar')+bigcard('data-role','proveedor','Proveedor extranjero','Empresa extranjera que quiere vender combustible en Cuba.','Entrar')+'</div>';}
+  function panelDatos(){
+    if(!S.role)return needRole();
+    if(S.role==='proveedor')return '<p class="en-h">Datos del proveedor</p><p class="en-sub">Información de la empresa + documentos.</p><div class="en-grid2">'+field('Nombre de la empresa','<input id="en-name" placeholder="Nombre de la empresa"/>')+field('Clasificación del Proveedor','<select id="en-prov-class"><option value="">Clasificación…</option><option value="Productor"'+(S.provClass==='Productor'?' selected':'')+'>Productor</option><option value="Comerciante"'+(S.provClass==='Comerciante'?' selected':'')+'>Comerciante</option></select>')+'</div>'+field('Objeto social','<textarea id="en-objeto" rows="2" placeholder="Describa el objeto social de la entidad"></textarea>')+providerAddress()+mincexBlock()+contactFields()+socioBlock()+docGrid('Proveedor');
+    return '<p class="en-h">Mis datos · Cliente nacional</p><p class="en-sub">Elige tu tipo: se despliegan sus documentos.</p>'+typeCards('data-ctype',S.ctype)+(S.ctype?('<div class="en-grid2" style="margin-top:12px">'+field('Nombre de la empresa','<input id="en-name" placeholder="Nombre de la empresa"/>')+field('NIT','<input id="en-nit" placeholder="NIT"/><div id="en-nit-dup" style="display:none;color:#d33a4b;font-size:11.5px;margin-top:3px">El NIT ya existe — verifícalo antes de continuar.</div>')+'</div>'+field('Objeto social','<textarea id="en-objeto" rows="2" placeholder="Describa el objeto social de la entidad"></textarea>')+companyAddress()+contactFields()+docGrid(S.ctype)):'<div class="en-hint" style="margin-top:12px">Elige un tipo para ver sus documentos.</div>');
+  }
+  function solLineRow(l,i){
+    var prods=['Diésel','Gasolina','Jet A-1','Fuel oíl','GLP'];
+    var po=prods.map(function(p){return '<option'+(l.prod===p?' selected':'')+'>'+p+'</option>';}).join('');
+    var eo=[['isotanque','Isotanque'],['isomodulo','Isomódulo']].map(function(o){return '<option value="'+o[0]+'"'+(l.env===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('');
+    var rm=S.solLines.length>1?'<button class="en-chip" data-rmsol="'+i+'">✕</button>':'';
+    return '<tr><td><select data-li="'+i+'" data-lf="prod">'+po+'</select></td>'+
+      '<td><input type="number" data-li="'+i+'" data-lf="qty" value="'+(l.qty||'')+'" placeholder="0"/></td>'+
+      '<td><select data-li="'+i+'" data-lf="env">'+eo+'</select></td>'+
+      '<td class="num">'+rm+'</td></tr>';
+  }
+  function panelSolCli(){
+    var payOpts='<option value="">-- Seleccione --</option>'+S.payMethods.map(function(m){return '<option value="'+m.id+'"'+(String(S.solPay)===String(m.id)?' selected':'')+'>'+m.name+'</option>';}).join('');
+    var rows=S.solLines.map(solLineRow).join('');
+    var table='<p class="en-sechead">Productos</p><table class="ot"><thead><tr><th>Producto</th><th>Cantidad</th><th>Tipo de envase</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<button class="en-btn ghost" data-addsol="1" style="margin:8px 0 14px">+ Agregar producto</button>';
+    return '<p class="en-h">Solicitud de importación</p><p class="en-sub">Añade uno o varios productos. Según ellos te mostraremos proveedores.</p>'+
+      table+
+      '<div class="en-grid2">'+
+        field('Fecha de entrega deseada','<input id="sol-delivery" type="date"/>')+
+        field('Forma de pago *','<select id="sol-pay">'+payOpts+'</select>')+
+        field('Presupuesto disponible (USD) *','<input id="sol-budget" type="number" min="0" step="0.01" placeholder="0.00"/>')+
+      '</div>'+
+      field('Especificaciones','<textarea id="sol-specs" rows="2" placeholder="Especificaciones técnicas del producto"></textarea>')+
+      field('Observaciones','<textarea id="sol-obs" rows="2"></textarea>');
+  }
+  function offerCardHtml(o){var sel=String(S.cpSel)===String(o.id);return '<div class="en-offer'+(sel?' sel':'')+'" data-pick="'+o.id+'"><div class="top"><span style="font-weight:500">'+o.supplier+'</span><span class="en-badge en-pub">Acreditado</span></div><div class="meta"><span>'+o.fuels+'</span><span>'+o.price+'</span><span>'+o.port+'</span></div></div>';}
+  function renderOfferList(){var q=(S.search||'').toLowerCase();var fil=S.offers.filter(function(o){var pOk=!S.solProduct||(o.fuels||'').toLowerCase().indexOf(S.solProduct.toLowerCase())>=0;var qOk=!q||(o.supplier+' '+o.fuels+' '+o.port).toLowerCase().indexOf(q)>=0;return pOk&&qOk;});if(!fil.length)return '<div class="en-hint">Sin ofertas para esa búsqueda.</div>';return fil.map(offerCardHtml).join('');}
+  function panelCp(){
+    if(!S.role)return needRole();
+    var head='<p class="en-h">Proveedor de la operación</p>';var pT=S.solProduct||'tu producto';
+    if(S.cpHas==null)return head+'<p class="en-sub">Para tu solicitud de <b>'+pT+'</b>, ¿cómo eliges proveedor?</p><div class="en-grid2">'+bigcard('data-has','si','Ya tengo un proveedor','En mi cartera o lo registro. Puede no estar acreditado.','Continuar')+bigcard('data-has','buscar','Buscar en el catálogo','Ofertas de proveedores acreditados de '+pT+'.','Buscar')+bigcard('data-has','cotiza','Que me coticen','Pliego de concurrencia: la mejor oferta del mercado.','Solicitar')+'</div>';
+    var backb='<button class="en-btn ghost" data-has="back" style="margin-bottom:12px">← Cambiar respuesta</button>';
+    if(S.cpHas==='cotiza')return head+backb+'<div class="en-cotiza"><div><p style="font-weight:500;margin:0 0 4px">ENETEC cotiza por ti (pliego de concurrencia)</p><p style="font-size:13px;color:var(--cts);margin:0">Para tu solicitud de '+pT+', ENETEC sale al mercado, recibe ofertas y te presenta la mejor.</p></div></div><div class="en-note" style="background:var(--csucc);color:var(--ctsu)">✓ Elegiste que ENETEC cotice. Lo verás en el resumen.</div>';
+    if(S.cpHas==='buscar'){if(!S.offersLoaded){loadOffers(function(){render();});return head+'<p class="en-sub">Cargando ofertas…</p>'+backb;}var sel=S.cpSel?'<div class="en-note" style="background:var(--csucc);color:var(--ctsu)">✓ Oferta seleccionada.</div>':'';return head+'<p class="en-sub">Ofertas de proveedores acreditados para <b>'+pT+'</b>. Usa el buscador.</p>'+backb+'<input id="of-search" placeholder="Buscar por proveedor, combustible o puerto" style="margin-bottom:10px"/><div id="offer-list">'+renderOfferList()+'</div>'+sel;}
+    var chips=[['cartera','Mi cartera'],['info','Acreditar nuevo'],['invitar','Invitar']].map(function(c){return '<button class="en-chip'+(S.cp===c[0]?" sel":"")+'" data-cp="'+c[0]+'">'+c[1]+'</button>';}).join(' ');
+    var content;
+    if(S.cp==='info')content='<p class="en-sechead">Datos del proveedor (empresa extranjera)</p><div class="en-grid2">'+field('Razón social','<input id="cp-name"/>')+field('País','<input id="cp-country"/>')+'</div>'+field('Código MINCEX','<input id="cp-mincex"/>')+docGrid('Proveedor','Documentos del proveedor');
+    else if(S.cp==='invitar')content=field('Correo del proveedor','<input id="en-invite-email" placeholder="correo@empresa.com"/>')+'<div class="en-note">Recibe un enlace para acreditarse solo como proveedor. Al enviarlo te notifica y entra al CRM.</div>';
+    else{
+      if(!S.portfolioLoaded){loadPortfolio(function(){render();});content='<div class="en-hint">Cargando tu cartera…</div>';}
+      else if(!S.portfolio.length)content='<div class="en-hint">No tienes proveedores en tu cartera todavía. Usa «Acreditar nuevo» o «Invitar».</div>';
+      else content=S.portfolio.map(function(p){var sel=String(S.cpSel)===String(p.id);var badge=p.accredited?'<span class="en-badge en-ok">Acreditado</span>':'<span class="en-badge en-pend">Pendiente</span>';return '<div class="en-row'+(sel?' sel':'')+'" data-pick="'+p.id+'"><span><span style="font-weight:500">'+p.name+'</span>'+(p.nit?(' · NIT '+p.nit):'')+'</span>'+badge+'</div>';}).join('');
+    }
+    return head+'<p class="en-sub">Búscalo en tu cartera. Si no está acreditado, acredítalo o invítalo.</p>'+backb+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+chips+'</div>'+content;
+  }
+  function panelOferta(){
+    var prods=['Diésel','Gasolina','Jet A-1','Fuel oíl','GLP'],vigs=['1 mes','3 meses','6 meses','1 año','Personalizada'];
+    var head='<div class="en-grid2">'+field('Vigencia','<select id="of-vig">'+vigs.map(function(v){return '<option'+(S.vigencia===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select>')+field('Incoterm','<select><option>CIF</option><option>CFR</option><option>FOB</option></select>')+field('Puerto de origen','<input id="of-port" placeholder="Puerto"/>')+field('Forma de pago','<select><option>Transferencia</option><option>Carta de crédito</option></select>')+'</div>';
+    var rows=S.offerLines.length?S.offerLines.map(function(l,i){var imp=(+l.qty||0)*(+l.price||0);return '<tr><td style="font-weight:500">'+l.prod+'</td><td>'+l.env+'</td><td class="num">'+(l.qty||'—')+'</td><td class="num">'+fmt(l.price)+'</td><td class="imp">'+fmt(imp)+'</td><td class="num"><button class="en-chip" data-rmline="'+i+'">✕</button></td></tr>';}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--cts);padding:14px">Aún no hay líneas. Agrega una abajo.</td></tr>';
+    var table='<p class="en-sechead">Productos de la oferta</p><table class="ot"><thead><tr><th>Producto</th><th>Envase</th><th class="num">Cant.</th><th class="num">Precio</th><th class="num">Importe</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+    var addbar='<div class="addbar"><div class="en-fld"><label>Producto</label><select id="ol-prod">'+prods.map(function(p){return '<option>'+p+'</option>';}).join('')+'</select></div><div class="en-fld"><label>Envase</label><select id="ol-env"><option>Isotanque</option><option>Isomódulo</option></select></div><div class="en-fld"><label>Cantidad</label><input id="ol-qty" type="number"/></div><div class="en-fld"><label>Precio (USD)</label><input id="ol-price" type="number"/></div><button class="en-btn" data-addline="1">+ Agregar</button></div>';
+    var totals='<div class="totbox"><div class="totrow"><span style="color:var(--cts)">Subtotal</span><span id="of-subtotal" style="font-weight:500">$0.00</span></div><div class="totrow"><span style="color:var(--cts)">Flete</span><input id="of-flete" type="number"/></div><div class="totrow"><span style="color:var(--cts)">Seguro</span><input id="of-seguro" type="number"/></div><div class="totend"><span style="font-weight:500">Total</span><span id="of-total" style="font-weight:500;color:var(--ctsu)">$0.00</span></div></div>';
+    return '<p class="en-h">Oferta de suministro</p><p class="en-sub">Cotización: líneas valoradas, flete, seguro y total.</p>'+head+table+addbar+totals;
+  }
+  function panelClientes(){
+    if(!S.role)return needRole();var head='<p class="en-h">Tus clientes</p>';
+    if(S.cpHas==null)return head+'<p class="en-sub">¿Cómo defines a los clientes de tu oferta?</p><div class="en-grid2">'+bigcard('data-has','tengo','Ya tengo clientes','De mi cartera (uno o varios).','Elegir')+bigcard('data-has','sumar','Sumar clientes nuevos','Acredito o invito a uno o varios.','Continuar')+bigcard('data-has','difundir','Difundir mi oferta','A clientes que reciben ofertas.','Elegir')+'</div>';
+    var backb='<button class="en-btn ghost" data-has="back" style="margin-bottom:12px">← Cambiar respuesta</button>';
+    if(S.cpHas==='tengo'){var rows=[['Pymes del Sur S.R.L.','3000…841',true],['Comercial Habana','3000…077',false],['Distribuidora Oriente','3000…512',true]];return head+'<p class="en-sub">Marca uno o varios clientes de tu cartera.</p>'+backb+rows.map(function(r){return rowG(r,'data-multi',S.clients.indexOf(r[0])>=0,true);}).join('')+tagsOf(S.clients,'data-rm','Clientes');}
+    if(S.cpHas==='difundir'){var rows=[['Transporte Habana','3001…900'],['Logística Caribe','3001…044']];return head+'<p class="en-sub">Clientes que aceptan recibir ofertas. Marca a quiénes enviar tu oferta.</p>'+backb+rows.map(function(r){return rowG(r,'data-diff',S.diffused.indexOf(r[0])>=0,true,'<span class="en-badge en-pub">Recibe ofertas</span>');}).join('')+tagsOf(S.diffused,'data-rmd','Difusión a');}
+    var oc='<button class="en-chip'+(S.cp==='info'?' sel':'')+'" data-cp="info">Acreditar (datos+docs)</button> <button class="en-chip'+(S.cp==='invitar'?' sel':'')+'" data-cp="invitar">Invitar</button>';
+    var content=S.cp==='invitar'?field('Correo del cliente','<input id="en-invite-email" placeholder="correo@empresa.com"/>')+'<button class="en-btn" data-add="invite">+ Agregar a la lista</button>'+tagsOf(S.clients,'data-rm','Clientes'):'<p class="en-sechead">Tipo del cliente cubano</p>'+typeCards('data-cpctype',S.cpCtype)+(S.cpCtype?('<div class="en-grid2" style="margin-top:12px">'+field('Razón social','<input/>')+field('NIT','<input/>')+'</div>'+docGrid(S.cpCtype,'Documentos del cliente')+'<button class="en-btn" data-add="client" style="margin-top:10px">+ Agregar cliente</button>'):'<div class="en-hint" style="margin-top:12px">Elige el tipo para ver sus documentos.</div>')+tagsOf(S.clients,'data-rm','Clientes');
+    return head+'<p class="en-sub">Suma uno o varios clientes: acredítalos o invítalos.</p>'+backb+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+oc+'</div>'+content;
+  }
+  function p2(){if(!S.role)return needRole();return S.role==='proveedor'?panelOferta():panelSolCli();}
+  function p3(){if(!S.role)return needRole();return S.role==='proveedor'?panelClientes():panelCp();}
+  var SHIP_DOCS=['Oferta','Factura comercial','Lista de empaque'];
+  var SHIP_NATIVE=[['Documentación BL/AWB','documentation_file'],['Certificado de exportación','export_certificate'],['Certificado de calidad','quality_certificate'],['Certificado de origen','origin_certificate']];
+  function hasProvider(){return (S.cpHas==='buscar'&&!!S.cpSel)||(S.cpHas==='si'&&S.cp==='info')||(S.cpHas==='si'&&S.cp==='cartera'&&!!S.cpSel);}
+  // El paso de embarque es parte del flujo de importación del cliente: se muestra
+  // siempre tras Proveedor, salvo cuando se elige "Que me coticen" o "Invitar"
+  // (ahí todavía no hay un proveedor/embarque concreto).
+  function showEmbarque(){if(S.role==='proveedor')return false;return !(S.cpHas==='cotiza'||(S.cpHas==='si'&&S.cp==='invitar'));}
+  function solGate(){if(steps().p[cur]!==panelSolCli)return;var bad=(!S.solPay||!(parseFloat(S.solBudget)>0));next.disabled=hasRejected()||bad;next.title=bad?'Completa la forma de pago y el presupuesto disponible para continuar.':'';}
+  function panelEmbarque(){
+    if(!S.countriesLoaded){loadCountries(function(){render();});}
+    var co='<option value="">Seleccione el origen…</option>'+(S.countries||[]).map(function(c){return '<option value="'+c[0]+'"'+(String(S.shipCountry)===String(c[0])?' selected':'')+'>'+c[1]+'</option>';}).join('');
+    return '<p class="en-h">Documentos del embarque</p><p class="en-sub">Datos y documentos de la operación de importación. <b>Este paso es opcional</b>: si aún no tienes los documentos, puedes continuar y aportarlos después. Los revisará un comercial.</p>'+
+      '<div class="en-grid2">'+field('País de origen','<select id="ship-country">'+co+'</select>')+'</div>'+
+      '<p class="en-sechead">Documentos comerciales <span style="font-weight:400;color:var(--cts)">(opcional)</span></p>'+
+      '<div class="en-docgrid">'+SHIP_DOCS.map(function(n){return docCard(n,S.shipFiles[n],'data-shipf="'+encodeURIComponent(n)+'"');}).join('')+'</div>'+
+      '<p class="en-sechead">Documentación de la carga <span style="font-weight:400;color:var(--cts)">(opcional)</span></p>'+
+      '<div class="en-docgrid">'+SHIP_NATIVE.map(function(o){return docCard(o[0],S.shipNatFiles[o[1]],'data-shipnat="'+o[1]+'"');}).join('')+'</div>';
+  }
+  function row2(k,v){return '<div class="en-row" style="cursor:default"><span>'+k+'</span><span style="font-weight:500;text-align:right;max-width:60%">'+v+'</span></div>';}
+  function panelRes(){
+    if(!S.role)return needRole();var esCli=S.role!=='proveedor';var imp=S.importOnly;
+    var stages=imp?['Solicitud enviada','Solicitudes para atender','En operación']:['Borrador','En revisión · abogado','Contratos aprobados','Solicitudes para atender'],on=S.sent?1:0;
+    var pipe='<div class="en-pipe">'+stages.map(function(s,i){return '<div class="'+(i===on?'on':'')+'">'+s+'</div>';}).join('')+'</div>';
+    var ndocs=Object.keys(S.docFiles).length;
+    var r='<p class="en-h">Resumen y envío</p><p class="en-sub">Revisa tu '+(imp?'solicitud de importación':'solicitud de acreditación')+' y envíala.</p>';
+    if(imp){r+=row2('Empresa',S.coName||'');}
+    if(!imp){
+      r+=row2('Rol',(esCli?'Cliente nacional':'Proveedor extranjero')+(S.ctype?' · '+S.ctype:''));
+      r+=row2('Empresa',S.coName||'<span style="color:var(--cts)">(sin nombre)</span>');
+      if(S.coObjeto)r+=row2('Objeto social',S.coObjeto.length>42?S.coObjeto.slice(0,40)+'…':S.coObjeto);
+      r+=row2('Documentos',ndocs?(ndocs+' subido(s)'):'<span style="color:var(--cts)">0</span>');
+    }
+    if(esCli){
+      var cart=S.cpHas==='si'&&S.cp==='cartera'&&S.cpSel?(S.portfolio.filter(function(p){return String(p.id)===String(S.cpSel);})[0]||{}).name:null;
+      var t=S.cpHas==='cotiza'?'Que me coticen (pliego de concurrencia)':(cart?('Cartera · '+cart):((S.cpHas==='buscar'&&S.cpSel)?'Oferta del catálogo':(S.cpHas==='si'&&S.cp==='invitar'?'Proveedor invitado':(S.cpHas==='si'&&S.cp==='info'?'Proveedor registrado':'<span style=\"color:var(--cts)\">(sin elegir)</span>'))));
+      var solTxt=S.solLines.filter(function(l){return l.prod;}).map(function(l){return l.prod+(l.qty?(' · '+l.qty):'');}).join('  |  ')||'—';
+      r+=row2('Solicitud',solTxt);
+      var pm=S.payMethods.filter(function(m){return String(m.id)===String(S.solPay);})[0];
+      r+=row2('Forma de pago',pm?pm.name:'<span style="color:var(--cts)">(sin elegir)</span>');
+      r+=row2('Presupuesto (USD)',S.solBudget?('$'+S.solBudget):'<span style="color:var(--cts)">—</span>');
+      r+=row2('Proveedor',t);
+      if(showEmbarque()){var pc=(S.countries||[]).filter(function(c){return String(c[0])===String(S.shipCountry);})[0];r+=row2('País de origen',pc?pc[1]:'<span style="color:var(--cts)">(sin elegir)</span>');}
+      if(showEmbarque()){var nship=Object.keys(S.shipFiles).length+Object.keys(S.shipNatFiles).length;r+=row2('Documentos del embarque',nship?(nship+' subido(s)'):'<span style="color:var(--cts)">0</span>');}
+    } else {
+      r+=row2('Oferta de suministro',S.offerLines.length+' línea(s) · '+(S.vigencia||'')+' · Total '+fmt(grandTotal()));
+      r+=row2('Clientes',S.clients.length||0);
+      if(S.diffused.length)r+=row2('Difusión de oferta',S.diffused.length+' cliente(s)');
+    }
+    r+='<p class="en-sechead">Proceso de '+(imp?'importación':'acreditación')+':</p>'+pipe+'<div id="en-sent" style="margin-top:12px"></div>';return r;
+  }
+  function steps(){
+    var ship=showEmbarque();
+    if(S.importOnly){var li=['Solicitud','Proveedor'],pi=[panelSolCli,panelCp];if(ship){li.push('Documentos del embarque');pi.push(panelEmbarque);}li.push('Resumen');pi.push(panelRes);return{l:li,p:pi};}
+    if(S.role==='proveedor')return{l:['Rol','Mis datos','Oferta','Clientes','Resumen'],p:[panelRol,panelDatos,panelOferta,panelClientes,panelRes]};
+    var lc=['Rol','Mis datos','Solicitud','Proveedor'],pc=[panelRol,panelDatos,panelSolCli,panelCp];if(ship){lc.push('Documentos del embarque');pc.push(panelEmbarque);}lc.push('Resumen');pc.push(panelRes);return{l:lc,p:pc};
+  }
+  function loadOffers(cb){if(S.offersLoaded){cb&&cb();return;}rpc('/en/catalog/offers',{}).then(function(list){S.offers=list||[];S.offersLoaded=true;cb&&cb();}).catch(function(){S.offers=[];S.offersLoaded=true;cb&&cb();});}
+  function go(i){cur=i;render();}
+  function render(){
+    var st=steps();var STEPS=st.l;var last=st.p.length-1;
+    stepper.innerHTML=STEPS.map(function(t,i){var cls=i===cur?'active':(i<cur?'done':'');return '<button class="en-step '+cls+'" data-go="'+i+'"><div class="dot">'+(i<cur?'✓':(i+1))+'</div><div class="lbl">'+t+'</div></button>';}).join('');
+    body.innerHTML=st.p[cur]();
+    back.style.visibility=cur===0?'hidden':'visible';
+    next.textContent=cur===last?'Enviar':'Siguiente';
+    var solBad=(st.p[cur]===panelSolCli)&&(!S.solPay||!(parseFloat(S.solBudget)>0));
+    next.disabled=(!S.importOnly && cur===0 && !S.role) || hasRejected() || solBad;
+    next.title=hasRejected()?'Hay documentos rechazados por la IA: reemplázalos para continuar.':(solBad?'Completa la forma de pago y el presupuesto disponible para continuar.':'');
+    document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){go(+b.getAttribute('data-go'));};});
+    body.querySelectorAll('[data-role]').forEach(function(b){b.onclick=function(){S.role=b.getAttribute('data-role');S.cpHas=null;S.cpSel=null;S.cp='cartera';S.cpCtype=null;S.clients=[];S.diffused=[];S.offerLines=[];go(1);};});
+    body.querySelectorAll('[data-ctype]').forEach(function(b){b.onclick=function(){S.ctype=b.getAttribute('data-ctype');render();};});
+    body.querySelectorAll('[data-cpctype]').forEach(function(b){b.onclick=function(){S.cpCtype=b.getAttribute('data-cpctype');render();};});
+    body.querySelectorAll('[data-has]').forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-has');if(v==='back'){S.cpHas=null;S.cpSel=null;}else{S.cpHas=v;S.cpSel=null;S.cp=(v==='sumar'?'info':'cartera');S.cpCtype=null;S.search='';}render();};});
+    body.querySelectorAll('[data-cp]').forEach(function(b){b.onclick=function(){S.cp=b.getAttribute('data-cp');S.cpSel=null;render();};});
+    body.querySelectorAll('[data-pick]').forEach(function(b){b.onclick=function(){S.cpSel=b.getAttribute('data-pick');render();};});
+    body.querySelectorAll('[data-multi]').forEach(function(b){b.onclick=function(){var n=b.getAttribute('data-multi'),i=S.clients.indexOf(n);if(i>=0)S.clients.splice(i,1);else S.clients.push(n);render();};});
+    body.querySelectorAll('[data-diff]').forEach(function(b){b.onclick=function(){var n=b.getAttribute('data-diff'),i=S.diffused.indexOf(n);if(i>=0)S.diffused.splice(i,1);else S.diffused.push(n);render();};});
+    body.querySelectorAll('[data-docf]').forEach(function(b){b.onchange=function(){
+      var k=decodeURIComponent(b.getAttribute('data-docf'));
+      if(b.files&&b.files[0]){
+        var file=b.files[0]; S.docFiles[k]=file;
+        var label=k.indexOf('|')>=0?k.split('|')[1]:k;
+        S.docVerdict[k]={ai_state:'validating'};
+        var fr=new FileReader();
+        fr.onload=function(){var b64=(String(fr.result).split(',')[1])||'';rpc('/en/wizard/validate_doc',{label:label,file_b64:b64}).then(function(res){S.docVerdict[k]=res||{ai_state:'validating'};render();}).catch(function(){S.docVerdict[k]={ai_state:'validating'};render();});};
+        fr.readAsDataURL(file);
+      }
+      render();
+    };});
+    body.querySelectorAll('[data-socio]').forEach(function(el){var k=el.getAttribute('data-socio');el.value=S.socioData[k]||'';el.oninput=function(){S.socioData[k]=el.value;};});
+    body.querySelectorAll('[data-sociof]').forEach(function(b){b.onchange=function(){var k=decodeURIComponent(b.getAttribute('data-sociof'));if(b.files&&b.files[0])S.socioFiles[k]=b.files[0];render();};});
+    body.querySelectorAll('[data-shipf]').forEach(function(b){b.onchange=function(){var k=decodeURIComponent(b.getAttribute('data-shipf'));if(b.files&&b.files[0])S.shipFiles[k]=b.files[0];render();};});
+    body.querySelectorAll('[data-shipnat]').forEach(function(b){b.onchange=function(){var k=b.getAttribute('data-shipnat');if(b.files&&b.files[0])S.shipNatFiles[k]=b.files[0];render();};});
+    var shc=document.getElementById('ship-country');if(shc)shc.onchange=function(){S.shipCountry=shc.value;};
+    var al=body.querySelector('[data-addline]');if(al)al.onclick=function(){var p=document.getElementById('ol-prod'),e=document.getElementById('ol-env'),q=document.getElementById('ol-qty'),pr=document.getElementById('ol-price');S.offerLines.push({prod:p?p.value:'Diésel',env:e?e.value:'Isotanque',qty:(q&&q.value)?+q.value:0,price:(pr&&pr.value)?+pr.value:0});render();};
+    body.querySelectorAll('[data-rmline]').forEach(function(b){b.onclick=function(){S.offerLines.splice(+b.getAttribute('data-rmline'),1);render();};});
+    body.querySelectorAll('[data-add]').forEach(function(b){b.onclick=function(){var em=document.getElementById('en-invite-email');var t=b.getAttribute('data-add');if(t==='invite'&&em)S.inviteEmail=em.value;S.clients.push(t==='invite'?('Invitado '+(S.clients.length+1)):('Nuevo cliente '+(S.clients.length+1)));render();};});
+    body.querySelectorAll('[data-rm]').forEach(function(b){b.onclick=function(){S.clients.splice(+b.getAttribute('data-rm'),1);render();};});
+    body.querySelectorAll('[data-rmd]').forEach(function(b){b.onclick=function(){S.diffused.splice(+b.getAttribute('data-rmd'),1);render();};});
+    body.querySelectorAll('[data-li]').forEach(function(b){var i=+b.getAttribute('data-li'),f=b.getAttribute('data-lf');var ev=(f==='qty')?'oninput':'onchange';b[ev]=function(){S.solLines[i][f]=b.value;if(f==='prod')S.solProduct=S.solLines[0].prod;};});
+    var asl=body.querySelector('[data-addsol]');if(asl)asl.onclick=function(){S.solLines.push({prod:'Diésel',qty:'',env:'isotanque'});render();};
+    body.querySelectorAll('[data-rmsol]').forEach(function(b){b.onclick=function(){S.solLines.splice(+b.getAttribute('data-rmsol'),1);S.solProduct=S.solLines[0].prod;render();};});
+    var sde=document.getElementById('sol-delivery');if(sde){sde.value=S.solDelivery||'';sde.onchange=function(){S.solDelivery=sde.value;};}
+    var spm=document.getElementById('sol-pay');if(spm)spm.onchange=function(){S.solPay=spm.value;solGate();};
+    var sbu=document.getElementById('sol-budget');if(sbu){sbu.value=S.solBudget||'';sbu.oninput=function(){S.solBudget=sbu.value;solGate();};}
+    var ssp=document.getElementById('sol-specs');if(ssp){ssp.value=S.solSpecs||'';ssp.oninput=function(){S.solSpecs=ssp.value;};}
+    var sob=document.getElementById('sol-obs');if(sob){sob.value=S.solObs||'';sob.oninput=function(){S.solObs=sob.value;};}
+    var srch=document.getElementById('of-search');if(srch){srch.value=S.search||'';srch.oninput=function(){S.search=srch.value;var ol=document.getElementById('offer-list');if(ol){ol.innerHTML=renderOfferList();ol.querySelectorAll('[data-pick]').forEach(function(b){b.onclick=function(){S.cpSel=b.getAttribute('data-pick');render();};});}};}
+    var vg=document.getElementById('of-vig');if(vg)vg.onchange=function(){S.vigencia=vg.value;};
+    var fl=document.getElementById('of-flete');if(fl){fl.value=S.flete||'';fl.oninput=function(){S.flete=+fl.value||0;paintTotals();};}
+    var sg=document.getElementById('of-seguro');if(sg){sg.value=S.seguro||'';sg.oninput=function(){S.seguro=+sg.value||0;paintTotals();};}
+    var nm=document.getElementById('en-name');if(nm){nm.value=S.coName||'';nm.oninput=function(){S.coName=nm.value;};}
+    var ob=document.getElementById('en-objeto');if(ob){ob.value=S.coObjeto||'';ob.oninput=function(){S.coObjeto=ob.value;};}
+    var nit=document.getElementById('en-nit');if(nit){nit.value=S.coNit||'';nit.oninput=function(){S.coNit=nit.value;};nit.onchange=function(){checkNit(nit.value);};var nb=document.getElementById('en-nit-dup');if(nb)nb.style.display=S.nitDup?'block':'none';}
+    var ct1=document.getElementById('en-contact');if(ct1){ct1.value=S.contactName||'';ct1.oninput=function(){S.contactName=ct1.value;};}
+    var em1=document.getElementById('en-email');if(em1){em1.value=S.coEmail||'';em1.oninput=function(){S.coEmail=em1.value;};}
+    var ph1=document.getElementById('en-phone');if(ph1){ph1.value=S.coPhone||'';ph1.oninput=function(){S.coPhone=ph1.value;};}
+    var ad1=document.getElementById('en-address');if(ad1){ad1.value=S.coAddress||'';ad1.oninput=function(){S.coAddress=ad1.value;};}
+    var st1=document.getElementById('en-state');if(st1){st1.value=S.coState||'';st1.onchange=function(){S.coState=st1.value;S.coCity='';loadCities(st1.value,function(){render();});};}
+    var cy1=document.getElementById('en-city');if(cy1){cy1.value=S.coCity||'';cy1.onchange=function(){S.coCity=cy1.value;};}
+    var pc1=document.getElementById('en-prov-class');if(pc1){pc1.value=S.provClass||'';pc1.onchange=function(){S.provClass=pc1.value;};}
+    var co1=document.getElementById('en-country');if(co1){co1.value=S.provCountry||'';co1.onchange=function(){S.provCountry=co1.value;};}
+    var rm1=document.getElementById('en-req-mincex');if(rm1){rm1.checked=!!S.reqMincex;rm1.onchange=function(){S.reqMincex=rm1.checked;render();};}
+    var mx1=document.getElementById('en-mincex');if(mx1){mx1.value=S.mincex||'';mx1.oninput=function(){S.mincex=mx1.value;};}
+    var so1=document.getElementById('en-socio');if(so1){so1.checked=!!S.socio;so1.onchange=function(){S.socio=so1.checked;render();};}
+    var cpn=document.getElementById('cp-name');if(cpn){cpn.value=S.cpName||'';cpn.oninput=function(){S.cpName=cpn.value;};}
+    var cpc=document.getElementById('cp-country');if(cpc){cpc.value=S.cpCountry||'';cpc.oninput=function(){S.cpCountry=cpc.value;};}
+    var cpm=document.getElementById('cp-mincex');if(cpm){cpm.value=S.cpMincex||'';cpm.oninput=function(){S.cpMincex=cpm.value;};}
+    paintTotals();
+  }
+  function doSubmit(){
+    var em=document.getElementById('en-invite-email');if(em)S.inviteEmail=em.value;
+    var first=S.solLines[0]||{};var qty=first.qty||'';
+    var verdicts={};Object.keys(S.docVerdict).forEach(function(k){var lbl=k.indexOf('|')>=0?k.split('|')[1]:k;verdicts[lbl]=S.docVerdict[k];});
+    var payload={role:S.role,importOnly:!!S.importOnly,ctype:S.ctype,verdicts:verdicts,company:{name:S.coName,nit:S.coNit,objeto_social:S.coObjeto,address:S.coAddress,state_id:S.coState,city_id:S.coCity},contact:{name:S.contactName,email:S.coEmail,phone:S.coPhone},prov:{clasificacion:S.provClass,country_id:S.provCountry,requiere_mincex:S.reqMincex,mincex:S.mincex,socio_cubano:S.socio},socio:{enabled:S.socio,data:S.socioData},cpHas:S.cpHas,cp:S.cp,cpSel:S.cpSel,inviteEmail:S.inviteEmail,cpInfo:{name:S.cpName,country:S.cpCountry,mincex:S.cpMincex},sol:{product:first.prod,qty:qty,envase:first.env,lines:S.solLines,delivery:S.solDelivery,payment_method_id:S.solPay,budget:S.solBudget,specifications:S.solSpecs,observations:S.solObs},shipData:{country_id:S.shipCountry},offer:{vigencia:S.vigencia,flete:S.flete,seguro:S.seguro,lines:S.offerLines},clients:S.clients,diffused:S.diffused};
+    var fd=new FormData();fd.append('payload',JSON.stringify(payload));
+    Object.keys(S.docFiles).forEach(function(k){fd.append('doc:'+k,S.docFiles[k],S.docFiles[k].name);});
+    Object.keys(S.socioFiles).forEach(function(k){fd.append('socio:'+k,S.socioFiles[k],S.socioFiles[k].name);});
+    Object.keys(S.shipFiles).forEach(function(k){fd.append('ship:'+k,S.shipFiles[k],S.shipFiles[k].name);});
+    Object.keys(S.shipNatFiles).forEach(function(k){fd.append('shipnat:'+k,S.shipNatFiles[k],S.shipNatFiles[k].name);});
+    next.disabled=true;next.textContent='Enviando…';
+    fetch('/en/wizard/submit',{method:'POST',credentials:'same-origin',body:fd}).then(function(r){return r.json();}).then(function(res){if(res&&res.ok){window.location.href='/en/wizard/enviado'+(S.importOnly?'?op=1':'');return;}next.disabled=false;next.textContent='Enviar';var s=document.getElementById('en-sent');if(s)s.innerHTML='<div class="en-note" style="background:#fdeef0;color:#d33a4b">No se pudo enviar. Inténtalo de nuevo.</div>';}).catch(function(e){next.disabled=false;next.textContent='Enviar';var s=document.getElementById('en-sent');if(s)s.innerHTML='<div class="en-note" style="background:#fdeef0;color:#d33a4b">Error al enviar.</div>';});
+  }
+  next.onclick=function(){var last=steps().p.length-1;if(cur<last)go(cur+1);else doSubmit();};
+  back.onclick=function(){if(cur>0)go(cur-1);};
+  render();
+})();
+                ]]></script>
+            </div>
+        </t>
+    </template>
+</odoo>

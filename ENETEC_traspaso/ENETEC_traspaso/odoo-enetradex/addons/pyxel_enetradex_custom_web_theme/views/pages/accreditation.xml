@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!--
+        BANNER REUTILIZABLE PARA PÁGINAS INTERNAS (no-home).
+    -->
+    <template id="ag_page_banner" name="Enetradex Page Banner">
+        <section class="ag-pagebanner">
+            <div class="ag-pagebanner-pattern"></div>
+            <div class="container">
+                <div class="ag-pagebanner-row">
+                    <div class="ag-pagebanner-text">
+                        <h1 t-esc="pb_title"/>
+                        <p t-if="pb_subtitle" t-esc="pb_subtitle"/>
+                        <t t-if="pb_cta"><a t-att-href="pb_cta_href or '#'" class="ag-btn-primary"><i class="fa fa-check-circle"></i> <t t-esc="pb_cta"/></a></t>
+                    </div>
+                    <div class="ag-pagebanner-aside">
+                        <t t-out="0"/>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="ag-breadcrumb-bar">
+            <div class="container">
+                <nav class="ag-breadcrumb">
+                    <a href="/">Inicio</a>
+                    <span class="ag-breadcrumb-sep">/</span>
+                    <span class="ag-breadcrumb-cur" t-esc="pb_title"/>
+                </nav>
+            </div>
+        </div>
+    </template>
+
+    <!-- ============================================================
+         PÁGINA DE ACREDITACIÓN — rediseño ENETEC (fiel al mockup)
+         ============================================================ -->
+    <template id="business_registration_agrimpex"
+              inherit_id="pyxel_import_website.business_registration"
+              name="Acreditación ENETEC (rediseño)">
+
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" add="ag-inner-page ag-acc-page" separator=" "/>
+        </xpath>
+
+        <!-- Banner azul "Acreditación corporativa" + stepper -->
+        <xpath expr="//div[@id='wrap']/div[contains(@class,'me-lg-auto')]" position="replace">
+            <t t-call="pyxel_enetradex_custom_web_theme.ag_page_banner">
+                <t t-set="pb_title">Acreditación corporativa</t>
+                <t t-set="pb_subtitle">Acceda a operaciones de importación, marketplace energético y servicios especializados.</t>
+                <t t-set="pb_cta">Comenzar acreditación</t>
+                <t t-set="pb_cta_href">#business_registration_form</t>
+                <div class="ag-bannersteps">
+                    <div class="ag-bstep"><span class="ag-bstep-ico"><i class="fa fa-user-plus"></i></span><span class="ag-bstep-lbl">Registro</span></div>
+                    <span class="ag-bstep-arrow"><i class="fa fa-long-arrow-right"></i></span>
+                    <div class="ag-bstep"><span class="ag-bstep-ico"><i class="fa fa-search"></i></span><span class="ag-bstep-lbl">Revisión</span></div>
+                    <span class="ag-bstep-arrow"><i class="fa fa-long-arrow-right"></i></span>
+                    <div class="ag-bstep"><span class="ag-bstep-ico"><i class="fa fa-shield"></i></span><span class="ag-bstep-lbl">Validación</span></div>
+                    <span class="ag-bstep-arrow"><i class="fa fa-long-arrow-right"></i></span>
+                    <div class="ag-bstep"><span class="ag-bstep-ico"><i class="fa fa-check-circle"></i></span><span class="ag-bstep-lbl">Activación</span></div>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- Tarjetas de "Tipo de entidad" (5): los 4 tipos de gestión cliente + Proveedor.
+             Cada tarjeta fija el contact_type y el tipo de gestión reales (JS). -->
+        <xpath expr="//div[contains(@class,'s_website_form_field')][.//select[@id='contact_type']]" position="before">
+            <t t-set="cliente_nac" t-value="contact_types.filtered(lambda c: c.name == 'Cliente nacional')"/>
+            <t t-set="prov_nac" t-value="contact_types.filtered(lambda c: c.name == 'Proveedor nacional')"/>
+            <div class="ag-formsection"><span class="ag-formsection-num">1</span><h3>Tipo de entidad</h3></div>
+            <p class="ag-formsection-sub">Seleccione el tipo de entidad que representa.</p>
+            <div class="ag-typecards en-typecards">
+                <t t-foreach="cliente_nac.management_type_ids" t-as="mt">
+                    <div class="ag-typecard en-typecard" t-att-data-ct="cliente_nac.id" t-att-data-mt="mt.name">
+                        <span class="ag-typecard-ico">
+                            <i t-attf-class="fa {{ 'fa-building-o' if mt.name == 'Pymes' else ('fa-globe' if mt.name == 'Sucursal Extranjera' else ('fa-university' if mt.name == 'Estatal' else 'fa-shield')) }}"></i>
+                        </span>
+                        <span class="ag-typecard-lbl" t-esc="mt.name"/>
+                        <span class="en-typecard-desc">
+                            <t t-if="mt.name == 'Pymes'">Micro, pequeña y mediana empresa</t>
+                            <t t-elif="mt.name == 'Sucursal Extranjera'">Empresa constituida en el extranjero</t>
+                            <t t-elif="mt.name == 'Estatal'">Empresa de propiedad del estado</t>
+                            <t t-elif="mt.name == 'CNA'">Cooperativa no agropecuaria</t>
+                        </span>
+                    </div>
+                </t>
+                <div class="ag-typecard en-typecard" t-att-data-ct="prov_nac.id" data-mt="">
+                    <span class="ag-typecard-ico"><i class="fa fa-users"></i></span>
+                    <span class="ag-typecard-lbl">Proveedor</span>
+                    <span class="en-typecard-desc">Proveedor de bienes y servicios</span>
+                </div>
+            </div>
+            <div class="ag-formsection"><span class="ag-formsection-num">2</span><h3>Información básica</h3></div>
+            <p class="ag-formsection-sub">Complete la información general de su entidad.</p>
+        </xpath>
+
+        <!-- Barra "¿Necesita ayuda?" al final (reemplaza las secciones agro) -->
+        <xpath expr="//div[@id='wrap']" position="inside">
+            <section class="en-helpbar">
+                <div class="container">
+                    <div class="en-helpbar-row">
+                        <div class="en-helpbar-text">
+                            <span class="en-helpbar-ico"><i class="fa fa-headphones"></i></span>
+                            <div>
+                                <h3>¿Necesita ayuda?</h3>
+                                <p>Nuestro equipo está disponible para asistirle en el proceso de acreditación.</p>
+                            </div>
+                        </div>
+                        <div class="en-helpbar-contacts">
+                            <a href="mailto:acreditaciones@enetec.telmark.com.cu"><i class="fa fa-envelope"></i> acreditaciones@enetec.telmark.com.cu</a>
+                            <a href="tel:+5352807765"><i class="fa fa-phone"></i> +53 5280 7765</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+</odoo>

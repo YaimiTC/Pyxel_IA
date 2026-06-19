@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--Styled Template for Shipment
+    Information-->
+    <template id="update_files" name="Actualizar Archivos">
+        <t t-call="website.layout">
+            <div class="container">
+                <ol class="breadcrumb bg-transparent p-0 my-2">
+                    <!-- Home -->
+                    <li class="breadcrumb-item o_not_editable">
+                        <a href="/my/home">
+                            <span>Mi Cuenta</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item o_not_editable">
+                        <a href="/model/imports">
+                            <span>Importaciones</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item o_not_editable">
+                        <a t-att-href="'/importations/view/%s' % record.id">
+                             <span t-field="record.display_name" />
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <span>Información de Embarque</span>
+                    </li>
+                </ol>
+                <h3 class="text-display text-primary text-uppercase">Introducir Información de
+                    Embarque</h3>
+                <!-- Archivos de la orden de importación -->
+                <h5 class="text-uppercase">Solicitud <t t-esc="record.name" /></h5>
+                <div class="container py-4">
+                    <div class="row">
+                        <t t-if="record.has_awb or record.has_bl">
+                            <div class="col-md-6 col-12">
+                                <div class="d-flex d-inline">
+                                    <div class="col-2">
+                                        <label>Documentación BL/AWB</label>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="px-5 align-items-center">
+                                            <t t-if="record.documentation_file">
+                                                <a class="text-decoration-none"
+                                                    t-att-href="'/web/content/importation.process/%s/documentation_file?download=true' % record.id"
+                                                    target="_blank">Ver PDF</a>
+                                            </t>
+                                            <t t-else="">
+                                                <owl-component
+                                                    name="pyxel_import_website.FileUploader"
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'documentation_file', 'cannotUpload': cannot_upload, 'disableMessage': upload_disable_message})" />
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-if="record.has_origin_certificate">
+                            <div class="col-md-6 col-12">
+                                <div class="d-flex d-inline">
+                                    <div class="col-2">
+                                        <label>Certificado de Origen</label>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="px-5 align-items-center">
+                                            <t t-if="record.origin_certificate">
+                                                <a class="text-decoration-none"
+                                                    t-att-href="'/web/content/importation.process/%s/origin_certificate?download=true' % record.id"
+                                                    target="_blank">Ver PDF</a>
+                                            </t>
+                                            <t t-else="">
+                                                <owl-component
+                                                    name="pyxel_import_website.FileUploader"
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id,'fieldName':'origin_certificate', 'cannotUpload': cannot_upload, 'disableMessage': upload_disable_message})" />
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    <br />
+                    <div class="row to-toggle">
+                        <t t-if="record.has_export_certificate">
+                            <div class="col-md-6 col-12">
+                                <div class="d-flex d-inline">
+                                    <div class="col-2">
+                                        <label>Certificado de Exportación</label>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="px-5 align-items-center">
+                                            <t t-if="record.export_certificate">
+                                                <a class="text-decoration-none"
+                                                    t-att-href="'/web/content/importation.process/%s/export_certificate?download=true' % record.id"
+                                                    target="_blank">Ver PDF</a>
+                                            </t>
+                                            <t t-else="">
+                                                <owl-component
+                                                    name="pyxel_import_website.FileUploader"
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'export_certificate', 'cannotUpload': cannot_upload, 'disableMessage': upload_disable_message})" />
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                        <t t-if="record.has_quality_certificate">
+                            <div class="col-md-6 col-12">
+                                <div class="d-flex d-inline">
+                                    <div class="col-2">
+                                        <label>Certificado de Calidad</label>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="px-5 align-items-center">
+                                            <t t-if="record.quality_certificate">
+                                                <a class="text-decoration-none"
+                                                    t-att-href="'/web/content/importation.process/%s/quality_certificate?download=true' % record.id"
+                                                    target="_blank">Ver PDF</a>
+                                            </t>
+                                            <t t-else="">
+                                                <owl-component
+                                                    name="pyxel_import_website.FileUploader"
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'quality_certificate', 'cannotUpload': cannot_upload, 'disableMessage': upload_disable_message})" />
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    <br />
+                    <div class="row to-toggle">
+
+                        <div class="col-md-6 col-12">
+                            <!--Empty
+                            col for balance-->
+                        </div>
+                        <t t-if="record.has_packing_list">
+                            <div class="col-md-6 col-12">
+                                <div class="d-flex d-inline">
+                                    <div class="col-2">
+                                        <label>Lista de Empaque</label>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="px-5 align-items-center">
+                                            <t t-if="record.packing_list">
+                                                <a class="text-decoration-none"
+                                                    t-att-href="'/web/content/importation.process/%s/packing_list?download=true' % record.id"
+                                                    target="_blank">Ver PDF</a>
+                                            </t>
+                                            <t t-else="">
+                                                <owl-component
+                                                    name="pyxel_import_website.FileUploader"
+                                                    t-att-props="json.dumps({'model':'importation.process', 'recordId':record.id, 'fieldName':'packing_list', 'cannotUpload': cannot_upload, 'disableMessage': upload_disable_message})" />
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                    <br />
+
+                    <h5 class="text-uppercase">Archivos por orden de compra</h5>
+                    <t t-foreach="record.purchase_order_ids" t-as="po">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <strong>
+                                    <t t-esc="po.partner_id.name" />
+                                </strong>
+                            </div>
+                            <div class="card-body px-0">
+                                <div class="row">
+                                    <div class="col-md-6 col-12">
+                                        <div class="d-flex d-inline">
+                                            <div class="col-2">
+                                                <label>Oferta Firmada</label>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="px-5 align-items-center">
+                                                    <t t-if="po.signed_offer">
+                                                        <a class="text-decoration-none"
+                                                            t-att-href="'/web/content/purchase.order/%s/signed_offer?download=true' % po.id"
+                                                            target="_blank">Ver PDF</a>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <owl-component
+                                                            name="pyxel_import_website.FileUploader"
+                                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId': po.id, 'fieldName':'signed_offer', 'cannotUpload': cannot_upload, 'disableMessage': upload_disable_message})" />
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-12">
+                                        <div class="d-flex d-inline">
+                                            <div class="col-2">
+                                                <label>Factura Comercial</label>
+                                            </div>
+                                            <div class="col-4">
+                                                <div class="px-5 align-items-center">
+                                                    <t t-if="po.commercial_invoice">
+                                                        <a class="text-decoration-none"
+                                                            t-att-href="'/web/content/purchase.order/%s/commercial_invoice?download=true' % po.id"
+                                                            target="_blank">Ver PDF</a>
+                                                    </t>
+                                                    <t t-else="">
+                                                        <owl-component
+                                                            name="pyxel_import_website.FileUploader"
+                                                            t-att-props="json.dumps({'model':'purchase.order', 'recordId': po.id, 'fieldName':'commercial_invoice', 'cannotUpload': cannot_upload, 'disableMessage': upload_disable_message})" />
+                                                    </t>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                    <!-- Botones -->
+                    <div class="form-group mt-3">
+                        <button type="button" class="btn btn-outline-secondary"
+                            onclick="window.history.back();">
+                            Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

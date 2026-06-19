@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ============================================================
+         DETALLE DE PRODUCTO — rediseño sobre website_sale.product
+         ============================================================ -->
+    <template id="product_agrimpex" inherit_id="website_sale.product" name="Detalle producto Agrimpex">
+        <!-- Scope -->
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" add="ag-pdp-page" separator=" "/>
+        </xpath>
+
+        <!-- Texto del botón en español -->
+        <xpath expr="//a[@id='add_to_cart']" position="replace">
+            <a role="button" id="add_to_cart" href="#" data-animation-selector=".o_wsale_product_images"
+               class="btn btn-primary js_check_product a-submit flex-grow-1">
+                <i class="fa fa-shopping-cart me-2"></i> Agregar al carrito
+            </a>
+        </xpath>
+
+        <!-- Badges de confianza tras el bloque de compra -->
+        <xpath expr="//div[hasclass('js_main_product')]" position="after">
+            <div class="ag-pdp-badges">
+                <div class="ag-pdp-badge">
+                    <i class="fa fa-shield"></i>
+                    <div><strong>Compra segura</strong><span>Tus pagos están protegidos</span></div>
+                </div>
+                <div class="ag-pdp-badge">
+                    <i class="fa fa-truck"></i>
+                    <div><strong>Entrega garantizada</strong><span>En todo el país</span></div>
+                </div>
+                <div class="ag-pdp-badge">
+                    <i class="fa fa-cube"></i>
+                    <div><strong>Disponibilidad inmediata</strong><span>Productos en stock</span></div>
+                </div>
+                <div class="ag-pdp-badge">
+                    <i class="fa fa-headphones"></i>
+                    <div><strong>Soporte especializado</strong><span>Atención personalizada</span></div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+</odoo>

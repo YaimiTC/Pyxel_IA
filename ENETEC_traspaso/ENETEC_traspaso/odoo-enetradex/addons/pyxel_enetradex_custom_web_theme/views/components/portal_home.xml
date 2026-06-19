@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="agrimpex_portal_layout_inherit" inherit_id="portal.portal_layout" priority="1000">
+        <!-- Replacing the "My account" title -->
+        <xpath expr="//div[@id='wrap']//h3[@class='my-3']" position="replace">
+            <!-- Adding My Account custom breadcumb -->
+            <div class="container">
+                <ol class="breadcrumb p-0 bg-transparent">
+                    <!-- Home -->
+                    <li class="breadcrumb-item o_not_editable">
+                        <a href="/">
+                            <span>Inicio</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        <a href="/my/home">
+                            <span>Mi Cuenta</span>
+                        </a>
+                    </li>
+                </ol>
+            </div>
+            <h3>Mi Cuenta</h3>
+        </xpath>
+    </template>
+
+    <template id="agrimpex_portal_my_home_inherit" inherit_id="portal.portal_my_home" priority="1000">
+        <!--Customizing
+        container position-->
+        <xpath expr="//div[@class='o_portal_docs row g-2']" position="attributes">
+            <attribute name="class">o_portal_docs row g-2 ml-2</attribute>
+        </xpath>
+        <!-- Hide categories i don't want -->
+        <xpath expr="//div[@id='portal_alert_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='portal_vendor_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+
+        <!-- Replace common category with custom icons -->
+        <xpath expr="//div[@id='portal_common_category']" position="replace">
+            <div class="o_portal_category row g-2 mt-3" id="portal_common_category">
+
+                <!-- Invoices -->
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon"
+                        t-value="'/pyxel_enetradex_custom_web_theme/static/src/img/facturas.png'" />
+                    <t t-set="title">
+                        <t t-esc="new_quotations_count or ''" /> Facturas </t>
+                    <t t-set="text">Vea sus facturas</t>
+                    <t t-set="url" t-value="'/my/invoices'" />
+                    <t t-set="config_card" t-value="True" />
+                </t>
+
+                <!-- Imports -->
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon"
+                        t-value="'/pyxel_enetradex_custom_web_theme/static/src/img/importaciones.png'" />
+                    <t t-set="title">
+                        <t t-esc="new_importaciones_count or ''" /> Importaciones </t>
+                    <t t-set="text">Vea sus importaciones</t>
+                    <t t-set="url" t-value="'/model/imports'" />
+                    <t t-set="config_card" t-value="True" />
+                </t>
+
+                <!-- Mi acreditación (expediente de documentos) -->
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon"
+                        t-value="'/pyxel_enetradex_custom_web_theme/static/src/img/acreditacion.png'" />
+                    <t t-set="title">Mi acreditación</t>
+                    <t t-set="text">Gestione los documentos de su acreditación</t>
+                    <t t-set="url" t-value="'/my/acreditacion'" />
+                    <t t-set="config_card" t-value="True" />
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="agrimpex_sale_portal_my_home_inherit" inherit_id="sale.portal_my_home_sale"
+        priority="1000">
+        <xpath expr="//div[@id='portal_alert_category']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//div[@id='portal_client_category']" position="replace">
+            <div class="o_portal_category row g-2 mt-3" id="portal_client_category">
+
+                <!--Quotes-->
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon"
+                        t-value="'/pyxel_enetradex_custom_web_theme/static/src/img/pedidos.png'" />
+                    <t t-set="title">
+                        <t t-esc="new_quotations_count or ''" /> Pedidos </t>
+                    <t t-set="text">Vea sus cotizaciones</t>
+                    <t t-set="url" t-value="'/my/quotes'" />
+                    <t t-set="config_card" t-value="True" />
+                </t>
+
+                <!-- Orders-->
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon"
+                        t-value="'/pyxel_enetradex_custom_web_theme/static/src/img/solicitudes.png'" />
+                    <t t-set="title">
+                        <t t-esc="new_orders_count or ''" /> Solicitudes </t>
+                    <t t-set="text">Vea sus órdenes</t>
+                    <t t-set="url" t-value="'/my/orders'" />
+                    <t t-set="config_card" t-value="True" />
+                </t>
+            </div>
+        </xpath>
+    </template>
+
+    <!-- Custom Layout for user profile_session -->
+    <template id="agrimpex_portal_side_content_inherit" inherit_id="portal.side_content"
+        priority="1000">
+        <xpath expr="//div[@t-attf-class]" position="replace">
+            <div t-att-class="'offcanvas-body' if isOffcanvas else 'mt-3'">
+                <div class="d-flex justify-content-start align-items-center gap-3 mb-4">
+                    <img class="o_portal_contact_img rounded-circle o_object_fit_cover"
+                        t-att-src="image_data_uri(user_id.partner_id.avatar_128)" alt="Contact"
+                        width="50" />
+                    <div class="d-flex flex-column justify-content-center">
+                        <h5 class="mb-0" t-out="user_id.name" />
+                        <p class="mb-0 text-muted" t-out="user_id.partner_id.email" />
+                        <p class="mb-0 text-muted" t-out="user_id.company_name" />
+                    </div>
+                </div>
+                <div class="o_portal_my_details">
+                    <div t-field="user_id.partner_id"
+                        t-options='{"widget": "contact", "fields": ["phone", "address"]}' />
+                    <!-- Estado de acreditación con la estética de marca -->
+                    <div t-attf-class="en-acc-banner #{'ok' if is_accredited else 'wait'}">
+                        <span class="ic">
+                            <i t-attf-class="fa #{'fa-check' if is_accredited else 'fa-clock-o'}"/>
+                        </span>
+                        <span t-esc="'Empresa acreditada' if is_accredited else 'Acreditación en proceso'"/>
+                    </div>
+                    <t t-if="contract_status != False">
+                        <div class="text-muted small mb-1">
+                            Etapa: <t t-esc="contract_status" />
+                            <t t-if="days_in_process != 'False'"> · <t t-out="days_in_process" /> días en proceso</t>
+                        </div>
+                    </t>
+                    <a href="/my/seguimiento" class="text-decoration-none" style="color:#0f44ce;font-weight:600;">
+                        <i class="fa fa-route me-1"/> Ver seguimiento completo
+                    </a>
+                </div>
+                <div class="my-3">
+                    <h6 class="text-left text-dark mb-2">Administrar Cuenta</h6>
+                    <a role="button" href="/my/account"
+                        class="text-decoration-none text-dark p-0 mb-1"><i
+                            class="fa fa-pencil-square-o" /> Editar información de usuario</a>
+                    <!-- Divider -->
+                    <hr class="border-secondary my-1" style="opacity: 0.5;" />
+                    <a role="button" href="/my/quotes"
+                        class="text-decoration-none text-dark p-0 mb-1"><i class="fa fa-list" />
+                        Historial de pedidos</a>
+                    <!-- Divider -->
+                    <hr class="border-secondary my-1" style="opacity: 0.5;" />
+                    <a role="button" href="/my/notifications"
+                        class="text-decoration-none text-dark p-0 mb-1"><i class="fa fa-bell" />
+                        Notificaciones</a>
+                    <!-- Divider -->
+                    <hr class="border-secondary my-1" style="opacity: 0.5;" />
+                    <a role="button" href="/web/session/logout"
+                        class="text-decoration-none text-dark p-0 mb-1"><i class="fa fa-sign-out" />
+                        Salir</a>
+                    <!-- Divider -->
+                    <hr class="border-secondary my-1" style="opacity: 0.5;" />
+                </div>
+                <hr t-if="sales_user" />
+                <div class="o_my_contact" t-if="sales_user">
+                    <t t-call="portal.portal_contact" />
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

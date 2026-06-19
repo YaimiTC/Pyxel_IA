@@ -1,0 +1,27 @@
+<odoo>
+    <template id="portal_notifications_template" name="Portal Notifications">
+        <t t-call="pyxel_enetradex_custom_web_theme.base_layout">
+            <xpath expr="//div[@id='wrap']" position="inside">
+                <section class="container mt-4">
+                    <h1 class="mb-4">Notificaciones</h1>
+                    <t t-if="messages">
+                        <ul class="list-group">
+                            <t t-foreach="messages" t-as="msg">
+                                <li class="list-group-item d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <i class="fa fa-bell text-primary mr-2"></i>
+                                        <span t-esc="msg.subject or msg.body[:80]"/>
+                                    </div>
+                                    <small class="text-muted" t-esc="msg.date.strftime('%Y-%m-%d %H:%M')"/>
+                                </li>
+                            </t>
+                        </ul>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info">No hay notificaciones.</div>
+                    </t>
+                </section>
+            </xpath>
+        </t>
+    </template>
+</odoo>

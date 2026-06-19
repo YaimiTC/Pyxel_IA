@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Heredar la vista del login -->
+        <template id="import_registration_with_recaptcha" inherit_id="pyxel_import_website.import_registration">
+             <xpath expr="//a[@id='button-submit']" position="after">
+                <!-- Agregar el widget de reCAPTCHA -->
+                <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
+                <div class="form-group mt-3">
+                   <div class="g-recaptcha" t-if="request.env['ir.config_parameter'].sudo().get_param('recaptcha_public_key')" t-att-data-sitekey="request.env['ir.config_parameter'].sudo().get_param('recaptcha_public_key')"/>
+                </div>
+            </xpath>
+
+        </template>
+
+         <!-- Heredar la vista del login -->
+        <template id="business_registration_with_recaptcha" inherit_id="pyxel_import_website.business_registration">
+           <xpath expr="//a[@id='button-submit']" position="after">
+                <!-- Agregar el widget de reCAPTCHA -->
+                <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
+                <div class="form-group mt-3">
+<!--                    <div class="g-recaptcha"-->
+<!--                          t-att-data-sitekey="recaptcha_public_key">-->
+<!--                    </div>-->
+                   <div class="g-recaptcha" t-if="request.env['ir.config_parameter'].sudo().get_param('recaptcha_public_key')" t-att-data-sitekey="request.env['ir.config_parameter'].sudo().get_param('recaptcha_public_key')"/>
+
+
+                </div>
+            </xpath>
+
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_order_form_inherit_override_supplier" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.override.supplier</field>
+        <field name="model">sale.order</field>
+        <!-- Esta es la vista de sale_purchase que añade el botón -->
+        <field name="inherit_id" ref="sale_purchase.sale_order_inherited_form_purchase"/>
+        <!-- Súbela para que se aplique DESPUÉS -->
+        <field name="priority" eval="200"/>
+        <field name="arch" type="xml">
+            <!-- Usa // (descendiente) por si hay contenedores intermedios -->
+            <xpath expr="//div[@name='button_box']//button[@name='action_view_purchase_orders']"
+                   position="replace">
+                <button name="action_view_related_purchase_orders"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-shopping-cart">
+                    <field name="purchase_order_count" widget="statinfo" string="Purchases"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+
+    <record id="view_order_form_inherit_evaluar_proveedor" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.evaluar.proveedor</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <!-- Button to open the Evaluate Supplier wizard -->
+                <field name="has_applicable_evaluations" invisible="1"/>
+                <field name="order_type" invisible="1"/>
+                <field name="importation_process_id" invisible="1"/>
+                <button name="%(action_open_evaluar_proveedor)d"
+                        type="action"
+                        string="Evaluate Supplier"
+                        class="btn-secondary"
+                        context="{'default_sale_order_id': active_id}"
+                        invisible="has_applicable_evaluations or order_type in ('evaluation_final', 'importation_process') or state in ['cancel']"/>
+                <button name="action_initial_process_importation"
+                        type="object"
+                        string="Start Importation"
+                        class="btn-secondary"
+                        invisible="order_type != 'evaluation_final' or importation_process_id"/>
+            </xpath>
+
+            <xpath expr="//div[@class='oe_button_box']" position="inside">
+
+                <button type="action"
+                        name="%(action_purchase_provider_evaluation)d"
+                        class="oe_stat_button"
+                        icon="fa-balance-scale"
+                        invisible="order_type in ('evaluation_final', 'importation_process')"
+                        context="{'active_id': active_id, 'default_sale_order_id': active_id}">
+                    <field name="purchase_evaluation_count" widget="statinfo" string="Evaluations"/>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="contract_reference_supplier"/>
+                <field name="contract_reference_customer"/>
+                <field name="order_type" string="Order Type" readonly="1"/>
+                <field name="importation_process_id" string="Importation Process" readonly="1"/>
+
+            </xpath>
+            <xpath expr="//field[@name='validity_date']" position="attributes">
+              <attribute name="invisible">True</attribute>
+              <!-- si prefieres el viejo flag: <attribute name="invisible">1</attribute> -->
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                  <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]</attribute>
+             </xpath>
+
+             <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="before">
+                 <field name="line_number" readonly="1" string="N°" width="40"/>
+             </xpath>
+
+             <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="before">
+                 <field name="line_number" readonly="1" string="N°" width="40"/>
+             </xpath>
+
+            <!-- Insertar la UoM en el árbol de order_line -->
+            <xpath expr="//field[@name='order_line']/tree//field[@name='name']" position="before">
+              <!-- En ventas el campo es product_uom -->
+              <field name="product_uom" optional="show"/>
+            </xpath>
+            <!-- Si también tienes vista tipo form de la línea -->
+            <xpath expr="//field[@name='order_line']/form//field[@name='name']" position="before">
+              <field name="product_uom"/>
+            </xpath>
+
+        </field>
+        </record>
+
+    <record id="view_order_form_inherit_invoice_button" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.invoice.button</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority" eval="200"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@id='create_invoice']" position="attributes">
+                <attribute name="invisible">
+                    invoice_status != 'to invoice' or order_type != 'importation_process'
+                </attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_quotation_tree_inherit_order_type" model="ir.ui.view">
+        <field name="name">sale.quotation.tree.inherit.order_type</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="process_id"/>
+                <field name="order_type" string="Order Type"/>
+                <field name="provider_names" string="Providers"/>
+                <field name="invoice_names" string="Invoices"/>
+                <field name="is_third_party_contract" string="Is third party contract"/>
+            </xpath>
+<!--            <xpath expr="//tree" position="attributes">-->
+<!--              <attribute name="default_group_by">partner_id,process_id,order_type</attribute>-->
+<!--           </xpath>-->
+        </field>
+    </record>
+
+     <record id="view_order_tree_inherit_order_type" model="ir.ui.view">
+        <field name="name">sale.order.tree.inherit.order_type</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="process_id"/>
+                <field name="order_type" string="Order Type"/>
+                <field name="provider_names" string="Providers"/>
+                <field name="invoice_names" string="Invoices"/>
+                <field name="is_third_party_contract" string="Is third party contract"/>
+            </xpath>
+<!--            <xpath expr="//tree" position="attributes">-->
+<!--              <attribute name="default_group_by">partner_id,process_id,order_type</attribute>-->
+<!--           </xpath>-->
+        </field>
+    </record>
+
+    <record id="view_order_search_inherit_order_type_extension" model="ir.ui.view">
+        <field name="name">sale.order.search.inherit.order.type.extension</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='order_month']" position="after">
+                <filter string="Año (Proceso)" name="group_by_process_year" context="{'group_by': 'process_year'}"/>
+                <filter string="Sequence" name="group_by_process_id" context="{'group_by': 'process_id'}"/>
+                <filter string="Order type" name="group_by_order_type" context="{'group_by': 'order_type'}"/>
+                <filter string="Evaluación Final" name="filter_final_evaluation" domain="[('order_type', '=', 'evaluation_final')]"/>
+
+
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="context" eval="{'search_default_group_by_process_year': 1,'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>
+<!--        <field name="context" eval="{ 'search_default_customer': 1, 'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>-->
+    </record>
+
+
+
+ <record id="action_mass_send_quotation_final_evaluation_binding" model="ir.actions.server">
+    <field name="name">Enviar Cotizaciones: Evaluación Final</field>
+    <field name="model_id" ref="sale.model_sale_order"/>
+    <field name="binding_model_id" ref="sale.model_sale_order"/>
+    <field name="binding_view_types">list</field>
+    <field name="state">code</field>
+    <field name="code">
+records = env['sale.order'].search([('order_type', '=', 'evaluation_final')]) if not env.context.get('active_ids') else env['sale.order'].browse(env.context.get('active_ids')).filtered(lambda r: r.order_type == 'evaluation_final')
+for record in records:
+    record.action_quotation_send()
+    record.message_post(
+        body="Se ha enviado el correo de la cotización (Evaluación Final).",
+        message_type="comment"
+    )
+    </field>
+</record>
+
+</odoo>

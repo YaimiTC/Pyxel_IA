@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="extended_importations_table_template" xml:space="preserve">
+  <!-- Extending the original table template -->
+  <t t-name="pyxel_enetradex_custom_web_theme.ExtendedImportationsTableTemplate" owl="1" t-inherit="pyxel_import_website.ImportationsTableTemplate" t-inherit-mode="extension">
+    
+    <!--Replacing breadcumb default home icon-->
+    <xpath expr="//a[contains(@class,'text-decoration-none text-primary-custom d-flex align-items-center')]" position="replace">
+      <a href="/my/home" class="text-decoration-none text-primary-custom d-flex align-items-center">
+        <span>Mi Cuenta</span>
+      </a>
+    </xpath>
+    
+    <!-- Making the filters wrapper a flex row so search + button align horizontally -->
+    <xpath expr="//t[@t-set-slot='filters']/div[contains(@class,'mb-4')]" position="attributes">
+      <attribute name="class" add="d-flex align-items-center flex-wrap" separator=" "/>
+    </xpath>
+
+    <!-- Inserting the button after the input-group -->
+    <xpath expr="//t[@t-set-slot='filters']//div[contains(@class,'input-group')]" position="after">
+      <div class="ms-4 mt-2 mt-md-0">
+        <a class="btn btn-outline-info rounded-pill px-4"
+           href="/en/wizard">
+          Registrar importación
+        </a>
+      </div>
+    </xpath>
+  </t>
+</templates>

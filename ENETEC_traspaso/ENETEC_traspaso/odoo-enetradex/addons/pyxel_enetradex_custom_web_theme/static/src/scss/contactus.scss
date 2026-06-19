@@ -1,0 +1,60 @@
+// =============================================
+// PÁGINA CONTACTO — tarjetas de info
+// =============================================
+.cx-contact-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 18px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    transition: all 0.2s ease;
+}
+.cx-contact-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+    border-color: rgba(10,92,54,0.25);
+}
+.cx-contact-icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: rgba(10,92,54,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.cx-contact-icon i {
+    color: $cx-green;
+    font-size: 1.1rem;
+}
+.cx-contact-card-green .cx-contact-icon {
+    background: rgba(37,211,102,0.18);
+}
+.cx-contact-card-green .cx-contact-icon i {
+    color: #25d366;
+    font-size: 1.3rem;
+}
+.cx-contact-body h6 {
+    font-family: $font-headings;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: $cx-text;
+    margin: 0 0 4px;
+}
+.cx-contact-body p {
+    color: $cx-muted;
+    font-size: 0.88rem;
+    margin: 0;
+    line-height: 1.5;
+}
+.cx-contact-body p a {
+    color: $cx-green;
+    text-decoration: none;
+}
+.cx-contact-body p a:hover {
+    text-decoration: underline;
+}

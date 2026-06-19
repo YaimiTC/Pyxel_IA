@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="action_pyxel_enetradex_conciliation_wizard" model="ir.actions.act_window">
+    <field name="name">Conciliación</field>
+    <field name="res_model">pyxel.enetradex.conciliation.wizard</field>
+    <field name="view_mode">form</field>
+    <field name="target">new</field>
+  </record>
+
+  <!-- Ajusta parent al menú real donde lo quieres -->
+  <menuitem id="menu_pyxel_enetradex_conciliation_report"
+            name="Conciliación"
+            parent="account.menu_finance_reports"
+            action="action_pyxel_enetradex_conciliation_wizard"
+            sequence="210"/>
+
+</odoo>

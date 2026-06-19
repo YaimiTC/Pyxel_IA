@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="portal_my_despacho" name="Mi expediente de importación">
+    <t t-call="portal.portal_layout">
+        <t t-set="breadcrumbs_searchbar" t-value="True"/>
+        <t t-call="portal.portal_searchbar">
+            <t t-set="title">Expediente de documentos</t>
+        </t>
+
+        <!-- Selector de proceso si hay varios -->
+        <t t-if="len(processes) > 1">
+            <div class="mb-3">
+                <label class="fw-bold">Proceso de importación:</label>
+                <div class="d-flex flex-wrap gap-2 mt-1">
+                    <t t-foreach="processes" t-as="proc">
+                        <a t-attf-href="/my/despacho?process_id=#{proc.id}"
+                           t-attf-class="btn btn-sm #{proc == selected_process and 'btn-primary' or 'btn-outline-secondary'}">
+                            <t t-esc="proc.name"/>
+                        </a>
+                    </t>
+                </div>
+            </div>
+        </t>
+
+        <t t-if="not selected_process">
+            <div class="alert alert-info">
+                No tienes procesos de importación asignados como proveedor.
+            </div>
+        </t>
+        <t t-else="">
+            <!-- Tarjetas resumen -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="card text-center border-0 bg-light">
+                        <div class="card-body py-2">
+                            <div class="fs-4 fw-bold"><t t-esc="c_total"/></div>
+                            <div class="small text-muted">Requeridos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card text-center border-0 bg-success text-white">
+                        <div class="card-body py-2">
+                            <div class="fs-4 fw-bold"><t t-esc="c_approved"/></div>
+                            <div class="small">Aprobados</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card text-center border-0 bg-warning">
+                        <div class="card-body py-2">
+                            <div class="fs-4 fw-bold"><t t-esc="c_review"/></div>
+                            <div class="small">En revisión</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card text-center border-0 bg-danger text-white">
+                        <div class="card-body py-2">
+                            <div class="fs-4 fw-bold"><t t-esc="c_pending"/></div>
+                            <div class="small">Pendientes</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Un card por documento -->
+            <t t-foreach="docs" t-as="doc">
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <strong><t t-esc="doc.document_label"/></strong>
+                        <t t-if="doc.portal_state == 'approved'">
+                            <span class="badge bg-success">Aprobado</span>
+                        </t>
+                        <t t-elif="doc.portal_state == 'in_review'">
+                            <span class="badge bg-warning text-dark">En revisión</span>
+                        </t>
+                        <t t-elif="doc.portal_state == 'validating'">
+                            <span class="badge bg-info text-white">Validando</span>
+                        </t>
+                        <t t-elif="doc.portal_state == 'rejected'">
+                            <span class="badge bg-danger">Rechazado</span>
+                        </t>
+                        <t t-elif="doc.portal_state == 'optional'">
+                            <span class="badge bg-light text-dark border">Opcional</span>
+                        </t>
+                        <t t-else="">
+                            <span class="badge bg-secondary">Pendiente</span>
+                        </t>
+                    </div>
+                    <div class="card-body">
+
+                        <!-- Motivo de rechazo -->
+                        <t t-if="doc.portal_state == 'rejected' and doc.portal_reason">
+                            <div class="alert alert-danger py-2">
+                                <strong>Motivo:</strong> <t t-esc="doc.portal_reason"/>
+                            </div>
+                        </t>
+                        <t t-elif="doc.portal_state == 'in_review'">
+                            <div class="alert alert-info py-2">
+                                Documento recibido, nuestro equipo lo está revisando.
+                            </div>
+                        </t>
+                        <t t-elif="doc.portal_state == 'approved'">
+                            <div class="alert alert-success py-2">
+                                ✔ Documento aprobado.
+                            </div>
+                        </t>
+
+                        <!-- Páginas fotográficas (si las hay y el doc es editable) -->
+                        <t t-if="doc.page_ids and doc.portal_state not in ('in_review', 'approved')">
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                <t t-foreach="doc.page_ids.sorted('page_number')" t-as="pg">
+                                    <div class="position-relative" style="width:80px;">
+                                        <img t-attf-src="data:image/jpeg;base64,#{pg.image}"
+                                             class="img-thumbnail" style="width:80px;height:80px;object-fit:cover;"/>
+                                        <form t-attf-action="/my/despacho/page/delete/#{pg.id}"
+                                              method="post" style="display:inline;">
+                                            <input type="hidden" name="csrf_token"
+                                                   t-att-value="request.csrf_token()"/>
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                                                    style="padding:0 4px;line-height:1.2;">✕</button>
+                                        </form>
+                                    </div>
+                                </t>
+                            </div>
+                            <!-- Botón finalizar PDF -->
+                            <form t-attf-action="/my/despacho/finalize/#{doc.id}" method="post" class="mb-2">
+                                <input type="hidden" name="csrf_token"
+                                       t-att-value="request.csrf_token()"/>
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    📄 Generar PDF con las fotos
+                                </button>
+                            </form>
+                        </t>
+
+                        <!-- Acciones: subir / cámara / descargar / eliminar -->
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+
+                            <!-- Subir / reemplazar archivo -->
+                            <t t-if="doc.portal_state in ('pending', 'rejected', 'optional')">
+                                <form t-attf-action="/my/despacho/upload/#{doc.id}"
+                                      method="post" enctype="multipart/form-data"
+                                      class="d-flex gap-1 align-items-center">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <input type="file" name="document" accept=".pdf,image/*"
+                                           class="form-control form-control-sm" style="max-width:220px;"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        📁 Subir
+                                    </button>
+                                </form>
+
+                                <!-- Botón cámara -->
+                                <button class="btn btn-sm btn-outline-secondary js-imp-cam-open"
+                                        t-att-data-doc-id="doc.id"
+                                        t-att-data-doc-label="doc.document_label">
+                                    📷 Tomar foto
+                                    <t t-if="doc.page_count">
+                                        <span class="imp-page-badge badge bg-warning ms-1">
+                                            <t t-esc="doc.page_count"/>
+                                        </span>
+                                    </t>
+                                </button>
+                            </t>
+
+                            <!-- Descargar -->
+                            <t t-if="doc.attachment_id">
+                                <a t-attf-href="/my/despacho/download/#{doc.id}"
+                                   class="btn btn-sm btn-outline-secondary">
+                                    ⬇ Descargar
+                                </a>
+                            </t>
+
+                            <!-- Eliminar -->
+                            <t t-if="doc.portal_state not in ('in_review', 'approved') and doc.attachment_id">
+                                <form t-attf-action="/my/despacho/delete/#{doc.id}"
+                                      method="post" style="display:inline;">
+                                    <input type="hidden" name="csrf_token"
+                                           t-att-value="request.csrf_token()"/>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger"
+                                            onclick="return confirm('¿Eliminar este documento?')">
+                                        🗑 Eliminar
+                                    </button>
+                                </form>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </t>
+</template>
+
+</odoo>

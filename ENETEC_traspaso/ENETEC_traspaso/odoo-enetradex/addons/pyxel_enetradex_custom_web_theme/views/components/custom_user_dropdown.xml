@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="agrimpex_custom_user_dropdown" inherit_id="portal.user_dropdown">
+        <xpath expr="//a[@id='o_backend_user_dropdown_link']" position="replace">
+            <a groups="base.group_user" href="/web" role="menuitem"
+                class="dropdown-item ps-3" id="o_backend_user_dropdown_link">
+                <i class="fa fa-fw fa-th me-1 small text-primary" /> Aplicaciones </a>
+        </xpath>
+        <xpath expr="//a[@id='o_logout']" position="replace">
+            <a t-attf-href="/web/session/logout?redirect=/" role="menuitem"
+                id="o_logout" class="dropdown-item ps-3">
+                <i class="fa fa-fw fa-sign-out me-1 small text-primary" /> Cerrar sesión </a>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="0">
+
+        <record id="view_transport_hub_import_wizard_form" model="ir.ui.view">
+            <field name="name">transport.hub.import.wizard.form</field>
+            <field name="model">transport.hub.import.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Import Ports from CSV">
+                    <group>
+                        <field name="filename" readonly="1"/>
+                        <field name="csv_file" filename="filename"/>
+                    </group>
+                    <footer>
+                        <button name="action_process_csv"
+                                type="object"
+                                string="Import Ports"
+                                class="btn-primary"/>
+                        <button string="Cancel"
+                                class="btn-secondary"
+                                special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

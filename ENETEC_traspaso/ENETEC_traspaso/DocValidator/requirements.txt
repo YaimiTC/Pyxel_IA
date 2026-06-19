@@ -1,0 +1,22 @@
+# === API ===
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+pydantic==2.9.2
+pydantic-settings==2.5.2
+requests==2.32.3
+
+# === Imagen ===
+opencv-python==4.10.0.84
+pillow==10.4.0
+numpy==1.26.4
+
+# === Clasificador (deep learning) ===
+# IMPORTANTE: torch/torchvision deben instalarse con soporte CUDA.
+# Ver README.md -> Instalacion. No instales torch desde aqui directamente.
+timm==1.0.9
+
+# === OCR ===
+# PaddleOCR + Paddle se instalan aparte segun tu CUDA. Ver README.md.
+# paddleocr==2.8.1
+# paddlepaddle-gpu==2.6.1   # o paddlepaddle (solo CPU)

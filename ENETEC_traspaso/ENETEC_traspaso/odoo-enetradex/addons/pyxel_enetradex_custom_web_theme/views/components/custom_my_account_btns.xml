@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Overriding "my_account_link" template -->
+    <template id="agrimpex_custom_my_account_btns" inherit_id="portal.portal_my_details">
+        <xpath expr="//div[contains(@class, 'clearfix text-end mb-5')]" position="replace">
+            <div class="clearfix text-end mb-5">
+                <a href="/my/" class="btn btn-outline-danger rounded px-4 me-2">
+                    Descartar
+                </a>
+                <button type="submit" class="btn btn-outline-info rounded px-4 float-end">
+                    Guardar
+                </button>
+            </div>
+        </xpath>
+    </template>
+</odoo>

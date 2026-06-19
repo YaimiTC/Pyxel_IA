@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+
+        <!-- Acción principal de hubs -->
+        <record id="action_transport_hub" model="ir.actions.act_window">
+            <field name="name">Ports and Airports</field>
+            <field name="res_model">transport.hub</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="view_id" ref="transport_hub.view_transport_hub_tree"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Start by creating a Transport Hub.
+                </p>
+            </field>
+        </record>
+
+        <!-- Wizard para importar puertos -->
+        <record id="action_transport_hub_import_csv" model="ir.actions.act_window">
+            <field name="name">Import Ports from CSV</field>
+            <field name="res_model">transport.hub.import.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_transport_hub_import_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <!-- Menú raíz: aplicación principal -->
+        <menuitem id="menu_transport_hub_root"
+                  name="Transport Hubs"
+                  sequence="10"
+                  action="action_transport_hub"
+                  web_icon="transport_hub,static/description/icon.png"/>
+
+        <!-- Submenú para importar puertos -->
+        <menuitem id="menu_import_ports_csv"
+                  name="Import Ports"
+                  parent="menu_transport_hub_root"
+                  action="action_transport_hub_import_csv"
+                  sequence="20"/>
+
+    </data>
+</odoo>

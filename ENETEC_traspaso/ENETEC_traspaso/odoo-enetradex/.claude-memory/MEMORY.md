@@ -1,0 +1,12 @@
+- [Proyecto ENETEC / ODIN 2.0](proyecto-enetec-odin.md) — clon Odoo de Agrimpex para importadora de combustibles ENETEC S.A.
+- [Proceso de importación ODIN](proceso-importacion-odin.md) — arquitectura y máquina de estados del motor pyxel_import_backend
+- [Rebrand Agrimpex→Enetradex](rebrand-agrimpex-a-enetradex.md) — qué módulos tocar y qué es genérico en el clon
+- [Patrón GranComerx dual-servicio](patron-grancomerx-dual-servicio.md) — diseño acreditación+contraparte reutilizable para ENETEC
+- [Requisitos ENETEC (cliente)](requisitos-enetec-cliente.md) — docs de acreditación, campos de solicitud de importación, seguimiento
+- [Entorno ODIN ENETEC](entorno-odin-enetec.md) — URL y credenciales del ODIN desplegado por pyxel
+- [Identidad web ENETRADEX](identidad-web-enetradex.md) — paleta y estructura del home (mockup Home.png) para el rediseño
+- [Optimización rendimiento web](optimizacion-rendimiento-web.md) — se localizaron recursos externos (CDN) y se añadieron workers
+- [Presentación en localhost](presentacion-localhost.md) — la demo se ve siempre en localhost (Docker local); git/GitHub solo mueve código
+- [Sync git multi-PC](sync-git-multipc.md) — repos GitHub privados (ntdiaz87-sudo) + memoria por junction para trabajar desde varias PCs
+- [Implementación acreditación Fase 1](implementacion-acreditacion-fase1.md) — wizard + contraparte + ofertas + gate construidos y probados end-to-end en localhost
+- [Test E2E por preview](test-e2e-preview.md) — cómo loguear/conducir el flujo en el panel de preview + hallazgos abiertos

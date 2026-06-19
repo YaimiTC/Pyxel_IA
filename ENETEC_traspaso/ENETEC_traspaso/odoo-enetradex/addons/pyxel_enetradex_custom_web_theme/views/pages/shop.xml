@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- ============================================================
+         TIENDA AGRIMPEX — rediseño sobre website_sale.products
+         ============================================================ -->
+    <template id="shop_agrimpex" inherit_id="website_sale.products" name="Tienda Agrimpex (rediseño)">
+
+        <!-- Marcar el wrap para scopear estilos -->
+        <xpath expr="//div[@id='wrap']" position="attributes">
+            <attribute name="class" add="ag-shop-page" separator=" "/>
+        </xpath>
+
+        <!-- Banner de tienda antes del contenedor de productos -->
+        <xpath expr="//div[@id='wrap']/div[contains(@class,'oe_website_sale')]" position="before">
+            <t t-call="pyxel_enetradex_custom_web_theme.ag_page_banner">
+                <t t-set="pb_title">Tienda Agrimpex</t>
+                <t t-set="pb_subtitle">Insumos, equipamiento y soluciones para el productor.</t>
+                <div class="ag-shop-bannerctas">
+                    <a href="/contactus" class="ag-btn-primary"><i class="fa fa-file-text-o"></i> Solicitar Cotización</a>
+                    <a href="/shop" class="ag-btn-ghost">Ver Catálogo</a>
+                </div>
+            </t>
+        </xpath>
+
+        <!-- Acciones rápidas al final del sidebar -->
+        <xpath expr="//div[hasclass('o_wsale_products_grid_before_rail')]" position="inside">
+            <div class="ag-sidebar-actions">
+                <h5>Acciones rápidas</h5>
+                <a href="/contactus" class="ag-side-btn ag-side-btn-green"><i class="fa fa-file-text-o"></i> Solicitar Cotización</a>
+                <a href="/en/wizard?op=1" class="ag-side-btn"><i class="fa fa-download"></i> Importar Producto</a>
+                <a href="/en/wizard" class="ag-side-btn"><i class="fa fa-check-circle"></i> Acreditarme</a>
+            </div>
+        </xpath>
+
+        <!-- Banda CTA mayorista tras el catálogo -->
+        <xpath expr="//div[@id='wrap']/div[contains(@class,'oe_website_sale')]" position="after">
+            <section class="ag-ctaband ag-shop-cta">
+                <div class="container">
+                    <div class="ag-ctaband-row">
+                        <div class="ag-ctaband-text">
+                            <span class="ag-ctaband-ico"><i class="fa fa-cubes"></i></span>
+                            <div>
+                                <h3>¿Necesitas más de 100 unidades?</h3>
+                                <p>Solicita una oferta personalizada para cooperativas, MIPYMES y empresas.</p>
+                            </div>
+                        </div>
+                        <div class="ag-shop-bannerctas">
+                            <a href="/contactus" class="ag-btn-primary"><i class="fa fa-file-text-o"></i> Solicitar Cotización</a>
+                            <a href="/contactus" class="ag-btn-ghost">Contactar Especialista</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </xpath>
+    </template>
+
+    <!-- Ficha de producto: botón carrito + badge stock -->
+    <template id="products_item_agrimpex" inherit_id="website_sale.products_item" name="Ficha producto Agrimpex">
+        <xpath expr="//div[hasclass('o_wsale_product_sub')]" position="before">
+            <div class="ag-grid-stock"><i class="fa fa-check-circle"></i> En stock</div>
+        </xpath>
+        <xpath expr="//div[hasclass('o_wsale_product_btn')]" position="inside">
+            <a t-att-href="product_href" class="ag-grid-cart" role="button" aria-label="Ver producto">
+                <i class="fa fa-shopping-cart"></i>
+            </a>
+        </xpath>
+    </template>
+
+</odoo>

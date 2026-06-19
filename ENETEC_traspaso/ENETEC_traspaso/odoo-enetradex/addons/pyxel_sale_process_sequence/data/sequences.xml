@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Secuencia para la parte numérica -->
+        <record id="seq_sale_process_sli" model="ir.sequence">
+            <field name="name">Secuencia SLI procesos de venta</field>
+             <field name="code">sale.process.sli.seq</field>
+             <field name="prefix"/>
+             <field name="suffix"/>
+             <field name="padding">4</field>
+             <field name="number_next">1</field>
+             <field name="number_increment">1</field>
+             <field name="implementation">standard</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,47 @@
+// =============================================
+// PÁGINA NOSOTROS — estilo Cupet
+// =============================================
+.cx-who-history { padding: 4rem 0; background: $cx-white; }
+.cx-who-history p { color: $cx-muted; font-size: 0.97rem; line-height: 1.7; margin-bottom: 1rem; }
+.cx-who-history-card { background: linear-gradient(135deg, #073d24 0%, #0a5c36 100%); color: $cx-white; padding: 2rem; border-radius: 16px; position: relative; box-shadow: 0 14px 35px rgba(7,61,36,0.2); }
+.cx-who-history-card i.fa-quote-left { color: rgba(255,255,255,0.18); font-size: 2.6rem; margin-bottom: 1rem; display: block; }
+.cx-who-history-card p { color: rgba(255,255,255,0.95); font-size: 1.05rem; line-height: 1.6; font-style: italic; margin: 0; }
+
+.cx-who-mv { padding: 4rem 0; background: #fafafa; }
+.cx-who-mv-card { background: $cx-white; border-radius: 14px; padding: 2.2rem; box-shadow: 0 6px 18px rgba(0,0,0,0.06); border-top: 4px solid $cx-green; height: 100%; transition: all 0.25s ease; }
+.cx-who-mv-card:hover { transform: translateY(-4px); box-shadow: 0 14px 35px rgba(0,0,0,0.1); }
+.cx-who-mv-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(10,92,54,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 1.2rem; }
+.cx-who-mv-icon i { color: $cx-green; font-size: 1.6rem; }
+.cx-who-mv-card h3 { font-family: $font-headings; font-weight: 800; color: $cx-text; font-size: 1.3rem; margin: 0 0 0.8rem; }
+.cx-who-mv-card p { color: $cx-muted; font-size: 0.95rem; line-height: 1.65; margin: 0; }
+
+.cx-who-values { padding: 4rem 0; background: $cx-white; }
+.cx-who-value-card { text-align: center; padding: 1.5rem 1rem; }
+.cx-who-value-icon { width: 76px; height: 76px; margin: 0 auto 1.25rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(10,92,54,0.1); transition: all 0.25s ease; }
+.cx-who-value-icon i { color: $cx-green; font-size: 1.8rem; }
+.cx-who-value-card:hover .cx-who-value-icon { background: $cx-green; transform: translateY(-3px); }
+.cx-who-value-card:hover .cx-who-value-icon i { color: $cx-white; }
+.cx-who-value-card h6 { font-family: $font-headings; font-weight: 700; font-size: 1rem; color: $cx-text; margin: 0 0 0.6rem; }
+.cx-who-value-card p { font-size: 0.85rem; color: $cx-muted; line-height: 1.55; margin: 0; }
+
+.cx-who-stats { padding: 4rem 0; background: $cx-white; }
+.cx-who-stats-wrap { background: linear-gradient(135deg, #073d24 0%, #0a5c36 60%, #1a7a4a 100%); border-radius: 16px; padding: 3rem 2rem; box-shadow: 0 14px 40px rgba(7,61,36,0.25); }
+.cx-who-stat { color: $cx-white; padding: 0.5rem; }
+.cx-who-stat-num { font-family: $font-headings; font-weight: 800; font-size: 2.8rem; line-height: 1; margin-bottom: 0.4rem; color: $cx-white; }
+.cx-who-stat-label { font-size: 0.92rem; color: rgba(255,255,255,0.85); font-weight: 500; }
+
+.cx-who-team { padding: 4rem 0; background: #fafafa; }
+.cx-who-team-intro { color: $cx-muted; font-size: 1rem; line-height: 1.6; max-width: 600px; margin: 0.5rem auto 0; }
+.cx-who-team-card { background: $cx-white; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 6px 18px rgba(0,0,0,0.06); transition: all 0.25s ease; }
+.cx-who-team-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(0,0,0,0.1); }
+.cx-who-team-avatar { width: 90px; height: 90px; border-radius: 50%; background: rgba(10,92,54,0.08); margin: 0 auto 1.2rem; display: flex; align-items: center; justify-content: center; }
+.cx-who-team-avatar i { color: $cx-green; font-size: 3.5rem; }
+.cx-who-team-card h6 { font-family: $font-headings; font-weight: 700; font-size: 1rem; color: $cx-text; margin: 0 0 0.3rem; }
+.cx-who-team-role { font-size: 0.85rem; color: $cx-muted; margin: 0; }
+
+.cx-who-cta { padding: 3rem 0 4rem; background: $cx-white; }
+.cx-who-cta-inner { background: linear-gradient(135deg, #052918 0%, #073d24 60%, #0a5c36 100%); border-radius: 16px; padding: 2.5rem; color: $cx-white; box-shadow: 0 14px 35px rgba(7,61,36,0.25); }
+.cx-who-cta-inner h3 { font-family: $font-headings; font-weight: 800; color: $cx-white; font-size: 1.5rem; margin: 0 0 0.4rem; }
+.cx-who-cta-inner p { color: rgba(255,255,255,0.85); margin: 0; font-size: 0.97rem; }
+.cx-who-cta-btn { background: $cx-red; color: $cx-white; border: none; padding: 0.85rem 1.8rem; border-radius: 10px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; transition: all 0.2s ease; box-shadow: 0 6px 18px rgba(230,0,0,0.35); }
+.cx-who-cta-btn:hover { background: $cx-red-hover; color: $cx-white; transform: translateY(-2px); box-shadow: 0 10px 24px rgba(230,0,0,0.5); }

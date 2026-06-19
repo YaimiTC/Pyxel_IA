@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ENETEC: etapa gate previa a las operativas. La operación entra aquí y
+         no avanza hasta que cliente y proveedor estén ambos acreditados. -->
+    <record id="en_stage_pending_accreditation" model="importation.stage">
+        <field name="name">PENDIENTE DE ACREDITACIÓN</field>
+        <field name="sequence">0</field>
+        <field name="is_final">False</field>
+        <field name="en_is_gate_stage">True</field>
+    </record>
+
+    <!-- Renombrar la primera etapa operable a la terminología del cliente. -->
+    <record id="pyxel_import_backend.importation_stage_solicitud" model="importation.stage">
+        <field name="name">SOLICITUDES PARA ATENDER</field>
+    </record>
+
+    <!-- La etapa "Trámites en origen" pasa a ser donde viven las órdenes
+         generadas al aprobar la solicitud. -->
+    <record id="pyxel_import_backend.importation_stage_tramites_origen" model="importation.stage">
+        <field name="name">SOLICITUDES APROBADAS</field>
+    </record>
+</odoo>

@@ -1,0 +1,9 @@
+<odoo>
+    <!--
+        Limpieza histórica: estos dos tipos de gestión por defecto
+        (natural_person, foreign_branch) ya fueron eliminados en un install
+        previo. Se quitaron los <delete> por external-id porque, al re-ejecutar
+        un -u, intentar borrar un registro inexistente lanza
+        "External ID not found" y aborta la actualización del módulo.
+    -->
+</odoo>

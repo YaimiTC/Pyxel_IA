@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Overriding "my_account_link" template -->
+    <template id="agrimpex_custom_my_account_link" inherit_id="portal.my_account_link">
+        <xpath expr="//a[contains(@href, '/my/home')]" position="replace">
+            <a href="/my/home" role="menuitem" class="dropdown-item ps-3">
+                <i class="fa fa-fw fa-id-card-o me-1 small text-primary"/> Mi cuenta
+            </a>
+        </xpath>
+    </template>
+</odoo>

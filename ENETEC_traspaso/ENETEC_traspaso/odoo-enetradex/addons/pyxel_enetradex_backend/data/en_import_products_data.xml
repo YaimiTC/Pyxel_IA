@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Categoría de productos de costo de importación. Los productos asignados
+         aquí se precargan como líneas de costo al aprobar una solicitud. -->
+    <record id="en_product_categ_import_cost" model="product.category">
+        <field name="name">Costos de importación</field>
+    </record>
+
+    <!-- Producto de servicio para la línea de margen/comisión de ENETEC
+         en la oferta de venta al cliente. -->
+    <record id="en_product_margin" model="product.product">
+        <field name="name">Margen / Comisión ENETEC</field>
+        <field name="type">service</field>
+        <field name="sale_ok">True</field>
+        <field name="purchase_ok">False</field>
+        <field name="list_price">0.0</field>
+    </record>
+
+</odoo>

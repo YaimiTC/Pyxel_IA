@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<record id="load_fill_wizard_view" model="ir.ui.view">
+    <field name="name">importation_load_fill_wizard_form</field>
+    <field name="model">importation_load_fill_wizard</field>
+    <field name="arch" type="xml">
+        <form string="Cargar por defecto las lineas ">
+            <group>
+                <field name="load_id" readonly="1"/>
+                <field name="available_purchase_order_ids" invisible="1"/>
+                <field name="purchase_order_ids" widget="many2many_tags"/>
+            </group>
+            <footer>
+                <button name="action_fill_load_lines" type="object" string="Confirmar" class="oe_highlight"/>
+                <button string="Cancelar" class="oe_link" special="cancel"/>
+            </footer>
+        </form>
+    </field>
+</record>
+
+    <record id="action_x_container_fill_wizard" model="ir.actions.act_window">
+        <field name="name">Cargar Líneas</field>
+        <field name="res_model">importation_load_fill_wizard</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="load_fill_wizard_view"/>
+        <field name="target">new</field>
+        <field name="context">{'default_load_id': active_id}</field>
+        <field name="binding_view_types">list,form</field>
+    </record>
+
+</odoo>
