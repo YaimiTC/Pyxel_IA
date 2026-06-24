@@ -149,11 +149,28 @@ Hay una fila por cada orden de compra del proceso. Cada fila muestra:
 | IA | Resultado del análisis automático del PDF |
 | Extracción | Estado de extracción de datos (Sin DM / Extraído por IA / Datos manuales) |
 | Nº DM | Número de la declaración |
-| Contenedor | Número de contenedor |
-| CIF (USD) | Valor CIF en dólares |
-| Aranceles (USD) | Total de aranceles en dólares |
-| Imp. Circulación (USD) | Impuesto de circulación |
+| CIF (USD) | Valor estadístico en dólares (escaque 54 de la DM) |
+| Aranceles (MN) | Total de aranceles en pesos cubanos |
+| Servicio Aduana (MN) | Servicio de Aduana en pesos cubanos |
 | Confirmado | Indica si el apoderado ya confirmó los datos |
+
+> Los campos **Aranceles** y **Servicio de Aduana** están en **Moneda Nacional (MN)**
+> porque así figuran en la DM cubana, no en dólares.
+
+### Campos extraídos automáticamente por OCR
+
+Al subir el PDF, el sistema extrae automáticamente:
+
+| Campo | Origen en la DM |
+|-------|-----------------|
+| Nº DM | Escaque 2 — número de declaración |
+| CIF (USD) | Escaque 54 — "Valor estadístico" |
+| Aranceles (MN) | Fila "Arancel" en la tabla de liquidación |
+| Servicio Aduana (MN) | Fila "Servicio" en la tabla de liquidación |
+
+> Si el PDF es una fotografía escaneada, el sistema usa OCR (reconocimiento óptico
+> de caracteres). La calidad del escaneo afecta la precisión — revise siempre los
+> valores antes de confirmar.
 
 ### Botones de acción por fila
 
@@ -161,7 +178,8 @@ Hay una fila por cada orden de compra del proceso. Cada fila muestra:
 |-------|---------------|----------|
 | **Subir DM** | Cuando no hay PDF subido | Abre la ficha para subir el PDF |
 | **Ver DM** | Cuando hay PDF subido | Abre el PDF en una nueva pestaña |
-| **Confirmar** | Cuando hay PDF y no está confirmado | Marca la DM como confirmada |
+| **Reemplazar** | Cuando hay PDF subido | Borra el PDF y todos los datos extraídos para empezar de nuevo |
+| **Confirmar** | Cuando hay PDF y no está confirmado | Valida los datos y marca la DM como confirmada |
 
 ---
 
@@ -176,25 +194,27 @@ Hay una fila por cada orden de compra del proceso. Cada fila muestra:
 5. El estado cambiará a **Validando** mientras la IA procesa
 6. Cuando termine, el estado mostrará **Pasado** o **Duda**
 
-### Paso 2 — Revisar los datos extraídos por la IA
+### Paso 2 — Revisar los datos extraídos
 
 Volver al formulario del proceso (botón Atrás o migas de pan).
 En la pestaña **Declaración de Mercancía (DM)**, la fila de esa OC ahora mostrará
-los campos completados automáticamente por la IA:
+los campos completados automáticamente:
 
 - Nº DM
-- Contenedor
 - CIF (USD)
-- Aranceles (USD)
-- Imp. Circulación (USD)
+- Aranceles (MN)
+- Servicio Aduana (MN)
 
 **Revisar cada campo.** Si algún valor es incorrecto o no se extrajo bien:
 1. Hacer clic en la celda del campo a corregir
 2. Escribir el valor correcto
 3. Guardar
 
-> La columna "Extracción" mostrará **Extraído por IA** si la IA obtuvo los datos,
-> o **Sin DM** si el PDF no pudo ser procesado (en ese caso ingresar todo manual).
+> La columna "Extracción" mostrará **Extraído por IA** si el sistema obtuvo los datos,
+> o **Sin DM** si el PDF no pudo ser procesado (en ese caso ingresar todo manualmente).
+
+> **Servicio de Aduana:** en PDFs de baja calidad (fotografías) el OCR puede no
+> capturar este valor — si aparece en 0,00, ingréselo manualmente consultando el PDF.
 
 ### Paso 3 — Agregar notas arancelarias (opcional)
 
@@ -203,10 +223,40 @@ observaciones sobre los aranceles de cada OC en texto libre.
 
 ### Paso 4 — Confirmar la DM
 
-Cuando los datos son correctos:
-1. Hacer clic en el botón **Confirmar** (verde) de esa fila
-2. La fila cambiará a color verde y el campo "Confirmado" se activará
-3. El botón Confirmar desaparece — la DM está cerrada
+Cuando los datos son correctos, hacer clic en el botón **Confirmar** de esa fila.
+
+El sistema realiza automáticamente una **validación cruzada** entre el contenido del
+PDF y los datos registrados en la importación. Si detecta discrepancias, aparece un
+aviso amarillo en la esquina superior derecha con el detalle:
+
+| Alerta posible | Qué significa |
+|---------------|---------------|
+| "Cliente X no encontrado en la DM" | El nombre del cliente no aparece en el texto del PDF |
+| "Proveedor X no encontrado en la DM" | El nombre del proveedor no aparece en el PDF |
+| "Apoderado X no encontrado en la DM" | Su nombre no aparece en el PDF de la DM |
+| "BL/referencia X no encontrado en la DM" | El número de BL no aparece en el PDF |
+| "No hay número de BL/referencia registrado" | El proceso no tiene BL registrado |
+| "Ningún contenedor (X) encontrado en la DM" | Los números de contenedor no aparecen en el PDF |
+| "No hay contenedores registrados" | El proceso no tiene contenedores registrados |
+| "No existe línea de costo Arancel" | Falta añadir el Arancel en los gastos de la importación |
+| "No existe línea de costo Servicio de Aduana" | Falta añadir el Servicio de Aduana en los gastos |
+
+> Las alertas son **informativas** — la DM se confirma igual aunque haya avisos.
+> El objetivo es que el apoderado detecte cualquier discrepancia antes de cerrar.
+> Las alertas también quedan registradas en el **historial del proceso** para
+> trazabilidad.
+
+**Si los datos son correctos y las alertas son esperadas** (por ejemplo, el nombre
+del cliente está abreviado en la DM), puede ignorar el aviso y continuar.
+
+**Si detecta un error real** (número de Arancel incorrecto, contenedor diferente):
+1. No hacer caso al aviso por ahora
+2. Corregir el dato erróneo en el proceso o en los campos de la tabla
+3. Usar el botón **Reemplazar** si el PDF es incorrecto (ver sección de casos especiales)
+4. Volver a hacer clic en **Confirmar**
+
+Una vez confirmada, la fila muestra el campo "Confirmado" activo y el botón
+Confirmar desaparece. La DM está cerrada.
 
 Repetir el proceso para cada OC del proceso.
 
@@ -233,20 +283,36 @@ Cuando **todas las OC** tienen su DM confirmada:
 - El proceso está completo y fue retirado de la lista automáticamente.
 - Para verlo: en la lista usar el filtro y quitar la restricción "DM lista = No".
 
-### La IA no extrajo los datos del PDF
+### El sistema no extrajo los datos del PDF
 
 Si la columna "Extracción" muestra **Sin DM** después de subir el PDF:
 1. Verificar que el PDF es legible y no está escaneado de forma deficiente
-2. Ingresar los datos manualmente en los campos de la tabla
+2. Ingresar los valores manualmente en las celdas de la tabla (Nº DM, CIF, Aranceles, Servicio Aduana)
 3. Confirmar normalmente
+
+### El Servicio de Aduana quedó en 0,00
+
+Esto ocurre con PDFs fotografiados donde la columna de importes es ilegible para el OCR.
+El Nº DM, CIF y Aranceles suelen extraerse bien. Solo el Servicio de Aduana requiere
+entrada manual en estos casos:
+1. Abrir el PDF con **Ver DM** y localizar la fila "Servicio" en la tabla de liquidación
+2. Hacer clic en la celda **Servicio Aduana (MN)** de esa fila en la tabla
+3. Ingresar el valor manualmente
+4. Guardar y confirmar
 
 ### Necesito reemplazar un PDF de DM ya subido
 
-1. Hacer clic en **Ver DM** para verificar el archivo actual
-2. Abrir la ficha del documento (botón "Revisar" desde el expediente principal)
-3. En la sección "Subir / reemplazar archivo" subir el nuevo PDF
-4. La IA volverá a procesar el nuevo archivo
-5. Revisar y volver a confirmar los datos
+1. En la fila de la OC, hacer clic en **Reemplazar**
+2. El sistema borrará el PDF actual y reiniciará todos los campos (Nº DM, CIF, Aranceles,
+   Servicio de Aduana, Confirmado y los estados de validación)
+3. La fila vuelve al estado inicial — como si no se hubiera subido ningún PDF
+4. Hacer clic en **Subir DM** y seleccionar el nuevo PDF
+5. El sistema volverá a extraer los datos automáticamente
+6. Revisar y confirmar de nuevo
+
+> El botón **Reemplazar** está siempre disponible mientras haya un PDF subido,
+> incluso si la DM ya estaba confirmada. Úselo solo si el PDF es incorrecto —
+> reemplazar una DM confirmada requiere volver a confirmarla.
 
 ### Hay dos apoderados para el mismo proceso
 
@@ -264,8 +330,9 @@ Si dos apoderados necesitan trabajar el mismo proceso (múltiples OC):
 Sí. Cualquier usuario con acceso puede modificar el campo "Apoderado asignado".
 
 **¿Qué pasa si confirmo una DM con datos incorrectos?**
-La confirmación no es definitiva a nivel de sistema — un administrador puede
-desmarcar `dm_confirmed` directamente. Contactar al administrador del sistema.
+Use el botón **Reemplazar** para volver al estado inicial y subir el PDF correcto,
+o edite directamente los campos numéricos si solo hay un valor equivocado.
+Si la DM ya está confirmada y necesita reabrirla, contacte al administrador del sistema.
 
 **¿El proceso vuelve a aparecer si se desconfirma una DM?**
 Sí. Si `en_customs_dm_done` vuelve a ser False, el proceso reaparece en la lista.
@@ -289,10 +356,20 @@ BL/AWB      ✓ Aprobado    →    1. Ver proceso en "Trámites de aduana"
 Factura     ✓ Aprobado    →    2. Asignarse el proceso
 Lista emp.  ✓ Aprobado    →    3. Consultar docs de entrada (readonly)
                                4. Subir PDF de DM por cada OC
-en_ready_for_customs = True    5. IA extrae campos automáticamente
-                               6. Revisar y corregir si es necesario
-                               7. Confirmar DM por cada OC
-                               8. Proceso desaparece de la lista ✓
+en_ready_for_customs = True    5. OCR extrae: Nº DM, CIF, Aranceles MN,
+                                  Servicio Aduana MN automáticamente
+                               6. Revisar campos — corregir si hace falta
+                                  (Servicio Aduana en 0 = ingresar manual)
+                               7. Confirmar → sistema valida cliente,
+                                  proveedor, apoderado, BL, contenedores
+                                  y líneas de costo; muestra alertas
+                               8. Revisar alertas y corregir si procede
+                                  (o ignorar si son esperadas)
+                               9. Repetir por cada OC del proceso
+                              10. Proceso desaparece de la lista ✓
+
+Si el PDF es incorrecto en cualquier momento:
+    → Reemplazar → sube nuevo PDF → vuelve al paso 5
 ```
 
 ---
