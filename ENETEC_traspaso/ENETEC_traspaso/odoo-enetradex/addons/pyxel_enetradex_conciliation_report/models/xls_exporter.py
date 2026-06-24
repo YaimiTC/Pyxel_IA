@@ -10,7 +10,7 @@ from odoo.exceptions import UserError
 
 class PyxelEnetradexConciliationXlsExporter(models.AbstractModel):
     _name = "pyxel.enetradex.conciliation.xls_exporter"
-    _description = "XLS Exporter ENETEC CE-PCT (USD/CUP/Resumen)"
+    _description = "XLS Exporter ENETRADEX CE-PCT (USD/CUP/Resumen)"
 
     @api.model
     def export_excel(self, lines, data):
@@ -29,7 +29,7 @@ class PyxelEnetradexConciliationXlsExporter(models.AbstractModel):
         contract_label = contract_map.get(data.get("contract_to_third"), "Todos")
 
         platform_name = data.get("platform_name") or ""
-        provider_import_name = data.get("provider_import_name") or "ENETEC"
+        provider_import_name = data.get("provider_import_name") or "ENETRADEX"
         pyxel_name = data.get("pyxel_name") or "PYXEL SOLUTIONS SRL"
 
         lines = lines or []
@@ -264,7 +264,7 @@ class PyxelEnetradexConciliationXlsExporter(models.AbstractModel):
             # Título
             ws_sum.write_merge(
                 0, 0, 0, 4,
-                "ACTA DE CONCILIACIÓN DEL SERVICIO DE IMPORTACIÓN ENETEC",
+                "ACTA DE CONCILIACIÓN DEL SERVICIO DE IMPORTACIÓN ENETRADEX",
                 st_box_title
             )
 

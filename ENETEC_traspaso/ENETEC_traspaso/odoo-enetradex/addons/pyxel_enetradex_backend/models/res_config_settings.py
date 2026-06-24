@@ -7,7 +7,7 @@ class ResCompany(models.Model):
 
     en_import_margin_percent = fields.Float(
         string="Margen de importación (%)", default=0.3,
-        help="Comisión/margen de ENETEC aplicado a la oferta de venta al cliente.")
+        help="Comisión/margen de ENETRADEX aplicado a la oferta de venta al cliente.")
 
 
 class ResConfigSettings(models.TransientModel):

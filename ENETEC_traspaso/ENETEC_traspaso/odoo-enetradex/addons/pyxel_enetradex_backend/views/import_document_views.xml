@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Ficha de revisión del documento de importación -->
+    <!-- ===== Ficha de revisión del documento (comercial) ===== -->
     <record id="view_pyxel_import_document_form" model="ir.ui.view">
         <field name="name">pyxel.import.document.form</field>
         <field name="model">pyxel.import.document</field>
         <field name="arch" type="xml">
-            <form string="Revisión de documento de importación">
+            <form string="Revisión de documento">
                 <header>
+                    <button name="action_start_manual_review" type="object" string="Revisar manualmente"
+                            class="btn-secondary"
+                            invisible="ai_state not in ('validating','pending') or not attachment_id"/>
+                    <button name="action_rerun_ai" type="object" string="Re-evaluar con IA"
+                            invisible="not attachment_id"/>
                     <button name="action_commercial_approve" type="object" string="Aprobar"
                             class="btn-primary"
-                            invisible="ai_state not in ('passed','doubt') or commercial_state == 'approved'"/>
+                            invisible="not attachment_id or ai_state == 'rejected' or commercial_state == 'approved'"/>
                     <button name="action_commercial_reject" type="object" string="Rechazar"
-                            invisible="ai_state not in ('passed','doubt') or commercial_state == 'rejected'"/>
-                    <button name="action_commercial_reopen" type="object" string="Reabrir revisión"
+                            invisible="not attachment_id or commercial_state == 'rejected'"/>
+                    <button name="action_commercial_reopen" type="object" string="Reabrir"
                             invisible="commercial_state not in ('approved','rejected')"/>
                     <field name="portal_state" widget="badge"
                            decoration-success="portal_state == 'approved'"
@@ -22,15 +27,16 @@
                 </header>
                 <sheet>
                     <div class="en-track en-track-backend">
+                        <!-- Banner de estado -->
                         <div class="en-action success" invisible="portal_state != 'approved'">
                             <span class="ico"><i class="fa fa-check" title="Aprobado"/></span>
-                            <span>Documento aprobado.</span>
+                            <span>Documento aprobado — IA y revisión comercial conformes.</span>
                         </div>
                         <div class="en-action warning" invisible="portal_state != 'rejected'">
                             <span class="ico"><i class="fa fa-times" title="Rechazado"/></span>
                             <span>Documento rechazado — el proveedor debe reemplazarlo.</span>
                         </div>
-                        <div class="en-action warning"
+                        <div class="en-action info"
                              invisible="portal_state not in ('in_review','validating','pending','optional')">
                             <span class="ico"><i class="fa fa-clock-o" title="En revisión"/></span>
                             <span>Documento en proceso de revisión.</span>
@@ -38,30 +44,38 @@
 
                         <div class="oe_title">
                             <h1><field name="document_label" readonly="1"/></h1>
+                            <field name="is_required" invisible="1"/>
+                            <span class="text-muted" invisible="is_required">
+                                <i class="fa fa-info-circle me-1"/>Documento opcional
+                            </span>
                         </div>
 
                         <div class="row">
                             <div class="col-lg-7">
                                 <div class="en-card">
-                                    <h4>Documento subido</h4>
+                                    <h4>Documento</h4>
                                     <field name="attachment_id" invisible="1"/>
                                     <field name="document_file" filename="document_filename"
                                            widget="pdf_viewer" invisible="not attachment_id"/>
-                                    <div invisible="attachment_id" class="text-muted">Sin documento subido.</div>
-                                    <button name="action_view_document" type="object"
-                                            string="Abrir en pestaña nueva"
-                                            class="btn btn-link p-0 mt-2"
-                                            invisible="not attachment_id"/>
-                                    <div class="mt-3">
-                                        <div class="fw-bold mb-1">Subir / reemplazar archivo:</div>
-                                        <field name="document_upload" widget="camera_capture"
-                                               filename="document_upload_filename"/>
-                                        <field name="document_upload_filename" invisible="1"/>
+                                    <div invisible="attachment_id" class="text-muted mb-2">
+                                        Sin documento subido. Súbelo o tómale una foto:
+                                        al guardarlo se evalúa con la IA.
                                     </div>
+                                    <field name="document_file" filename="document_filename"
+                                           widget="binary" invisible="attachment_id"/>
+                                    <div class="mt-2">
+                                        <widget name="en_doc_photo"/>
+                                        <span class="text-muted small ms-2" invisible="not attachment_id">
+                                            Reemplaza el documento con una foto nueva.
+                                        </span>
+                                    </div>
+                                    <button name="action_view_document" type="object"
+                                            string="Abrir en pestaña nueva" class="btn btn-link p-0 mt-2"
+                                            invisible="not attachment_id"/>
                                 </div>
                             </div>
                             <div class="col-lg-5">
-                                <div class="en-card">
+                                <div class="en-card" invisible="ai_state == 'unavailable'">
                                     <h4>1 · Análisis de la IA</h4>
                                     <group>
                                         <field name="ai_state" widget="badge"
@@ -70,13 +84,26 @@
                                                decoration-danger="ai_state == 'rejected'"
                                                decoration-info="ai_state == 'validating'"/>
                                         <field name="ai_confidence" widget="progressbar" readonly="1"/>
-                                        <field name="ai_quality" widget="progressbar" readonly="1"/>
                                     </group>
+                                    <div class="en-note" invisible="ai_state != 'validating'">
+                                        <i class="fa fa-info-circle"/>
+                                        <span>La IA aún no entregó dictamen. Usa el botón
+                                            "Revisar manualmente" para activar la lista de chequeo.</span>
+                                    </div>
+                                    <div class="alert alert-danger mb-2" role="alert"
+                                         invisible="ai_state != 'rejected'">La IA rechazó el documento.</div>
+                                    <div class="alert alert-warning mb-2" role="alert"
+                                         invisible="ai_state != 'doubt'">La IA lo marcó como dudoso.</div>
                                     <field name="ai_reason" readonly="1" invisible="not ai_reason"/>
-                                    <field name="ai_extracted_data" readonly="1"
-                                           invisible="not ai_extracted_data"/>
+                                    <field name="ai_extracted_data" readonly="1" invisible="not ai_extracted_data"/>
                                 </div>
-                                <div class="en-card" invisible="ai_state not in ('passed','doubt')">
+                                <div class="alert alert-secondary mb-2" role="alert"
+                                     invisible="ai_state != 'unavailable'">
+                                    <i class="fa fa-info-circle"/> IA no disponible — revisión manual.
+                                    <button name="action_rerun_ai" type="object" string="Reintentar IA"
+                                            class="btn btn-sm btn-outline-secondary ms-2"/>
+                                </div>
+                                <div class="en-card" invisible="not attachment_id">
                                     <h4>2 · Revisión comercial</h4>
                                     <group>
                                         <field name="commercial_state" widget="badge"
@@ -88,9 +115,103 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="en-card" invisible="check_total == 0">
+                            <h4>Lista de validación — el comercial confirma cada punto</h4>
+                            <group>
+                                <field name="check_ok_count" string="Puntos conformes" readonly="1"/>
+                                <field name="check_total" string="Total puntos" readonly="1"/>
+                            </group>
+                            <field name="check_ids">
+                                <tree editable="bottom" create="0" delete="0">
+                                    <field name="severity" widget="badge"
+                                           decoration-danger="severity == 'critico'"
+                                           decoration-warning="severity == 'alto'"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="commercial_ok" widget="boolean_toggle"/>
+                                    <field name="commercial_comment"/>
+                                </tree>
+                            </field>
+                        </div>
                     </div>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!-- ===== Tree embebido del expediente ===== -->
+    <record id="view_pyxel_import_document_tree" model="ir.ui.view">
+        <field name="name">pyxel.import.document.tree</field>
+        <field name="model">pyxel.import.document</field>
+        <field name="arch" type="xml">
+            <tree create="0" delete="0">
+                <field name="document_label" readonly="1"/>
+                <field name="is_required" readonly="1" optional="hide"/>
+                <field name="attachment_id" readonly="1"/>
+                <field name="ai_state" string="Dictamen IA" readonly="1" widget="badge"
+                       decoration-success="ai_state == 'passed'" decoration-warning="ai_state == 'doubt'"
+                       decoration-danger="ai_state == 'rejected'" decoration-info="ai_state == 'validating'"/>
+                <field name="ai_confidence" readonly="1" optional="show"/>
+                <field name="commercial_state" string="Comercial" readonly="1" widget="badge"
+                       decoration-success="commercial_state == 'approved'"
+                       decoration-danger="commercial_state == 'rejected'"/>
+                <field name="portal_state" string="Estado" readonly="1" widget="badge"
+                       decoration-success="portal_state == 'approved'"
+                       decoration-warning="portal_state in ('in_review','validating')"
+                       decoration-danger="portal_state == 'rejected'"/>
+                <button name="action_open_review" type="object" string="Revisar" class="btn-link"/>
+                <button name="action_view_document" type="object" string="Ver"
+                        class="btn-link" invisible="not attachment_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ===== Pestaña "Expediente de documentos" en el proceso ===== -->
+    <record id="view_importation_process_form_expediente" model="ir.ui.view">
+        <field name="name">importation.process.form.expediente</field>
+        <field name="model">importation.process</field>
+        <field name="inherit_id" ref="pyxel_import_backend.view_importation_process_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Expediente de documentos">
+                    <group>
+                        <group>
+                            <field name="en_import_doc_count"/>
+                            <field name="en_import_doc_approved"/>
+                        </group>
+                        <group>
+                            <field name="en_import_docs_ready"
+                                   widget="boolean_toggle" readonly="1"/>
+                        </group>
+                    </group>
+                    <button name="action_create_import_expediente" type="object"
+                            string="Crear expediente" class="btn-primary"
+                            invisible="en_import_doc_count != 0"/>
+                    <separator string="Documentos de la importación"/>
+                    <field name="en_import_document_ids" nolabel="1" create="0" delete="0"
+                           context="{'tree_view_ref': 'pyxel_enetradex_backend.view_pyxel_import_document_tree'}"/>
+                    <separator string="Documentos por Orden de Compra"/>
+                    <field name="en_import_oc_doc_ids" nolabel="1" create="0" delete="0">
+                        <tree create="0" delete="0" default_order="purchase_order_id, sequence">
+                            <field name="purchase_order_id" string="Orden de compra"/>
+                            <field name="document_label" readonly="1"/>
+                            <field name="attachment_id" readonly="1"/>
+                            <field name="ai_state" string="Dictamen IA" readonly="1" widget="badge"
+                                   decoration-success="ai_state == 'passed'" decoration-warning="ai_state == 'doubt'"
+                                   decoration-danger="ai_state == 'rejected'" decoration-info="ai_state == 'validating'"/>
+                            <field name="commercial_state" string="Comercial" readonly="1" widget="badge"
+                                   decoration-success="commercial_state == 'approved'"
+                                   decoration-danger="commercial_state == 'rejected'"/>
+                            <field name="portal_state" string="Estado" readonly="1" widget="badge"
+                                   decoration-success="portal_state == 'approved'"
+                                   decoration-warning="portal_state in ('in_review','validating')"
+                                   decoration-danger="portal_state == 'rejected'"/>
+                            <button name="action_open_review" type="object" string="Revisar" class="btn-link"/>
+                            <button name="action_view_document" type="object" string="Ver"
+                                    class="btn-link" invisible="not attachment_id"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
         </field>
     </record>
 

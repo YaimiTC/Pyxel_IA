@@ -64,7 +64,7 @@ const CustomBusinessRegistrationForm = BusinessRegistrationForm.extend({
         });
     },
 
-    // ENETEC: al cambiar el tipo de contacto, el base recarga (RPC) las opciones de
+    // ENETRADEX: al cambiar el tipo de contacto, el base recarga (RPC) las opciones de
     // gestión y, al no haber placeholder, dejaba seleccionada la PRIMERA (Pymes) y
     // disparaba change, PISANDO la opción que fijó la tarjeta (p. ej. Sucursal
     // Extranjera) -> se mostraban documentos de empresa cubana. Aquí preservamos la
@@ -93,7 +93,7 @@ const CustomBusinessRegistrationForm = BusinessRegistrationForm.extend({
         if (sel) { sel.dispatchEvent(new Event('change', { bubbles: true })); }
     },
 
-    // ENETEC: muestra el SET (grid) de documentos del tipo de cliente seleccionado
+    // ENETRADEX: muestra el SET (grid) de documentos del tipo de cliente seleccionado
     // (Pymes/Sucursal Extranjera/Estatal/CNA) o el de Proveedor, y marca como
     // obligatorios solo los visibles. Los ocultos se deshabilitan.
     _showHideLegalDocumentation: function () {
@@ -121,7 +121,7 @@ const CustomBusinessRegistrationForm = BusinessRegistrationForm.extend({
         });
     },
 
-    // ENETEC: se elimina la "Ficha de cliente" (descargar/subir). El formulario
+    // ENETRADEX: se elimina la "Ficha de cliente" (descargar/subir). El formulario
     // recoge sus datos. Se oculta y se deshabilita para que no sea obligatoria.
     _showHideFichaCliente: function () {
         const ficha = document.querySelector('div[name="ficha_cliente"]');
@@ -134,7 +134,7 @@ const CustomBusinessRegistrationForm = BusinessRegistrationForm.extend({
         }
     },
 
-    // ENETEC: la "planilla/perfil del proveedor" (descargar/subir) es el equivalente
+    // ENETRADEX: la "planilla/perfil del proveedor" (descargar/subir) es el equivalente
     // a la Ficha de Cliente. Igual que la ficha, se elimina: el formulario recoge los
     // datos y el grid de documentos del proveedor (endoc_proveedor) cubre sus adjuntos.
     _showHidePerfilProveedor: function () {
@@ -148,7 +148,7 @@ const CustomBusinessRegistrationForm = BusinessRegistrationForm.extend({
         }
     },
 
-    // ENETEC: se oculta el bloque genérico de escritura (número/fecha).
+    // ENETRADEX: se oculta el bloque genérico de escritura (número/fecha).
     _showHideDeedInput: function () {
         const deed = document.querySelector('div[name="deed_input"]');
         if (deed) {

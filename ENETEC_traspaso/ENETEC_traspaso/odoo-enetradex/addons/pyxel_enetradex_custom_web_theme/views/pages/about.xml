@@ -9,26 +9,26 @@
                 <div class="d-none" aria-hidden="true">
                     <ul class="nav" id="aboutTabs" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active" id="who-tab" data-bs-toggle="tab" href="#who" role="tab">¿Quienes Somos?</a>
+                            <a t-attf-class="nav-link #{active_tab == 'who' and 'active' or ''}" id="who-tab" data-bs-toggle="tab" href="#who" role="tab">¿Quienes Somos?</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="services-tab" data-bs-toggle="tab" href="#services" role="tab">Nuestros Servicios</a>
+                            <a t-attf-class="nav-link #{active_tab == 'services' and 'active' or ''}" id="services-tab" data-bs-toggle="tab" href="#services" role="tab">Nuestros Servicios</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="vision-tab" data-bs-toggle="tab" href="#vision" role="tab">Visión General</a>
+                            <a t-attf-class="nav-link #{active_tab == 'vision' and 'active' or ''}" id="vision-tab" data-bs-toggle="tab" href="#vision" role="tab">Visión General</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="policy-tab" data-bs-toggle="tab" href="#policy" role="tab">Política y Términos</a>
+                            <a t-attf-class="nav-link #{active_tab == 'policy' and 'active' or ''}" id="policy-tab" data-bs-toggle="tab" href="#policy" role="tab">Política y Términos</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="faq-tab" data-bs-toggle="tab" href="#faqs" role="tab">Preguntas frecuentes</a>
+                            <a t-attf-class="nav-link #{active_tab == 'faqs' and 'active' or ''}" id="faq-tab" data-bs-toggle="tab" href="#faqs" role="tab">Preguntas frecuentes</a>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Tab Contents -->
                 <div class="tab-content" id="aboutTabsContent">
-                    <div class="tab-pane fade show active" id="who" role="tabpanel"
+                    <div t-attf-class="tab-pane fade #{active_tab == 'who' and 'show active' or ''}" id="who" role="tabpanel"
                         aria-labelledby="who-tab">
                         <section class="cx-srv-hero">
                             <div class="container">
@@ -207,7 +207,7 @@
                             </div>
                         </section>
                     </div>
-                    <div class="tab-pane fade" id="services" role="tabpanel"
+                    <div t-attf-class="tab-pane fade #{active_tab == 'services' and 'show active' or ''}" id="services" role="tabpanel"
                         aria-labelledby="services-tab">
 
                         <section class="cx-srv-hero">
@@ -357,7 +357,7 @@
                         </section>
 
                     </div>
-                    <div class="tab-pane fade" id="vision" role="tabpanel"
+                    <div t-attf-class="tab-pane fade #{active_tab == 'vision' and 'show active' or ''}" id="vision" role="tabpanel"
                         aria-labelledby="vision-tab">
                         <div class="container">
                             <div class="row justify-content-center p-5">
@@ -418,7 +418,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="policy" role="tabpanel"
+                    <div t-attf-class="tab-pane fade #{active_tab == 'policy' and 'show active' or ''}" id="policy" role="tabpanel"
                         aria-labelledby="policy-tab">
                         <div class="container">
                             <div class="row justify-content-center p-5">
@@ -479,7 +479,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="tab-pane fade" id="faqs" role="tabpanel" aria-labelledby="faqs-tab">
+                    <div t-attf-class="tab-pane fade #{active_tab == 'faqs' and 'show active' or ''}" id="faqs" role="tabpanel" aria-labelledby="faqs-tab">
                         <section class="cx-srv-hero">
                             <div class="container">
                                 <h1 class="cx-srv-hero-title">PREGUNTAS FRECUENTES</h1>

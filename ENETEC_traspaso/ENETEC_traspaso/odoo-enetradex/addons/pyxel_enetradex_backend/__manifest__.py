@@ -16,6 +16,7 @@
        'pyxel_import_backend',
     ],
     "data": [
+        'security/groups.xml',
         'security/ir.model.access.csv',
         'security/portal_rules.xml',
         'data/res_partner_management_type_data.xml',
@@ -27,14 +28,13 @@
         'views/en_backend_views.xml',
         'views/lead_document_views.xml',
         'views/import_document_views.xml',
-        'views/apoderado_views.xml',
         'report/en_cuban_partner_report.xml',
         'report/en_document_layout.xml',
     ],
     "assets": {
         "web.assets_backend": [
-            "pyxel_enetradex_backend/static/src/xml/camera_field.xml",
-            "pyxel_enetradex_backend/static/src/js/camera_field.js",
+            "pyxel_enetradex_backend/static/src/import_doc_photo/import_doc_photo.js",
+            "pyxel_enetradex_backend/static/src/import_doc_photo/import_doc_photo.xml",
         ],
     },
     "installable": True,

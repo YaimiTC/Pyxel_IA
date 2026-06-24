@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Confirmación: el usuario pulsó "Acreditarme" pero su empresa ya está acreditada -->
+    <template id="en_already_accredited" name="Ya acreditado">
+        <t t-call="website.layout">
+            <div class="ag-breadcrumb-bar">
+                <div class="container">
+                    <nav class="ag-breadcrumb">
+                        <a href="/">Inicio</a>
+                        <span class="ag-breadcrumb-sep">/</span>
+                        <span class="ag-breadcrumb-cur">Acreditación</span>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="container my-4" style="max-width:760px;">
+                <div class="en-track">
+                    <!-- Banner de confirmación -->
+                    <div class="en-action success">
+                        <span class="ico"><i class="fa fa-check"/></span>
+                        <span>
+                            <b t-esc="company.name"/> ya está acreditada en ENETRADEX.
+                            No necesitas volver a acreditarte.
+                        </span>
+                    </div>
+
+                    <!-- Tipo de cliente -->
+                    <div class="en-card">
+                        <h4><i class="fa fa-id-card-o me-2" style="color:var(--en-blue);"/>Tu acreditación</h4>
+                        <div class="en-kv">
+                            <div>
+                                <span class="k">Empresa</span>
+                                <span class="v" t-esc="company.name"/>
+                            </div>
+                            <div t-if="nit">
+                                <span class="k">NIT</span>
+                                <span class="v" t-esc="nit"/>
+                            </div>
+                            <div t-if="contact_type">
+                                <span class="k">Clasificación</span>
+                                <span class="v" t-esc="contact_type"/>
+                            </div>
+                            <div>
+                                <span class="k" t-esc="'Tipo de proveedor' if is_supplier else 'Tipo de cliente'"/>
+                                <span class="v" t-esc="type_label"/>
+                            </div>
+                            <div t-if="acc_date">
+                                <span class="k">Acreditada desde</span>
+                                <span class="v" t-esc="acc_date.strftime('%d/%m/%Y')"/>
+                            </div>
+                            <div>
+                                <span class="k" t-esc="'Despachos' if is_supplier else 'Operaciones activas'"/>
+                                <span class="v" t-esc="op_count"/>
+                            </div>
+                        </div>
+                        <div class="en-note mt-3">
+                            <i class="fa fa-info-circle"/>
+                            <span t-esc="type_desc"/>
+                        </div>
+                    </div>
+
+                    <!-- Operaciones activas -->
+                    <div class="en-card" t-if="operations">
+                        <h4><i class="fa fa-ship me-2" style="color:var(--en-blue);"/><t t-esc="'Mis despachos' if is_supplier else 'Mis operaciones de importación'"/></h4>
+                        <t t-foreach="operations" t-as="op">
+                            <a t-attf-href="/importations/view/#{op['id']}" class="en-op">
+                                <div>
+                                    <div class="ref" t-esc="op['name']"/>
+                                </div>
+                                <span class="badge-stage" t-esc="op['stage']"/>
+                            </a>
+                        </t>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="en-card">
+                        <h4>¿Qué quieres hacer ahora?</h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a t-if="not is_supplier" href="/en/wizard?op=1" class="dash-action"
+                               style="border-color:var(--en-blue);color:var(--en-blue);font-weight:700;">
+                                <i class="fa fa-ship me-1"/>Solicitar una importación
+                            </a>
+                            <a href="/my/home" class="dash-action">
+                                <i class="fa fa-tachometer me-1"/>Ir a Mi Cuenta
+                            </a>
+                            <a href="/my/seguimiento" class="dash-action">
+                                <i class="fa fa-route me-1"/>Ver seguimiento
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

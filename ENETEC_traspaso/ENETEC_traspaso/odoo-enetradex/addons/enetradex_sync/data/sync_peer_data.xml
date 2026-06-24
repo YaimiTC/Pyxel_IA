@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Registro de configuración por defecto (rol local). Se ajusta en cada plano. -->
+    <record id="sync_peer_default" model="sync.peer">
+        <field name="name">Configuración de sync</field>
+        <field name="node_role">local</field>
+    </record>
+</odoo>

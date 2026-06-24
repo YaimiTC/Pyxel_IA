@@ -56,25 +56,31 @@
         </xpath>
         <xpath expr="//div[@id='portal_client_category']" position="replace">
             <div class="o_portal_category row g-2 mt-3" id="portal_client_category">
-                <t t-call="portal.portal_docs_entry">
-                    <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/pedidos.png'"/>
-                    <t t-set="title">
-                        <t t-esc="new_quotations_count or ''"/>
-                        Pedidos
+                <!-- Proveedor: muestra sus OC en /my/compras -->
+                <t t-if="contact_type == 'Supplier'">
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/pedidos.png'"/>
+                        <t t-set="title">
+                            <t t-esc="new_quotations_count or ''"/>
+                            Compras
+                        </t>
+                        <t t-set="text">Vea sus órdenes de compra</t>
+                        <t t-set="url" t-value="'/my/compras'"/>
+                        <t t-set="config_card" t-value="True"/>
                     </t>
-                    <t t-set="text">Vea sus cotizaciones</t>
-                    <t t-set="url" t-value="'/my/quotes'"/>
-                    <t t-set="config_card" t-value="True"/>
                 </t>
-                <t t-call="portal.portal_docs_entry">
-                    <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/solicitudes.png'"/>
-                    <t t-set="title">
-                        <t t-esc="new_orders_count or ''"/>
-                        Solicitudes
+                <!-- Cliente: muestra sus OV de importación en /my/orders -->
+                <t t-if="contact_type != 'Supplier'">
+                    <t t-call="portal.portal_docs_entry">
+                        <t t-set="icon" t-value="'/pyxel_import_website/static/src/custom_icons/solicitudes.png'"/>
+                        <t t-set="title">
+                            <t t-esc="new_orders_count or ''"/>
+                            Solicitudes
+                        </t>
+                        <t t-set="text">Vea sus órdenes</t>
+                        <t t-set="url" t-value="'/my/orders'"/>
+                        <t t-set="config_card" t-value="True"/>
                     </t>
-                    <t t-set="text">Vea sus órdenes</t>
-                    <t t-set="url" t-value="'/my/orders'"/>
-                    <t t-set="config_card" t-value="True"/>
                 </t>
             </div>
         </xpath>

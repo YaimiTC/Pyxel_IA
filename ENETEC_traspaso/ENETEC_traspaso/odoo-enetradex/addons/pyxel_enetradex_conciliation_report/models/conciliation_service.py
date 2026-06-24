@@ -5,7 +5,7 @@ from odoo.exceptions import UserError
 
 class PyxelEnetradexConciliationService(models.AbstractModel):
     _name = "pyxel.enetradex.conciliation.service"
-    _description = "Service Conciliación ENETEC CE-PCT (por proceso)"
+    _description = "Service Conciliación ENETRADEX CE-PCT (por proceso)"
 
     @api.model
     def _get_currency(self, code):

@@ -72,6 +72,26 @@
                     <t t-set="url" t-value="'/my/acreditacion'" />
                     <t t-set="config_card" t-value="True" />
                 </t>
+
+                <!-- Documentos de la importación (cliente): BL/AWB + certificados -->
+                <t t-call="portal.portal_docs_entry" t-if="importacion_count">
+                    <t t-set="icon"
+                        t-value="'/pyxel_enetradex_custom_web_theme/static/src/img/importaciones.png'" />
+                    <t t-set="title">Documentos de importación</t>
+                    <t t-set="text">Suba el BL/AWB y los certificados de sus importaciones</t>
+                    <t t-set="url" t-value="'/my/importacion'" />
+                    <t t-set="config_card" t-value="True" />
+                </t>
+
+                <!-- Documentos de despacho (proveedor): factura/lista por OC -->
+                <t t-call="portal.portal_docs_entry" t-if="despacho_count">
+                    <t t-set="icon"
+                        t-value="'/pyxel_enetradex_custom_web_theme/static/src/img/importaciones.png'" />
+                    <t t-set="title">Mis despachos</t>
+                    <t t-set="text">Documentos de embarque por orden de compra</t>
+                    <t t-set="url" t-value="'/my/despacho'" />
+                    <t t-set="config_card" t-value="True" />
+                </t>
             </div>
         </xpath>
     </template>

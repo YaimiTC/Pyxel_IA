@@ -38,7 +38,7 @@
 
                             <field name="name"/>
                             <field name="importation_id"/>
-                            <field name="cargo_type" invisible="hide_cargo_type"/>
+                            <field name="cargo_type" invisible="hide_cargo_type" readonly="1"/>
                             <field name="size"/>
                             <field name="weight"/>
                             <field name="volume" invisible="hide_volume == True"/>
@@ -69,7 +69,6 @@
                             <field name="hide_shipping_company" invisible="1"/>
                             <field name="hide_airline" invisible="1"/>
                             <field name="hide_transit_agency" invisible="1"/>
-
                             <field name="shipping_company" invisible="hide_shipping_company"/>
                             <field name="airline" invisible="hide_airline"/>
                             <field name="transit_agency" invisible="hide_transit_agency"/>

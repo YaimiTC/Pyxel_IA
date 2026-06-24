@@ -13,12 +13,12 @@ class ImportationLoad(models.Model):
     purchase_condition = fields.Selection(related='importation_id.purchase_condition', string='Purchase Condition',
                                           readonly=True)
     import_type_id = fields.Many2one(comodel_name='import.type',
-                                              related='importation_id.import_type_id', string='IIT')
+                                              related='importation_id.import_type_id', string='IIT', store=True)
 
     cargo_type = fields.Selection([
         ('dry', 'Dry'),
         ('reefer', 'Refrigerated'),
-    ], string='Load Type')
+    ], string='Load Type', default='dry')
 
     size = fields.Selection(
         selection=[
@@ -50,21 +50,38 @@ class ImportationLoad(models.Model):
     days_in_tcm = fields.Integer(string="Days in TCM", compute='_compute_days_in_tcm')
     days_extracted = fields.Integer(string="Days extracted", compute='_compute_days_extracted')
 
-    hide_cargo_type = fields.Boolean(string='Show Cargo Type', compute='_inverse_boolean_value')
-    hide_volume = fields.Boolean(string='Show Volume', compute='_inverse_boolean_value')
-    hide_bulk = fields.Boolean(string='Show Bulk', compute='_inverse_boolean_value')
+    hide_cargo_type = fields.Boolean(string='Show Cargo Type', compute='_inverse_boolean_value', store=True)
+    hide_volume = fields.Boolean(string='Show Volume', compute='_inverse_boolean_value', store=True)
+    hide_bulk = fields.Boolean(string='Show Bulk', compute='_inverse_boolean_value', store=True)
 
-    hide_opening_date = fields.Boolean(string='Show Opening Date', compute='_inverse_boolean_value')
-    hide_arrival_date = fields.Boolean(string='Show Arrival Date', compute='_inverse_boolean_value')
-    hide_release_date = fields.Boolean(string='Show Release Date', compute='_inverse_boolean_value')
-    hide_extraction_date = fields.Boolean(string='Show Extraction Date', compute='_inverse_boolean_value')
-    hide_return_date = fields.Boolean(string='Show Return Date', compute='_inverse_boolean_value')
+    hide_opening_date = fields.Boolean(string='Show Opening Date', compute='_inverse_boolean_value', store=True)
+    hide_arrival_date = fields.Boolean(string='Show Arrival Date', compute='_inverse_boolean_value', store=True)
+    hide_release_date = fields.Boolean(string='Show Release Date', compute='_inverse_boolean_value', store=True)
+    hide_extraction_date = fields.Boolean(string='Show Extraction Date', compute='_inverse_boolean_value', store=True)
+    hide_return_date = fields.Boolean(string='Show Return Date', compute='_inverse_boolean_value', store=True)
 
-    hide_shipping_company = fields.Boolean(string='Show Shipping Company', compute='_inverse_boolean_value')
-    hide_airline = fields.Boolean(string='Show Airline', compute='_inverse_boolean_value')
-    hide_transit_agency = fields.Boolean(string='Show Transit Agency', compute='_inverse_boolean_value')
+    hide_shipping_company = fields.Boolean(string='Show Shipping Company', compute='_inverse_boolean_value', store=True)
+    hide_airline = fields.Boolean(string='Show Airline', compute='_inverse_boolean_value', store=True)
+    hide_transit_agency = fields.Boolean(string='Show Transit Agency', compute='_inverse_boolean_value', store=True)
 
-    @api.depends('import_type_id')
+    show_shipping_company = fields.Boolean(string='Mostrar Naviera', compute='_compute_show_transport', store=False)
+    show_airline = fields.Boolean(string='Mostrar Aerolínea', compute='_compute_show_transport', store=False)
+    show_transit_agency = fields.Boolean(string='Mostrar Transitoria', compute='_compute_show_transport', store=False)
+
+    @api.depends('importation_id', 'importation_id.import_type_id')
+    def _compute_show_transport(self):
+        for record in self:
+            import_type = record.importation_id.import_type_id
+            record.show_shipping_company = import_type.show_shipping_company if import_type else False
+            record.show_airline = import_type.show_airline if import_type else False
+            record.show_transit_agency = import_type.show_transit_agency if import_type else False
+
+    @api.onchange('importation_id')
+    def _onchange_importation_id(self):
+        self._inverse_boolean_value()
+        self._compute_show_transport()
+
+    @api.depends('import_type_id', 'importation_id', 'importation_id.import_type_id')
     def _inverse_boolean_value(self):
         for record in self:
             record.hide_cargo_type = False
@@ -78,18 +95,19 @@ class ImportationLoad(models.Model):
             record.hide_shipping_company = False
             record.hide_airline = False
             record.hide_transit_agency = False
-            if record.import_type_id:
-                record.hide_cargo_type = not record.import_type_id.show_cargo_type
-                record.hide_volume = not record.import_type_id.show_volume
-                record.hide_bulk = not record.import_type_id.show_bulk
-                record.hide_opening_date = not record.import_type_id.show_opening_date
-                record.hide_arrival_date = not record.import_type_id.show_arrival_date
-                record.hide_release_date = not record.import_type_id.show_release_date
-                record.hide_extraction_date = not record.import_type_id.show_extraction_date
-                record.hide_return_date = not record.import_type_id.show_return_date
-                record.hide_shipping_company = not record.import_type_id.show_shipping_company
-                record.hide_airline = not record.import_type_id.show_airline
-                record.hide_transit_agency = not record.import_type_id.show_transit_agency
+            import_type = record.import_type_id or record.importation_id.import_type_id
+            if import_type:
+                record.hide_cargo_type = not import_type.show_cargo_type
+                record.hide_volume = not import_type.show_volume
+                record.hide_bulk = not import_type.show_bulk
+                record.hide_opening_date = not import_type.show_opening_date
+                record.hide_arrival_date = not import_type.show_arrival_date
+                record.hide_release_date = not import_type.show_release_date
+                record.hide_extraction_date = not import_type.show_extraction_date
+                record.hide_return_date = not import_type.show_return_date
+                record.hide_shipping_company = not import_type.show_shipping_company
+                record.hide_airline = not import_type.show_airline
+                record.hide_transit_agency = not import_type.show_transit_agency
 
 
     # @api.depends('arrival_date', 'extraction_date')
@@ -122,9 +140,9 @@ class ImportationLoad(models.Model):
     ], string='State', compute='_compute_state', store=True, readonly=True, tracking=True)
 
     # Información logística adicional
-    shipping_company = fields.Char(string='Shipping company')
-    airline = fields.Char(string='Airline')
-    transit_agency = fields.Char(string='Transitory')
+    shipping_company = fields.Char(string='Naviera')
+    airline = fields.Char(string='Aerolínea')
+    transit_agency = fields.Char(string='Transitoria')
 
     # Información del Transportista
     pre_appointment_date = fields.Date(string='Date Prior to the Appointment')

@@ -62,14 +62,18 @@ class ImportationProcess(models.Model):
         compute='_compute_en_import_doc_count', string="Documentos del expediente")
     en_import_doc_approved = fields.Integer(
         compute='_compute_en_import_doc_count', string="Documentos aprobados")
+    en_import_docs_ready = fields.Boolean(
+        compute='_compute_en_import_doc_count', store=True,
+        string="Expediente listo")
 
     @api.depends('en_import_document_ids.portal_state')
     def _compute_en_import_doc_count(self):
         for rec in self:
             docs = rec.en_import_document_ids
             rec.en_import_doc_count = len(docs)
-            rec.en_import_doc_approved = len(
-                docs.filtered(lambda d: d.portal_state == 'approved'))
+            approved = len(docs.filtered(lambda d: d.portal_state == 'approved'))
+            rec.en_import_doc_approved = approved
+            rec.en_import_docs_ready = bool(docs) and approved == len(docs)
 
     # Campos de la Declaración de Mercancía (los rellena el apoderado de aduana).
     en_dm_number = fields.Char(string='Número DM')
@@ -92,11 +96,12 @@ class ImportationProcess(models.Model):
         compute='_compute_en_customs_dm_done', store=True,
         string='DM completadas')
 
-    @api.depends('en_import_dm_doc_ids.dm_confirmed')
+    @api.depends('en_import_dm_doc_ids')
     def _compute_en_customs_dm_done(self):
+        # Implementación base: siempre False hasta que pyxel_customs_agent
+        # sobreescribe este método con la lógica de dm_confirmed.
         for rec in self:
-            dm_docs = rec.en_import_dm_doc_ids
-            rec.en_customs_dm_done = bool(dm_docs) and all(d.dm_confirmed for d in dm_docs)
+            rec.en_customs_dm_done = False
 
     # True cuando: solicitud aprobada + BL/AWB aprobado + oferta/factura/lista de OC aprobados.
     en_ready_for_customs = fields.Boolean(
@@ -166,6 +171,12 @@ class ImportationProcess(models.Model):
         help="Comisión/margen aplicado a la oferta de venta al cliente.")
     en_client_sale_order_id = fields.Many2one(
         'sale.order', string="Oferta de venta al cliente", readonly=True, copy=False)
+    def _compute_cost_sale_order_count(self):
+        for rec in self:
+            rec.cost_sale_order_count = self.env['sale.order'].search_count([
+                ('importation_process_id', '=', rec.id),
+                ('is_cost_order', '=', True),
+            ])
     en_request_approved = fields.Boolean(
         string="Solicitud aprobada", readonly=True, copy=False)
     en_can_approve_request = fields.Boolean(
@@ -341,19 +352,51 @@ class ImportationProcess(models.Model):
         created = SaleOrder
         for grp in by_currency.values():
             pl = self._en_pricelist_for_currency(grp['ccy'])
-            so = SaleOrder.create({
-                'partner_id': partner.id,
-                'importation_process_id': self.id,
-                'origin': self.name,
-                'order_type': 'importation_process',
-                'pricelist_id': pl.id,
-                'currency_id': grp['ccy'].id,
-                'order_line': [(0, 0, {
-                    'product_id': val['product'].id, 'name': val['name'],
-                    'product_uom_qty': 1.0, 'price_unit': val['price_unit'],
-                    'product_uom': val['product'].uom_id.id,
-                }) for val in grp['prods'].values()],
-            })
+            new_lines = [(0, 0, {
+                'product_id': val['product'].id, 'name': val['name'],
+                'product_uom_qty': 1.0, 'price_unit': val['price_unit'],
+                'product_uom': val['product'].uom_id.id,
+            }) for val in grp['prods'].values()]
+
+            existing = SaleOrder.search([
+                ('importation_process_id', '=', self.id),
+                ('is_cost_order', '=', True),
+                ('currency_id', '=', grp['ccy'].id),
+            ], limit=1)
+
+            if existing:
+                # Forzar a borrador sin tocar facturas (Odoo gestiona el resto nativamente)
+                if existing.state not in ('draft', 'sent'):
+                    existing.sudo().write({'state': 'draft'})
+                # Actualizar líneas existentes por producto, agregar las nuevas
+                lines_by_product = {l.product_id.id: l for l in existing.order_line}
+                for val in grp['prods'].values():
+                    pid = val['product'].id
+                    if pid in lines_by_product:
+                        lines_by_product[pid].write({
+                            'price_unit': val['price_unit'],
+                            'name': val['name'],
+                        })
+                    else:
+                        existing.write({'order_line': [(0, 0, {
+                            'product_id': pid,
+                            'name': val['name'],
+                            'product_uom_qty': 1.0,
+                            'price_unit': val['price_unit'],
+                            'product_uom': val['product'].uom_id.id,
+                        })]})
+                so = existing
+            else:
+                so = SaleOrder.create({
+                    'partner_id': partner.id,
+                    'importation_process_id': self.id,
+                    'origin': self.name,
+                    'order_type': 'importation_process',
+                    'pricelist_id': pl.id,
+                    'currency_id': grp['ccy'].id,
+                    'is_cost_order': True,
+                    'order_line': new_lines,
+                })
             created |= so
         if created:
             self.final_sale_order_id = created[0].id

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Agente de sync: empuja catálogo y tira de pedidos. Solo actúa si rol=local.
+         OJO: requiere max_cron_threads>=1 en el odoo.conf del LOCAL.
+         Si el local corre con max_cron_threads=0, usar el botón "Sincronizar ahora". -->
+    <record id="ir_cron_enetradex_sync" model="ir.cron">
+        <field name="name">ENETRADEX Sync — agente pull/push (local)</field>
+        <field name="model_id" ref="model_sync_agent"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_run()</field>
+        <field name="interval_number">5</field>
+        <field name="interval_type">minutes</field>
+        <field name="numbercall">-1</field>
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

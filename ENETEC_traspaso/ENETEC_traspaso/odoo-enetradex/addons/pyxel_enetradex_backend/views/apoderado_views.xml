@@ -27,6 +27,7 @@
     <record id="view_apoderado_process_form" model="ir.ui.view">
         <field name="name">importation.process.apoderado.form</field>
         <field name="model">importation.process</field>
+        <field name="priority">100</field>
         <field name="arch" type="xml">
             <form string="Trámites de aduana">
                 <sheet>
@@ -98,18 +99,14 @@
                                            decoration-success="portal_state == 'approved'"
                                            decoration-danger="portal_state == 'rejected'"
                                            decoration-warning="portal_state == 'in_review'"/>
-                                    <button name="action_view_document" type="object"
-                                            string="Ver" class="btn-link"
-                                            invisible="display_type == 'line_section' or not attachment_id"/>
                                 </tree>
                             </field>
                         </page>
 
-                        <!-- ── Declaración de Mercancía por OC ── -->
+                        <!-- ── Declaración de Mercancía (editable) ── -->
                         <page string="Declaración de Mercancía (DM)" name="ap_dm">
                             <div class="alert alert-warning" role="alert"
                                  invisible="en_ready_for_customs">
-                                <i class="fa fa-lock me-2"/>
                                 Los documentos de entrada aún no están aprobados.
                                 No es posible gestionar la DM hasta que el expediente esté completo.
                             </div>
@@ -120,42 +117,31 @@
                                       decoration-success="dm_confirmed"
                                       decoration-muted="not attachment_id">
                                     <field name="purchase_order_id" string="OC" readonly="1"/>
-                                    <field name="attachment_id" string="PDF DM"
-                                           widget="many2one" readonly="1"/>
-                                    <field name="display_type" column_invisible="1"/>
-                                    <field name="ai_state" string="IA" widget="badge" readonly="1"
+                                    <field name="attachment_id" string="PDF DM"/>
+                                    <field name="ai_state" string="IA" widget="badge"
                                            decoration-success="ai_state == 'passed'"
                                            decoration-warning="ai_state == 'doubt'"
                                            decoration-danger="ai_state == 'rejected'"
-                                           decoration-info="ai_state == 'validating'"/>
-                                    <field name="dm_extraction_state" string="Extracción"
-                                           widget="badge" readonly="1"
-                                           decoration-success="dm_extraction_state == 'extracted'"
-                                           decoration-warning="dm_extraction_state == 'manual'"
-                                           decoration-muted="dm_extraction_state == 'pending'"/>
+                                           invisible="not attachment_id"/>
+                                    <field name="dm_extraction_state" string="Extracción" widget="badge"
+                                           decoration-info="dm_extraction_state == 'extracted'"
+                                           decoration-warning="dm_extraction_state == 'manual'"/>
                                     <field name="dm_number" string="Nº DM"/>
-                                    <field name="dm_container_number" string="Contenedor"/>
                                     <field name="dm_cif_value" string="CIF (USD)"/>
                                     <field name="dm_arancel_total" string="Aranceles (USD)"/>
-                                    <field name="dm_impuesto_circulacion" string="Imp. Circulación (USD)"/>
                                     <field name="dm_confirmed" string="Confirmado" readonly="1"/>
-                                    <button name="action_open_review" type="object"
-                                            string="Subir DM" class="btn-link"
-                                            invisible="attachment_id"/>
                                     <button name="action_view_document" type="object"
                                             string="Ver DM" class="btn-link"
                                             invisible="not attachment_id"/>
                                     <button name="action_confirm_dm" type="object"
-                                            string="Confirmar" class="btn-link btn-success"
-                                            invisible="dm_confirmed or not attachment_id"/>
+                                            string="Confirmar" class="btn-success"
+                                            invisible="not attachment_id or dm_confirmed"/>
                                 </tree>
                             </field>
 
-                            <!-- Detalle notas arancelarias (editable al seleccionar fila) -->
                             <separator string="Notas arancelarias"
                                        invisible="not en_ready_for_customs"/>
-                            <field name="en_import_dm_doc_ids"
-                                   invisible="not en_ready_for_customs">
+                            <field name="en_import_dm_doc_ids" invisible="not en_ready_for_customs">
                                 <tree editable="bottom" create="0" delete="0">
                                     <field name="purchase_order_id" string="OC" readonly="1"/>
                                     <field name="dm_arancel_notes" string="Notas"/>
@@ -164,31 +150,24 @@
                         </page>
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="message_ids"/>
-                </div>
             </form>
         </field>
     </record>
 
     <!-- ══════════════════════════════════════════════════════════════════════
-         Acción: solo procesos en "TRÁMITES EN DESTINO" con docs OK
+         Acción: lista de trámites pendientes para el apoderado
          ══════════════════════════════════════════════════════════════════════ -->
     <record id="action_apoderado_aduana" model="ir.actions.act_window">
         <field name="name">Trámites de aduana</field>
         <field name="res_model">importation.process</field>
         <field name="view_mode">tree,form</field>
-        <field name="domain">[('stage_id.name', '=', 'TRÁMITES EN DESTINO'), ('en_ready_for_customs', '=', True), ('en_customs_dm_done', '=', False)]</field>
-        <field name="context">{'create': False}</field>
-        <field name="views" eval="[(ref('view_apoderado_process_tree'), 'tree'), (ref('view_apoderado_process_form'), 'form')]"/>
+        <field name="domain">[('stage_id.name','=','TRÁMITES EN DESTINO'),('en_ready_for_customs','=',True),('en_customs_dm_done','=',False)]</field>
+        <field name="view_ids" eval="[(5,0,0),
+            (0,0,{'view_mode':'tree','view_id':ref('view_apoderado_process_tree')}),
+            (0,0,{'view_mode':'form','view_id':ref('view_apoderado_process_form')})]"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                No hay procesos listos para trámites de aduana.
-            </p>
-            <p>
-                Aquí aparecen los procesos en etapa "Trámites en destino" que tienen
-                BL/AWB, factura comercial y lista de empaque aprobados.
+                No hay procesos pendientes de despacho aduanero.
             </p>
         </field>
     </record>
@@ -196,7 +175,7 @@
     <!-- ══════════════════════════════════════════════════════════════════════
          Menú
          ══════════════════════════════════════════════════════════════════════ -->
-    <menuitem id="en_menu_apoderado"
+    <menuitem id="menu_apoderado_aduana"
               name="Trámites de aduana"
               parent="pyxel_import_backend.menu_importation_root"
               action="action_apoderado_aduana"

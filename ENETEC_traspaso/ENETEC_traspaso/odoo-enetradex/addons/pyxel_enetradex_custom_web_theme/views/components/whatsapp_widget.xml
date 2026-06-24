@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="whatsapp_widget" name="Cupet WhatsApp Floating Widget">
+    <template id="whatsapp_widget" name="ENETRADEX WhatsApp Floating Widget">
         <div class="cx-wa-widget" id="cxWaWidget" data-number="5355555555">
 
             <div class="cx-wa-panel" id="cxWaPanel">
@@ -9,7 +9,7 @@
                         <i class="fa fa-whatsapp"></i>
                     </div>
                     <div class="cx-wa-header-text">
-                        <div class="cx-wa-title">Atención CUPET</div>
+                        <div class="cx-wa-title">Atención ENETRADEX</div>
                         <div class="cx-wa-status">
                             <span class="cx-wa-dot"></span> En línea ahora
                         </div>

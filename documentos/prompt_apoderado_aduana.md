@@ -327,6 +327,63 @@ ORDER BY d.purchase_order_id NULLS FIRST;
 
 ---
 
+## Crear usuario de prueba — Apoderado de aduana
+
+### Desde la interfaz de Odoo
+1. Ir a **Ajustes → Usuarios → Nuevo**
+2. Completar:
+   - **Nombre:** Apoderado Aduana
+   - **Correo electrónico:** apoderado@enetradex.cu
+   - **Contraseña:** apoderado (cambiar en el primer acceso)
+   - **Tipo de usuario:** Usuario interno
+3. Guardar y enviar invitación (o establecer contraseña manualmente)
+
+### Desde SQL (más rápido para pruebas)
+
+```sql
+-- 1. Crear el contacto (res.partner)
+INSERT INTO res_partner (name, email, active, company_type, lang)
+VALUES ('Apoderado Aduana', 'apoderado@enetradex.cu', true, 'person', 'es_ES')
+RETURNING id;
+
+-- 2. Crear el usuario vinculado al contacto (usar el id devuelto arriba)
+INSERT INTO res_users (partner_id, login, active, share)
+SELECT id, 'apoderado@enetradex.cu', true, false
+FROM res_partner WHERE email = 'apoderado@enetradex.cu'
+RETURNING id;
+
+-- 3. Establecer contraseña "apoderado"
+UPDATE res_users
+SET password = crypt('apoderado', gen_salt('bf'))
+WHERE login = 'apoderado@enetradex.cu';
+
+-- 4. Verificar
+SELECT u.id, u.login, p.name, u.active, u.share
+FROM res_users u
+JOIN res_partner p ON p.id = u.partner_id
+WHERE u.login = 'apoderado@enetradex.cu';
+```
+
+### Desde Docker (comando directo)
+
+```powershell
+docker exec enetradex_postgres psql -U odoo -d enetradex_dev -c "
+SELECT u.id, u.login, p.name
+FROM res_users u
+JOIN res_partner p ON p.id = u.partner_id
+WHERE u.share = false
+ORDER BY u.id DESC LIMIT 10;"
+```
+
+### Credenciales de acceso
+| Campo | Valor |
+|-------|-------|
+| URL | http://localhost:8469 |
+| Usuario | apoderado@enetradex.cu |
+| Contraseña | apoderado |
+
+---
+
 ## Comandos de apoyo
 
 ```powershell

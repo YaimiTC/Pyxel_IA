@@ -32,11 +32,11 @@
     </template>
 
     <!-- ============================================================
-         PÁGINA DE ACREDITACIÓN — rediseño ENETEC (fiel al mockup)
+         PÁGINA DE ACREDITACIÓN — rediseño ENETRADEX (fiel al mockup)
          ============================================================ -->
     <template id="business_registration_agrimpex"
               inherit_id="pyxel_import_website.business_registration"
-              name="Acreditación ENETEC (rediseño)">
+              name="Acreditación ENETRADEX (rediseño)">
 
         <xpath expr="//div[@id='wrap']" position="attributes">
             <attribute name="class" add="ag-inner-page ag-acc-page" separator=" "/>

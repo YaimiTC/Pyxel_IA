@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_wa_log_tree" model="ir.ui.view">
+        <field name="name">whatsapp.message.log.tree</field>
+        <field name="model">whatsapp.message.log</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state in ('sent','delivered','read')"
+                  decoration-danger="state == 'failed'" decoration-info="direction == 'inbound'">
+                <field name="create_date"/>
+                <field name="direction"/>
+                <field name="partner_id"/>
+                <field name="phone"/>
+                <field name="msg_type"/>
+                <field name="template_name" optional="show"/>
+                <field name="body" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state in ('sent','delivered','read')"
+                       decoration-danger="state == 'failed'"/>
+                <field name="error" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_wa_log_form" model="ir.ui.view">
+        <field name="name">whatsapp.message.log.form</field>
+        <field name="model">whatsapp.message.log</field>
+        <field name="arch" type="xml">
+            <form string="Mensaje WhatsApp">
+                <header>
+                    <button name="action_send" type="object" string="Enviar / Reintentar"
+                            class="btn-primary"
+                            invisible="direction == 'inbound' or state in ('sent','delivered','read')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,queued,sent,delivered,read"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="direction"/>
+                            <field name="partner_id"/>
+                            <field name="phone"/>
+                            <field name="msg_type"/>
+                        </group>
+                        <group>
+                            <field name="template_mapping_id"
+                                   invisible="msg_type != 'template'"/>
+                            <field name="template_name" invisible="msg_type != 'template'"/>
+                            <field name="event" readonly="1"/>
+                            <field name="wa_message_id" readonly="1"/>
+                            <field name="res_model" readonly="1"/>
+                            <field name="res_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="body" placeholder="Texto del mensaje (solo válido dentro de la ventana de 24h)"/>
+                    <group string="Diagnóstico" invisible="not error and not response_json">
+                        <field name="error" readonly="1"/>
+                        <field name="retry_count" readonly="1"/>
+                        <field name="response_json" readonly="1" widget="ace" options="{'mode': 'json'}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_wa_log" model="ir.actions.act_window">
+        <field name="name">Mensajes WhatsApp</field>
+        <field name="res_model">whatsapp.message.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_group_direction': 1}</field>
+    </record>
+
+</odoo>

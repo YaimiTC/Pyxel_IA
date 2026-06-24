@@ -8,19 +8,35 @@
         <field name="arch" type="xml">
             <form string="Revisión de documento">
                 <header>
-                    <button name="action_lawyer_approve" type="object" string="Aprobar (legal)"
-                            class="btn-primary" invisible="ai_state not in ('passed','doubt') or lawyer_state == 'approved'"/>
-                    <button name="action_lawyer_reject" type="object" string="Rechazar (legal)"
-                            invisible="ai_state not in ('passed','doubt') or lawyer_state == 'rejected'"/>
-                    <button name="action_lawyer_reopen" type="object" string="Reabrir (legal)"
+                    <!-- Botones ABOGADA — solo cuando lawyer_state == 'to_review' y IA desbloqueada -->
+                    <button name="action_start_manual_review" type="object" string="Revisar manualmente"
+                            class="btn-secondary"
+                            groups="pyxel_enetradex_backend.group_lawyer"
+                            invisible="ai_state not in ('validating','pending') or not attachment_id"/>
+                    <button name="action_lawyer_approve" type="object" string="Aprobar (Legal)"
+                            class="btn-primary"
+                            groups="pyxel_enetradex_backend.group_lawyer"
+                            invisible="lawyer_state != 'to_review' or ai_state not in ('passed','doubt','unavailable')"/>
+                    <button name="action_lawyer_reject" type="object" string="Rechazar (Legal)"
+                            groups="pyxel_enetradex_backend.group_lawyer"
+                            invisible="lawyer_state != 'to_review' or ai_state not in ('passed','doubt','unavailable')"/>
+                    <button name="action_lawyer_reopen" type="object" string="Reabrir revisión (Legal)"
+                            groups="pyxel_enetradex_backend.group_lawyer"
                             invisible="lawyer_state not in ('approved','rejected')"/>
-                    <button name="action_commercial_approve" type="object" string="Aprobar (comercial)"
-                            class="btn-primary" invisible="lawyer_state != 'approved' or commercial_state == 'approved'"/>
-                    <button name="action_commercial_reject" type="object" string="Rechazar (comercial)"
-                            invisible="lawyer_state != 'approved' or commercial_state == 'rejected'"/>
-                    <button name="action_commercial_reopen" type="object" string="Reabrir (comercial)"
+                    <!-- Botones COMERCIAL — solo cuando abogada aprobó y commercial_state == 'to_review' -->
+                    <button name="action_commercial_approve" type="object" string="Aprobar (Comercial)"
+                            class="btn-primary"
+                            groups="pyxel_enetradex_backend.group_commercial"
+                            invisible="commercial_state != 'to_review'"/>
+                    <button name="action_commercial_reject" type="object" string="Rechazar (Comercial)"
+                            groups="pyxel_enetradex_backend.group_commercial"
+                            invisible="commercial_state != 'to_review'"/>
+                    <button name="action_commercial_reopen" type="object" string="Reabrir revisión (Comercial)"
+                            groups="pyxel_enetradex_backend.group_commercial"
                             invisible="commercial_state not in ('approved','rejected')"/>
+                    <!-- Enviar notas: ambos grupos -->
                     <button name="action_send_notes_email" type="object" string="Enviar notas por correo"
+                            groups="pyxel_enetradex_backend.group_lawyer,pyxel_enetradex_backend.group_commercial"
                             invisible="not attachment_id"/>
                     <field name="portal_state" widget="badge" decoration-success="portal_state == 'approved'"
                            decoration-warning="portal_state in ('in_review','validating')"
@@ -52,15 +68,24 @@
                                 <div class="en-card">
                                     <h4>Documento subido</h4>
                                     <field name="attachment_id" invisible="1"/>
-                                    <field name="document_file" filename="document_filename" widget="pdf_viewer"
-                                           invisible="not attachment_id"/>
-                                    <div invisible="attachment_id" class="text-muted">Sin documento subido.</div>
-                                    <button name="action_view_document" type="object" string="Abrir en pestaña nueva"
-                                            class="btn btn-link p-0 mt-2" invisible="not attachment_id"/>
+                                    <!-- Visor PDF cuando ya hay adjunto -->
+                                    <field name="document_file" filename="document_filename"
+                                           widget="pdf_viewer" invisible="not attachment_id"/>
+                                    <!-- Sin documento: instrucciones -->
+                                    <div invisible="attachment_id" class="text-muted mb-2">
+                                        Sin documento subido. Usa una de las opciones:
+                                    </div>
+                                    <!-- Ambas opciones las gestiona el widget JS -->
+                                    <div class="mt-1">
+                                        <widget name="en_doc_photo"/>
+                                    </div>
+                                    <button name="action_view_document" type="object"
+                                            string="Abrir en pestaña nueva" class="btn btn-link p-0 mt-2"
+                                            invisible="not attachment_id"/>
                                 </div>
                             </div>
                             <div class="col-lg-5">
-                                <div class="en-card">
+                                <div class="en-card" invisible="ai_state == 'unavailable'">
                                     <h4>1 · Análisis de la IA</h4>
                                     <group>
                                         <field name="ai_state" widget="badge" decoration-success="ai_state == 'passed'"
@@ -78,7 +103,12 @@
                                     <field name="ai_reason" readonly="1" invisible="not ai_reason"/>
                                     <field name="ai_extracted_data" readonly="1" invisible="not ai_extracted_data"/>
                                 </div>
-                                <div class="en-card" invisible="ai_state not in ('passed','doubt')">
+                                <div class="alert alert-secondary mb-2" role="alert" invisible="ai_state != 'unavailable'">
+                                    <i class="fa fa-info-circle"/> IA no disponible — revisión manual.
+                                    <button name="action_rerun_ai" type="object" string="Reintentar IA"
+                                            class="btn btn-sm btn-outline-secondary ms-2"/>
+                                </div>
+                                <div class="en-card" invisible="ai_state not in ('passed','doubt','unavailable')">
                                     <h4>2 · Revisión de la abogada</h4>
                                     <group>
                                         <field name="lawyer_state" widget="badge" decoration-success="lawyer_state == 'approved'"
@@ -128,8 +158,16 @@
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Documentación de acreditación" invisible="accreditation_doc_count == 0">
-                    <group>
+                <page string="Documentación de acreditación">
+                    <group invisible="accreditation_doc_count != 0">
+                        <field name="accreditation_client_type" required="1"/>
+                    </group>
+                    <button name="action_generate_expediente"
+                            type="object"
+                            string="Generar expediente"
+                            class="btn-primary mb-3"
+                            invisible="accreditation_doc_count != 0"/>
+                    <group invisible="accreditation_doc_count == 0">
                         <group>
                             <field name="accreditation_doc_count"/>
                             <field name="accreditation_approved_count"/>
@@ -139,13 +177,15 @@
                             <field name="accreditation_pending_count"/>
                         </group>
                     </group>
-                    <field name="accreditation_document_ids" create="0" delete="0">
+                    <field name="accreditation_document_ids" create="0" delete="0"
+                           invisible="accreditation_doc_count == 0">
                         <tree create="0" delete="0">
                             <field name="document_label" readonly="1"/>
                             <field name="attachment_id" readonly="1"/>
                             <field name="ai_state" readonly="1" widget="badge"
                                    decoration-success="ai_state == 'passed'" decoration-warning="ai_state == 'doubt'"
-                                   decoration-danger="ai_state == 'rejected'" decoration-info="ai_state == 'validating'"/>
+                                   decoration-danger="ai_state == 'rejected'" decoration-info="ai_state == 'validating'"
+                                   decoration-muted="ai_state == 'unavailable'" optional="show"/>
                             <field name="ai_confidence" readonly="1"/>
                             <field name="lawyer_state" string="Abogada" readonly="1" widget="badge"
                                    decoration-success="lawyer_state == 'approved'" decoration-danger="lawyer_state == 'rejected'"/>

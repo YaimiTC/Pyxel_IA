@@ -19,6 +19,10 @@ class ResPartner(models.Model):
     dap = fields.Char(string="DPA", help="Dos dígitos para provincia y dos para el municipio documento de la ONEI.")
     license_holder = fields.Char(string="Mincex")
     objeto_social = fields.Text(string="Objeto Social", help="Objeto social de la entidad (requerido para generar la Ficha de Cliente).")
+    visible_to_clients = fields.Boolean(string="Visible para clientes", default=False,
+        help="El proveedor autoriza que los clientes puedan ver su información.")
+    visible_to_providers = fields.Boolean(string="Visible para proveedores", default=False,
+        help="El cliente autoriza que los proveedores puedan ver su información.")
     activity_number = fields.Char(string="Activity Number")
     hiring_number = fields.Char(string="Hiring Number")
 

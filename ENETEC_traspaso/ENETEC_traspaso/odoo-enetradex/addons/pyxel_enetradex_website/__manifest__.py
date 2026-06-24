@@ -20,14 +20,16 @@
     "data": [
         'views/business_registration.xml',
         'views/en_wizard.xml',
+        'views/en_accredited.xml',
         'views/en_invited.xml',
         'views/portal_accreditation.xml',
-        'views/portal_import.xml',
+        'views/portal_despacho.xml',
+        'views/portal_importacion.xml',
     ],
     "assets": {
         "web.assets_frontend": [
             "pyxel_enetradex_website/static/src/js/business_registration_override.js",
-            "pyxel_enetradex_website/static/src/js/import_camera.js",
+            "pyxel_enetradex_website/static/src/js/portal_accreditation_photo.js",
         ],
     },
     "installable": True,

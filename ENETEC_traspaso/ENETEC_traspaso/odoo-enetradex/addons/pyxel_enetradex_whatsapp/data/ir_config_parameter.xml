@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="param_wa_url" model="ir.config_parameter">
+        <field name="key">whatsapp.gateway_url</field>
+        <field name="value">http://host.docker.internal:3001</field>
+    </record>
+    <record id="param_wa_key" model="ir.config_parameter">
+        <field name="key">whatsapp.gateway_api_key</field>
+        <field name="value">EnEtRaDex.WaGw.2026!</field>
+    </record>
+</odoo>

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="page_suppliers" name="Catálogo de Proveedores">
+<t t-call="pyxel_enetradex_custom_web_theme.base_layout">
+<div id="wrap">
+
+<style>
+.cx-sup-hero{padding:2.5rem 0 1.5rem;border-bottom:1px solid #e8edf4;margin-bottom:2rem}
+.cx-sup-hero-label{font-size:12px;font-weight:600;letter-spacing:.08em;color:#6b82a4;text-transform:uppercase;margin-bottom:.4rem}
+.cx-sup-hero-title{font-size:32px;font-weight:700;color:#0c2a4d;margin-bottom:.4rem}
+.cx-sup-hero-sub{font-size:16px;color:#4a6080;line-height:1.6}
+.cx-sup-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:2rem}
+.cx-sup-stat{background:#fff;border-radius:12px;padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;border:1px solid #e8eef7;box-shadow:0 1px 6px rgba(12,42,77,.07)}
+.cx-sup-stat-icon{width:46px;height:46px;border-radius:10px;background:linear-gradient(135deg,#1a56db 0%,#0c2a4d 100%);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:20px}
+.cx-sup-stat-body{display:flex;flex-direction:column}
+.cx-sup-stat-num{font-size:30px;font-weight:800;color:#0c2a4d;line-height:1}
+.cx-sup-stat-lbl{font-size:11px;color:#6b82a4;margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.cx-sup-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap}
+.cx-sup-search{flex:1;min-width:180px;height:40px;padding:0 14px 0 38px;border:1px solid #dde5f0;border-radius:8px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%236b82a4' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 12px center;font-size:14px;color:#0c2a4d}
+.cx-sup-search:focus{outline:none;border-color:#1e5ab4;box-shadow:0 0 0 3px rgba(30,90,180,.1)}
+.cx-sup-pill{height:34px;padding:0 14px;border:1px solid #dde5f0;border-radius:99px;background:#fff;color:#4a6080;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;white-space:nowrap}
+.cx-sup-pill:hover,.cx-sup-pill.active{background:#1e5ab4;color:#fff;border-color:#1e5ab4;text-decoration:none}
+.cx-sup-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:1.1rem}
+.cx-sup-card{background:#fff;border:1px solid #e0e8f4;border-radius:14px;overflow:hidden;transition:box-shadow .2s,border-color .2s}
+.cx-sup-card:hover{border-color:#b8cceb;box-shadow:0 4px 20px rgba(30,90,180,.08)}
+.cx-sup-card-hd{padding:1.1rem 1.25rem;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid #eef2f8}
+.cx-sup-avatar{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.cx-av-blue{background:#dbeafe;color:#1e5ab4}
+.cx-av-teal{background:#d1fae5;color:#065f46}
+.cx-av-amber{background:#fef3c7;color:#92400e}
+.cx-av-purple{background:#ede9fe;color:#5b21b6}
+.cx-av-coral{background:#fee2e2;color:#991b1b}
+.cx-sup-name{font-size:15px;font-weight:700;color:#0c2a4d;margin-bottom:3px;line-height:1.3}
+.cx-sup-loc{font-size:13px;color:#6b82a4;display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.cx-badges{display:flex;gap:5px;flex-wrap:wrap}
+.cx-badge{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600}
+.cx-badge-green{background:#d1fae5;color:#065f46}
+.cx-badge-blue{background:#dbeafe;color:#1e5ab4}
+.cx-badge-amber{background:#fef3c7;color:#92400e}
+.cx-sup-card-bd{padding:.9rem 1.25rem}
+.cx-prod-label{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9aafc8;margin-bottom:.6rem}
+.cx-prod-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f4fa}
+.cx-prod-row:last-child{border-bottom:none}
+.cx-prod-name{font-size:13px;color:#0c2a4d;font-weight:500}
+.cx-prod-meta{font-size:11px;color:#9aafc8;margin-top:1px}
+.cx-prod-price{font-size:13px;font-weight:700;color:#1e5ab4;white-space:nowrap}
+.cx-sup-card-ft{padding:.85rem 1.25rem;border-top:1px solid #eef2f8;display:flex;align-items:center;justify-content:space-between}
+.cx-ft-meta{font-size:12px;color:#9aafc8}
+.cx-btn-cotizar{font-size:13px;font-weight:600;padding:6px 16px;border:1.5px solid #1e5ab4;border-radius:8px;background:transparent;color:#1e5ab4;cursor:pointer;text-decoration:none;transition:all .15s}
+.cx-btn-cotizar:hover{background:#1e5ab4;color:#fff;text-decoration:none}
+.cx-sup-empty{padding:4rem;text-align:center;color:#9aafc8}
+.cx-sup-empty i{font-size:40px;display:block;margin-bottom:1rem}
+.cx-sup-empty p{font-size:15px}
+</style>
+
+<div class="container">
+
+    <!-- Hero -->
+    <div class="cx-sup-hero">
+        <p class="cx-sup-hero-label">Red de suministro global</p>
+        <h1 class="cx-sup-hero-title">Catálogo de proveedores</h1>
+        <p class="cx-sup-hero-sub">Proveedores verificados por ENETRADEX con ofertas vigentes de combustibles y productos energéticos.</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="cx-sup-stats">
+        <div class="cx-sup-stat">
+            <div class="cx-sup-stat-icon"><i class="fa fa-building"/></div>
+            <div class="cx-sup-stat-body">
+                <div class="cx-sup-stat-num"><t t-out="stat_suppliers"/></div>
+                <div class="cx-sup-stat-lbl">Proveedores activos</div>
+            </div>
+        </div>
+        <div class="cx-sup-stat">
+            <div class="cx-sup-stat-icon"><i class="fa fa-cubes"/></div>
+            <div class="cx-sup-stat-body">
+                <div class="cx-sup-stat-num"><t t-out="stat_products"/></div>
+                <div class="cx-sup-stat-lbl">Productos en catálogo</div>
+            </div>
+        </div>
+        <div class="cx-sup-stat">
+            <div class="cx-sup-stat-icon"><i class="fa fa-globe"/></div>
+            <div class="cx-sup-stat-body">
+                <div class="cx-sup-stat-num"><t t-out="stat_countries"/></div>
+                <div class="cx-sup-stat-lbl">Países de origen</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <form method="GET" action="/proveedores" class="cx-sup-toolbar">
+        <input type="text" name="q" class="cx-sup-search"
+               t-att-value="q" placeholder="Buscar proveedor o producto…"/>
+        <a t-attf-href="/proveedores" t-attf-class="cx-sup-pill #{not active_product and 'active' or ''}">Todos</a>
+        <t t-foreach="[('Gasolina','Gasolina'),('Diésel','Di%C3%A9sel'),('Jet A-1','Jet+A-1'),('GLP','GLP'),('Fuel Oil','Fuel+Oil')]" t-as="fp">
+            <a t-attf-href="/proveedores?product=#{fp[0]}"
+               t-attf-class="cx-sup-pill #{active_product == fp[0] and 'active' or ''}">
+                <t t-out="fp[0]"/>
+            </a>
+        </t>
+    </form>
+
+    <!-- Grid -->
+    <t t-if="suppliers">
+        <div class="cx-sup-grid">
+            <t t-foreach="suppliers" t-as="s">
+                <t t-set="offers" t-value="s.en_supply_offer_ids.filtered(lambda o: o.state == 'published')"/>
+                <t t-set="lines" t-value="offers.mapped('line_ids')"/>
+                <t t-if="lines">
+                <div class="cx-sup-card">
+                    <!-- Header -->
+                    <div class="cx-sup-card-hd">
+                        <t t-set="av_colors" t-value="['cx-av-blue','cx-av-teal','cx-av-amber','cx-av-purple','cx-av-coral']"/>
+                        <div t-attf-class="cx-sup-avatar #{av_colors[s_index % 5]}">
+                            <t t-out="(s.name or 'XX')[:2].upper()"/>
+                        </div>
+                        <div style="flex:1;min-width:0">
+                            <div class="cx-sup-name"><t t-out="s.name"/></div>
+                            <div class="cx-sup-loc">
+                                <t t-if="s.country_id">
+                                    <span><t t-out="s.country_id.name"/></span>
+                                </t>
+                                <t t-if="offers and offers[0].port">
+                                    <span>· Puerto: <t t-out="offers[0].port"/></span>
+                                </t>
+                            </div>
+                            <div class="cx-badges">
+                                <span class="cx-badge cx-badge-green">Verificado</span>
+                                <t t-if="s.en_requiere_mincex">
+                                    <span class="cx-badge cx-badge-blue">Mincex</span>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Productos -->
+                    <div class="cx-sup-card-bd">
+                        <div class="cx-prod-label">Productos disponibles</div>
+                        <t t-foreach="lines[:4]" t-as="line">
+                            <div class="cx-prod-row">
+                                <div>
+                                    <div class="cx-prod-name"><t t-out="line.product_id.name"/></div>
+                                    <div class="cx-prod-meta">
+                                        <t t-if="line.packaging"><t t-out="dict(line._fields['packaging'].selection)
+                                            .get(line.packaging, line.packaging)"/></t>
+                                        <t t-if="not line.packaging">A granel</t>
+                                    </div>
+                                </div>
+                                <div class="cx-prod-price">
+                                    <t t-if="line.unit_price">
+                                        $<t t-out="'%.0f' % line.unit_price"/>/<t t-out="line.product_id.uom_id.name or 'ton'"/>
+                                    </t>
+                                    <t t-if="not line.unit_price">Consultar</t>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="cx-sup-card-ft">
+                        <span class="cx-ft-meta">
+                            <t t-if="offers and offers[0].incoterm_id">
+                                <t t-out="offers[0].incoterm_id.code"/>
+                            </t>
+                            <t t-if="offers and offers[0].payment_term">
+                                · <t t-out="offers[0].payment_term"/>
+                            </t>
+                        </span>
+                        <a t-attf-href="/en/wizard?op=1&amp;supplier_id=#{s.id}" class="cx-btn-cotizar">
+                            Cotizar →
+                        </a>
+                    </div>
+                </div>
+                </t>
+            </t>
+        </div>
+    </t>
+
+    <!-- Empty state -->
+    <t t-if="not suppliers">
+        <div class="cx-sup-empty">
+            <i class="fa fa-search" aria-hidden="true"/>
+            <p>No hay proveedores que coincidan con esa búsqueda.</p>
+            <a href="/proveedores" class="cx-sup-pill active" style="margin-top:1rem;display:inline-flex">Ver todos</a>
+        </div>
+    </t>
+
+</div><!-- /container -->
+</div><!-- /wrap -->
+</t>
+</template>
+</odoo>

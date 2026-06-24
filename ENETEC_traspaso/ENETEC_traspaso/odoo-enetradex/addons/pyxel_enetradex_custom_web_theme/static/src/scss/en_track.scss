@@ -41,6 +41,10 @@
     .en-doc:hover { border-color: var(--en-blue); color: var(--en-blue); box-shadow: 0 4px 12px rgba(15,68,206,.1); }
     .en-doc i { color: #d9342b; }
 
+    /* Fila de documento dentro de una tarjeta (portal del proveedor /my/despacho) */
+    .en-doc-row { padding: 14px 0; border-top: 1px solid var(--en-line); }
+    .en-doc-row:first-of-type { border-top: 0; padding-top: 0; }
+
     .en-summary { position: sticky; top: 90px; }
     .en-summary-grid { display: flex; flex-direction: column; gap: 11px; }
     .en-summary-grid > div { display: flex; flex-direction: column; }

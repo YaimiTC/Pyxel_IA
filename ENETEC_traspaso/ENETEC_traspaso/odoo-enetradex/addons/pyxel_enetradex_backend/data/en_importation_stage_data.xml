@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ENETEC: etapa gate previa a las operativas. La operación entra aquí y
+    <!-- ENETRADEX: etapa gate previa a las operativas. La operación entra aquí y
          no avanza hasta que cliente y proveedor estén ambos acreditados. -->
     <record id="en_stage_pending_accreditation" model="importation.stage">
         <field name="name">PENDIENTE DE ACREDITACIÓN</field>

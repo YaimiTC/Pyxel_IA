@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_wa_log_user,whatsapp.message.log.user,model_whatsapp_message_log,base.group_user,1,1,1,0
+access_wa_log_system,whatsapp.message.log.system,model_whatsapp_message_log,base.group_system,1,1,1,1
+access_wa_mapping_user,whatsapp.template.mapping.user,model_whatsapp_template_mapping,base.group_user,1,0,0,0
+access_wa_mapping_system,whatsapp.template.mapping.system,model_whatsapp_template_mapping,base.group_system,1,1,1,1
+access_wa_var_user,whatsapp.template.variable.user,model_whatsapp_template_variable,base.group_user,1,0,0,0
+access_wa_var_system,whatsapp.template.variable.system,model_whatsapp_template_variable,base.group_system,1,1,1,1

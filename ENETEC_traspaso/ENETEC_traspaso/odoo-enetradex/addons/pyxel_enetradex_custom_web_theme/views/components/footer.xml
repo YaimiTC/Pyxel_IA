@@ -23,11 +23,11 @@
                     <!-- Plataforma -->
                     <div class="ag-footer-col">
                         <h6>Plataforma</h6>
+                        <a href="/en/wizard">Acreditación</a>
                         <a href="/en/wizard?op=1">Importar</a>
-                        <a href="/shop">Marketplace</a>
-                        <a href="/shop">Combustibles</a>
                         <a href="/about?tab=services">Trading</a>
-                        <a href="/en/wizard">Proveedores</a>
+                        <a href="/proveedores">Proveedores</a>
+                        <a href="/about?tab=services">Servicios</a>
                     </div>
 
                     <!-- Empresa -->

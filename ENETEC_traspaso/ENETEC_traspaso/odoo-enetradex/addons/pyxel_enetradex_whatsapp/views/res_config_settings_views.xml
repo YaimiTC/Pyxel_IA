@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_whatsapp" model="ir.ui.view">
+        <field name="name">res.config.settings.view.whatsapp</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app string="WhatsApp" data-string="WhatsApp"
+                     name="pyxel_enetradex_whatsapp"
+                     logo="/mail/static/description/icon.png"
+                     groups="base.group_system">
+                    <block title="Gateway de Mensajería" name="whatsapp_gateway_block">
+                        <setting string="URL del Gateway" help="Dirección del servicio de mensajería (ej: https://wa-gw.enetradex.com)">
+                            <field name="whatsapp_gateway_url" placeholder="https://wa-gw.enetradex.com"/>
+                        </setting>
+                        <setting string="API Key del Gateway" help="Clave de autenticación (header x-api-key en cada envío)">
+                            <field name="whatsapp_gateway_api_key" widget="char" password="True" placeholder="••••••••"/>
+                        </setting>
+                    </block>
+                    <block title="Prueba de Conexión" name="whatsapp_test_block">
+                        <setting>
+                            <button name="action_test_whatsapp" type="object"
+                                    class="btn btn-secondary"
+                                    string="Probar conexión con el gateway"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+</odoo>

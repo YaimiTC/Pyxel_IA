@@ -75,7 +75,7 @@ class ImportationsController(BaseController):
         values["provider_accredited"] = prov_ok
 
         if not cust_ok:
-            action = "Tu empresa está en proceso de acreditación. Te avisaremos en cuanto ENETEC valide tus documentos."
+            action = "Tu empresa está en proceso de acreditación. Te avisaremos en cuanto ENETRADEX valide tus documentos."
             action_kind = "warning"
         elif not prov_ok:
             action = "Tu empresa ya está acreditada. Falta acreditar a tu proveedor%s para poder iniciar la operación." % (

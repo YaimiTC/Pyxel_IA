@@ -14,32 +14,25 @@
                          style="background-image:url('/pyxel_enetradex_custom_web_theme/static/src/img/en_hero.jpg?v=3');"></div>
                     <div class="container">
                         <div class="ag-hero-banner-text">
-                            <span class="ag-kicker ag-kicker-dark"><i class="fa fa-bolt"></i> ENETRADEX</span>
                             <h1 class="ag-hero-banner-title">Conectamos energía con <span>oportunidades</span></h1>
                             <p class="ag-hero-banner-sub">
-                                Plataforma de importación de combustibles y comercialización
-                                de productos energéticos.
+                                Plataforma especializada en importación, trading e intermediación
+                                de combustibles y derivados.
                             </p>
                             <div class="ag-hero-cta">
                                 <a href="/en/wizard" class="ag-btn-primary">
                                     <i class="fa fa-check-circle"></i> Acreditarme
                                 </a>
-                                <a href="/shop" class="ag-btn-outline-dark">
-                                    <i class="fa fa-th-large"></i> Explorar Marketplace
+                                <a href="/en/wizard?op=1" class="ag-btn-outline-dark">
+                                    <i class="fa fa-ship"></i> Solicitar Importación
                                 </a>
-                            </div>
-                            <div class="ag-hero-feats">
-                                <span><i class="fa fa-tint"></i> Combustibles de calidad</span>
-                                <span><i class="fa fa-globe"></i> Red global confiable</span>
-                                <span><i class="fa fa-shield"></i> Operaciones seguras</span>
-                                <span><i class="fa fa-line-chart"></i> Información en tiempo real</span>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- ====================================================
-                     BLOQUE DUAL — Importar / Marketplace energético
+                     BLOQUE DUAL — Importación de Combustibles / Acreditación
                      ==================================================== -->
                 <section class="ag-section ag-dual-wrap">
                     <div class="container">
@@ -47,11 +40,12 @@
                             <div class="ag-dual-card">
                                 <div class="ag-dual-content">
                                     <div class="ag-dual-icon"><i class="fa fa-ship"></i></div>
-                                    <h3>Importar</h3>
-                                    <p>Importación integral de combustibles y derivados energéticos,
-                                       gestionando todo el proceso logístico y documental.</p>
+                                    <h3>Importación de combustibles</h3>
+                                    <p>Gestionamos importaciones seguras y eficientes de combustibles
+                                       y derivados a nivel internacional, con todo el proceso logístico
+                                       y documental.</p>
                                     <div class="ag-dual-cta">
-                                        <a href="/en/wizard?op=1" class="ag-pill-green"><i class="fa fa-download"></i> Importar ahora</a>
+                                        <a href="/en/wizard?op=1" class="ag-pill-green"><i class="fa fa-ship"></i> Solicitar Importación</a>
                                     </div>
                                 </div>
                                 <div class="ag-dual-img"
@@ -59,115 +53,68 @@
                             </div>
                             <div class="ag-dual-card">
                                 <div class="ag-dual-content">
-                                    <div class="ag-dual-icon"><i class="fa fa-shopping-cart"></i></div>
-                                    <h3>Marketplace energético</h3>
-                                    <p>Compra productos y suministros para el sector energético:
-                                       combustibles, lubricantes, aditivos y más.</p>
+                                    <div class="ag-dual-icon"><i class="fa fa-shield"></i></div>
+                                    <h3>Acreditación corporativa</h3>
+                                    <p>Acredite su empresa y acceda a operaciones de importación,
+                                       trading y servicios especializados con total confianza.</p>
                                     <div class="ag-dual-cta">
-                                        <a href="/shop" class="ag-pill-green">Comprar productos <i class="fa fa-arrow-right"></i></a>
+                                        <a href="/en/wizard" class="ag-pill-green">Iniciar Acreditación <i class="fa fa-arrow-right"></i></a>
                                     </div>
                                 </div>
                                 <div class="ag-dual-img ag-dual-img-shop"
-                                     style="background-image:url('/pyxel_enetradex_custom_web_theme/static/src/img/en_card_market.jpg?v=2');"></div>
+                                     style="background-color:#123b6b;background-image:url('/pyxel_enetradex_custom_web_theme/static/src/img/en_acreditacion.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;"></div>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <!-- ====================================================
-                     BANNER CTA — Comience a operar con ENETRADEX
-                     ==================================================== -->
-                <section class="ag-cta-band">
-                    <div class="container">
-                        <div class="ag-cta-band-inner">
-                            <div class="ag-cta-band-text">
-                                <div class="ag-cta-band-icon"><i class="fa fa-id-card-o"></i></div>
-                                <div>
-                                    <h3>Comience a operar con ENETRADEX</h3>
-                                    <p>Acceda a importaciones, marketplace y servicios especializados.</p>
-                                </div>
-                            </div>
-                            <a href="/en/wizard" class="ag-btn-primary">
-                                <i class="fa fa-check-circle"></i> Acreditarme ahora
-                            </a>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ====================================================
-                     NUESTROS SERVICIOS
+                     NUESTROS SERVICIOS — 6 tarjetas B2B
                      ==================================================== -->
                 <section class="ag-section">
                     <div class="container">
                         <div class="ag-head"><h2 class="ag-head-title">Nuestros Servicios</h2></div>
-                        <div class="ag-solutions">
-                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-ship"></i></div><h4>Importación</h4><p>Gestión integral de importación de combustibles y derivados energéticos.</p></div>
-                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-exchange"></i></div><h4>Trading</h4><p>Operaciones internacionales eficientes y ágiles en el mercado energético.</p></div>
-                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-th-large"></i></div><h4>Marketplace energético</h4><p>Plataforma digital para compra y venta de productos del sector energético.</p></div>
-                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-truck"></i></div><h4>Logística internacional</h4><p>Transporte, almacenamiento y custodia a nivel global.</p></div>
-                            <div class="ag-solution"><div class="ag-sol-ico"><i class="fa fa-bar-chart"></i></div><h4>Inteligencia comercial</h4><p>Información y análisis del mercado para decisiones estratégicas.</p></div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- ====================================================
-                     PRODUCTOS MÁS VENDIDOS
-                     ==================================================== -->
-                <section class="ag-section ag-section-alt">
-                    <div class="container">
-                        <div class="ag-head ag-head-row">
-                            <h2 class="ag-head-title">Productos más vendidos</h2>
-                            <a href="/shop" class="ag-link-more">Ver todos <i class="fa fa-arrow-right"></i></a>
-                        </div>
-                        <div class="ag-products-wrap">
-                            <div class="ag-products">
-                                <div class="ag-product">
-                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_1.jpg" alt="Gasoil EN590"/></div>
-                                    <div class="ag-product-body">
-                                        <h5>Gasoil EN590</h5>
-                                        <span class="ag-product-meta">Combustible diésel de alta calidad</span>
-                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
-                                    </div>
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+                            <div class="col">
+                                <div class="h-100" style="background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:24px;box-shadow:0 8px 20px rgba(12,42,77,0.06);">
+                                    <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><i class="fa fa-ship" style="font-size:26px;color:#fff;"></i></div>
+                                    <h4 style="font-size:16px;color:#0c2a4d;font-weight:700;margin:0 0 6px;">Importación de Combustibles</h4>
+                                    <p style="font-size:13px;color:#5b6b85;margin:0;">Importación segura y eficiente de combustibles y derivados.</p>
                                 </div>
-                                <div class="ag-product">
-                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_2.jpg" alt="Gasolina RON 95"/></div>
-                                    <div class="ag-product-body">
-                                        <h5>Gasolina RON 95</h5>
-                                        <span class="ag-product-meta">Gasolina de alto rendimiento</span>
-                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
-                                    </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:24px;box-shadow:0 8px 20px rgba(12,42,77,0.06);">
+                                    <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><i class="fa fa-exchange" style="font-size:26px;color:#fff;"></i></div>
+                                    <h4 style="font-size:16px;color:#0c2a4d;font-weight:700;margin:0 0 6px;">Trading Internacional</h4>
+                                    <p style="font-size:13px;color:#5b6b85;margin:0;">Negociación global de productos energéticos y derivados.</p>
                                 </div>
-                                <div class="ag-product">
-                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_3.jpg" alt="Fuel Oil 180 CST"/></div>
-                                    <div class="ag-product-body">
-                                        <h5>Fuel Oil 180 CST</h5>
-                                        <span class="ag-product-meta">Combustible para uso industrial</span>
-                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
-                                    </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:24px;box-shadow:0 8px 20px rgba(12,42,77,0.06);">
+                                    <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><i class="fa fa-users" style="font-size:26px;color:#fff;"></i></div>
+                                    <h4 style="font-size:16px;color:#0c2a4d;font-weight:700;margin:0 0 6px;">Búsqueda de Proveedores</h4>
+                                    <p style="font-size:13px;color:#5b6b85;margin:0;">Red global de proveedores confiables y certificados.</p>
                                 </div>
-                                <div class="ag-product">
-                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_4.jpg" alt="Jet Fuel A1"/></div>
-                                    <div class="ag-product-body">
-                                        <h5>Jet Fuel A1</h5>
-                                        <span class="ag-product-meta">Combustible para aviación</span>
-                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
-                                    </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:24px;box-shadow:0 8px 20px rgba(12,42,77,0.06);">
+                                    <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><i class="fa fa-truck" style="font-size:26px;color:#fff;"></i></div>
+                                    <h4 style="font-size:16px;color:#0c2a4d;font-weight:700;margin:0 0 6px;">Gestión Logística</h4>
+                                    <p style="font-size:13px;color:#5b6b85;margin:0;">Coordinación integral de fletes y cadena de suministro.</p>
                                 </div>
-                                <div class="ag-product">
-                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_5.jpg" alt="Lubricantes"/></div>
-                                    <div class="ag-product-body">
-                                        <h5>Lubricantes</h5>
-                                        <span class="ag-product-meta">Aceites y lubricantes de alta calidad</span>
-                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
-                                    </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:24px;box-shadow:0 8px 20px rgba(12,42,77,0.06);">
+                                    <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><i class="fa fa-check-square-o" style="font-size:26px;color:#fff;"></i></div>
+                                    <h4 style="font-size:16px;color:#0c2a4d;font-weight:700;margin:0 0 6px;">Inspección y Control</h4>
+                                    <p style="font-size:13px;color:#5b6b85;margin:0;">Aseguramos calidad y cumplimiento en cada envío.</p>
                                 </div>
-                                <div class="ag-product">
-                                    <div class="ag-product-img"><img src="/pyxel_enetradex_custom_web_theme/static/src/img/en_prod_6.jpg" alt="Aditivos"/></div>
-                                    <div class="ag-product-body">
-                                        <h5>Aditivos</h5>
-                                        <span class="ag-product-meta">Aditivos para mejorar el rendimiento</span>
-                                        <div class="ag-product-foot"><a href="/shop" class="ag-pill-green">Ver producto</a></div>
-                                    </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:24px;box-shadow:0 8px 20px rgba(12,42,77,0.06);">
+                                    <div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;margin-bottom:14px;"><i class="fa fa-shield" style="font-size:26px;color:#fff;"></i></div>
+                                    <h4 style="font-size:16px;color:#0c2a4d;font-weight:700;margin:0 0 6px;">Acreditación Corporativa</h4>
+                                    <p style="font-size:13px;color:#5b6b85;margin:0;">Acreditación empresarial para operar con total confianza.</p>
                                 </div>
                             </div>
                         </div>
@@ -175,16 +122,127 @@
                 </section>
 
                 <!-- ====================================================
-                     CÓMO FUNCIONA ENETRADEX
+                     CÓMO FUNCIONA ENETRADEX — 5 pasos
+                     ==================================================== -->
+                <section class="ag-section ag-section-alt">
+                    <div class="container">
+                        <div class="ag-head"><h2 class="ag-head-title">Cómo funciona ENETRADEX</h2></div>
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4 justify-content-center text-center">
+                            <div class="col">
+                                <div style="width:60px;height:60px;margin:0 auto 12px;border-radius:50%;background:#1e5fae;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">1</div>
+                                <div style="font-size:26px;color:#1e5fae;margin-bottom:8px;"><i class="fa fa-id-card-o"></i></div>
+                                <h4 style="font-size:15px;color:#0c2a4d;font-weight:700;margin:0;">Acreditación</h4>
+                                <p style="font-size:12.5px;color:#5b6b85;margin:6px 0 0;">Acredite su empresa y valide su documentación.</p>
+                            </div>
+                            <div class="col">
+                                <div style="width:60px;height:60px;margin:0 auto 12px;border-radius:50%;background:#1e5fae;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">2</div>
+                                <div style="font-size:26px;color:#1e5fae;margin-bottom:8px;"><i class="fa fa-file-text-o"></i></div>
+                                <h4 style="font-size:15px;color:#0c2a4d;font-weight:700;margin:0;">Solicitud</h4>
+                                <p style="font-size:12.5px;color:#5b6b85;margin:6px 0 0;">Solicite importación o servicio especializado.</p>
+                            </div>
+                            <div class="col">
+                                <div style="width:60px;height:60px;margin:0 auto 12px;border-radius:50%;background:#1e5fae;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">3</div>
+                                <div style="font-size:26px;color:#1e5fae;margin-bottom:8px;"><i class="fa fa-handshake-o"></i></div>
+                                <h4 style="font-size:15px;color:#0c2a4d;font-weight:700;margin:0;">Negociación</h4>
+                                <p style="font-size:12.5px;color:#5b6b85;margin:6px 0 0;">Negociamos las mejores condiciones para usted.</p>
+                            </div>
+                            <div class="col">
+                                <div style="width:60px;height:60px;margin:0 auto 12px;border-radius:50%;background:#1e5fae;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">4</div>
+                                <div style="font-size:26px;color:#1e5fae;margin-bottom:8px;"><i class="fa fa-ship"></i></div>
+                                <h4 style="font-size:15px;color:#0c2a4d;font-weight:700;margin:0;">Importación</h4>
+                                <p style="font-size:12.5px;color:#5b6b85;margin:6px 0 0;">Gestionamos todo el proceso de importación.</p>
+                            </div>
+                            <div class="col">
+                                <div style="width:60px;height:60px;margin:0 auto 12px;border-radius:50%;background:#1e5fae;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;">5</div>
+                                <div style="font-size:26px;color:#1e5fae;margin-bottom:8px;"><i class="fa fa-cube"></i></div>
+                                <h4 style="font-size:15px;color:#0c2a4d;font-weight:700;margin:0;">Entrega</h4>
+                                <p style="font-size:12.5px;color:#5b6b85;margin:6px 0 0;">Entrega segura y puntual en su destino.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     SECTORES QUE ATENDEMOS
                      ==================================================== -->
                 <section class="ag-section">
                     <div class="container">
-                        <div class="ag-head"><h2 class="ag-head-title">Cómo funciona ENETRADEX</h2></div>
-                        <div class="ag-steps">
-                            <div class="ag-step"><span class="ag-step-num">1</span><div class="ag-step-ico"><i class="fa fa-file-text-o"></i></div><h4>Solicitud</h4><p>Indique sus requerimientos de importación o compra.</p></div>
-                            <div class="ag-step"><span class="ag-step-num">2</span><div class="ag-step-ico"><i class="fa fa-calculator"></i></div><h4>Cotización</h4><p>Reciba cotizaciones de nuestros proveedores verificados.</p></div>
-                            <div class="ag-step"><span class="ag-step-num">3</span><div class="ag-step-ico"><i class="fa fa-ship"></i></div><h4>Importación</h4><p>Gestionamos todo el proceso logístico y documental.</p></div>
-                            <div class="ag-step"><span class="ag-step-num">4</span><div class="ag-step-ico"><i class="fa fa-check-circle"></i></div><h4>Entrega</h4><p>Reciba su carga en el destino final de manera segura.</p></div>
+                        <div class="ag-head"><h2 class="ag-head-title">Sectores que atendemos</h2></div>
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-6 g-3 justify-content-center">
+                            <div class="col">
+                                <div class="h-100" style="text-align:center;background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:20px 10px;box-shadow:0 8px 20px rgba(12,42,77,0.07);">
+                                    <div style="width:76px;height:76px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;"><i class="fa fa-tint" style="font-size:32px;color:#fff;"></i></div>
+                                    <h4 style="margin:0;color:#0c2a4d;font-size:14px;font-weight:700;">Combustibles</h4>
+                                    <p style="margin:6px 0 0;font-size:12px;color:#5b6b85;">Gasolinas, diésel, Jet A-1, fuel oíl y GLP.</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="text-align:center;background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:20px 10px;box-shadow:0 8px 20px rgba(12,42,77,0.07);">
+                                    <div style="width:76px;height:76px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;"><i class="fa fa-flask" style="font-size:32px;color:#fff;"></i></div>
+                                    <h4 style="margin:0;color:#0c2a4d;font-size:14px;font-weight:700;">Lubricantes</h4>
+                                    <p style="margin:6px 0 0;font-size:12px;color:#5b6b85;">Aceites y lubricantes industriales y automotrices.</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="text-align:center;background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:20px 10px;box-shadow:0 8px 20px rgba(12,42,77,0.07);">
+                                    <div style="width:76px;height:76px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;"><i class="fa fa-fire" style="font-size:32px;color:#fff;"></i></div>
+                                    <h4 style="margin:0;color:#0c2a4d;font-size:14px;font-weight:700;">Gas Industrial</h4>
+                                    <p style="margin:6px 0 0;font-size:12px;color:#5b6b85;">Suministro de gases para uso industrial.</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="text-align:center;background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:20px 10px;box-shadow:0 8px 20px rgba(12,42,77,0.07);">
+                                    <div style="width:76px;height:76px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;"><i class="fa fa-truck" style="font-size:32px;color:#fff;"></i></div>
+                                    <h4 style="margin:0;color:#0c2a4d;font-size:14px;font-weight:700;">Transporte</h4>
+                                    <p style="margin:6px 0 0;font-size:12px;color:#5b6b85;">Soluciones de transporte y distribución.</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="text-align:center;background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:20px 10px;box-shadow:0 8px 20px rgba(12,42,77,0.07);">
+                                    <div style="width:76px;height:76px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;"><i class="fa fa-industry" style="font-size:32px;color:#fff;"></i></div>
+                                    <h4 style="margin:0;color:#0c2a4d;font-size:14px;font-weight:700;">Industria</h4>
+                                    <p style="margin:6px 0 0;font-size:12px;color:#5b6b85;">Energéticos para procesos industriales.</p>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="h-100" style="text-align:center;background:#fff;border:1px solid #e6ecf5;border-radius:14px;padding:20px 10px;box-shadow:0 8px 20px rgba(12,42,77,0.07);">
+                                    <div style="width:76px;height:76px;margin:0 auto 12px;border-radius:14px;background:linear-gradient(135deg,#0c2a4d,#1e5fae);display:flex;align-items:center;justify-content:center;"><i class="fa fa-bolt" style="font-size:32px;color:#fff;"></i></div>
+                                    <h4 style="margin:0;color:#0c2a4d;font-size:14px;font-weight:700;">Energía</h4>
+                                    <p style="margin:6px 0 0;font-size:12px;color:#5b6b85;">Soluciones integrales para el sector energético.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====================================================
+                     COBERTURA INTERNACIONAL
+                     ==================================================== -->
+                <section class="ag-section ag-section-alt">
+                    <div class="container">
+                        <div class="ag-head"><h2 class="ag-head-title">Cobertura Internacional</h2></div>
+                        <div style="position:relative;background:#0a2647;border-radius:18px;overflow:hidden;min-height:320px;display:flex;flex-direction:column;justify-content:flex-end;">
+                            <div style="position:absolute;inset:0;background:url('/pyxel_enetradex_custom_web_theme/static/src/img/world_dots.svg') center/cover no-repeat;opacity:0.55;"></div>
+                            <div style="position:relative;background:linear-gradient(to top, rgba(10,38,71,0.96) 45%, rgba(10,38,71,0));padding:30px 24px;">
+                                <div style="display:flex;flex-wrap:wrap;gap:20px;justify-content:space-around;text-align:center;">
+                                    <div style="flex:1;min-width:120px;">
+                                        <div style="font-size:42px;font-weight:800;color:#3d8bff;line-height:1;">+20</div>
+                                        <div style="color:#cfe0f5;margin-top:6px;font-weight:600;">Países</div>
+                                    </div>
+                                    <div style="flex:1;min-width:120px;">
+                                        <div style="font-size:42px;font-weight:800;color:#3d8bff;line-height:1;">+100</div>
+                                        <div style="color:#cfe0f5;margin-top:6px;font-weight:600;">Proveedores</div>
+                                    </div>
+                                    <div style="flex:1;min-width:120px;">
+                                        <div style="font-size:42px;font-weight:800;color:#3d8bff;line-height:1;">+500</div>
+                                        <div style="color:#cfe0f5;margin-top:6px;font-weight:600;">Operaciones</div>
+                                    </div>
+                                    <div style="flex:1;min-width:120px;">
+                                        <div style="font-size:42px;font-weight:800;color:#3d8bff;line-height:1;"><i class="fa fa-globe"></i></div>
+                                        <div style="color:#cfe0f5;margin-top:6px;font-weight:600;">Global</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -192,7 +250,7 @@
                 <!-- ====================================================
                      ACTUALIDAD DE LOS MERCADOS
                      ==================================================== -->
-                <section class="ag-section ag-section-alt">
+                <section class="ag-section">
                     <div class="container">
                         <div class="ag-head ag-head-row">
                             <h2 class="ag-head-title">Actualidad de los mercados</h2>

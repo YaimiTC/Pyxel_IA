@@ -90,6 +90,26 @@ class EnWizard(http.Controller):
                         'nit': nit, 'accredited': bool(s.is_accredited)})
         return res
 
+    @http.route('/en/wizard/photo_to_pdf', type='json', auth='user', website=True)
+    def photo_to_pdf(self, images=None, **kw):
+        """Recibe lista de imágenes base64, las une en PDF con Pillow y devuelve el PDF base64."""
+        import base64, io
+        images = images or []
+        if not images:
+            return {'error': 'Sin imágenes'}
+        try:
+            from PIL import Image as PILImage
+            imgs = []
+            for b64 in images:
+                raw = base64.b64decode(b64)
+                imgs.append(PILImage.open(io.BytesIO(raw)).convert('RGB'))
+            buf = io.BytesIO()
+            imgs[0].save(buf, format='PDF', save_all=True, append_images=imgs[1:])
+            pdf_b64 = base64.b64encode(buf.getvalue()).decode()
+            return {'pdf': pdf_b64}
+        except Exception as e:
+            return {'error': str(e)}
+
     @http.route('/en/wizard/validate_doc', type='json', auth='user', website=True)
     def validate_doc(self, label=None, file_b64=None, **kw):
         """Valida un documento al subirlo (DocValidator IA) y devuelve el veredicto."""
@@ -210,8 +230,8 @@ class EnWizard(http.Controller):
             cvals['name'] = co['name']
         if co.get('nit'):
             cvals['vat'] = co['nit']
-        if co.get('objeto_social'):
-            cvals['objeto_social'] = co['objeto_social']
+        cvals['visible_to_clients'] = bool(co.get('visible_to_clients'))
+        cvals['visible_to_providers'] = bool(co.get('visible_to_providers'))
         if co.get('address'):
             cvals['street'] = co['address']
         if co.get('state_id'):

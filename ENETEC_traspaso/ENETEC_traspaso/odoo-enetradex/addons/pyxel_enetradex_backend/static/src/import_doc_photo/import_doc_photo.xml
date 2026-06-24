@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="pyxel_enetradex_backend.ImportDocPhoto">
+        <div class="o_en_doc_photo">
+
+            <!-- Inputs ocultos -->
+            <input type="file" accept="application/pdf" t-ref="pdfInput"
+                   class="d-none" t-on-change="onPdfSelected"/>
+            <input type="file" accept="image/*" capture="environment" multiple="multiple"
+                   t-ref="imgInput" class="d-none" t-on-change="onImgSelected"/>
+
+            <!-- Botones principales -->
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="button" class="btn btn-outline-secondary btn-sm"
+                        t-att-disabled="state.busy or state.assembling"
+                        t-on-click="triggerPdf">
+                    <i class="fa fa-file-pdf-o me-1"/>
+                    <t t-if="state.busy">Subiendo…</t>
+                    <t t-else="">Subir PDF</t>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm"
+                        t-att-disabled="state.busy or state.assembling"
+                        t-on-click="triggerCamera">
+                    <i class="fa fa-camera me-1"/>
+                    Tomar foto
+                </button>
+            </div>
+
+            <!-- Vista de cámara en escritorio (getUserMedia) -->
+            <t t-if="state.showCamera">
+                <div class="mt-2 border rounded p-2" style="max-width:400px">
+                    <video t-ref="videoEl" autoplay="1" playsinline="1"
+                           style="width:100%;border-radius:4px"/>
+                    <div class="d-flex gap-2 mt-2">
+                        <button type="button" class="btn btn-primary btn-sm"
+                                t-on-click="captureFrame">
+                            <i class="fa fa-camera me-1"/>Capturar
+                        </button>
+                        <button type="button" class="btn btn-secondary btn-sm"
+                                t-on-click="closeCamera">
+                            Cerrar cámara
+                        </button>
+                    </div>
+                </div>
+            </t>
+
+            <!-- Páginas acumuladas OK -->
+            <t t-if="state.pages.length">
+                <div class="mt-2">
+                    <span class="fw-bold small text-success">
+                        <i class="fa fa-check-circle me-1"/>
+                        <t t-esc="state.pages.length"/> página(s) lista(s)
+                    </span>
+                    <div class="d-flex flex-wrap gap-2 mt-1">
+                        <t t-foreach="state.pages" t-as="page" t-key="page.page_id">
+                            <div class="position-relative" style="width:80px">
+                                <img t-att-src="page.preview" class="img-thumbnail"
+                                     style="width:80px;height:80px;object-fit:cover"/>
+                                <span class="badge bg-success position-absolute bottom-0 start-0"
+                                      style="font-size:9px">
+                                    Pág <t t-esc="page.page_number"/>
+                                </span>
+                                <button type="button" class="btn-close position-absolute top-0 end-0"
+                                        style="font-size:8px"
+                                        t-on-click="() => this.removePage(page.page_id)"/>
+                            </div>
+                        </t>
+                    </div>
+                    <button type="button" class="btn btn-primary btn-sm mt-2"
+                            t-att-disabled="state.assembling"
+                            t-on-click="assemblePdf">
+                        <i class="fa fa-file-pdf-o me-1"/>
+                        <t t-if="state.assembling">Generando PDF…</t>
+                        <t t-else="">Generar PDF y aplicar</t>
+                    </button>
+                </div>
+            </t>
+
+            <!-- Páginas rechazadas -->
+            <t t-if="state.rejected.length">
+                <div class="mt-2 alert alert-warning py-1 px-2 small mb-0">
+                    <i class="fa fa-exclamation-triangle me-1"/>
+                    <t t-esc="state.rejected.length"/> foto(s) con baja calidad:
+                    <t t-foreach="state.rejected" t-as="r" t-key="r.page_id">
+                        <div>Pág <t t-esc="r.page_number"/>: <t t-esc="r.quality_reason"/></div>
+                    </t>
+                    <div class="d-flex gap-2 mt-1">
+                        <button type="button" class="btn btn-sm btn-outline-warning"
+                                t-on-click="clearRejected">Descartar y reintentar</button>
+                        <button type="button" class="btn btn-sm btn-warning"
+                                t-att-disabled="state.assembling"
+                                t-on-click="assemblePdfForce">
+                            <i class="fa fa-file-pdf-o me-1"/>
+                            <t t-if="state.assembling">Generando…</t>
+                            <t t-else="">Generar PDF igualmente</t>
+                        </button>
+                    </div>
+                </div>
+            </t>
+
+        </div>
+    </t>
+
+</templates>

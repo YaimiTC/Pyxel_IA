@@ -23,5 +23,7 @@ access_en_import_request_line_user,en.import.request.line.user,model_en_import_r
 access_en_import_request_line_portal,en.import.request.line.portal,model_en_import_request_line,base.group_portal,1,0,0,0
 access_pyxel_import_document_user,pyxel.import.document.user,model_pyxel_import_document,base.group_user,1,1,1,1
 access_pyxel_import_document_portal,pyxel.import.document.portal,model_pyxel_import_document,base.group_portal,1,1,0,0
+access_pyxel_import_document_check_user,pyxel.import.document.check.user,model_pyxel_import_document_check,base.group_user,1,1,1,1
+access_pyxel_lead_document_page_user,pyxel.lead.document.page.user,model_pyxel_lead_document_page,base.group_user,1,1,1,1
+access_pyxel_lead_document_page_portal,pyxel.lead.document.page.portal,model_pyxel_lead_document_page,base.group_portal,1,1,1,1
 access_pyxel_import_document_page_user,pyxel.import.document.page.user,model_pyxel_import_document_page,base.group_user,1,1,1,1
-access_pyxel_import_document_page_portal,pyxel.import.document.page.portal,model_pyxel_import_document_page,base.group_portal,1,1,1,1

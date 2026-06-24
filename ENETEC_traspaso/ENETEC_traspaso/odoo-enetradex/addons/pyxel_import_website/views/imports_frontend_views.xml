@@ -70,7 +70,7 @@
                         </div>
                         <div class="col-lg-9 mt-lg-10 col-sm-8 px-3">
                             <div id="informations">
-                                <!-- ENETEC seguimiento: acción requerida + estado de las partes -->
+                                <!-- ENETRADEX seguimiento: acción requerida + estado de las partes -->
                                 <div class="en-track mt-3">
                                     <div t-if="action_required" t-attf-class="en-action #{action_kind}">
                                         <span class="ico">
@@ -110,7 +110,7 @@
                                 </div>
                                 <!--</div>    -->
 
-                                <!-- ENETEC seguimiento: línea de tiempo + documentos (tarjetas de marca) -->
+                                <!-- ENETRADEX seguimiento: línea de tiempo + documentos (tarjetas de marca) -->
                                 <div class="en-track">
                                     <div t-if="timeline" class="en-card">
                                         <h4>Seguimiento de tu operación</h4>
@@ -503,7 +503,7 @@
                                 </div>
                                   </div>
                                 </div>
-                                <!-- ENETEC: chatter siempre visible (no solo cuando hay contenedores) -->
+                                <!-- ENETRADEX: chatter siempre visible (no solo cuando hay contenedores) -->
                                 <div class="en-track">
                                   <div class="en-card" id="a">
                                     <h4>Comuníquese con nosotros</h4>
@@ -641,12 +641,39 @@
                     </div>
                 </div>
 
+                <!-- Widget expediente de acreditación -->
+                <t t-if="dash_acc_docs">
+                    <div class="en-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h4 class="mb-0"><i class="fa fa-shield me-1" style="color:#0f44ce"/>Expediente de acreditación</h4>
+                            <a href="/my/acreditacion" style="color:#0f44ce;font-weight:600;font-size:.86rem;text-decoration:none;">Ver detalle</a>
+                        </div>
+                        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px">
+                            <t t-foreach="dash_acc_docs" t-as="d">
+                                <div t-attf-style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid #{'#86efac' if d['state']=='approved' else '#fca5a5' if d['state']=='rejected' else '#93c5fd' if d['state']=='validating' else '#fcd34d' if d['state']=='in_review' else '#e3e9f2'};background:#{'#effaf3' if d['state']=='approved' else '#fde8e8' if d['state']=='rejected' else '#eef3fc' if d['state'] in ('validating','in_review') else '#f6f8fc'}">
+                                    <i t-attf-class="fa #{'fa-check-circle' if d['state']=='approved' else 'fa-times-circle' if d['state']=='rejected' else 'fa-circle-o-notch fa-spin' if d['state']=='validating' else 'fa-clock-o' if d['state']=='in_review' else 'fa-upload'}"
+                                       t-attf-style="color:#{'#16a34a' if d['state']=='approved' else '#b91c1c' if d['state']=='rejected' else '#0f44ce' if d['state'] in ('validating','in_review') else '#9ca3af'};font-size:14px;flex-shrink:0"/>
+                                    <span style="font-size:12px;font-weight:500;color:#16233f;line-height:1.3" t-esc="d['label']"/>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
                 <!-- Operaciones + Actividad -->
                 <div class="dash-cols">
                     <div class="en-card">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
+                        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                             <h4 class="mb-0">Mis operaciones</h4>
-                            <a href="/model/imports" style="color:#0f44ce;font-weight:600;font-size:.86rem;text-decoration:none;">Ver todas</a>
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <a t-if="dash_role == 'supplier'" href="/my/despacho" class="dash-action">
+                                    <i class="fa fa-file-text-o me-1"/>Documentos de despacho
+                                </a>
+                                <a t-else="" href="/my/importacion" class="dash-action">
+                                    <i class="fa fa-file-text-o me-1"/>Documentos de importación
+                                </a>
+                                <a href="/model/imports" style="color:#0f44ce;font-weight:600;font-size:.86rem;text-decoration:none;">Ver todas</a>
+                            </div>
                         </div>
                         <t t-if="dash_operations">
                             <a t-foreach="dash_operations" t-as="op" t-attf-href="/importations/view/#{op['id']}" class="op-card">

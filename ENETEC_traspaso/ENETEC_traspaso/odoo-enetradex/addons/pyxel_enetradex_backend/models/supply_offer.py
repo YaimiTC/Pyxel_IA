@@ -53,7 +53,7 @@ class SupplyOfferLine(models.Model):
 
 class Tender(models.Model):
     _name = 'en.tender'
-    _description = 'Pliego de concurrencia (ENETEC cotiza)'
+    _description = 'Pliego de concurrencia (ENETRADEX cotiza)'
 
     name = fields.Char(string="Referencia", default='Pliego de concurrencia')
     client_id = fields.Many2one('res.partner', string="Cliente", required=True, ondelete='cascade', index=True)

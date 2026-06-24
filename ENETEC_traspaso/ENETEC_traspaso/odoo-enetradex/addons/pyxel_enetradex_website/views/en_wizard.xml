@@ -72,6 +72,7 @@
 .en-doc-file{font-size:11px;color:var(--ctsu);font-weight:500;word-break:break-word}
 .en-doc-btn{margin-top:auto;align-self:stretch;text-align:center;background:var(--cti);color:#fff;border-radius:var(--rmd);padding:7px 10px;font-size:12px;cursor:pointer}
 .en-doc-btn.done{background:var(--cbg);color:var(--cti);border:1px solid var(--cb2)}
+@keyframes en-spin{to{transform:rotate(360deg)}}
                 </style>
                 <div class="enwz"
                      t-att-data-op="'1' if wz_op else '0'"
@@ -91,7 +92,460 @@
                 </div>
                 <script><![CDATA[
 (function(){
-  var S={role:null,ctype:null,cpHas:null,cp:'cartera',cpCtype:null,cpSel:null,clients:[],diffused:[],offerLines:[],vigencia:'3 meses',flete:0,seguro:0,solProduct:'Diésel',search:'',offers:[],offersLoaded:false,inviteEmail:'',cpName:'',cpCountry:'',cpMincex:'',docFiles:{},docVerdict:{},coName:'',coNit:'',coObjeto:'',contactName:'',coEmail:'',coPhone:'',coAddress:'',coState:'',coCity:'',provinces:[],provincesLoaded:false,cities:[],provClass:'',provCountry:'',reqMincex:false,socio:false,socioData:{},socioFiles:{},shipFiles:{},shipNatFiles:{},shipCountry:'',portfolio:[],portfolioLoaded:false,solLines:[{prod:'Diésel',qty:'',env:'isotanque'}],solDelivery:'',solPay:'',solBudget:'',solSpecs:'',solObs:'',payMethods:[],mincex:'',countries:[],countriesLoaded:false,nitDup:false,solQty:'',sent:false,result:null};
+  var S={role:null,ctype:null,cpHas:null,cp:'cartera',cpCtype:null,cpSel:null,clients:[],diffused:[],offerLines:[],vigencia:'3 meses',flete:0,seguro:0,solProduct:'Diésel',search:'',offers:[],offersLoaded:false,inviteEmail:'',cpName:'',cpCountry:'',cpMincex:'',cpProvClass:'',cpAddress:'',cpReqMincex:false,cpContactName:'',cpContactEmail:'',cpContactPhone:'',cpVisibleToClients:false,cpCliName:'',cpCliNit:'',cpCliAddress:'',cpCliState:'',cpCliCity:'',cpCliContactName:'',cpCliContactEmail:'',cpCliContactPhone:'',cpCliVisibleToProviders:false,docFiles:{},docVerdict:{},coName:'',coNit:'',visibleToClients:false,visibleToProviders:false,contactName:'',coEmail:'',coPhone:'',coAddress:'',coState:'',coCity:'',provinces:[],provincesLoaded:false,cities:[],provClass:'',provCountry:'',reqMincex:false,socio:false,socioData:{},socioFiles:{},shipFiles:{},shipNatFiles:{},shipCountry:'',portfolio:[],portfolioLoaded:false,solLines:[{prod:'Diésel',qty:'',env:'isotanque'}],solDelivery:'',solPay:'',solBudget:'',solSpecs:'',solObs:'',payMethods:[],mincex:'',countries:[],countriesLoaded:false,nitDup:false,solQty:'',sent:false,result:null};
+  var CAM={open:false,key:null,stream:null,pages:[],busy:false};
+  var SCAN_DS='http://localhost:8900';
+  (function(){
+    // ===== Panel completo de escaneo (DocScan :8900 como motor) =====
+    var tp='#16233f',ti='#0f44ce',ts='#5b6b85',ci='#eef3fc',bd='#e3e9f2',bd2='#c9d4e6',cbg='#f6f8fc';
+    var sov=document.createElement('div');
+    sov.id='en-scan-overlay';
+    sov.style.cssText='display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:16px';
+    sov.innerHTML=
+      '<div id="en-scan-panel" style="background:#fff;width:100%;max-width:1100px;max-height:92vh;height:92vh;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;font-family:system-ui,-apple-system,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)">'
+        // ── Header ──
+        +'<div style="background:'+tp+';padding:14px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0">'
+          +'<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="5" width="16" height="9" rx="2" stroke="#fff" stroke-width="1.5"/><path d="M5 5V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v1" stroke="#fff" stroke-width="1.5"/><circle cx="14" cy="9.5" r="1" fill="#fff"/></svg>'
+          +'<span style="color:#fff;font-weight:600;font-size:14px;flex:1">Escáner — <span id="en-scan-title" style="font-weight:400;opacity:.8"></span></span>'
+          +'<button id="en-scan-close" style="background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">✕</button>'
+        +'</div>'
+        // ── Cuerpo en dos columnas ──
+        +'<div id="en-scan-cols" style="flex:1;overflow:hidden;display:flex;flex-direction:row;min-height:0">'
+
+          // ── Columna izquierda: controles ──
+          +'<div id="en-scan-left" style="width:360px;min-width:220px;max-width:600px;flex-shrink:0;display:flex;flex-direction:column;overflow:hidden">'
+
+            // Acumulador de páginas
+            +'<div id="en-scan-top" style="height:200px;min-height:80px;flex-shrink:0;overflow-y:auto;padding:14px 16px 8px;background:'+cbg+';border-bottom:1px solid '+bd+'">'
+              +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
+                +'<span id="en-sc-count" style="font-size:13px;font-weight:600;color:'+tp+';flex:1">Sin páginas</span>'
+                +'<button id="en-sc-use" style="display:none;background:'+ti+';color:#fff;border:none;border-radius:7px;padding:7px 16px;font-size:12px;font-weight:500;cursor:pointer">✓ Usar este PDF</button>'
+                +'<button id="en-sc-clear" style="background:#fff;color:'+ts+';border:1px solid '+bd2+';border-radius:7px;padding:7px 12px;font-size:12px;cursor:pointer">Vaciar</button>'
+              +'</div>'
+              +'<div id="en-sc-thumbs" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;min-height:8px;scrollbar-width:thin">'
+                +'<div id="en-sc-empty" style="color:'+ts+';font-size:12px;padding:18px 0;text-align:center;width:100%;border:1.5px dashed '+bd2+';border-radius:8px">Aún no hay páginas escaneadas</div>'
+              +'</div>'
+            +'</div>'
+
+            // Resizer horizontal entre acumulador y config
+            +'<div id="en-scan-hresizer" style="height:5px;flex-shrink:0;background:'+bd+';cursor:row-resize;position:relative;display:flex;align-items:center;justify-content:center">'
+              +'<div style="display:flex;gap:4px">'
+                +'<div style="width:3px;height:3px;border-radius:50%;background:'+ts+'"></div>'
+                +'<div style="width:3px;height:3px;border-radius:50%;background:'+ts+'"></div>'
+                +'<div style="width:3px;height:3px;border-radius:50%;background:'+ts+'"></div>'
+              +'</div>'
+            +'</div>'
+
+            // Controles de escaneo
+            +'<div id="en-scan-bot" style="flex:1;overflow-y:auto;padding:14px 16px">'
+            +'<div style="background:#fff;border:1px solid '+bd+';border-radius:10px;padding:14px">'
+              +'<div style="font-size:11px;font-weight:600;color:'+ts+';text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Configuración del escaneo</div>'
+              +'<div style="display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end">'
+                +'<div><div style="font-size:11px;color:'+ts+';margin-bottom:3px">Origen</div>'
+                  +'<select id="en-scan-src" style="border:1px solid '+bd2+';border-radius:7px;padding:6px 28px 6px 10px;font-size:13px;color:'+tp+';background:#fff;-webkit-appearance:none;background-image:url(\'data:image/svg+xml,%3Csvg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'10\\\' height=\\\'6\\\'%3E%3Cpath d=\\\'M0 0l5 6 5-6z\\\' fill=\\\'%235b6b85\\\'/%3E%3C/svg%3E\');background-repeat:no-repeat;background-position:right 8px center;outline:none">'
+                    +'<option value="adf" selected>ADF</option>'
+                    +'<option value="flatbed">Solo cristal</option>'
+                    +'<option value="auto">Cristal + ADF</option>'
+                  +'</select>'
+                +'</div>'
+                +'<div><div style="font-size:11px;color:'+ts+';margin-bottom:3px">Resolución</div>'
+                  +'<select id="en-scan-dpi" style="border:1px solid '+bd2+';border-radius:7px;padding:6px 28px 6px 10px;font-size:13px;color:'+tp+';background:#fff;-webkit-appearance:none;background-image:url(\'data:image/svg+xml,%3Csvg xmlns=\\\'http://www.w3.org/2000/svg\\\' width=\\\'10\\\' height=\\\'6\\\'%3E%3Cpath d=\\\'M0 0l5 6 5-6z\\\' fill=\\\'%235b6b85\\\'/%3E%3C/svg%3E\');background-repeat:no-repeat;background-position:right 8px center;outline:none">'
+                    +'<option value="200">200 DPI</option><option value="300" selected>300 DPI</option><option value="600">600 DPI</option>'
+                  +'</select>'
+                +'</div>'
+                +'<label style="display:flex;align-items:center;gap:5px;font-size:13px;color:'+tp+';cursor:pointer"><input type="checkbox" id="en-scan-dup" checked style="accent-color:'+ti+';width:15px;height:15px"> Dúplex</label>'
+                +'<label style="display:flex;align-items:center;gap:5px;font-size:13px;color:'+tp+';cursor:pointer"><input type="checkbox" id="en-scan-enh" checked style="accent-color:'+ti+';width:15px;height:15px"> Realzar</label>'
+                +'<label style="display:flex;align-items:center;gap:5px;font-size:13px;color:'+tp+';cursor:pointer"><input type="checkbox" id="en-scan-blank" checked style="accent-color:'+ti+';width:15px;height:15px"> Quitar blancos</label>'
+              +'</div>'
+              // Progreso
+              +'<div id="en-scan-prog" style="display:none;margin-top:12px">'
+                +'<div style="display:flex;justify-content:space-between;margin-bottom:5px">'
+                  +'<span id="en-scan-pst" style="font-size:12px;font-weight:600;color:'+ti+'">Iniciando…</span>'
+                  +'<span id="en-scan-pct" style="font-size:12px;color:'+ts+'">0%</span>'
+                +'</div>'
+                +'<div style="height:5px;border-radius:3px;background:'+ci+';overflow:hidden"><div id="en-scan-bar" style="height:100%;width:0%;background:'+ti+';border-radius:3px;transition:width .3s"></div></div>'
+              +'</div>'
+              // Mensaje
+              +'<div id="en-scan-msg" style="display:none;margin-top:10px;font-size:12px;padding:8px 12px;border-radius:8px;line-height:1.5"></div>'
+              // Botón único
+              +'<div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">'
+                +'<button id="en-scan-go" style="background:'+ti+';color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px">'
+                  +'<svg width="15" height="15" viewBox="0 0 15 15" fill="none"><rect x="1" y="4" width="13" height="8" rx="1.5" stroke="#fff" stroke-width="1.4"/><path d="M4 4V3a.8.8 0 0 1 .8-.8h5.4a.8.8 0 0 1 .8.8v1" stroke="#fff" stroke-width="1.4"/><circle cx="11.5" cy="8" r=".9" fill="#fff"/></svg>'
+                  +'<span id="en-scan-go-lbl">Escanear</span>'
+                +'</button>'
+                +'<span id="en-scan-hint" style="font-size:12px;color:'+ts+'">Coloca el documento en el ADF</span>'
+              +'</div>'
+            +'</div>'
+            +'</div>'
+
+          +'</div>'
+
+          // ── Resizer vertical (columnas) ──
+          +'<div id="en-scan-resizer" style="width:5px;flex-shrink:0;background:'+bd+';cursor:col-resize;position:relative;transition:background .15s">'
+            +'<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:3px">'
+              +'<div style="width:3px;height:3px;border-radius:50%;background:'+ts+'"></div>'
+              +'<div style="width:3px;height:3px;border-radius:50%;background:'+ts+'"></div>'
+              +'<div style="width:3px;height:3px;border-radius:50%;background:'+ts+'"></div>'
+            +'</div>'
+          +'</div>'
+
+          // ── Columna derecha: visor PDF a altura completa ──
+          +'<div id="en-scan-right" style="flex:1;display:flex;flex-direction:column;min-width:200px;background:'+cbg+'">'
+            // Placeholder antes del primer escaneo
+            +'<div id="en-scan-placeholder" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:'+ts+'">'
+              +'<svg width="48" height="48" viewBox="0 0 48 48" fill="none" opacity=".3"><rect x="4" y="14" width="40" height="24" rx="4" stroke="'+ts+'" stroke-width="2"/><path d="M14 14V11a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v3" stroke="'+ts+'" stroke-width="2"/><circle cx="38" cy="26" r="2.5" fill="'+ts+'"/></svg>'
+              +'<span style="font-size:13px">El documento escaneado aparecerá aquí</span>'
+            +'</div>'
+            // Visor PDF (oculto hasta primer escaneo)
+            +'<div id="en-scan-viewer" style="display:none;flex:1;flex-direction:column;min-height:0">'
+              +'<div style="background:#fff;padding:8px 14px;border-bottom:1px solid '+bd+';display:flex;align-items:center;gap:8px;flex-shrink:0">'
+                +'<span id="en-scan-view-lbl" style="font-size:12px;color:'+ts+';flex:1"></span>'
+                +'<a id="en-scan-view-dl" href="#" download style="font-size:12px;color:'+ti+';text-decoration:none;font-weight:500">⬇ Descargar</a>'
+              +'</div>'
+              +'<div style="flex:1;position:relative;min-height:0">'
+                +'<embed id="en-scan-embed" type="application/pdf" style="position:absolute;inset:0;width:100%;height:100%;display:block">'
+              +'</div>'
+            +'</div>'
+          +'</div>'
+
+        +'</div>'
+      +'</div>';
+    document.body.appendChild(sov);
+
+    var _scanKey=null,_scanPoll=null,_scanPages=[],_lastPdfUrl=null;
+
+    function closeScan(){clearInterval(_scanPoll);_scanPoll=null;_scanKey=null;sov.style.display='none';}
+    function setScanProg(pct,txt){
+      var b=document.getElementById('en-scan-bar'),pc=document.getElementById('en-scan-pct'),ps=document.getElementById('en-scan-pst');
+      if(b)b.style.width=Math.round(pct)+'%';if(pc)pc.textContent=Math.round(pct)+'%';if(txt&&ps)ps.textContent=txt;
+    }
+    function showScanMsg(cls,txt){
+      var m=document.getElementById('en-scan-msg');if(!m)return;
+      var cfg={ok:['#effaf3','#16a34a','✓'],err:['#fdeef0','#d33a4b','✕'],warn:['#fff7db','#a8650c','⚠']};
+      var c=cfg[cls]||cfg.err;
+      m.style.cssText='display:block;background:'+c[0]+';color:'+c[1]+';border-radius:8px;padding:8px 12px;font-size:12px;margin-top:10px';
+      m.textContent=c[2]+' '+txt;
+    }
+    function hideScanMsg(){var m=document.getElementById('en-scan-msg');if(m)m.style.display='none';}
+
+    function renderScanThumbs(){
+      var t=document.getElementById('en-sc-thumbs'),empty=document.getElementById('en-sc-empty');
+      var cnt=document.getElementById('en-sc-count'),useBtn=document.getElementById('en-sc-use');
+      var addBtn=document.getElementById('en-scan-add');
+      if(!t)return;
+      t.innerHTML='';
+      if(!_scanPages.length){
+        if(empty){empty.style.display='';t.appendChild(empty);}
+        cnt.textContent='Sin páginas';useBtn.style.display='none';
+        if(addBtn)addBtn.style.display='none';
+        return;
+      }
+      cnt.textContent=_scanPages.length+' página'+(_scanPages.length!==1?'s':'')+' listas';
+      useBtn.style.display='inline-block';
+      if(addBtn)addBtn.style.display='inline-block';
+      _scanPages.forEach(function(pg,idx){
+        var box=document.createElement('div');
+        box.style.cssText='flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px';
+        var img=document.createElement('img');
+        img.src=pg.preview_b64?('data:image/jpeg;base64,'+pg.preview_b64):'';
+        img.style.cssText='height:100px;width:74px;object-fit:cover;border-radius:6px;border:2px solid '+bd+';background:#f9f9f9;cursor:default';
+        box.appendChild(img);
+        var num=document.createElement('div');num.style.cssText='font-size:10px;color:'+ts;num.textContent='Pág '+(idx+1);
+        box.appendChild(num);
+        var acts=document.createElement('div');acts.style.cssText='display:flex;gap:2px';
+        var btnL=document.createElement('button');btnL.textContent='◄';btnL.disabled=idx===0;
+        btnL.style.cssText='border:none;background:none;cursor:pointer;color:'+ts+';font-size:12px;padding:2px 4px;border-radius:4px';
+        btnL.onclick=function(){var t2=_scanPages[idx];_scanPages[idx]=_scanPages[idx-1];_scanPages[idx-1]=t2;renderScanThumbs();};
+        var btnR=document.createElement('button');btnR.textContent='►';btnR.disabled=idx===_scanPages.length-1;
+        btnR.style.cssText=btnL.style.cssText;
+        btnR.onclick=function(){var t2=_scanPages[idx];_scanPages[idx]=_scanPages[idx+1];_scanPages[idx+1]=t2;renderScanThumbs();};
+        var btnX=document.createElement('button');btnX.textContent='✕';
+        btnX.style.cssText='border:none;background:none;cursor:pointer;color:#d33a4b;font-size:12px;padding:2px 4px;border-radius:4px';
+        btnX.onclick=function(){_scanPages.splice(idx,1);if(!_scanPages.length){var vw=document.getElementById('en-scan-viewer');if(vw)vw.style.display='none';var ph=document.getElementById('en-scan-placeholder');if(ph)ph.style.display='flex';}renderScanThumbs();};
+        acts.appendChild(btnL);acts.appendChild(btnR);acts.appendChild(btnX);
+        box.appendChild(acts);t.appendChild(box);
+      });
+    }
+
+    function showPdfViewer(b64,filename,info){
+      if(_lastPdfUrl){URL.revokeObjectURL(_lastPdfUrl);}
+      var bin=atob(b64),u8=new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+      _lastPdfUrl=URL.createObjectURL(new Blob([u8],{type:'application/pdf'}));
+      var em=document.getElementById('en-scan-embed');if(em)em.src=_lastPdfUrl;
+      var lbl=document.getElementById('en-scan-view-lbl');if(lbl)lbl.textContent=info||'';
+      var dl=document.getElementById('en-scan-view-dl');if(dl){dl.href=_lastPdfUrl;dl.download=filename||'escaneo.pdf';}
+      var ph=document.getElementById('en-scan-placeholder');if(ph)ph.style.display='none';
+      var vw=document.getElementById('en-scan-viewer');if(vw){vw.style.display='flex';}
+    }
+
+    function storeAndClose(){
+      if(!_scanPages.length||!_scanKey)return;
+      // Combinar todas las páginas con /combine
+      var pdfs=_scanPages.map(function(p){return p.pdf_b64;});
+      var btn=document.getElementById('en-sc-use');if(btn){btn.disabled=true;btn.textContent='Procesando…';}
+      showScanMsg('ok','⏳ Combinando páginas…');
+      fetch(SCAN_DS+'/combine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pdfs:pdfs})})
+        .then(function(r){return r.json();})
+        .then(function(res){
+          var b64=res.pdf_b64||(_scanPages.length===1?_scanPages[0].pdf_b64:null);
+          if(!b64){showScanMsg('err','No se pudo unir las páginas.');if(btn){btn.disabled=false;btn.textContent='✓ Usar este PDF';}return;}
+          var key=decodeURIComponent(_scanKey);
+          var label=key.indexOf('|')>=0?key.split('|')[1]:key;
+          var fname=label.replace(/[^a-z0-9]/gi,'_')+'.pdf';
+          var bin2=atob(b64),arr=new Uint8Array(bin2.length);for(var i=0;i<bin2.length;i++)arr[i]=bin2.charCodeAt(i);
+          var file=new File([arr],fname,{type:'application/pdf'});
+          S.docFiles[key]=file;S.docVerdict[key]={ai_state:'validating'};
+          showScanMsg('ok','🧠 Enviando a la IA…');
+          var fr=new FileReader();fr.onload=function(){
+            var b64r=(String(fr.result).split(',')[1])||'';
+            rpc('/en/wizard/validate_doc',{label:label,file_b64:b64r})
+              .then(function(vres){S.docVerdict[key]=vres||{ai_state:'validating'};render();})
+              .catch(function(){render();});
+          };fr.readAsDataURL(file);
+          setTimeout(function(){closeScan();render();},600);
+        })
+        .catch(function(){
+          // fallback: solo primera página
+          var key=decodeURIComponent(_scanKey);var label=key.indexOf('|')>=0?key.split('|')[1]:key;
+          var b64f=_scanPages[0].pdf_b64;
+          var fname=label.replace(/[^a-z0-9]/gi,'_')+'.pdf';
+          var bin2=atob(b64f),arr=new Uint8Array(bin2.length);for(var i=0;i<bin2.length;i++)arr[i]=bin2.charCodeAt(i);
+          var file=new File([arr],fname,{type:'application/pdf'});
+          S.docFiles[key]=file;S.docVerdict[key]={ai_state:'validating'};
+          var fr=new FileReader();fr.onload=function(){var b64r=(String(fr.result).split(',')[1])||'';rpc('/en/wizard/validate_doc',{label:label,file_b64:b64r}).then(function(vres){S.docVerdict[key]=vres||{ai_state:'validating'};render();}).catch(function(){render();});};
+          fr.readAsDataURL(file);closeScan();render();
+        });
+    }
+
+    function doScan(){
+      var go=document.getElementById('en-scan-go');
+      var src=document.getElementById('en-scan-src').value;
+      var dpi=document.getElementById('en-scan-dpi').value;
+      var dup=document.getElementById('en-scan-dup').checked;
+      var enh=document.getElementById('en-scan-enh').checked;
+      var blank=document.getElementById('en-scan-blank').checked;
+      var hint=document.getElementById('en-scan-hint');
+      hideScanMsg();
+      document.getElementById('en-scan-prog').style.display='block';
+      go.disabled=true;go.style.opacity='.5';
+      if(hint)hint.textContent='Escaneando…';
+      setScanProg(3,'Conectando con el escáner…');
+      clearInterval(_scanPoll);
+      fetch(SCAN_DS+'/scan/start',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({source:src,dpi:+dpi,color:'color',duplex:dup,enhance:enh,drop_blank:blank})})
+        .then(function(r){return r.json();})
+        .then(function(res){
+          var sid=res.job_id;if(!sid)throw new Error('sin id');
+          setScanProg(15,'Escaneando…');
+          _scanPoll=setInterval(function(){
+            fetch(SCAN_DS+'/scan/status/'+sid).then(function(r){return r.json();}).then(function(st){
+              if(st.percent!=null)setScanProg(15+Math.round(st.percent*0.75),st.state||'Escaneando…');
+              if(!st.done)return;
+              clearInterval(_scanPoll);_scanPoll=null;
+              go.disabled=false;go.style.opacity='1';
+              document.getElementById('en-scan-prog').style.display='none';
+              if(!st.result||!st.result.accepted){
+                showScanMsg('err',(st.result&&st.result.message?st.result.message:'No se logró un buen escaneo.')+' Pulsa Escanear para reintentar.');return;
+              }
+              // Agregar páginas al acumulador
+              var r=st.result;
+              var list=(r.pages_list&&r.pages_list.length)?r.pages_list:[{pdf_b64:r.pdf_b64,preview_b64:r.preview_b64||''}];
+              list.forEach(function(pg){_scanPages.push({pdf_b64:pg.pdf_b64,preview_b64:pg.preview_b64||''});});
+              renderScanThumbs();
+              var lbl=document.getElementById('en-scan-go-lbl');if(lbl)lbl.textContent='+ Agregar otra página';
+              showScanMsg('ok',r.pages+' pág. añadida'+(r.pages!==1?'s':'')+' · '+((r.attempts||1)+' intento'+(r.attempts!==1?'s':''))+(r.rehecho?' · rehecho':''));
+              showPdfViewer(r.pdf_b64,r.filename,r.pages+' pág. · '+r.message);
+            }).catch(function(){clearInterval(_scanPoll);_scanPoll=null;go.disabled=false;go.style.opacity='1';document.getElementById('en-scan-prog').style.display='none';showScanMsg('err','Error al consultar el escáner.');});
+          },700);
+        })
+        .catch(function(){go.disabled=false;go.style.opacity='1';document.getElementById('en-scan-prog').style.display='none';showScanMsg('err','No se pudo conectar con el escáner local (puerto 8900).');});
+    }
+
+    document.getElementById('en-scan-go').onclick=doScan;
+    document.getElementById('en-scan-close').onclick=closeScan;
+    (function(){
+      var hints={adf:'Mete las hojas en el alimentador (ADF)',flatbed:'Coloca el documento boca abajo en el cristal',auto:'Cristal primero, luego ADF si hay hojas'};
+      var srcEl=document.getElementById('en-scan-src');
+      var hintEl=document.getElementById('en-scan-hint');
+      function updHint(){if(hintEl&&srcEl)hintEl.textContent=hints[srcEl.value]||'';}
+      if(srcEl)srcEl.addEventListener('change',updHint);
+      updHint();
+    })();
+
+    // ── Resizer columnas (horizontal) ──
+    (function(){
+      var rz=document.getElementById('en-scan-resizer');
+      var lc=document.getElementById('en-scan-left');
+      if(!rz||!lc)return;
+      var dragging=false,startX=0,startW=0;
+      rz.addEventListener('mousedown',function(e){
+        dragging=true;startX=e.clientX;startW=lc.offsetWidth;
+        document.body.style.cursor='col-resize';document.body.style.userSelect='none';
+        rz.style.background='#0f44ce';e.preventDefault();
+      });
+      document.addEventListener('mousemove',function(e){
+        if(!dragging)return;
+        lc.style.width=Math.max(220,Math.min(600,startW+(e.clientX-startX)))+'px';
+      });
+      document.addEventListener('mouseup',function(){
+        if(!dragging)return;
+        dragging=false;document.body.style.cursor='';document.body.style.userSelect='';rz.style.background='';
+      });
+    })();
+
+    // ── Resizer filas izq (vertical) ──
+    (function(){
+      var rz=document.getElementById('en-scan-hresizer');
+      var top=document.getElementById('en-scan-top');
+      if(!rz||!top)return;
+      var dragging=false,startY=0,startH=0;
+      rz.addEventListener('mousedown',function(e){
+        dragging=true;startY=e.clientY;startH=top.offsetHeight;
+        document.body.style.cursor='row-resize';document.body.style.userSelect='none';
+        rz.style.background='#0f44ce';e.preventDefault();
+      });
+      document.addEventListener('mousemove',function(e){
+        if(!dragging)return;
+        top.style.height=Math.max(60,Math.min(500,startH+(e.clientY-startY)))+'px';
+      });
+      document.addEventListener('mouseup',function(){
+        if(!dragging)return;
+        dragging=false;document.body.style.cursor='';document.body.style.userSelect='';rz.style.background='';
+      });
+    })();
+    document.getElementById('en-sc-clear').onclick=function(){_scanPages=[];var vw=document.getElementById('en-scan-viewer');if(vw)vw.style.display='none';var ph=document.getElementById('en-scan-placeholder');if(ph)ph.style.display='flex';hideScanMsg();renderScanThumbs();};
+    document.getElementById('en-sc-use').onclick=storeAndClose;
+
+    window.openDocScanner=function(encodedKey,label){
+      _scanKey=encodedKey;_scanPages=[];
+      document.getElementById('en-scan-title').textContent=label;
+      hideScanMsg();
+      document.getElementById('en-scan-prog').style.display='none';
+      document.getElementById('en-scan-viewer').style.display='none';
+      var ph2=document.getElementById('en-scan-placeholder');if(ph2)ph2.style.display='flex';
+      var go=document.getElementById('en-scan-go');if(go){go.disabled=false;go.style.opacity='1';}
+      document.getElementById('en-sc-use').style.display='none';
+      var lbl0=document.getElementById('en-scan-go-lbl');if(lbl0)lbl0.textContent='Escanear';
+      renderScanThumbs();
+      setScanProg(0,'');
+      sov.style.display='flex';
+    };
+  })();
+  (function(){
+    var ov=document.createElement('div');
+    ov.id='en-cam-overlay';
+    ov.style.cssText='display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);align-items:center;justify-content:center';
+    ov.innerHTML='<div style="background:#fff;border-radius:12px;padding:20px;max-width:420px;width:95%;font-family:sans-serif"><p id="en-cam-title" style="font-weight:600;margin:0 0 10px"></p>'
+      +'<video id="en-cam-video" autoplay playsinline style="width:100%;border-radius:8px;background:#000;max-height:280px"></video>'
+      +'<div id="en-cam-thumbs" style="display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:20px"></div>'
+      +'<div id="en-cam-rejected" style="display:none;background:#fff7db;border-radius:8px;padding:8px 10px;font-size:12px;color:#a8650c;margin-bottom:8px"></div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+      +'<button id="en-cam-capture" class="en-btn" style="font-size:12px;padding:6px 12px">📷 Capturar</button>'
+      +'<button id="en-cam-generate" class="en-btn" style="font-size:12px;padding:6px 12px;display:none">✓ Generar PDF</button>'
+      +'<button id="en-cam-force" style="display:none;font-size:12px;padding:6px 12px;border-radius:8px;border:1px solid #a8650c;background:#fff7db;color:#a8650c;cursor:pointer">Generar igualmente</button>'
+      +'<button id="en-cam-close" class="en-btn ghost" style="font-size:12px;padding:6px 12px">Cerrar</button>'
+      +'</div>'
+      +'<div id="en-cam-status" style="font-size:12px;color:#5b6b85;margin-top:8px"></div>'
+      +'</div>';
+    document.body.appendChild(ov);
+    function closeCam(){if(CAM.stream){CAM.stream.getTracks().forEach(function(t){t.stop();});CAM.stream=null;}ov.style.display='none';CAM.open=false;CAM.pages=[];CAM.key=null;}
+    function paintThumbs(){
+      var tc=document.getElementById('en-cam-thumbs');
+      var rc=document.getElementById('en-cam-rejected');
+      var gen=document.getElementById('en-cam-generate');
+      var force=document.getElementById('en-cam-force');
+      if(!tc)return;
+      var ok=CAM.pages.filter(function(p){return p.ok;});
+      var bad=CAM.pages.filter(function(p){return !p.ok;});
+      tc.innerHTML=ok.map(function(p,i){return '<div style="position:relative"><img src="'+p.dataUrl+'" style="width:64px;height:64px;object-fit:cover;border-radius:6px;border:2px solid #16a34a"/><span style="position:absolute;bottom:2px;left:2px;background:#16a34a;color:#fff;font-size:9px;padding:1px 4px;border-radius:4px">'+p.num+'</span></div>';}).join('');
+      if(bad.length){rc.style.display='block';rc.innerHTML='<b>'+bad.length+' foto(s) con baja calidad:</b> '+bad.map(function(p){return 'Pág '+p.num+': '+p.reason;}).join(' | ');}
+      else{rc.style.display='none';}
+      gen.style.display=ok.length?'inline-block':'none';
+      force.style.display=bad.length?'inline-block':'none';
+    }
+    function doCapture(){
+      var video=document.getElementById('en-cam-video');
+      if(!video||!video.videoWidth)return;
+      var canvas=document.createElement('canvas');
+      canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+      canvas.getContext('2d').drawImage(video,0,0);
+      var dataUrl=canvas.toDataURL('image/jpeg',0.92);
+      var b64=dataUrl.split(',')[1];
+      var num=CAM.pages.length+1;
+      var ok=true;var reason='';
+      var score=(canvas.width*canvas.height)/(1920*1080)*100;
+      if(canvas.width<400||canvas.height<300){ok=false;reason='Resolución muy baja ('+canvas.width+'×'+canvas.height+')';}
+      else if(score<20){ok=false;reason='Calidad insuficiente ('+Math.round(score)+'%)';}
+      else{reason='Calidad correcta ('+Math.round(score)+'%)';}
+      CAM.pages.push({b64:b64,dataUrl:dataUrl,num:num,ok:ok,reason:reason});
+      paintThumbs();
+    }
+    function doGenerate(force){
+      var pages=force?CAM.pages:CAM.pages.filter(function(p){return p.ok;});
+      if(!pages.length)return;
+      var st=document.getElementById('en-cam-status');
+      if(st)st.textContent='Generando PDF…';
+      document.getElementById('en-cam-generate').disabled=true;
+      document.getElementById('en-cam-force').disabled=true;
+      rpc('/en/wizard/photo_to_pdf',{images:pages.map(function(p){return p.b64;})}).then(function(res){
+        if(res&&res.pdf){
+          var bin=atob(res.pdf);var arr=new Uint8Array(bin.length);
+          for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+          var blob=new Blob([arr],{type:'application/pdf'});
+          var fname=(CAM.key?decodeURIComponent(CAM.key).split('|').pop():'documento')+'.pdf';
+          var file=new File([blob],fname,{type:'application/pdf'});
+          var key=decodeURIComponent(CAM.key);
+          S.docFiles[key]=file;
+          S.docVerdict[key]={ai_state:'validating'};
+          var fr=new FileReader();fr.onload=function(){
+            var b64r=(String(fr.result).split(',')[1])||'';
+            var label=key.indexOf('|')>=0?key.split('|')[1]:key;
+            rpc('/en/wizard/validate_doc',{label:label,file_b64:b64r}).then(function(vres){S.docVerdict[key]=vres||{ai_state:'validating'};render();}).catch(function(){render();});
+          };fr.readAsDataURL(file);
+          closeCam();render();
+        }else{if(st)st.textContent='Error: '+(res&&res.error)||'desconocido';document.getElementById('en-cam-generate').disabled=false;document.getElementById('en-cam-force').disabled=false;}
+      }).catch(function(){if(st)st.textContent='Error al generar el PDF.';document.getElementById('en-cam-generate').disabled=false;document.getElementById('en-cam-force').disabled=false;});
+    }
+    document.getElementById('en-cam-capture').onclick=doCapture;
+    document.getElementById('en-cam-generate').onclick=function(){doGenerate(false);};
+    document.getElementById('en-cam-force').onclick=function(){doGenerate(true);};
+    document.getElementById('en-cam-close').onclick=closeCam;
+    window.openDocCamera=function(encodedKey,label){
+      CAM.key=encodedKey;CAM.pages=[];
+      document.getElementById('en-cam-title').textContent='Tomar foto: '+label;
+      paintThumbs();
+      ov.style.display='flex';CAM.open=true;
+      var video=document.getElementById('en-cam-video');
+      if(/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)){
+        var inp=document.createElement('input');
+        inp.type='file';inp.accept='image/*';inp.capture='environment';inp.multiple=true;
+        inp.onchange=function(){
+          var files=Array.from(inp.files||[]);
+          files.forEach(function(f){
+            var fr=new FileReader();fr.onload=function(){
+              var dataUrl=fr.result;var b64=dataUrl.split(',')[1];
+              var img=new Image();img.onload=function(){
+                var score=(img.width*img.height)/(1920*1080)*100;
+                var ok=img.width>=400&&img.height>=300&&score>=20;
+                var reason=ok?'Calidad correcta ('+Math.round(score)+'%)':'Calidad insuficiente ('+Math.round(score)+'%)';
+                CAM.pages.push({b64:b64,dataUrl:dataUrl,num:CAM.pages.length+1,ok:ok,reason:reason});
+                paintThumbs();
+              };img.src=dataUrl;
+            };fr.readAsDataURL(f);
+          });
+        };
+        inp.click();
+      } else {
+        navigator.mediaDevices.getUserMedia({video:true}).then(function(stream){
+          CAM.stream=stream;video.srcObject=stream;
+        }).catch(function(){
+          var st=document.getElementById('en-cam-status');
+          if(st)st.textContent='No se pudo acceder a la cámara. Usa "Subir PDF" o intenta desde un móvil.';
+        });
+      }
+    };
+  })();
   var cur=0;
   var DOCS={'Pymes':['Escritura notarial','Registro mercantil','Carnet con el NIT','Contrato de banco','Certifico de no adeudo'],'Estatal':['Resoluciones constitutivas','Código REUP','NIT','Contrato de banco'],'CNA':['ONAT','Código REANE','Escritura notarial','Registro mercantil','Carnet con el NIT','Contrato de banco','Certifico de no adeudo'],'Sucursal Extranjera':['Escrituras de constitución','Inscripción registro mercantil','Licencia de la cámara comercial','Carnet de ACORE o PALCO','Planilla de contribuyente','Contrato de banco','Resolución del MINCEX'],'Proveedor':['Escritura de constitución','Inscripción registro mercantil','Poder acreditativo','Certifico de cuenta bancaria','Código MINCEX']};
   var docState={};
@@ -149,35 +603,40 @@
   function bigcard(a,v,t,d,c){return '<button class="en-rolecard" '+a+'="'+v+'"><span style="font-weight:500">'+t+'</span><span style="font-size:12.5px;color:var(--cts)">'+d+'</span><span style="font-size:12px;color:var(--cti);margin-top:2px">'+c+' →</span></button>';}
   function iaBadge(v){
     if(!v||!v.ai_state) return '';
-    var map={validating:['🕓 Validando IA…','#eef3fc','#0f44ce'],passed:['✓ IA: Apto','#effaf3','#16a34a'],doubt:['! IA: Dudoso','#fff7db','#a8650c'],rejected:['✕ IA: Rechazado — sube otro','#fdeef0','#d33a4b']};
+    if(v.ai_state==='validating')return '<div style="margin-top:7px;display:flex;align-items:center;gap:6px;background:#eef3fc;border-radius:7px;padding:6px 10px"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="animation:en-spin 1s linear infinite;flex-shrink:0"><circle cx="7" cy="7" r="5.5" stroke="#0f44ce" stroke-width="1.5" stroke-dasharray="22 12" stroke-linecap="round"/></svg><span style="font-size:12px;font-weight:500;color:#0f44ce">Analizando con IA…</span></div>';
+    var map={passed:['✓ IA: Apto','#effaf3','#16a34a'],doubt:['⚠ IA: Dudoso','#fff7db','#a8650c'],rejected:['✕ IA: Rechazado — sube otro','#fdeef0','#d33a4b']};
     var m=map[v.ai_state]; if(!m) return '';
-    var conf=(v.ai_state!=='validating'&&v.ai_confidence)?(' '+Math.round(v.ai_confidence)+'%'):'';
+    var conf=v.ai_confidence?(' '+Math.round(v.ai_confidence)+'%'):'';
     var rsn=(v.ai_reason&&v.ai_state!=='passed')?('<div style="font-size:10.5px;color:#a8650c;margin-top:3px;line-height:1.25">'+v.ai_reason+'</div>'):'';
     var note=(v.ai_state==='rejected')?'<div style="font-size:10.5px;color:#d33a4b;margin-top:2px">La IA lo rechazó: este archivo no se enviará. Sube uno válido.</div>':'';
     return '<div style="margin-top:5px"><span style="font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:6px;background:'+m[1]+';color:'+m[2]+'">'+m[0]+conf+'</span>'+rsn+note+'</div>';
   }
   function hasRejected(){return Object.keys(S.docVerdict).some(function(k){var v=S.docVerdict[k];return v&&v.ai_state==='rejected'&&S.docFiles[k];});}
-  function docCard(name,file,attr,verdict){
+  function docCard(name,file,attr,verdict,enablePhoto){
     var done=!!file;
     var rej=!!(verdict&&verdict.ai_state==='rejected');
     var fname=done?(file.name.length>26?file.name.slice(0,24)+'…':file.name):'';
     var icCls=rej?'':(done?' ok':''); var icIco=rej?'fa-times':(done?'fa-check':'fa-file-pdf-o');
     var ic='<span class="en-doc-ic'+icCls+'"'+(rej?' style="background:#fdeef0;color:#d33a4b"':'')+'><i class="fa '+icIco+'"></i></span>';
     var status=done?('<div class="en-doc-file"'+(rej?' style="color:#d33a4b"':'')+'>'+fname+'</div>'):'<div class="en-doc-hint">Formato PDF · máx. 6&#160;MB</div>';
-    var btn='<label class="en-doc-btn'+(done?' done':'')+'">'+(done?'Cambiar archivo':'Subir documento')+'<input type="file" accept=".pdf" '+attr+' style="display:none"/></label>';
+    var pdfBtn='<label class="en-doc-btn'+(done?' done':'')+'" style="text-align:center">'+(done?'Cambiar PDF':'Subir PDF')+'<input type="file" accept=".pdf" '+attr+' style="display:none"/></label>';
+    var camBtn=enablePhoto?('<button type="button" class="en-doc-btn done" style="margin-top:4px;text-align:center;cursor:pointer" data-cam="'+enablePhoto+'">📷 Tomar foto</button>'):'';
+    var scanBtn=enablePhoto?('<button type="button" class="en-doc-btn done" style="margin-top:4px;text-align:center;cursor:pointer" data-scan="'+enablePhoto+'">🖨️ Escanear</button>'):'';
+    var delBtn=(done?enablePhoto?('<button type="button" style="margin-top:6px;align-self:stretch;text-align:center;background:none;border:1px solid #f0c0c5;border-radius:var(--rmd);padding:5px 10px;font-size:11.5px;color:#d33a4b;cursor:pointer" data-deldoc="'+enablePhoto+'">&#x2715; Quitar documento</button>'):'':'');
     var cardStyle=rej?' style="border-color:#d33a4b;background:#fdeef0"':'';
-    return '<div class="en-doccard'+(done&&!rej?' is-done':'')+'"'+cardStyle+'>'+ic+'<div class="en-doc-name">'+name+'</div>'+status+iaBadge(verdict)+btn+'</div>';
+    var doneClass=(done?(rej?'':' is-done'):'');
+    return '<div class="en-doccard'+doneClass+'"'+cardStyle+'>'+ic+'<div class="en-doc-name">'+name+'</div>'+status+iaBadge(verdict)+pdfBtn+camBtn+scanBtn+delBtn+'</div>';
   }
-  function docGrid(type,label){return '<p class="en-sechead">'+(label||('Documentos de '+type))+'</p><div class="en-docgrid">'+DOCS[type].map(function(n){var k=type+'|'+n;return docCard(n,S.docFiles[k],'data-docf="'+encodeURIComponent(k)+'"',S.docVerdict[k]);}).join('')+'</div>';}
+  function docGrid(type,label){return '<p class="en-sechead">'+(label||('Documentos de '+type))+'</p><div class="en-docgrid">'+DOCS[type].map(function(n){var k=type+'|'+n;var enc=encodeURIComponent(k);return docCard(n,S.docFiles[k],'data-docf="'+enc+'"',S.docVerdict[k],enc);}).join('')+'</div>';}
   function typeCards(a,c){var t=[['Pymes','5 docs'],['Estatal','4 docs'],['CNA','7 docs'],['Sucursal Extranjera','7 docs']];return '<div class="en-grid2">'+t.map(function(x){return '<button class="en-typecard'+(c===x[0]?" sel":"")+'" '+a+'="'+x[0]+'"><span style="font-weight:500;font-size:13.5px">'+x[0]+'</span><span style="font-size:11.5px;color:var(--cts)">'+x[1]+'</span></button>';}).join('')+'</div>';}
   function tagsOf(arr,attr,label){if(!arr.length)return '';return '<p class="en-sechead">'+label+' ('+arr.length+')</p><div>'+arr.map(function(n,i){return '<span class="en-tag">'+n+' <button '+attr+'="'+i+'">✕</button></span>';}).join('')+'</div>';}
   function rowG(r,attr,sel,chk,extra){var badge=extra?extra:(r[2]?'<span class="en-badge en-ok">Acreditado</span>':'<span class="en-badge en-pend">Pendiente</span>');var c=chk?(sel?'☑ ':'☐ '):'';return '<div class="en-row'+(sel?' sel':'')+'" '+attr+'="'+r[0]+'"><span>'+c+'<span style="font-weight:500">'+r[0]+'</span> · NIT '+r[1]+'</span>'+badge+'</div>';}
   function needRole(){return '<div class="en-hint">Primero elige tu rol.</div><button class="en-btn" data-go="0">Ir al paso 1 →</button>';}
-  function panelRol(){return '<p class="en-h">¿Cómo te vas a acreditar?</p><p class="en-sub">Elige tu rol.</p><div class="en-grid2">'+bigcard('data-role','cliente','Cliente nacional','Empresa cubana que recibe el servicio de importación de combustible.','Entrar')+bigcard('data-role','proveedor','Proveedor extranjero','Empresa extranjera que quiere vender combustible en Cuba.','Entrar')+'</div>';}
+  function panelRol(){return '<p class="en-h">¿Cómo te vas a acreditar?</p><p class="en-sub">Elige tu rol.</p><div class="en-grid2">'+bigcard('data-role','cliente','Cliente','Empresa cubana que recibe el servicio de importación de combustible.','Entrar')+bigcard('data-role','proveedor','Proveedor','Empresa extranjera que quiere vender combustible en Cuba.','Entrar')+'</div>';}
   function panelDatos(){
     if(!S.role)return needRole();
-    if(S.role==='proveedor')return '<p class="en-h">Datos del proveedor</p><p class="en-sub">Información de la empresa + documentos.</p><div class="en-grid2">'+field('Nombre de la empresa','<input id="en-name" placeholder="Nombre de la empresa"/>')+field('Clasificación del Proveedor','<select id="en-prov-class"><option value="">Clasificación…</option><option value="Productor"'+(S.provClass==='Productor'?' selected':'')+'>Productor</option><option value="Comerciante"'+(S.provClass==='Comerciante'?' selected':'')+'>Comerciante</option></select>')+'</div>'+field('Objeto social','<textarea id="en-objeto" rows="2" placeholder="Describa el objeto social de la entidad"></textarea>')+providerAddress()+mincexBlock()+contactFields()+socioBlock()+docGrid('Proveedor');
-    return '<p class="en-h">Mis datos · Cliente nacional</p><p class="en-sub">Elige tu tipo: se despliegan sus documentos.</p>'+typeCards('data-ctype',S.ctype)+(S.ctype?('<div class="en-grid2" style="margin-top:12px">'+field('Nombre de la empresa','<input id="en-name" placeholder="Nombre de la empresa"/>')+field('NIT','<input id="en-nit" placeholder="NIT"/><div id="en-nit-dup" style="display:none;color:#d33a4b;font-size:11.5px;margin-top:3px">El NIT ya existe — verifícalo antes de continuar.</div>')+'</div>'+field('Objeto social','<textarea id="en-objeto" rows="2" placeholder="Describa el objeto social de la entidad"></textarea>')+companyAddress()+contactFields()+docGrid(S.ctype)):'<div class="en-hint" style="margin-top:12px">Elige un tipo para ver sus documentos.</div>');
+    if(S.role==='proveedor')return '<p class="en-h">Datos del proveedor</p><p class="en-sub">Información de la empresa + documentos.</p><div class="en-grid2">'+field('Nombre de la empresa','<input id="en-name" placeholder="Nombre de la empresa"/>')+field('Clasificación del Proveedor','<select id="en-prov-class"><option value="">Clasificación…</option><option value="Productor"'+(S.provClass==='Productor'?' selected':'')+'>Productor</option><option value="Comerciante"'+(S.provClass==='Comerciante'?' selected':'')+'>Comerciante</option></select>')+'</div>'+providerAddress()+mincexBlock()+contactFields()+socioBlock()+docGrid('Proveedor')+'<p class="en-sechead">Otros documentos legales</p><div class="en-docgrid">'+docCard('Otros documentos legales',S.docFiles['otros|Otros'],'data-docf="'+encodeURIComponent('otros|Otros')+'"',S.docVerdict['otros|Otros'],encodeURIComponent('otros|Otros'))+'</div>'+'<div style="margin-top:16px"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:500;margin:0;color:var(--ctp)"><input type="checkbox" id="en-visible-clients" style="width:auto"'+(S.visibleToClients?' checked':'')+'/> Mis datos pueden ser visibles para clientes</label></div>';
+    return '<p class="en-h">Mis datos · Cliente</p><p class="en-sub">Elige tu tipo: se despliegan sus documentos.</p>'+typeCards('data-ctype',S.ctype)+(S.ctype?('<div class="en-grid2" style="margin-top:12px">'+field('Nombre de la empresa','<input id="en-name" placeholder="Nombre de la empresa"/>')+field('NIT','<input id="en-nit" placeholder="NIT"/><div id="en-nit-dup" style="display:none;color:#d33a4b;font-size:11.5px;margin-top:3px">El NIT ya existe — verifícalo antes de continuar.</div>')+'</div>'+companyAddress()+contactFields()+docGrid(S.ctype)+'<p class="en-sechead">Otros documentos legales</p><div class="en-docgrid">'+docCard('Otros documentos legales',S.docFiles['otros|Otros'],'data-docf="'+encodeURIComponent('otros|Otros')+'"',S.docVerdict['otros|Otros'],encodeURIComponent('otros|Otros'))+'</div>'+'<div style="margin-top:16px"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:500;margin:0;color:var(--ctp)"><input type="checkbox" id="en-visible-providers" style="width:auto"'+(S.visibleToProviders?' checked':'')+'/> Mis datos pueden ser visibles para proveedores</label></div>'):'<div class="en-hint" style="margin-top:12px">Elige un tipo para ver sus documentos.</div>');
   }
   function solLineRow(l,i){
     var prods=['Diésel','Gasolina','Jet A-1','Fuel oíl','GLP'];
@@ -215,7 +674,11 @@
     if(S.cpHas==='buscar'){if(!S.offersLoaded){loadOffers(function(){render();});return head+'<p class="en-sub">Cargando ofertas…</p>'+backb;}var sel=S.cpSel?'<div class="en-note" style="background:var(--csucc);color:var(--ctsu)">✓ Oferta seleccionada.</div>':'';return head+'<p class="en-sub">Ofertas de proveedores acreditados para <b>'+pT+'</b>. Usa el buscador.</p>'+backb+'<input id="of-search" placeholder="Buscar por proveedor, combustible o puerto" style="margin-bottom:10px"/><div id="offer-list">'+renderOfferList()+'</div>'+sel;}
     var chips=[['cartera','Mi cartera'],['info','Acreditar nuevo'],['invitar','Invitar']].map(function(c){return '<button class="en-chip'+(S.cp===c[0]?" sel":"")+'" data-cp="'+c[0]+'">'+c[1]+'</button>';}).join(' ');
     var content;
-    if(S.cp==='info')content='<p class="en-sechead">Datos del proveedor (empresa extranjera)</p><div class="en-grid2">'+field('Razón social','<input id="cp-name"/>')+field('País','<input id="cp-country"/>')+'</div>'+field('Código MINCEX','<input id="cp-mincex"/>')+docGrid('Proveedor','Documentos del proveedor');
+    if(S.cp==='info'){
+      if(!S.countriesLoaded){loadCountries(function(){render();});}
+      var cpCo='<option value="">País…</option>'+(S.countries||[]).map(function(c){return '<option value="'+c[0]+'"'+(String(S.cpCountry)===String(c[0])?' selected':'')+'>'+c[1]+'</option>';}).join('');
+      content='<p class="en-sechead">Datos del proveedor (empresa extranjera)</p><div class="en-grid2">'+field('Nombre de la empresa','<input id="cp-name" placeholder="Nombre de la empresa"/>'+'')+field('Clasificación del Proveedor','<select id="cp-prov-class"><option value="">Clasificación…</option><option value="Productor"'+(S.cpProvClass==='Productor'?' selected':'')+'>Productor</option><option value="Comerciante"'+(S.cpProvClass==='Comerciante'?' selected':'')+'>Comerciante</option></select>')+'</div>'+'<p class="en-sechead">Dirección de la empresa</p><div class="en-grid2">'+field('Dirección','<input id="cp-address" placeholder="Dirección"/>'+'')+field('País','<select id="cp-country">'+cpCo+'</select>')+'</div>'+field('Código MINCEX','<input id="cp-mincex"/>'+'')+('<label style="display:flex;gap:8px;align-items:center;font-size:13px;margin:8px 0"><input type="checkbox" id="cp-req-mincex" style="width:auto"'+(S.cpReqMincex?' checked':'')+'/> ¿Requiere código MINCEX?</label>')+'<p class="en-sechead">Datos del contacto</p>'+field('Nombre y apellido del contacto','<input id="cp-contact" placeholder="Nombre y apellido de la persona"/>')+'<div class="en-grid2">'+field('Correo electrónico','<input id="cp-email" type="email" placeholder="correo@empresa.com"/>'+'')+field('Teléfono','<input id="cp-phone" placeholder="Teléfono"/>')+'</div>'+docGrid('Proveedor','Documentos del proveedor')+'<p class="en-sechead">Otros documentos legales</p><div class="en-docgrid">'+docCard('Otros documentos legales',S.docFiles['otros|Otros'],'data-docf="'+encodeURIComponent('otros|Otros')+'"',S.docVerdict['otros|Otros'],encodeURIComponent('otros|Otros'))+'</div>'+'<div style="margin-top:16px"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:500;margin:0;color:var(--ctp)"><input type="checkbox" id="cp-visible-clients" style="width:auto"'+(S.cpVisibleToClients?' checked':'')+'/> Mis datos pueden ser visibles para clientes</label></div>';
+    }
     else if(S.cp==='invitar')content=field('Correo del proveedor','<input id="en-invite-email" placeholder="correo@empresa.com"/>')+'<div class="en-note">Recibe un enlace para acreditarse solo como proveedor. Al enviarlo te notifica y entra al CRM.</div>';
     else{
       if(!S.portfolioLoaded){loadPortfolio(function(){render();});content='<div class="en-hint">Cargando tu cartera…</div>';}
@@ -240,7 +703,8 @@
     if(S.cpHas==='tengo'){var rows=[['Pymes del Sur S.R.L.','3000…841',true],['Comercial Habana','3000…077',false],['Distribuidora Oriente','3000…512',true]];return head+'<p class="en-sub">Marca uno o varios clientes de tu cartera.</p>'+backb+rows.map(function(r){return rowG(r,'data-multi',S.clients.indexOf(r[0])>=0,true);}).join('')+tagsOf(S.clients,'data-rm','Clientes');}
     if(S.cpHas==='difundir'){var rows=[['Transporte Habana','3001…900'],['Logística Caribe','3001…044']];return head+'<p class="en-sub">Clientes que aceptan recibir ofertas. Marca a quiénes enviar tu oferta.</p>'+backb+rows.map(function(r){return rowG(r,'data-diff',S.diffused.indexOf(r[0])>=0,true,'<span class="en-badge en-pub">Recibe ofertas</span>');}).join('')+tagsOf(S.diffused,'data-rmd','Difusión a');}
     var oc='<button class="en-chip'+(S.cp==='info'?' sel':'')+'" data-cp="info">Acreditar (datos+docs)</button> <button class="en-chip'+(S.cp==='invitar'?' sel':'')+'" data-cp="invitar">Invitar</button>';
-    var content=S.cp==='invitar'?field('Correo del cliente','<input id="en-invite-email" placeholder="correo@empresa.com"/>')+'<button class="en-btn" data-add="invite">+ Agregar a la lista</button>'+tagsOf(S.clients,'data-rm','Clientes'):'<p class="en-sechead">Tipo del cliente cubano</p>'+typeCards('data-cpctype',S.cpCtype)+(S.cpCtype?('<div class="en-grid2" style="margin-top:12px">'+field('Razón social','<input/>')+field('NIT','<input/>')+'</div>'+docGrid(S.cpCtype,'Documentos del cliente')+'<button class="en-btn" data-add="client" style="margin-top:10px">+ Agregar cliente</button>'):'<div class="en-hint" style="margin-top:12px">Elige el tipo para ver sus documentos.</div>')+tagsOf(S.clients,'data-rm','Clientes');
+    var cpCliProv,cpCliCity;if(!S.provincesLoaded){loadProvinces(function(){render();});}cpCliProv='<option value="">Provincia…</option>'+(S.provinces||[]).map(function(p){return '<option value="'+p[0]+'"'+(String(S.cpCliState)===String(p[0])?' selected':'')+'>'+p[1]+'</option>';}).join('');cpCliCity='<option value="">Municipio…</option>'+(S.cities||[]).map(function(c){return '<option value="'+c[0]+'"'+(String(S.cpCliCity)===String(c[0])?' selected':'')+'>'+c[1]+'</option>';}).join('');
+    var content=S.cp==='invitar'?field('Correo del cliente','<input id="en-invite-email" placeholder="correo@empresa.com"/>')+'<button class="en-btn" data-add="invite">+ Agregar a la lista</button>'+tagsOf(S.clients,'data-rm','Clientes'):'<p class="en-sechead">Tipo del cliente cubano</p>'+typeCards('data-cpctype',S.cpCtype)+(S.cpCtype?('<div class="en-grid2" style="margin-top:12px">'+field('Nombre de la empresa','<input id="cp-cli-name" placeholder="Nombre de la empresa"/>'+'')+field('NIT','<input id="cp-cli-nit" placeholder="NIT"/>')+'</div>'+'<p class="en-sechead">Dirección de la empresa</p>'+field('Dirección','<input id="cp-cli-address" placeholder="Calle, número, reparto"/>')+'<div class="en-grid2">'+field('Provincia','<select id="cp-cli-state">'+cpCliProv+'</select>')+field('Municipio','<select id="cp-cli-city">'+cpCliCity+'</select>')+'</div>'+'<p class="en-sechead">Datos del contacto</p>'+field('Nombre y apellido del contacto','<input id="cp-cli-contact" placeholder="Nombre y apellido de la persona"/>')+'<div class="en-grid2">'+field('Correo electrónico','<input id="cp-cli-email" type="email" placeholder="correo@empresa.com"/>'+'')+field('Teléfono','<input id="cp-cli-phone" placeholder="Teléfono"/>')+'</div>'+docGrid(S.cpCtype,'Documentos del cliente')+'<p class="en-sechead">Otros documentos legales</p><div class="en-docgrid">'+docCard('Otros documentos legales',S.docFiles['otros-cli|Otros'],'data-docf="'+encodeURIComponent('otros-cli|Otros')+'"',S.docVerdict['otros-cli|Otros'],encodeURIComponent('otros-cli|Otros'))+'</div>'+'<div style="margin-top:16px"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:500;margin:0;color:var(--ctp)"><input type="checkbox" id="cp-cli-visible-providers" style="width:auto"'+(S.cpCliVisibleToProviders?' checked':'')+'/> Mis datos pueden ser visibles para proveedores</label></div>'+'<button class="en-btn" data-add="client" style="margin-top:10px">+ Agregar cliente</button>'):'<div class="en-hint" style="margin-top:12px">Elige el tipo para ver sus documentos.</div>')+tagsOf(S.clients,'data-rm','Clientes');
     return head+'<p class="en-sub">Suma uno o varios clientes: acredítalos o invítalos.</p>'+backb+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+oc+'</div>'+content;
   }
   function p2(){if(!S.role)return needRole();return S.role==='proveedor'?panelOferta():panelSolCli();}
@@ -272,9 +736,10 @@
     var r='<p class="en-h">Resumen y envío</p><p class="en-sub">Revisa tu '+(imp?'solicitud de importación':'solicitud de acreditación')+' y envíala.</p>';
     if(imp){r+=row2('Empresa',S.coName||'');}
     if(!imp){
-      r+=row2('Rol',(esCli?'Cliente nacional':'Proveedor extranjero')+(S.ctype?' · '+S.ctype:''));
+      r+=row2('Rol',(esCli?'Cliente':'Proveedor')+(S.ctype?' · '+S.ctype:''));
       r+=row2('Empresa',S.coName||'<span style="color:var(--cts)">(sin nombre)</span>');
-      if(S.coObjeto)r+=row2('Objeto social',S.coObjeto.length>42?S.coObjeto.slice(0,40)+'…':S.coObjeto);
+      if(esCli&&S.visibleToProviders)r+=row2('Visible para','Proveedores');
+      if(!esCli&&S.visibleToClients)r+=row2('Visible para','Clientes');
       r+=row2('Documentos',ndocs?(ndocs+' subido(s)'):'<span style="color:var(--cts)">0</span>');
     }
     if(esCli){
@@ -321,6 +786,22 @@
     body.querySelectorAll('[data-pick]').forEach(function(b){b.onclick=function(){S.cpSel=b.getAttribute('data-pick');render();};});
     body.querySelectorAll('[data-multi]').forEach(function(b){b.onclick=function(){var n=b.getAttribute('data-multi'),i=S.clients.indexOf(n);if(i>=0)S.clients.splice(i,1);else S.clients.push(n);render();};});
     body.querySelectorAll('[data-diff]').forEach(function(b){b.onclick=function(){var n=b.getAttribute('data-diff'),i=S.diffused.indexOf(n);if(i>=0)S.diffused.splice(i,1);else S.diffused.push(n);render();};});
+    body.querySelectorAll('[data-cam]').forEach(function(b){b.onclick=function(){
+      var enc=b.getAttribute('data-cam');
+      var key=decodeURIComponent(enc);
+      var label=key.indexOf('|')>=0?key.split('|')[1]:key;
+      if(window.openDocCamera)window.openDocCamera(enc,label);
+    };});
+    body.querySelectorAll('[data-scan]').forEach(function(b){b.onclick=function(){
+      var enc=b.getAttribute('data-scan');
+      var key=decodeURIComponent(enc);
+      var label=key.indexOf('|')>=0?key.split('|')[1]:key;
+      if(window.openDocScanner)window.openDocScanner(enc,label);
+    };});
+    body.querySelectorAll('[data-deldoc]').forEach(function(b){b.onclick=function(){
+      var key=decodeURIComponent(b.getAttribute('data-deldoc'));
+      delete S.docFiles[key];delete S.docVerdict[key];render();
+    };});
     body.querySelectorAll('[data-docf]').forEach(function(b){b.onchange=function(){
       var k=decodeURIComponent(b.getAttribute('data-docf'));
       if(b.files&&b.files[0]){
@@ -356,7 +837,8 @@
     var fl=document.getElementById('of-flete');if(fl){fl.value=S.flete||'';fl.oninput=function(){S.flete=+fl.value||0;paintTotals();};}
     var sg=document.getElementById('of-seguro');if(sg){sg.value=S.seguro||'';sg.oninput=function(){S.seguro=+sg.value||0;paintTotals();};}
     var nm=document.getElementById('en-name');if(nm){nm.value=S.coName||'';nm.oninput=function(){S.coName=nm.value;};}
-    var ob=document.getElementById('en-objeto');if(ob){ob.value=S.coObjeto||'';ob.oninput=function(){S.coObjeto=ob.value;};}
+    var vc=document.getElementById('en-visible-clients');if(vc){vc.checked=!!S.visibleToClients;vc.onchange=function(){S.visibleToClients=vc.checked;};}
+    var vp=document.getElementById('en-visible-providers');if(vp){vp.checked=!!S.visibleToProviders;vp.onchange=function(){S.visibleToProviders=vp.checked;};}
     var nit=document.getElementById('en-nit');if(nit){nit.value=S.coNit||'';nit.oninput=function(){S.coNit=nit.value;};nit.onchange=function(){checkNit(nit.value);};var nb=document.getElementById('en-nit-dup');if(nb)nb.style.display=S.nitDup?'block':'none';}
     var ct1=document.getElementById('en-contact');if(ct1){ct1.value=S.contactName||'';ct1.oninput=function(){S.contactName=ct1.value;};}
     var em1=document.getElementById('en-email');if(em1){em1.value=S.coEmail||'';em1.oninput=function(){S.coEmail=em1.value;};}
@@ -370,15 +852,31 @@
     var mx1=document.getElementById('en-mincex');if(mx1){mx1.value=S.mincex||'';mx1.oninput=function(){S.mincex=mx1.value;};}
     var so1=document.getElementById('en-socio');if(so1){so1.checked=!!S.socio;so1.onchange=function(){S.socio=so1.checked;render();};}
     var cpn=document.getElementById('cp-name');if(cpn){cpn.value=S.cpName||'';cpn.oninput=function(){S.cpName=cpn.value;};}
-    var cpc=document.getElementById('cp-country');if(cpc){cpc.value=S.cpCountry||'';cpc.oninput=function(){S.cpCountry=cpc.value;};}
+    var cppc=document.getElementById('cp-prov-class');if(cppc){cppc.value=S.cpProvClass||'';cppc.onchange=function(){S.cpProvClass=cppc.value;};}
+    var cpad=document.getElementById('cp-address');if(cpad){cpad.value=S.cpAddress||'';cpad.oninput=function(){S.cpAddress=cpad.value;};}
+    var cpc=document.getElementById('cp-country');if(cpc){cpc.value=S.cpCountry||'';cpc.onchange=function(){S.cpCountry=cpc.value;};}
     var cpm=document.getElementById('cp-mincex');if(cpm){cpm.value=S.cpMincex||'';cpm.oninput=function(){S.cpMincex=cpm.value;};}
+    var cprm=document.getElementById('cp-req-mincex');if(cprm){cprm.checked=!!S.cpReqMincex;cprm.onchange=function(){S.cpReqMincex=cprm.checked;render();};}
+    var cpct=document.getElementById('cp-contact');if(cpct){cpct.value=S.cpContactName||'';cpct.oninput=function(){S.cpContactName=cpct.value;};}
+    var cpem=document.getElementById('cp-email');if(cpem){cpem.value=S.cpContactEmail||'';cpem.oninput=function(){S.cpContactEmail=cpem.value;};}
+    var cpph=document.getElementById('cp-phone');if(cpph){cpph.value=S.cpContactPhone||'';cpph.oninput=function(){S.cpContactPhone=cpph.value;};}
+    var ccln=document.getElementById('cp-cli-name');if(ccln){ccln.value=S.cpCliName||'';ccln.oninput=function(){S.cpCliName=ccln.value;};}
+    var cclit=document.getElementById('cp-cli-nit');if(cclit){cclit.value=S.cpCliNit||'';cclit.oninput=function(){S.cpCliNit=cclit.value;};}
+    var cclad=document.getElementById('cp-cli-address');if(cclad){cclad.value=S.cpCliAddress||'';cclad.oninput=function(){S.cpCliAddress=cclad.value;};}
+    var cclst=document.getElementById('cp-cli-state');if(cclst){cclst.value=S.cpCliState||'';cclst.onchange=function(){S.cpCliState=cclst.value;loadCities(cclst.value,function(){render();});};}
+    var cclcy=document.getElementById('cp-cli-city');if(cclcy){cclcy.value=S.cpCliCity||'';cclcy.onchange=function(){S.cpCliCity=cclcy.value;};}
+    var cclct=document.getElementById('cp-cli-contact');if(cclct){cclct.value=S.cpCliContactName||'';cclct.oninput=function(){S.cpCliContactName=cclct.value;};}
+    var cclEmail=document.getElementById('cp-cli-email');if(cclEmail){cclEmail.value=S.cpCliContactEmail||'';cclEmail.oninput=function(){S.cpCliContactEmail=cclEmail.value;};}
+    var cclph=document.getElementById('cp-cli-phone');if(cclph){cclph.value=S.cpCliContactPhone||'';cclph.oninput=function(){S.cpCliContactPhone=cclph.value;};}
+    var cclvp=document.getElementById('cp-cli-visible-providers');if(cclvp){cclvp.checked=!!S.cpCliVisibleToProviders;cclvp.onchange=function(){S.cpCliVisibleToProviders=cclvp.checked;};}
+    var cpvc=document.getElementById('cp-visible-clients');if(cpvc){cpvc.checked=!!S.cpVisibleToClients;cpvc.onchange=function(){S.cpVisibleToClients=cpvc.checked;};}
     paintTotals();
   }
   function doSubmit(){
     var em=document.getElementById('en-invite-email');if(em)S.inviteEmail=em.value;
     var first=S.solLines[0]||{};var qty=first.qty||'';
     var verdicts={};Object.keys(S.docVerdict).forEach(function(k){var lbl=k.indexOf('|')>=0?k.split('|')[1]:k;verdicts[lbl]=S.docVerdict[k];});
-    var payload={role:S.role,importOnly:!!S.importOnly,ctype:S.ctype,verdicts:verdicts,company:{name:S.coName,nit:S.coNit,objeto_social:S.coObjeto,address:S.coAddress,state_id:S.coState,city_id:S.coCity},contact:{name:S.contactName,email:S.coEmail,phone:S.coPhone},prov:{clasificacion:S.provClass,country_id:S.provCountry,requiere_mincex:S.reqMincex,mincex:S.mincex,socio_cubano:S.socio},socio:{enabled:S.socio,data:S.socioData},cpHas:S.cpHas,cp:S.cp,cpSel:S.cpSel,inviteEmail:S.inviteEmail,cpInfo:{name:S.cpName,country:S.cpCountry,mincex:S.cpMincex},sol:{product:first.prod,qty:qty,envase:first.env,lines:S.solLines,delivery:S.solDelivery,payment_method_id:S.solPay,budget:S.solBudget,specifications:S.solSpecs,observations:S.solObs},shipData:{country_id:S.shipCountry},offer:{vigencia:S.vigencia,flete:S.flete,seguro:S.seguro,lines:S.offerLines},clients:S.clients,diffused:S.diffused};
+    var payload={role:S.role,importOnly:!!S.importOnly,ctype:S.ctype,verdicts:verdicts,company:{name:S.coName,nit:S.coNit,address:S.coAddress,state_id:S.coState,city_id:S.coCity,visible_to_clients:S.visibleToClients,visible_to_providers:S.visibleToProviders},contact:{name:S.contactName,email:S.coEmail,phone:S.coPhone},prov:{clasificacion:S.provClass,country_id:S.provCountry,requiere_mincex:S.reqMincex,mincex:S.mincex,socio_cubano:S.socio},socio:{enabled:S.socio,data:S.socioData},cpHas:S.cpHas,cp:S.cp,cpSel:S.cpSel,inviteEmail:S.inviteEmail,cpInfo:{name:S.cpName,clasificacion:S.cpProvClass,address:S.cpAddress,country:S.cpCountry,mincex:S.cpMincex,requiere_mincex:S.cpReqMincex,contact_name:S.cpContactName,contact_email:S.cpContactEmail,contact_phone:S.cpContactPhone,visible_to_clients:S.cpVisibleToClients},cpCliInfo:{name:S.cpCliName,nit:S.cpCliNit,address:S.cpCliAddress,state_id:S.cpCliState,city_id:S.cpCliCity,contact_name:S.cpCliContactName,contact_email:S.cpCliContactEmail,contact_phone:S.cpCliContactPhone,visible_to_providers:S.cpCliVisibleToProviders},sol:{product:first.prod,qty:qty,envase:first.env,lines:S.solLines,delivery:S.solDelivery,payment_method_id:S.solPay,budget:S.solBudget,specifications:S.solSpecs,observations:S.solObs},shipData:{country_id:S.shipCountry},offer:{vigencia:S.vigencia,flete:S.flete,seguro:S.seguro,lines:S.offerLines},clients:S.clients,diffused:S.diffused};
     var fd=new FormData();fd.append('payload',JSON.stringify(payload));
     Object.keys(S.docFiles).forEach(function(k){fd.append('doc:'+k,S.docFiles[k],S.docFiles[k].name);});
     Object.keys(S.socioFiles).forEach(function(k){fd.append('socio:'+k,S.socioFiles[k],S.socioFiles[k].name);});

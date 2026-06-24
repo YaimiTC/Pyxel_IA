@@ -1,70 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Página del expediente para el cliente -->
     <template id="portal_my_accreditation" name="Mi acreditación">
         <t t-call="portal.portal_layout">
-            <t t-set="bcls" t-value="{'approved':'success','in_review':'warning','validating':'info','rejected':'danger','pending':'secondary','optional':'light'}"/>
-            <t t-set="blbl" t-value="{'approved':'Aprobado','in_review':'En revisión','validating':'Validando','rejected':'Rechazado','pending':'Pendiente','optional':'Opcional'}"/>
-            <div class="row mt-3 mb-2">
-                <div class="col">
-                    <h3 class="mb-0">Mi acreditación</h3>
-                    <p class="text-muted">Estado de los documentos de tu expediente.</p>
-                </div>
+            <style>
+                :root{--en-blue:#0f44ce;--en-dark:#16233f;--en-muted:#5b6b85;--en-border:#e3e9f2;--en-bg:#f6f8fc;--en-info-bg:#eef3fc;--en-succ-bg:#effaf3;--en-warn-bg:#fff7db;--en-err-bg:#fde8e8;--en-succ:#16a34a;--en-warn:#a8650c;--en-err:#b91c1c;--rmd:8px;--rlg:12px}
+                .acc-hero{padding:1.5rem 0 1.25rem;border-bottom:1px solid var(--en-border);margin-bottom:1.5rem}
+                .acc-hero h3{font-size:22px;font-weight:700;color:var(--en-dark);margin:0 0 3px}
+                .acc-hero p{font-size:14px;color:var(--en-muted);margin:0}
+                .acc-prog{background:#fff;border:1px solid var(--en-border);border-radius:var(--rlg);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1.25rem}
+                .acc-prog-bar-wrap{flex:1}
+                .acc-prog-label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--en-muted);margin-bottom:5px}
+                .acc-prog-bar{height:8px;background:var(--en-border);border-radius:4px;overflow:hidden}
+                .acc-prog-fill{height:100%;background:linear-gradient(90deg,var(--en-blue),#0c2a4d);border-radius:4px;transition:width .4s}
+                .acc-stats{display:flex;gap:.5rem;flex-wrap:wrap;font-size:12px;color:var(--en-muted)}
+                .acc-stat-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:99px;font-weight:600;font-size:12px}
+                .acc-stat-pill.ok{background:var(--en-succ-bg);color:var(--en-succ)}
+                .acc-stat-pill.rev{background:var(--en-warn-bg);color:var(--en-warn)}
+                .acc-stat-pill.pend{background:var(--en-bg);color:var(--en-muted)}
+                .acc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+                .acc-doc{background:#fff;border:1px solid var(--en-border);border-radius:var(--rlg);padding:14px;display:flex;flex-direction:column;gap:8px;position:relative}
+                .acc-doc.is-approved{border-color:#86efac;background:var(--en-succ-bg)}
+                .acc-doc.is-rejected{border-color:#fca5a5;background:var(--en-err-bg)}
+                .acc-doc.is-validating{border-color:#93c5fd;background:var(--en-info-bg)}
+                .acc-doc.is-review{border-color:#fcd34d;background:var(--en-warn-bg)}
+                .acc-doc-ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex:0 0 auto}
+                .acc-doc-ic.pend{background:var(--en-info-bg);color:var(--en-blue)}
+                .acc-doc-ic.ok{background:#dcfce7;color:var(--en-succ)}
+                .acc-doc-ic.err{background:#fee2e2;color:var(--en-err)}
+                .acc-doc-ic.rev{background:var(--en-warn-bg);color:var(--en-warn)}
+                .acc-doc-ic.spin{background:var(--en-info-bg);color:var(--en-blue)}
+                .acc-doc-name{font-size:13px;font-weight:600;color:var(--en-dark);line-height:1.3}
+                .acc-doc-opt{font-size:11px;color:var(--en-muted);font-weight:400}
+                .acc-pipe{display:flex;gap:3px;margin:2px 0}
+                .acc-pipe-step{flex:1;text-align:center;font-size:10px;font-weight:600;padding:3px 2px;border-radius:5px;background:var(--en-bg);color:var(--en-muted)}
+                .acc-pipe-step.done{background:#dcfce7;color:var(--en-succ)}
+                .acc-pipe-step.active{background:var(--en-info-bg);color:var(--en-blue)}
+                .acc-pipe-step.fail{background:#fee2e2;color:var(--en-err)}
+                .acc-doc-msg{font-size:12px;padding:6px 9px;border-radius:6px;line-height:1.4}
+                .acc-doc-msg.info{background:var(--en-info-bg);color:#1e3a8a}
+                .acc-doc-msg.warn{background:var(--en-warn-bg);color:#7c5300}
+                .acc-doc-msg.err{background:#fee2e2;color:var(--en-err)}
+                .acc-doc-msg.ok{background:#dcfce7;color:#15643a}
+                .acc-doc-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+                .acc-btn{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px;border-radius:6px;font-size:12px;font-weight:500;border:none;cursor:pointer;text-decoration:none}
+                .acc-btn.ghost{background:#fff;color:var(--en-muted);border:1px solid var(--en-border)}
+                .acc-btn.ghost:hover{border-color:var(--en-blue);color:var(--en-blue);text-decoration:none}
+                .acc-btn.danger{background:#fff;color:var(--en-err);border:1px solid #fca5a5}
+                .acc-btn.danger:hover{background:#fee2e2;text-decoration:none}
+.acc-empty{text-align:center;padding:3rem 1rem;color:var(--en-muted)}
+                .acc-empty i{font-size:40px;color:var(--en-border);display:block;margin-bottom:.75rem}
+            </style>
+
+            <div class="acc-hero">
+                <h3><i class="fa fa-shield me-2" style="color:var(--en-blue)"/>Mi acreditación</h3>
+                <p>Estado de los documentos de tu expediente.</p>
             </div>
 
-            <div t-if="not docs" class="alert alert-info">Aún no tienes un expediente de acreditación.</div>
+            <t t-if="not docs">
+                <div class="acc-empty">
+                    <i class="fa fa-folder-open-o"/>
+                    <p style="font-weight:600;color:var(--en-dark)">Aún no tienes un expediente de acreditación.</p>
+                    <p>Completa el proceso de registro para que tu expediente aparezca aquí.</p>
+                </div>
+            </t>
 
             <t t-else="">
-                <div class="row g-2 mb-4">
-                    <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body py-3">
-                        <h4 class="mb-0" t-out="c_total"/><small class="text-muted">Requeridos</small></div></div></div>
-                    <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body py-3">
-                        <h4 class="mb-0 text-success" t-out="c_approved"/><small class="text-muted">Aprobados</small></div></div></div>
-                    <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body py-3">
-                        <h4 class="mb-0 text-warning" t-out="c_review"/><small class="text-muted">En revisión</small></div></div></div>
-                    <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body py-3">
-                        <h4 class="mb-0 text-secondary" t-out="c_pending"/><small class="text-muted">Pendientes</small></div></div></div>
-                </div>
-
-                <t t-foreach="docs" t-as="d">
-                    <div class="card mb-2">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <b t-out="d.document_label"/>
-                                <span t-attf-class="badge text-bg-#{bcls.get(d.portal_state,'secondary')}"
-                                      t-out="blbl.get(d.portal_state, d.portal_state)"/>
+                <!-- Barra de progreso -->
+                <t t-if="c_total > 0">
+                    <div class="acc-prog">
+                        <div class="acc-prog-bar-wrap">
+                            <div class="acc-prog-label">
+                                <span>Progreso del expediente</span>
+                                <span><t t-out="c_approved"/>/<t t-out="c_total"/> aprobados</span>
                             </div>
-                            <div t-if="d.portal_state == 'rejected' and d.portal_reason"
-                                 class="alert alert-danger mt-2 mb-0 py-2">
-                                <i class="fa fa-times-circle"/> <span t-out="d.portal_reason"/>
+                            <div class="acc-prog-bar">
+                                <div class="acc-prog-fill" t-attf-style="width:#{int(c_approved * 100 / c_total)}%"/>
                             </div>
-                            <div t-if="d.portal_state == 'in_review'" class="alert alert-warning mt-2 mb-0 py-2">
-                                Documento recibido: ahora lo revisa nuestro equipo.
-                            </div>
-                            <div t-if="d.portal_state == 'approved'" class="alert alert-success mt-2 mb-0 py-2">
-                                <i class="fa fa-check-circle"/> Documento aprobado.
-                            </div>
-                            <div class="mt-2 d-flex gap-2 flex-wrap">
-                                <a t-if="d.attachment_id" t-attf-href="/my/acreditacion/download/#{d.id}"
-                                   class="btn btn-sm btn-outline-secondary">Descargar</a>
-                                <form t-if="d.portal_state in ('pending','rejected','optional')"
-                                      t-attf-action="/my/acreditacion/upload/#{d.id}" method="post"
-                                      enctype="multipart/form-data" class="d-flex gap-2 align-items-center mb-0">
-                                    <input type="file" name="document" accept=".pdf" class="form-control form-control-sm" style="max-width:240px"/>
-                                    <button class="btn btn-sm btn-primary" type="submit">
-                                        <t t-if="d.attachment_id">Subir otro</t><t t-else="">Subir</t>
-                                    </button>
-                                </form>
-                                <form t-if="d.attachment_id and d.portal_state not in ('in_review','approved')"
-                                      t-attf-action="/my/acreditacion/delete/#{d.id}" method="post" class="mb-0">
-                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                    <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
-                                </form>
-                            </div>
+                        </div>
+                        <div class="d-flex flex-column gap-1">
+                            <span t-if="c_approved" class="acc-stat-pill ok"><i class="fa fa-check"/> <t t-out="c_approved"/> aprobados</span>
+                            <span t-if="c_review" class="acc-stat-pill rev"><i class="fa fa-clock-o"/> <t t-out="c_review"/> en revisión</span>
+                            <span t-if="c_pending" class="acc-stat-pill pend"><i class="fa fa-upload"/> <t t-out="c_pending"/> pendientes</span>
                         </div>
                     </div>
                 </t>
+
+                <!-- Grid de documentos -->
+                <div class="acc-grid mb-5">
+                    <t t-foreach="docs" t-as="d">
+                        <div t-attf-class="acc-doc #{'is-approved' if d.portal_state == 'approved' else 'is-rejected' if d.portal_state == 'rejected' else 'is-validating' if d.portal_state == 'validating' else 'is-review' if d.portal_state == 'in_review' else ''}">
+
+                            <!-- Icono + nombre -->
+                            <div class="d-flex align-items-start gap-2">
+                                <div t-attf-class="acc-doc-ic #{'ok' if d.portal_state == 'approved' else 'err' if d.portal_state == 'rejected' else 'spin' if d.portal_state == 'validating' else 'rev' if d.portal_state == 'in_review' else 'pend'}">
+                                    <i t-attf-class="fa #{'fa-check' if d.portal_state == 'approved' else 'fa-times' if d.portal_state == 'rejected' else 'fa-circle-o-notch fa-spin' if d.portal_state == 'validating' else 'fa-clock-o' if d.portal_state == 'in_review' else 'fa-file-pdf-o'}"/>
+                                </div>
+                                <div>
+                                    <div class="acc-doc-name" t-out="d.document_label"/>
+                                    <t t-if="not d.is_required"><span class="acc-doc-opt">opcional</span></t>
+                                </div>
+                            </div>
+
+                            <!-- Pipeline 3 pasos -->
+                            <div class="acc-pipe">
+                                <div t-attf-class="acc-pipe-step #{'done' if d.ai_state in ('passed','doubt','unavailable') else 'fail' if d.ai_state == 'rejected' else 'active' if d.ai_state == 'validating' else ''}">IA</div>
+                                <div t-attf-class="acc-pipe-step #{'done' if d.lawyer_state == 'approved' else 'fail' if d.lawyer_state == 'rejected' else 'active' if d.lawyer_state == 'to_review' else ''}">Jurídico</div>
+                                <div t-attf-class="acc-pipe-step #{'done' if d.commercial_state == 'approved' else 'fail' if d.commercial_state == 'rejected' else 'active' if d.commercial_state == 'to_review' else ''}">Comercial</div>
+                            </div>
+
+                            <!-- Mensaje de estado -->
+                            <t t-if="d.portal_state == 'validating'">
+                                <div class="acc-doc-msg info"><i class="fa fa-circle-o-notch fa-spin me-1"/>Analizando con IA…</div>
+                            </t>
+                            <t t-elif="d.portal_state == 'in_review'">
+                                <div class="acc-doc-msg warn"><i class="fa fa-clock-o me-1"/>En revisión por nuestro equipo.</div>
+                            </t>
+                            <t t-elif="d.portal_state == 'approved'">
+                                <div class="acc-doc-msg ok"><i class="fa fa-check-circle me-1"/>Aprobado.</div>
+                            </t>
+                            <t t-elif="d.portal_state == 'rejected' and d.portal_reason">
+                                <div class="acc-doc-msg err"><i class="fa fa-exclamation-circle me-1"/><t t-out="d.portal_reason"/></div>
+                            </t>
+                            <t t-elif="d.portal_state == 'rejected'">
+                                <div class="acc-doc-msg err"><i class="fa fa-exclamation-circle me-1"/>Rechazado. Suba una versión corregida.</div>
+                            </t>
+
+                            <!-- Acciones -->
+                            <div class="acc-doc-actions">
+                                <t t-if="d.portal_state in ('pending','rejected','optional')">
+                                    <form t-attf-action="/my/acreditacion/upload/#{d.id}" method="post"
+                                          enctype="multipart/form-data" class="mb-0">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="file" name="document" accept=".pdf" style="display:none"
+                                               onchange="HTMLFormElement.prototype.submit.call(this.closest('form'))"/>
+                                        <button type="button" class="acc-btn ghost"
+                                                onclick="this.closest('form').querySelector('input[type=file]').click()"
+                                                title="Subir PDF">
+                                            <i class="fa fa-upload"/>
+                                            <t t-if="d.attachment_id"> Reemplazar</t><t t-else=""> Subir PDF</t>
+                                        </button>
+                                    </form>
+                                </t>
+                                <a t-if="d.attachment_id" t-attf-href="/my/acreditacion/download/#{d.id}" class="acc-btn ghost" title="Descargar"><i class="fa fa-download"/></a>
+                                <t t-if="d.attachment_id and d.portal_state not in ('in_review','approved')">
+                                    <form t-attf-action="/my/acreditacion/delete/#{d.id}" method="post" class="mb-0">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <button class="acc-btn danger" type="submit" title="Eliminar"><i class="fa fa-trash"/></button>
+                                    </form>
+                                </t>
+                            </div>
+
+                            <!-- Widget foto/cámara — solo en estados editables -->
+                            <t t-if="d.portal_state in ('pending','rejected','optional')">
+                                <div class="en-photo-widget mt-2" t-attf-data-doc-id="#{d.id}">
+                                    <input type="file" accept="image/*" capture="environment" multiple="multiple"
+                                           class="d-none en-img-input"/>
+                                    <div class="d-flex gap-2 flex-wrap mb-2">
+                                        <button type="button" class="acc-btn ghost en-btn-camera">
+                                            <i class="fa fa-camera me-1"/>Tomar foto
+                                        </button>
+                                    </div>
+                                    <div class="en-camera-wrap d-none mb-2 border rounded p-2" style="max-width:320px">
+                                        <video autoplay="1" playsinline="1" style="width:100%;border-radius:4px"/>
+                                        <div class="d-flex gap-2 mt-2">
+                                            <button type="button" class="btn btn-primary btn-sm en-btn-capture"><i class="fa fa-camera me-1"/>Capturar</button>
+                                            <button type="button" class="btn btn-secondary btn-sm en-btn-close-cam">Cerrar</button>
+                                        </div>
+                                    </div>
+                                    <div class="en-ok-section d-none mb-2">
+                                        <p class="small fw-bold text-success mb-1"><i class="fa fa-check-circle me-1"/>Fotos listas:</p>
+                                        <div class="en-thumbs-ok d-flex flex-wrap gap-2"/>
+                                        <button type="button" class="btn btn-primary btn-sm mt-2 en-btn-generate"><i class="fa fa-file-pdf-o me-1"/>Generar PDF y enviar</button>
+                                    </div>
+                                    <div class="en-rejected-section d-none">
+                                        <div class="alert alert-warning py-2 px-3 small">
+                                            <p class="fw-bold mb-1"><i class="fa fa-exclamation-triangle me-1"/>Fotos con baja calidad:</p>
+                                            <div class="en-thumbs-bad mb-2"/>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <button type="button" class="btn btn-sm btn-outline-warning en-btn-discard">Descartar</button>
+                                                <button type="button" class="btn btn-sm btn-warning en-btn-force"><i class="fa fa-file-pdf-o me-1"/>Generar igualmente</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="en-msg d-none"/>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </div>
             </t>
         </t>
     </template>

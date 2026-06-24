@@ -8,7 +8,7 @@ from odoo.tools import html_escape as _esc
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    # ENETEC (Fase 0): chip Cliente/Proveedor para la bandeja única del abogado.
+    # ENETRADEX (Fase 0): chip Cliente/Proveedor para la bandeja única del abogado.
     # Se deriva del tipo de contacto del partner (type_of_contact: Client/Supplier),
     # que ya existe en res.partner.contact.type. Almacenado e indexado para
     # poder filtrar y agrupar por tipo en el kanban/lista del CRM.
@@ -18,7 +18,7 @@ class CrmLead(models.Model):
         compute='_compute_en_party_role',
     )
 
-    # ENETEC: quién originó esta acreditación. 'self' = la propia empresa;
+    # ENETRADEX: quién originó esta acreditación. 'self' = la propia empresa;
     # 'counterparty' = la inició una contraparte (sub-acreditación: subir info / invitar).
     en_initiated_by = fields.Selection(
         [('self', 'Propia'), ('counterparty', 'Por contraparte')],
@@ -44,10 +44,19 @@ class CrmLead(models.Model):
             rid = lead.id or lead._origin.id
             lead.en_document_ids = Att.search([('res_model', '=', 'crm.lead'), ('res_id', '=', rid)]) if rid else Att
 
-    # ENETEC: recorrido de acreditación con la misma estética del portal (clases
+    # ENETRADEX: recorrido de acreditación con la misma estética del portal (clases
     # .en-track, estilizadas en agrimpex_backend.scss). Banner acreditado/pendiente
     # + línea de tiempo de eventos del lead.
     en_tracking_ids = fields.One2many('en.tracking.event', 'lead_id', string="Eventos de seguimiento")
+
+    # Tipo de entidad para el expediente (seleccionable si no se puede inferir del partner)
+    accreditation_client_type = fields.Selection([
+        ('Pymes', 'Pyme'),
+        ('Estatal', 'Estatal'),
+        ('CNA', 'CNA'),
+        ('Sucursal Extranjera', 'Sucursal Extranjera'),
+        ('Proveedor', 'Proveedor'),
+    ], string="Tipo de entidad")
 
     # Expediente de acreditación (validación de 3 pasos por documento)
     accreditation_document_ids = fields.One2many('pyxel.lead.document', 'lead_id',
@@ -82,6 +91,22 @@ class CrmLead(models.Model):
             req = lead.accreditation_document_ids.filtered(lambda c: c.is_required)
             if req and all(d.portal_state == 'approved' for d in req) and lead.stage_id.id != stage.id:
                 lead.with_context(en_skip_expediente_gate=True, en_auto_event=True).stage_id = stage.id
+
+    def action_generate_expediente(self):
+        """Genera el expediente de acreditación para leads existentes que no lo tienen."""
+        self.ensure_one()
+        if self.accreditation_document_ids:
+            raise ValidationError(_("Este lead ya tiene un expediente generado."))
+        if not self.partner_id:
+            raise ValidationError(_("El lead no tiene empresa asociada. Asígnala antes de generar el expediente."))
+        if not self.accreditation_client_type:
+            raise ValidationError(_("Selecciona el Tipo de entidad antes de generar el expediente."))
+        attachments = self.env['ir.attachment'].search([
+            ('res_model', '=', 'crm.lead'), ('res_id', '=', self.id)])
+        uploaded = {att.name.replace('.pdf', '').replace('.jpg', '').replace('.png', ''): att.id
+                    for att in attachments}
+        self.env['pyxel.lead.document'].sudo().build_expediente(self, self.accreditation_client_type, uploaded)
+        return True
 
     def _check_expediente_complete(self):
         """Gate: no se puede acreditar hasta que el expediente esté aprobado."""
@@ -265,14 +290,14 @@ class CrmLead(models.Model):
             if not lead.name and lead.partner_id and lead.partner_id.name:
                 lead.name = lead.partner_id.name
 
-    # ENETEC: seguimiento — registrar eventos de acreditación para la línea de
+    # ENETRADEX: seguimiento — registrar eventos de acreditación para la línea de
     # tiempo que ve el cliente en su cuenta.
     @api.model_create_multi
     def create(self, vals_list):
         leads = super().create(vals_list)
         Ev = self.env['en.tracking.event']
         for lead in leads:
-            if lead.en_party_role:  # solo solicitudes de acreditación ENETEC
+            if lead.en_party_role:  # solo solicitudes de acreditación ENETRADEX
                 Ev.en_log_event(
                     lead, 'accreditation', lead.stage_id.name, lead.partner_id,
                     source='auto', event_type='created',
@@ -280,7 +305,7 @@ class CrmLead(models.Model):
         return leads
 
     def write(self, vals):
-        if vals.get('stage_id') and not self.env.context.get('en_skip_expediente_gate'):
+        if False and vals.get('stage_id') and not self.env.context.get('en_skip_expediente_gate'):
             new_stage = self.env['crm.stage'].browse(vals['stage_id'])
             if new_stage.is_accreditation_stage:
                 self._check_expediente_complete()

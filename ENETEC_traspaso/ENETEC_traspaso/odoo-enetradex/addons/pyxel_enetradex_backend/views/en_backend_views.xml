@@ -237,8 +237,8 @@
         <field name="view_mode">tree,form</field>
     </record>
 
-    <!-- ============ Menú ENETEC ============ -->
-    <menuitem id="en_menu_root" name="ENETEC" sequence="5"/>
+    <!-- ============ Menú ENETRADEX ============ -->
+    <menuitem id="en_menu_root" name="ENETRADEX" sequence="5"/>
     <menuitem id="en_menu_leads" name="Solicitudes de acreditación" parent="en_menu_root" action="en_accreditation_leads_action" sequence="5"/>
     <menuitem id="en_menu_relations" name="Relaciones de contraparte" parent="en_menu_root" action="en_relation_action" sequence="10"/>
     <menuitem id="en_menu_invitations" name="Invitaciones" parent="en_menu_root" action="en_invitation_action" sequence="20"/>
@@ -393,11 +393,10 @@
                     </group>
                 </page>
             </xpath>
-            <!-- Documentos del embarque (adjuntos genéricos heredados) — oculta,
-                 reemplazada por la pestaña Expediente de documentos. -->
+            <!-- Documentos del embarque subidos por el cliente desde el wizard -->
             <xpath expr="//notebook" position="inside">
                 <page string="Documentos del embarque" name="en_shipment_docs"
-                      invisible="1">
+                      invisible="en_shipment_doc_count == 0 and not documentation_file and not export_certificate and not quality_certificate and not origin_certificate">
                     <div class="alert alert-info" role="alert">
                         Documentos del embarque subidos por el cliente para la revisión
                         comercial. La validación automática con DocValidator y el cruce
@@ -450,122 +449,6 @@
             </xpath>
             <xpath expr="//page[@name='import_costs']" position="after">
                 <xpath expr="//page[@name='en_shipment_docs']" position="move"/>
-            </xpath>
-            <!-- Expediente estructurado: IA + comercial por documento -->
-            <xpath expr="//notebook" position="inside">
-                <page string="Expediente de documentos" name="en_import_expediente">
-                    <field name="en_import_doc_count" invisible="1"/>
-                    <field name="en_import_doc_approved" invisible="1"/>
-                    <div class="alert alert-info d-flex align-items-center justify-content-between"
-                         role="alert" invisible="en_import_doc_count != 0">
-                        <span>El expediente se crea automáticamente al registrar la solicitud de importación desde el portal.</span>
-                        <button name="action_create_import_expediente" type="object"
-                                string="Crear expediente" class="btn btn-sm btn-primary ms-3"/>
-                    </div>
-                    <div class="alert alert-success d-flex align-items-center" role="alert"
-                         invisible="en_import_doc_count == 0 or en_import_doc_approved != en_import_doc_count">
-                        <i class="fa fa-check me-2"/>
-                        <span>Todos los documentos del expediente han sido aprobados.</span>
-                    </div>
-                    <!-- Sección 1: Documentos propios del proceso de importación -->
-                    <separator string="Documentos de la importación"/>
-                    <field name="en_import_process_doc_ids" create="0" delete="0">
-                        <tree create="0" delete="0"
-                              decoration-success="portal_state == 'approved'"
-                              decoration-danger="portal_state == 'rejected'"
-                              decoration-warning="portal_state == 'in_review'"
-                              decoration-muted="portal_state in ('pending','optional')">
-                            <field name="document_label" string="Documento" readonly="1"/>
-                            <field name="attachment_id" column_invisible="1"/>
-                            <field name="ai_state" string="Dictamen IA" readonly="1" widget="badge"
-                                   decoration-success="ai_state == 'passed'"
-                                   decoration-warning="ai_state == 'doubt'"
-                                   decoration-danger="ai_state == 'rejected'"
-                                   decoration-info="ai_state == 'validating'"/>
-                            <field name="ai_confidence" string="Confianza (%)" readonly="1"/>
-                            <field name="commercial_state" string="Comercial" readonly="1" widget="badge"
-                                   decoration-success="commercial_state == 'approved'"
-                                   decoration-danger="commercial_state == 'rejected'"
-                                   decoration-warning="commercial_state == 'to_review'"
-                                   decoration-muted="commercial_state == 'blocked'"/>
-                            <field name="portal_state" string="Estado proveedor" readonly="1" widget="badge"
-                                   decoration-success="portal_state == 'approved'"
-                                   decoration-danger="portal_state == 'rejected'"
-                                   decoration-warning="portal_state == 'in_review'"
-                                   decoration-info="portal_state == 'validating'"/>
-                            <button name="action_open_review" type="object" string="Revisar"
-                                    class="btn-link"/>
-                            <button name="action_view_document" type="object" string="Ver"
-                                    class="btn-link" invisible="not attachment_id"/>
-                        </tree>
-                    </field>
-
-                    <!-- Sección 2: Documentos por Orden de Compra (agrupados por OC) -->
-                    <separator string="Documentos por Orden de Compra"/>
-                    <field name="en_import_oc_doc_ids" create="0" delete="0">
-                        <tree create="0" delete="0"
-                              decoration-bf="display_type == 'line_section'"
-                              decoration-success="portal_state == 'approved' and not display_type"
-                              decoration-danger="portal_state == 'rejected' and not display_type"
-                              decoration-warning="portal_state == 'in_review' and not display_type"
-                              decoration-muted="portal_state in ('pending','optional') and not display_type">
-                            <field name="display_type" column_invisible="1"/>
-                            <field name="purchase_order_id" column_invisible="1"/>
-                            <field name="attachment_id" column_invisible="1"/>
-                            <field name="document_label" string="Documento / OC" readonly="1"/>
-                            <field name="ai_state" string="Dictamen IA" readonly="1" widget="badge"
-                                   invisible="display_type == 'line_section'"
-                                   decoration-success="ai_state == 'passed'"
-                                   decoration-warning="ai_state == 'doubt'"
-                                   decoration-danger="ai_state == 'rejected'"
-                                   decoration-info="ai_state == 'validating'"/>
-                            <field name="ai_confidence" string="Confianza (%)" readonly="1"
-                                   invisible="display_type == 'line_section'"/>
-                            <field name="commercial_state" string="Comercial" readonly="1" widget="badge"
-                                   invisible="display_type == 'line_section'"
-                                   decoration-success="commercial_state == 'approved'"
-                                   decoration-danger="commercial_state == 'rejected'"
-                                   decoration-warning="commercial_state == 'to_review'"
-                                   decoration-muted="commercial_state == 'blocked'"/>
-                            <field name="portal_state" string="Estado proveedor" readonly="1" widget="badge"
-                                   invisible="display_type == 'line_section'"
-                                   decoration-success="portal_state == 'approved'"
-                                   decoration-danger="portal_state == 'rejected'"
-                                   decoration-warning="portal_state == 'in_review'"
-                                   decoration-info="portal_state == 'validating'"/>
-                            <button name="action_open_review" type="object" string="Revisar"
-                                    class="btn-link" invisible="display_type == 'line_section'"/>
-                            <button name="action_view_document" type="object" string="Ver"
-                                    class="btn-link"
-                                    invisible="display_type == 'line_section' or not attachment_id"/>
-                        </tree>
-                    </field>
-                    <!-- Datos de la DM (rellenados por el apoderado de aduana) -->
-                    <separator string="Declaración de Mercancía (DM)"/>
-                    <group>
-                        <group>
-                            <field name="en_dm_number"/>
-                            <field name="en_dm_container_number"/>
-                            <field name="en_dm_extraction_state" widget="badge"
-                                   decoration-info="en_dm_extraction_state == 'extracted'"
-                                   decoration-warning="en_dm_extraction_state == 'manual'"/>
-                        </group>
-                        <group>
-                            <field name="en_dm_cif_value"/>
-                            <field name="en_dm_arancel_total"/>
-                            <field name="en_dm_impuesto_circulacion"/>
-                        </group>
-                    </group>
-                    <group string="Notas arancelarias">
-                        <field name="en_dm_arancel_notes" nolabel="1"/>
-                    </group>
-                    <group string="Estado despacho">
-                        <field name="en_ready_for_customs" readonly="1" widget="boolean_toggle"/>
-                    </group>
-                </page>
-            </xpath>
-            <xpath expr="//page[@name='en_shipment_docs']" position="after">
-                <xpath expr="//page[@name='en_import_expediente']" position="move"/>
             </xpath>
         </field>
     </record>

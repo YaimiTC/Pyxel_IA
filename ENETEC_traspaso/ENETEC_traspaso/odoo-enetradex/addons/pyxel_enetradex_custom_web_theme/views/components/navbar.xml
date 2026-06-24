@@ -32,12 +32,9 @@
                     </a>
 
                     <!-- Buscador -->
-                    <form action="/shop" method="get" class="ag-search">
-                        <select class="ag-search-cat" name="category" aria-label="Categoría">
-                            <option value="">Todo el catálogo</option>
-                        </select>
+                    <form action="/contactus" method="get" class="ag-search">
                         <input class="ag-search-input" type="search" name="search"
-                               placeholder="Buscar productos, proveedores, destinos..." aria-label="Buscar"/>
+                               placeholder="Buscar combustibles, proveedores o destinos..." aria-label="Buscar"/>
                         <button class="ag-search-btn" type="submit" aria-label="Buscar">
                             <i class="fa fa-search"></i>
                         </button>
@@ -69,12 +66,6 @@
                             </a>
                         </t>
 
-                        <!-- Carrito -->
-                        <a href="/shop/cart" class="ag-icon-link" aria-label="Carrito">
-                            <i class="fa fa-shopping-cart"></i>
-                            <span class="ag-cart-badge" t-esc="ag_order.cart_quantity if ag_order else 0"/>
-                        </a>
-
                         <!-- Acreditarse -->
                         <a href="/en/wizard" class="ag-btn-acreditar">
                             <i class="fa fa-check-circle"></i> Acreditarme
@@ -94,42 +85,22 @@
             <nav class="ag-nav" id="ag-nav">
                 <div class="container">
                     <a t-attf-class="ag-nav-link {{ 'active' if page_name == 'home' else '' }}" href="/">Inicio</a>
+                    <a class="ag-nav-link" href="/en/wizard">Acreditación</a>
                     <a class="ag-nav-link" href="/en/wizard?op=1">Importar</a>
-
-                    <div class="dropdown">
-                        <a class="ag-nav-link" href="/shop" data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                            Marketplace <i class="fa fa-chevron-down"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/shop">Ver catálogo</a></li>
-                            <li><a class="dropdown-item" href="/shop">Lubricantes y aditivos</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="dropdown">
-                        <a class="ag-nav-link" href="/shop" data-bs-toggle="dropdown" role="button" aria-expanded="false">
-                            Combustibles <i class="fa fa-chevron-down"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/shop">Gasoil / Diésel</a></li>
-                            <li><a class="dropdown-item" href="/shop">Gasolinas</a></li>
-                            <li><a class="dropdown-item" href="/shop">Fuel Oil</a></li>
-                            <li><a class="dropdown-item" href="/shop">Jet Fuel A1</a></li>
-                        </ul>
-                    </div>
-
                     <a class="ag-nav-link" href="/about?tab=services">Trading</a>
-                    <a class="ag-nav-link" href="/en/wizard">Proveedores</a>
+                    <a class="ag-nav-link" href="/proveedores">Proveedores</a>
 
                     <div class="dropdown">
                         <a class="ag-nav-link" href="/about?tab=services" data-bs-toggle="dropdown" role="button" aria-expanded="false">
                             Servicios <i class="fa fa-chevron-down"></i>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/about?tab=services">Importación</a></li>
-                            <li><a class="dropdown-item" href="/about?tab=services">Trading</a></li>
-                            <li><a class="dropdown-item" href="/about?tab=services">Logística internacional</a></li>
-                            <li><a class="dropdown-item" href="/about?tab=services">Inteligencia comercial</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Importación de Combustibles</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Trading Internacional</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Búsqueda de Proveedores</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Gestión Logística</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Inspección y Control</a></li>
+                            <li><a class="dropdown-item" href="/about?tab=services">Acreditación Corporativa</a></li>
                         </ul>
                     </div>
 

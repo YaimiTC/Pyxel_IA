@@ -35,7 +35,8 @@
         'views/imports_frontend_views.xml',
         'views/update_files_template.xml',
         'views/res_config_setting_views.xml',
-        'views/portal_template_view.xml'
+        'views/portal_template_view.xml',
+        'views/portal_compras_view.xml',
     ],
     'assets': {
         'web.assets_frontend': [

@@ -3,7 +3,7 @@
     <data>
         <template id="business_registration_agrimpex" inherit_id="pyxel_import_website.business_registration">
 
-            <!-- ENETEC: se ELIMINA el campo DPA del formulario -->
+            <!-- ENETRADEX: se ELIMINA el campo DPA del formulario -->
             <xpath expr="//label[@for='dap']//span[hasclass('s_website_form_mark')]" position="replace">
             </xpath>
             <xpath expr="//input[@name='dap']" position="replace">
@@ -13,14 +13,14 @@
                 <attribute name="style">display:none !important;</attribute>
             </xpath>
 
-            <!-- ENETEC: se ELIMINA el descargar/subir de la "Ficha de cliente".
+            <!-- ENETRADEX: se ELIMINA el descargar/subir de la "Ficha de cliente".
                  El formulario recoge sus datos (incluido "Objeto social") y el
                  backend generará la ficha. Se oculta el campo y el JS lo deshabilita. -->
             <xpath expr="//div[@name='ficha_cliente']" position="attributes">
                 <attribute name="style">display:none !important;</attribute>
             </xpath>
 
-            <!-- ENETEC: campo "Objeto social" (lo pide la Ficha de Cliente) -->
+            <!-- ENETRADEX: campo "Objeto social" (lo pide la Ficha de Cliente) -->
             <xpath expr="//div[contains(@class,'s_website_form_field')][.//input[@name='address']]" position="after">
                 <div data-name="Field" name="objeto_social"
                      class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required" data-type="char">
@@ -37,7 +37,7 @@
                 </div>
             </xpath>
 
-            <!-- ENETEC: Documentación requerida en GRID de tarjetas (fiel al diseño).
+            <!-- ENETRADEX: Documentación requerida en GRID de tarjetas (fiel al diseño).
                  Una subida (PDF) por documento. El input real va oculto y se dispara
                  con el botón "Subir documento". El controlador guarda todo lo que
                  empieza por 'legal_documentation' como adjunto. -->

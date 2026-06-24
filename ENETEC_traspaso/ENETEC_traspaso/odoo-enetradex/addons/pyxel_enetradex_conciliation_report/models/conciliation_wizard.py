@@ -5,7 +5,7 @@ from odoo.exceptions import UserError, ValidationError
 
 class PyxelEnetradexConciliationWizard(models.TransientModel):
     _name = "pyxel.enetradex.conciliation.wizard"
-    _description = "Conciliación ENETEC (CE-PCT) - Excel"
+    _description = "Conciliación ENETRADEX (CE-PCT) - Excel"
 
     start_date = fields.Date(required=True)
     end_date = fields.Date(required=True)
@@ -24,7 +24,7 @@ class PyxelEnetradexConciliationWizard(models.TransientModel):
         string="Contrato a 3ro",
     )
 
-    provider_import_name = fields.Char(string="Proveedor servicio importación", default="ENETEC")
+    provider_import_name = fields.Char(string="Proveedor servicio importación", default="ENETRADEX")
     platform_name = fields.Char(string="Servicio plataforma", help="Se llena automático si eliges partner.",
                                 default="PARQUE CIENTÍFICO TECNOLÓGICO DE LA HABANA")
     pyxel_name = fields.Char(string="Proveedor Pyxel", default="PYXEL SOLUTIONS SRL")

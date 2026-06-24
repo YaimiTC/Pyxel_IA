@@ -21,7 +21,9 @@ class AuthSignupRecaptcha(AuthSignupHome):
 
         _logger.info(f"Clave Pública reCAPTCHA: {recaptcha_public_key}")
 
-        if 'g-recaptcha-response' in kw:
+        # Solo se verifica si reCAPTCHA está CONFIGURADO (claves presentes).
+        # Si no hay claves, se delega al login normal de Odoo (no bloquear).
+        if recaptcha_public_key and recaptcha_private_key and 'g-recaptcha-response' in kw:
             recaptcha_response = kw.get('g-recaptcha-response')
 
             # Verificar el token de reCAPTCHA con Google
@@ -73,7 +75,14 @@ class AuthSignupRecaptcha(AuthSignupHome):
         recaptcha_public_key = request.env['ir.config_parameter'].sudo().get_param('recaptcha_public_key')
 
         # Verificar si el reCAPTCHA está habilitado y validar la respuesta
-        if recaptcha_secret_key and 'g-recaptcha-response' in kw:
+        # Solo se exige/verifica reCAPTCHA si está CONFIGURADO (clave presente).
+        if recaptcha_secret_key:
+            if 'g-recaptcha-response' not in kw:
+                _logger.warning("No se encontró el reCAPTCHA en la solicitud.")
+                return request.render('auth_signup.signup', {
+                    'error': _('Debes completar la verificación reCAPTCHA.'),
+                    'recaptcha_public_key': recaptcha_public_key
+                })
             recaptcha_response = kw.get('g-recaptcha-response')
             verify_url = 'https://www.google.com/recaptcha/api/siteverify'
             data = {'secret': recaptcha_secret_key, 'response': recaptcha_response}
@@ -85,13 +94,7 @@ class AuthSignupRecaptcha(AuthSignupHome):
                     'error': _('La verificación reCAPTCHA falló. Inténtalo nuevamente.'),
                     'recaptcha_public_key': recaptcha_public_key
                 })
-
-        else:
-            _logger.warning("No se encontró el reCAPTCHA en la solicitud.")
-            return request.render('auth_signup.signup', {
-                'error': _('Debes completar la verificación reCAPTCHA.'),
-                'recaptcha_public_key': recaptcha_public_key
-            })
+        # Si no hay claves de reCAPTCHA, se omite la verificación y se continúa.
 
         # Llamar al método original para continuar con el proceso de signup
         response = super(AuthSignupRecaptcha, self).web_auth_signup(*args, **kw)

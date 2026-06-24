@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ════════════ sync.peer (configuración) ════════════ -->
+    <record id="view_sync_peer_form" model="ir.ui.view">
+        <field name="name">sync.peer.form</field>
+        <field name="model">sync.peer</field>
+        <field name="arch" type="xml">
+            <form string="Configuración de sync">
+                <header>
+                    <button name="action_sync_now" type="object" string="Sincronizar ahora"
+                            class="btn-primary" invisible="node_role != 'local'"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="node_role"/>
+                        <field name="remote_endpoint" placeholder="http://178.104.186.167"
+                               invisible="node_role != 'local'"/>
+                        <field name="shared_secret" password="True"/>
+                        <field name="schema_version"/>
+                    </group>
+                    <div class="text-muted">
+                        El mismo módulo corre en ambos planos; el <b>rol</b> decide el comportamiento.
+                        En <b>local</b> se configura el endpoint de la nube y el local inicia todo el sync.
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sync_peer_tree" model="ir.ui.view">
+        <field name="name">sync.peer.tree</field>
+        <field name="model">sync.peer</field>
+        <field name="arch" type="xml">
+            <tree string="Configuración de sync">
+                <field name="name"/>
+                <field name="node_role"/>
+                <field name="remote_endpoint"/>
+                <field name="schema_version"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_sync_peer" model="ir.actions.act_window">
+        <field name="name">Configuración de sync</field>
+        <field name="res_model">sync.peer</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ════════════ sync.event (outbox/inbox) ════════════ -->
+    <record id="view_sync_event_tree" model="ir.ui.view">
+        <field name="name">sync.event.tree</field>
+        <field name="model">sync.event</field>
+        <field name="arch" type="xml">
+            <tree string="Eventos de sync" create="false">
+                <field name="create_date"/>
+                <field name="direction"/>
+                <field name="domain"/>
+                <field name="operation"/>
+                <field name="record_uuid"/>
+                <field name="state" decoration-success="state in ('acked','applied','sent')"
+                       decoration-danger="state == 'failed'" decoration-muted="state == 'pending'"/>
+                <field name="attempts"/>
+                <field name="uuid" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sync_event_form" model="ir.ui.view">
+        <field name="name">sync.event.form</field>
+        <field name="model">sync.event</field>
+        <field name="arch" type="xml">
+            <form string="Evento de sync" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="uuid"/>
+                            <field name="schema_version"/>
+                            <field name="direction"/>
+                            <field name="domain"/>
+                            <field name="operation"/>
+                        </group>
+                        <group>
+                            <field name="res_model"/>
+                            <field name="record_uuid"/>
+                            <field name="state"/>
+                            <field name="attempts"/>
+                        </group>
+                    </group>
+                    <field name="last_error" invisible="not last_error"/>
+                    <field name="payload"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_sync_event_search" model="ir.ui.view">
+        <field name="name">sync.event.search</field>
+        <field name="model">sync.event</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="record_uuid"/>
+                <field name="uuid"/>
+                <filter name="out" string="Salientes" domain="[('direction','=','out')]"/>
+                <filter name="in" string="Entrantes" domain="[('direction','=','in')]"/>
+                <separator/>
+                <filter name="pending" string="Pendientes" domain="[('state','=','pending')]"/>
+                <filter name="failed" string="Con error" domain="[('state','=','failed')]"/>
+                <group expand="0" string="Agrupar por">
+                    <filter name="g_domain" string="Dominio" context="{'group_by':'domain'}"/>
+                    <filter name="g_state" string="Estado" context="{'group_by':'state'}"/>
+                    <filter name="g_dir" string="Dirección" context="{'group_by':'direction'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_sync_event" model="ir.actions.act_window">
+        <field name="name">Eventos de sync</field>
+        <field name="res_model">sync.event</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_sync_event_search"/>
+    </record>
+
+    <!-- ════════════ enetradex.sync.order (pedidos captados) ════════════ -->
+    <record id="view_sync_order_tree" model="ir.ui.view">
+        <field name="name">enetradex.sync.order.tree</field>
+        <field name="model">enetradex.sync.order</field>
+        <field name="arch" type="xml">
+            <tree string="Pedidos captados">
+                <field name="create_date"/>
+                <field name="partner_name"/>
+                <field name="product_summary"/>
+                <field name="state" decoration-info="state == 'pendiente'"
+                       decoration-success="state == 'adjudicado'" decoration-muted="state == 'rechazado'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_sync_order_form" model="ir.ui.view">
+        <field name="name">enetradex.sync.order.form</field>
+        <field name="model">enetradex.sync.order</field>
+        <field name="arch" type="xml">
+            <form string="Pedido captado">
+                <sheet>
+                    <group>
+                        <field name="partner_name"/>
+                        <field name="product_summary"/>
+                        <field name="state"/>
+                        <field name="sync_uuid"/>
+                    </group>
+                    <field name="note"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sync_order" model="ir.actions.act_window">
+        <field name="name">Pedidos captados</field>
+        <field name="res_model">enetradex.sync.order</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- ════════════ Menús ════════════ -->
+    <menuitem id="menu_sync_root" name="Sync" sequence="90"/>
+    <menuitem id="menu_sync_orders" name="Pedidos captados" parent="menu_sync_root"
+              action="action_sync_order" sequence="10"/>
+    <menuitem id="menu_sync_events" name="Eventos de sync" parent="menu_sync_root"
+              action="action_sync_event" sequence="20"/>
+    <menuitem id="menu_sync_config" name="Configuración" parent="menu_sync_root"
+              action="action_sync_peer" sequence="90"/>
+
+</odoo>

@@ -24,6 +24,7 @@
         "views/pages/cart.xml",
         "views/pages/product.xml",
         "views/pages/about.xml",
+        "views/pages/suppliers.xml",
         "views/pages/contactus.xml",
         "views/pages/portal_notifications.xml",
         "views/pages/my_account.xml",

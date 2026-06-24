@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Página de documentos de la importación para el CLIENTE (nivel proceso) -->
+    <template id="portal_my_importacion" name="Mis importaciones">
+        <t t-call="portal.portal_layout">
+            <t t-set="bcls" t-value="{'approved':'success','in_review':'warning','validating':'info','rejected':'danger','pending':'secondary','optional':'light'}"/>
+            <t t-set="blbl" t-value="{'approved':'Aprobado','in_review':'En revisión','validating':'Validando','rejected':'Rechazado','pending':'Pendiente','optional':'Opcional'}"/>
+
+            <div class="en-track">
+                <h3 class="mb-1" style="color:#14233f;font-weight:700;">Mis importaciones</h3>
+                <p class="text-muted">Documentos de la importación por operación: sube el BL/AWB y los certificados (en PDF o foto). La IA los revisa al instante.</p>
+
+                <div t-if="not bloques" class="en-action info">
+                    <span class="ico"><i class="fa fa-info-circle"/></span>
+                    <span>Aún no tienes operaciones de importación con expediente de documentos.</span>
+                </div>
+
+                <t t-else="">
+                    <t t-foreach="bloques" t-as="b">
+                        <div class="en-card">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                <h4 class="mb-0">
+                                    <i class="fa fa-ship me-2" style="color:var(--en-blue);"/>
+                                    <span t-out="b['proc'].name"/>
+                                    <span class="en-tag ms-2" t-if="b['proc'].provider_id"
+                                          t-out="b['proc'].provider_id.name"/>
+                                </h4>
+                                <span t-if="b['ready']" class="en-pill ok">
+                                    <i class="fa fa-check"/> Lista para aduana
+                                </span>
+                                <span t-else="" class="en-pill wait">
+                                    <i class="fa fa-clock-o"/>
+                                    <span t-out="b['c_approved']"/> / <span t-out="b['c_total']"/> aprobados
+                                </span>
+                            </div>
+
+                            <t t-foreach="b['docs']" t-as="d">
+                                <div class="en-doc-row">
+                                    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                                        <span class="t-title">
+                                            <span t-out="d.document_label"/>
+                                            <small class="text-muted ms-1" t-if="not d.is_required">(opcional)</small>
+                                        </span>
+                                        <span t-attf-class="badge text-bg-#{bcls.get(d.portal_state,'secondary')}"
+                                              t-out="blbl.get(d.portal_state, d.portal_state)"/>
+                                    </div>
+
+                                    <div t-if="d.portal_state == 'rejected' and d.portal_reason"
+                                         class="en-note mt-2 mb-0" style="background:#fdecec;color:#c0392b;">
+                                        <i class="fa fa-times-circle" style="color:#c0392b;"/>
+                                        <span t-out="d.portal_reason"/>
+                                    </div>
+                                    <div t-if="d.portal_state == 'in_review'" class="en-meta mt-1">
+                                        <i class="fa fa-clock-o me-1"/>Documento recibido: ahora lo revisa nuestro equipo.
+                                    </div>
+                                    <div t-if="d.portal_state == 'validating'" class="en-meta mt-1">
+                                        <i class="fa fa-spinner me-1"/>La IA está analizando el documento…
+                                    </div>
+                                    <div t-if="d.portal_state == 'approved'" class="en-meta mt-1" style="color:#15803d;">
+                                        <i class="fa fa-check-circle me-1"/>Documento aprobado.
+                                    </div>
+
+                                    <div class="mt-2 d-flex gap-2 flex-wrap align-items-center">
+                                        <a t-if="d.attachment_id" t-attf-href="/my/importacion/download/#{d.id}"
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="fa fa-download me-1"/>Descargar
+                                        </a>
+                                        <form t-if="d.portal_state in ('pending','rejected','optional')"
+                                              t-attf-action="/my/importacion/upload/#{d.id}" method="post"
+                                              enctype="multipart/form-data" class="d-flex gap-2 align-items-center flex-wrap mb-0">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="file" name="document" accept=".pdf,image/*" capture="environment"
+                                                   class="form-control form-control-sm" style="max-width:240px"/>
+                                            <button class="btn btn-sm btn-primary" type="submit">
+                                                <i class="fa fa-camera me-1"/>
+                                                <t t-if="d.attachment_id">Subir otro</t><t t-else="">Subir / Foto</t>
+                                            </button>
+                                        </form>
+                                        <form t-if="d.attachment_id and d.portal_state not in ('in_review','approved')"
+                                              t-attf-action="/my/importacion/delete/#{d.id}" method="post" class="mb-0">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <button class="btn btn-sm btn-outline-danger" type="submit">
+                                                <i class="fa fa-trash-o"/>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </t>
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- ENETEC Fase 0: bandeja única del abogado con chip y agrupar/filtrar
+    <!-- ENETRADEX Fase 0: bandeja única del abogado con chip y agrupar/filtrar
          por Tipo de empresa (Cliente / Proveedor). -->
 
     <!-- Búsqueda de oportunidades: filtros + group by -->
@@ -76,6 +76,12 @@
             <xpath expr="//div[@name='button_box']" position="attributes">
                 <attribute name="class" add="d-none" separator=" "/>
             </xpath>
+            <xpath expr="//button[@name='action_sale_quotations_new']" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_set_won_rainbowman']" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </xpath>
             <field name="date_deadline" position="attributes">
                 <attribute name="invisible">1</attribute>
             </field>
@@ -96,6 +102,7 @@
             <xpath expr="//notebook" position="inside">
                 <page string="Acreditación" name="en_accreditation">
                     <group>
+                        <field name="en_party_role" invisible="1"/>
                         <field name="en_initiated_by"/>
                         <field name="en_inviter_partner_id"
                                invisible="en_initiated_by != 'counterparty'"/>

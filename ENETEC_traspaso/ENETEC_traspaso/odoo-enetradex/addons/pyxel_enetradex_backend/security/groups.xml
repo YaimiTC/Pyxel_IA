@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Categoría de seguridad para el módulo ENETRADEX -->
+        <record id="module_category_enetradex" model="ir.module.category">
+            <field name="name">ENETRADEX</field>
+            <field name="sequence">100</field>
+        </record>
+
+        <!-- Abogada: revisa y aprueba/rechaza documentos en el Paso 2 -->
+        <record id="group_lawyer" model="res.groups">
+            <field name="name">Abogada / Revisora legal</field>
+            <field name="category_id" ref="module_category_enetradex"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Comercial: aprueba/rechaza documentos en el Paso 3 y gestiona operaciones -->
+        <record id="group_commercial" model="res.groups">
+            <field name="name">Comercial</field>
+            <field name="category_id" ref="module_category_enetradex"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+    </data>
+</odoo>

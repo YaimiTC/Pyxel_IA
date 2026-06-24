@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_wa_settings" model="ir.actions.act_window">
+        <field name="name">Configuración WhatsApp</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">inline</field>
+        <field name="context">{'module': 'whatsapp_integration'}</field>
+    </record>
+
+    <menuitem id="menu_wa_root" name="WhatsApp" sequence="55"/>
+    <menuitem id="menu_wa_messages" name="Mensajes" parent="menu_wa_root"
+              action="action_wa_log" sequence="10"/>
+    <menuitem id="menu_wa_templates" name="Plantillas" parent="menu_wa_root"
+              action="action_wa_mapping" sequence="20"/>
+    <menuitem id="menu_wa_config" name="Configuración" parent="menu_wa_root"
+              action="action_wa_settings" sequence="90" groups="base.group_system"/>
+
+</odoo>

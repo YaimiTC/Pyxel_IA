@@ -16,7 +16,7 @@
                 <div style="background:#f6f8fc;border-radius:12px;padding:1.5rem">
                     <p style="font-size:12px;color:#5b6b85;margin:0 0 10px">
                         Enlace de invitación · Te invitó:
-                        <b style="color:#16233f"><t t-esc="inv.inviter_partner_id.name or 'ENETEC'"/></b>
+                        <b style="color:#16233f"><t t-esc="inv.inviter_partner_id.name or 'ENETRADEX'"/></b>
                     </p>
                     <h3 style="font-size:18px;font-weight:500;color:#16233f;margin:0 0 4px">
                         Acredítate como <t t-esc="'proveedor' if inv.expected_role=='supplier' else 'cliente'"/>
@@ -40,7 +40,7 @@
                                 </t>
                             </select>
                         </div>
-                        <p style="font-size:12.5px;color:#5b6b85">Adjunta tus documentos por correo o en el siguiente paso indicado por ENETEC.</p>
+                        <p style="font-size:12.5px;color:#5b6b85">Adjunta tus documentos por correo o en el siguiente paso indicado por ENETRADEX.</p>
                         <button type="submit" style="background:#0f44ce;color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:13px;cursor:pointer">
                             Enviar mi acreditación
                         </button>
@@ -90,7 +90,7 @@
                 <div style="background:#effaf3;color:#16a34a;border-radius:12px;padding:1.25rem">
                     <p style="font-weight:500;margin:0 0 4px">Acreditación enviada</p>
                     Notificamos a <b><t t-esc="inviter.name or 'quien te invitó'"/></b> que ya enviaste tu información.
-                    El abogado de ENETEC revisará tus documentos para acreditarte. No tienes que hacer nada más.
+                    El abogado de ENETRADEX revisará tus documentos para acreditarte. No tienes que hacer nada más.
                 </div>
             </div>
         </t>

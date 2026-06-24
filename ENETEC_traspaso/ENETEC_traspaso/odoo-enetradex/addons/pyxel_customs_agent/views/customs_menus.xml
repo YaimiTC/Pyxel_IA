@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_customs_tramites" model="ir.actions.act_window">
+        <field name="name">Trámites de aduana</field>
+        <field name="res_model">importation.process</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_customs_process_search"/>
+        <field name="domain">[('stage_id.name', '=', 'TRÁMITES EN DESTINO'), ('en_ready_for_customs', '=', True)]</field>
+        <field name="context">{'search_default_pendientes': 1}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_customs_process_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_customs_process_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay trámites de aduana pendientes</p>
+            <p>Aquí aparecen los procesos listos para despacho aduanero (BL/AWB, factura y
+               lista de empaque aprobados) cuyas Declaraciones de Mercancía faltan por confirmar.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_customs_tramites"
+              name="Trámites de aduana"
+              parent="pyxel_import_backend.menu_importation_root"
+              action="action_customs_tramites"
+              sequence="25"
+              groups="pyxel_customs_agent.group_customs_agent,base.group_system"/>
+
+</odoo>

@@ -4,7 +4,7 @@
     <field name="name">pyxel.enetradex.conciliation.wizard.form</field>
     <field name="model">pyxel.enetradex.conciliation.wizard</field>
     <field name="arch" type="xml">
-      <form string="Conciliación ENETEC (CE-PCT) - Excel">
+      <form string="Conciliación ENETRADEX (CE-PCT) - Excel">
         <group>
           <field name="start_date"/>
           <field name="end_date"/>

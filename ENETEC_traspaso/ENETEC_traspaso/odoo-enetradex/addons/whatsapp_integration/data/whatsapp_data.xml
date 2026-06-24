@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Reintento automático de mensajes salientes fallidos -->
+    <record id="cron_wa_retry_failed" model="ir.cron">
+        <field name="name">WhatsApp: reintentar mensajes fallidos</field>
+        <field name="model_id" ref="model_whatsapp_message_log"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_retry_failed()</field>
+        <field name="interval_number">30</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Pull de eventos del gateway exterior (entrantes + estados) -->
+    <record id="cron_wa_pull_gateway" model="ir.cron">
+        <field name="name">WhatsApp: consultar gateway (entrantes/estados)</field>
+        <field name="model_id" ref="model_whatsapp_message_log"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_pull_gateway()</field>
+        <field name="interval_number">2</field>
+        <field name="interval_type">minutes</field>
+        <field name="active" eval="True"/>
+    </record>
+
+    <!-- Valor por defecto de la versión de la API -->
+    <record id="param_api_version" model="ir.config_parameter">
+        <field name="key">whatsapp_integration.api_version</field>
+        <field name="value">v19.0</field>
+    </record>
+
+    <!-- Plantilla de ejemplo: confirmación de pedido (edítala con tu plantilla real de Meta) -->
+    <record id="mapping_sale_confirm_demo" model="whatsapp.template.mapping">
+        <field name="name">Confirmación de pedido (ejemplo)</field>
+        <field name="event">sale_confirm</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="template_name">order_confirmation</field>
+        <field name="lang_code">es</field>
+        <field name="category">utility</field>
+        <field name="note">Reemplaza 'order_confirmation' por el nombre EXACTO de tu plantilla aprobada en Meta.</field>
+    </record>
+    <record id="var_sale_confirm_1" model="whatsapp.template.variable">
+        <field name="mapping_id" ref="mapping_sale_confirm_demo"/>
+        <field name="sequence">1</field>
+        <field name="field_path">partner_id.name</field>
+        <field name="fallback">cliente</field>
+    </record>
+    <record id="var_sale_confirm_2" model="whatsapp.template.variable">
+        <field name="mapping_id" ref="mapping_sale_confirm_demo"/>
+        <field name="sequence">2</field>
+        <field name="field_path">name</field>
+        <field name="fallback"></field>
+    </record>
+
+</odoo>

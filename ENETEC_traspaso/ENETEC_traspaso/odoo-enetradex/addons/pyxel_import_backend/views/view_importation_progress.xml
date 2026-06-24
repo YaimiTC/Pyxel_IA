@@ -73,11 +73,17 @@
             <form>
                 <header>
                     <field name="final_sale_order_id" invisible="1"/>
+                    <field name="cost_sale_order_count" invisible="1"/>
                     <button name="action_create_cost_sale_order"
                             type="object"
                             string="Generar Venta de Costos"
                             class="btn-primary"
                             invisible="not cost_line_ids or final_sale_order_id"/>
+                    <button name="action_create_cost_sale_order"
+                            type="object"
+                            string="Regenerar Venta de Costos"
+                            class="btn-secondary"
+                            invisible="not cost_line_ids or not final_sale_order_id"/>
 
                     <button name="action_start_progress" string="Start Import" type="object" class="btn-primary"
                             invisible="state != 'evaluating'"/>
@@ -173,7 +179,7 @@
                             <field name="load_tracking_ids" context="{'default_importation_id': active_id}">
                                 <tree>
                                     <field name="name"/>
-                                    <field name="cargo_type" optional="show"/>
+                                    <field name="cargo_type" optional="show" readonly="1"/>
                                     <field name="size"/>
                                     <field name="weight" optional="show"/>
                                     <field name="volume" optional="show"/>
@@ -201,7 +207,7 @@
 
                                                 <field name="name"/>
                                                 <field name="importation_id"/>
-                                                <field name="cargo_type" invisible="hide_cargo_type"/>
+                                                <field name="cargo_type" invisible="hide_cargo_type" readonly="1"/>
                                                 <field name="size"/>
                                                 <field name="weight"/>
                                                 <field name="volume" invisible="hide_volume == True"/>
@@ -232,7 +238,6 @@
                                                 <field name="hide_shipping_company" invisible="1"/>
                                                 <field name="hide_airline" invisible="1"/>
                                                 <field name="hide_transit_agency" invisible="1"/>
-
                                                 <field name="shipping_company" invisible="hide_shipping_company"/>
                                                 <field name="airline" invisible="hide_airline"/>
                                                 <field name="transit_agency" invisible="hide_transit_agency"/>

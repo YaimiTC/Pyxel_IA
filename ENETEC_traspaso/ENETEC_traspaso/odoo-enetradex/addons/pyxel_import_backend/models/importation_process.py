@@ -113,6 +113,13 @@ class ImportationProcess(models.Model):
 
     sale_order_count = fields.Integer(string='Sale Orders Count', compute='_compute_sale_order_count')
 
+    cost_sale_order_count = fields.Integer(
+        string="Cost Sale Orders", compute='_compute_cost_sale_order_count')
+
+    def _compute_cost_sale_order_count(self):
+        for rec in self:
+            rec.cost_sale_order_count = 0
+
     stage_enter_date = fields.Datetime(string="Stage date")
     days_in_stage = fields.Integer(string="State days", compute='_compute_days_in_stage', store=True)
 
@@ -164,11 +171,7 @@ class ImportationProcess(models.Model):
     def _compute_sale_order_count(self):
         for rec in self:
             rec.sale_order_count = self.env['sale.order'].search_count([
-                '|',
-                '|',
-                ('id', '=', rec.origin_sale_order_id.id),
-                ('id', '=', rec.sale_order_id.id),
-                ('id', '=', rec.final_sale_order_id.id)
+                ('importation_process_id', '=', rec.id)
             ])
 
     def _compute_invoice_count(self):
@@ -216,14 +219,12 @@ class ImportationProcess(models.Model):
 
     def action_view_sale_orders(self):
         self.ensure_one()
-        domain = ['|', '|', ('id', '=', self.origin_sale_order_id.id), ('id', '=', self.sale_order_id.id),
-                  ('id', '=', self.final_sale_order_id.id)]
         return {
             'name': 'Sales Orders',
             'type': 'ir.actions.act_window',
             'res_model': 'sale.order',
             'view_mode': 'tree,form',
-            'domain': domain,
+            'domain': [('importation_process_id', '=', self.id)],
             'context': {'search_default_group_by_order_type': 1}
         }
 

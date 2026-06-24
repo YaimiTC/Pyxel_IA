@@ -43,6 +43,10 @@ class SaleOrder(models.Model):
         readonly=True,
         help='Importation process generated from this evaluation.'
     )
+    is_cost_order = fields.Boolean(
+        string='Pedido de costos', default=False,
+        help='Indica que este pedido fue generado por Generar/Regenerar Venta de Costos.'
+    )
 
     # Campo para año de importación (relacionado con el proceso)
     import_year = fields.Char(

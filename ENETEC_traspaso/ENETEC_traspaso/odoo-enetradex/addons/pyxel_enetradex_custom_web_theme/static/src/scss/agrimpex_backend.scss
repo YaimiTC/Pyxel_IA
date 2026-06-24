@@ -41,6 +41,24 @@ $en-blue-dark:  #0a338f;
     .o_menu_sections .dropdown-toggle {
         color: #fff !important;
     }
+
+    /* Submenús desplegables: fondo blanco, texto oscuro */
+    .o_menu_sections .dropdown-menu {
+        background-color: #fff !important;
+        border: 1px solid #dde5f0 !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,.12) !important;
+
+        .dropdown-item,
+        a.dropdown-item {
+            color: #14233f !important;
+            background-color: transparent !important;
+
+            &:hover, &:focus {
+                background-color: #eaf1ff !important;
+                color: $en-blue !important;
+            }
+        }
+    }
 }
 
 /* === Botones primarios === */

@@ -7,7 +7,6 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='phone']" position="after">
                 <field name="contact_type_id" optional="show" />
-                <field name="is_accredited2" invisible="1" />
                 <field name="license_holder" optional="show" />
                 <field name="count_imports" optional="show"/>
             </xpath>

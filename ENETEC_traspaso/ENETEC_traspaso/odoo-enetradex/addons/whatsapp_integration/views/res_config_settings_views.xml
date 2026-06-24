@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_whatsapp" model="ir.ui.view">
+        <field name="name">res.config.settings.view.form.whatsapp</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="whatsapp_integration" string="WhatsApp" name="whatsapp_integration">
+                    <block title="WhatsApp Cloud API (Meta)" name="wa_credentials">
+                        <setting string="Access Token" help="Token de la app de Meta (System User token recomendado).">
+                            <field name="whatsapp_token" password="True"/>
+                        </setting>
+                        <setting string="Phone Number ID" help="ID del número remitente en WhatsApp Cloud API.">
+                            <field name="whatsapp_phone_number_id"/>
+                        </setting>
+                        <setting string="WhatsApp Business Account ID">
+                            <field name="whatsapp_business_account_id"/>
+                        </setting>
+                        <setting string="API Version">
+                            <field name="whatsapp_api_version"/>
+                        </setting>
+                    </block>
+                    <block title="Gateway (servidor exterior — recomendado si Meta está geobloqueado)" name="wa_gateway">
+                        <setting string="Gateway URL" help="URL del gateway exterior (ej. https://wa.tudominio.com). Si se define, Odoo envía a través del gateway y el token NO se pone aquí.">
+                            <field name="whatsapp_gateway_url"/>
+                        </setting>
+                        <setting string="Gateway API Key" help="Misma clave (GATEWAY_API_KEY) configurada en el gateway.">
+                            <field name="whatsapp_gateway_api_key" password="True"/>
+                        </setting>
+                    </block>
+                    <block title="Webhook" name="wa_webhook">
+                        <setting string="Verify Token" help="El mismo valor que configuras en Meta al suscribir el webhook.">
+                            <field name="whatsapp_verify_token"/>
+                        </setting>
+                        <setting string="App Secret" help="Para validar la firma X-Hub-Signature-256 (opcional).">
+                            <field name="whatsapp_app_secret" password="True"/>
+                        </setting>
+                        <setting string="Webhook URL" help="Pega esta URL en Meta → Configuración del webhook (Callback URL).">
+                            <field name="whatsapp_webhook_url" readonly="1"/>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
