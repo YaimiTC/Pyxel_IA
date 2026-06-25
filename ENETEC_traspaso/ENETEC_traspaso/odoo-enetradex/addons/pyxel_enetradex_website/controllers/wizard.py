@@ -30,17 +30,17 @@ class EnWizard(http.Controller):
         lead = env['crm.lead'].sudo().search(
             [('partner_id', '=', company.id), ('en_party_role', '!=', False)],
             order='create_date desc', limit=1)
-        accredited = bool(company.is_accredited)
-        # Sin ?op=1: si ya está acreditada o en proceso, no se le vuelve a pedir
-        # acreditarse; se le lleva a ver en qué etapa va su proceso.
+        # Un lead activo (no rechazado) = ya tiene oportunidad → importOnly.
+        has_active_lead = bool(lead and not lead.stage_id.is_rejection_stage)
+        # Sin ?op=1: si ya tiene proceso en curso, redirigir a seguimiento.
         if not kw.get('op'):
-            if accredited or (lead and not lead.stage_id.is_rejection_stage):
+            if has_active_lead:
                 return request.redirect('/my/seguimiento')
         role = 'proveedor' if company.contact_type_id.type_of_contact == 'Supplier' else 'cliente'
         pay_methods = env['en.payment.method'].sudo().search([])
         return request.render('pyxel_enetradex_website.en_wizard_page', {
             'wz_op': bool(kw.get('op')),
-            'wz_accredited': accredited,
+            'wz_accredited': has_active_lead,
             'wz_role': role,
             'wz_company': (company.name or '') if company != person else '',
             'wz_contact': person.name or '',
@@ -194,8 +194,14 @@ class EnWizard(http.Controller):
         # Modo "solo importación": cliente YA acreditado que pide una operación. NO
         # se reestructura su empresa ni se crea un lead de acreditación; se usa su
         # empresa existente y se va directo a crear la solicitud de importación.
+        lead_existing = env['crm.lead'].sudo().search(
+            [('partner_id', '=', company_existing.id), ('en_party_role', '!=', False)],
+            order='create_date desc', limit=1)
+        # importOnly: basta con tener una oportunidad activa (no rechazada).
+        _has_active_lead = bool(
+            lead_existing and not lead_existing.stage_id.is_rejection_stage)
         import_only = (bool(payload.get('importOnly')) and role == 'cliente'
-                       and company_existing.is_accredited)
+                       and _has_active_lead)
         if import_only:
             company = company_existing
             created['lead'] = False
