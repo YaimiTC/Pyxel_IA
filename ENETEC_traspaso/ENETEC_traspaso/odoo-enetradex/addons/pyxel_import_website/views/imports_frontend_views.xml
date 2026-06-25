@@ -736,7 +736,7 @@
                 <!-- Accesos rápidos -->
                 <div class="d-flex flex-wrap gap-2">
                     <a href="/en/wizard?op=1" class="dash-action"><i class="fa fa-plus"/> Nueva importación</a>
-                    <a href="/shop" class="dash-action"><i class="fa fa-shopping-bag"/> Ver catálogo</a>
+                    <a href="/en/proveedores" class="dash-action"><i class="fa fa-shopping-bag"/> Ver catálogo</a>
                     <a href="/contactus" class="dash-action"><i class="fa fa-headphones"/> Soporte</a>
                 </div>
 
