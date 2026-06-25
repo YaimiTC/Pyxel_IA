@@ -1814,8 +1814,8 @@ msgstr "Terminal de La Habana"
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_res_partner__hiring_number
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_res_partner_contract_import__hiring_number
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_res_users__hiring_number
-msgid "Hiring Number"
-msgstr "Número de contrato"
+msgid "Agreement Number"
+msgstr "Número de acuerdo"
 
 #. module: pyxel_import_backend
 #: model:ir.model,name:pyxel_import_backend.model_import_container_billing_log

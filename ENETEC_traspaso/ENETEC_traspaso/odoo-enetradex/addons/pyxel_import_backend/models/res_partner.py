@@ -97,7 +97,7 @@ class ResPartnerContractImport(models.Model):
     partner_id = fields.Many2one('res.partner', string="Contact", ondelete='cascade')
     contract_number = fields.Char(string="Contract Number", required=True)
     activity_number = fields.Char(string="Activity Number")
-    hiring_number = fields.Char(string="Hiring Number")
+    hiring_number = fields.Char(string="Agreement Number")
 
     start_date = fields.Date(string="Start Date")
     end_date = fields.Date(string="End Date")
