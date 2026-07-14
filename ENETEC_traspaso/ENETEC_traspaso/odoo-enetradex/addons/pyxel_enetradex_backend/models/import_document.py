@@ -83,10 +83,10 @@ IMPORT_DEFAULT_CHECKS = {
 }
 
 # Catalogo de documentos DE LA IMPORTACION (nivel proceso, purchase_order_id=False).
-# Taxonomia del manual ODIN 2.0: el conocimiento de embarque + certificados. El BL/AWB
-# es el disparador de "listo para aduana" (en_ready_for_customs).
+# Taxonomia del manual ODIN 2.0: certificados que aplican a todo el proceso, no a
+# una OC en particular (el proceso puede tener varias OC/clientes, cada una con su
+# propio BL — ver OC_DOCS).
 IMPORT_DOCS = [
-    ('bl_awb', 'BL / AWB', True),
     ('cert_calidad', 'Certificado de calidad', False),
     ('cert_exportacion', 'Certificado de exportación', False),
     ('cert_origen', 'Certificado de origen', False),
@@ -94,15 +94,18 @@ IMPORT_DOCS = [
 # Campos nativos del proceso (los sube el cliente en el wizard de solicitud) ->
 # slot del expediente que pre-enlazan. (binary_field, filename_field)
 NATIVE_FIELD_MAP = {
-    'bl_awb': ('documentation_file', 'documentation_file_filename'),
     'cert_calidad': ('quality_certificate', 'quality_certificate_filename'),
     'cert_exportacion': ('export_certificate', 'export_certificate_filename'),
     'cert_origen': ('origin_certificate', 'origin_certificate_filename'),
 }
 
 # Catalogo de documentos por ORDEN DE COMPRA. Cada OC ligada al proceso genera su
-# bloque. Oferta/factura/lista/permisos los sube el proveedor; la DM, el apoderado de aduana.
+# bloque. El BL/AWB es por OC (un proceso multi-cliente puede tener un BL distinto
+# por cliente/OC) y es el disparador de "listo para aduana" (en_ready_for_customs)
+# — se exige aprobado en CADA OC del proceso, no en una sola. Oferta/factura/lista/
+# permisos los sube el proveedor; la DM, el apoderado de aduana.
 OC_DOCS = [
+    ('bl_awb', 'BL / AWB', True),
     ('oferta', 'Oferta firmada', True),
     ('factura_comercial', 'Factura comercial', True),
     ('lista_empaque', 'Lista de empaque', True),
@@ -135,7 +138,42 @@ class PyxelImportDocument(models.Model):
         'importation.process', required=True, ondelete='cascade', index=True)
     # Reservado para Fase 2 (documentos por Orden de Compra): por ahora siempre False.
     purchase_order_id = fields.Many2one('purchase.order', ondelete='cascade', index=True)
+    # Cliente de la OC (relevante en procesos multi-cliente, una OC por cliente)
+    # para no perder de vista a quién pertenece cada bloque en la lista de
+    # documentos. purchase_order_id.customer_id casi nunca se llena a mano
+    # (solo 2 de 188 OC reales); el dato real vive en el bloque de solicitud
+    # (en.import.request.client) que generó la OC, así que se cae a ese y,
+    # si tampoco existe, al cliente único del proceso (caso legado sin bloques).
+    customer_id = fields.Many2one(
+        'res.partner', compute='_compute_customer_id', string="Cliente")
+
+    @api.depends('purchase_order_id.customer_id', 'importation_id.customer_id')
+    def _compute_customer_id(self):
+        Block = self.env['en.import.request.client']
+        for rec in self:
+            po = rec.purchase_order_id
+            if po.customer_id:
+                rec.customer_id = po.customer_id
+                continue
+            block = Block.search([('purchase_order_id', '=', po.id)], limit=1) if po else Block
+            rec.customer_id = block.customer_id or rec.importation_id.customer_id
     sequence = fields.Integer(default=10)
+    # Sombreado alterno por bloque de OC en la lista "Documentos por Orden de
+    # Compra" del expediente: esa lista embebida en el formulario no soporta
+    # agrupar de verdad, así que se alternan dos tonos por OC para separar
+    # visualmente un bloque del siguiente (ver oc_expediente.css).
+    oc_shade = fields.Boolean(compute='_compute_oc_shade', string="Sombra OC (visual)")
+
+    @api.depends('purchase_order_id')
+    def _compute_oc_shade(self):
+        seen = {}
+        next_shade = False
+        for rec in self.sorted(key=lambda r: (r.purchase_order_id.id or 0, r.sequence, r.id)):
+            po_id = rec.purchase_order_id.id
+            if po_id not in seen:
+                seen[po_id] = next_shade
+                next_shade = not next_shade
+            rec.oc_shade = seen[po_id]
     document_key = fields.Char()
     document_label = fields.Char(required=True)
     is_required = fields.Boolean(default=True)
@@ -471,18 +509,69 @@ class PyxelImportDocument(models.Model):
     @api.model
     def build_oc_expediente(self, purchase_orders):
         """Crea el bloque de documentos de cada Orden de Compra ligada a un proceso.
-        No duplica si la OC ya tiene su bloque."""
+        No duplica si la OC ya tiene su bloque.
+        Pre-enlaza los archivos que el cliente subió en su bloque de solicitud."""
+        # Mapa: document_key -> (campo binary, campo filename) en en.import.request.client
+        CLIENT_BLOCK_FIELD_MAP = {
+            'oferta':                ('oferta_firmada',    'oferta_firmada_filename'),
+            'factura_comercial':     ('factura_comercial', 'factura_comercial_filename'),
+            'permisos_regulatorios': ('permisos',          'permisos_filename'),
+            'lista_empaque':         ('lista_empaque',     'lista_empaque_filename'),
+        }
+        # Mapa: document_key (OC_DOCS) -> document_type en en.import.request.document,
+        # el modelo real donde el proveedor sube estos archivos en el wizard
+        # (paso "Documentos del embarque"), antes de que la OC exista.
+        REQUEST_DOC_TYPE_MAP = {
+            'oferta':                'oferta_firmada',
+            'factura_comercial':     'factura_comercial',
+            'lista_empaque':         'lista_empaque',
+            'permisos_regulatorios': 'permisos',
+        }
+        ClientBlock = self.env['en.import.request.client']
+
         for po in purchase_orders:
             if not po.importation_id:
                 continue
             if self.search_count([('purchase_order_id', '=', po.id)]):
                 continue
+            # Bloque de cliente que generó esta OC (si existe)
+            block = ClientBlock.search([('purchase_order_id', '=', po.id)], limit=1)
             seq = 10
             for key, label, required in OC_DOCS:
-                self.create({
+                doc = self.create({
                     'importation_id': po.importation_id.id, 'purchase_order_id': po.id,
                     'document_key': key, 'document_label': label,
                     'is_required': required, 'sequence': seq,
                 })
+                # Pre-enlazar archivo del bloque de cliente si existe
+                if block:
+                    linked = False
+                    fmap = CLIENT_BLOCK_FIELD_MAP.get(key)
+                    if fmap and fmap[0] in block._fields and block[fmap[0]]:
+                        fname = (block[fmap[1]] or label) if fmap[1] in block._fields else label
+                        if fname and not fname.lower().endswith(('.pdf', '.png', '.jpg', '.jpeg')):
+                            fname = fname.rsplit('.', 1)[0] + '.pdf' if '.' in fname else fname + '.pdf'
+                        att = self.env['ir.attachment'].create({
+                            'name': fname,
+                            'datas': block[fmap[0]],
+                            'res_model': self._name,
+                            'res_id': doc.id,
+                            'type': 'binary',
+                        })
+                        doc.write({'attachment_id': att.id, 'upload_date': fields.Datetime.now()})
+                        linked = True
+                    if not linked:
+                        req_type = REQUEST_DOC_TYPE_MAP.get(key)
+                        req_doc = block.document_ids.filtered(
+                            lambda d, t=req_type: t and d.document_type == t)[:1] if req_type else False
+                        if req_doc:
+                            att = self.env['ir.attachment'].create({
+                                'name': req_doc.filename or req_doc.name or label,
+                                'datas': req_doc.attachment,
+                                'res_model': self._name,
+                                'res_id': doc.id,
+                                'type': 'binary',
+                            })
+                            doc.write({'attachment_id': att.id, 'upload_date': fields.Datetime.now()})
                 seq += 10
         return True

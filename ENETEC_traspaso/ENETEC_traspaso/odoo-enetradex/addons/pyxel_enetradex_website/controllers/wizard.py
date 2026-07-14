@@ -7,12 +7,27 @@ from odoo.http import request
 
 VALIDITY = {'1 mes': '1m', '3 meses': '3m', '6 meses': '6m', '1 año': '1y', 'Personalizada': 'custom'}
 
+# Nombres reales (en_US, sin traducción es_ES) de los combustibles que ofrece
+# el wizard. Buscar en ese idioma evita el problema de tildes/traducciones
+# vacías al hacer match por nombre.
+FUEL_PRODUCT_NAMES = ['DIESEL', 'GASOLINA-91', 'GASOLINA-83', 'Jet A-1', 'Fuel oíl', 'GLP']
+
 
 def _find_product(name):
     if not name:
         return False
-    P = request.env['product.product'].sudo()
+    P = request.env['product.product'].sudo().with_context(lang='en_US')
     return P.search([('name', 'ilike', name)], limit=1)
+
+
+def _resolve_product(pid, name):
+    """Resuelve un producto por id (preferido, viene del desplegable real del
+    wizard) o, si falta, por nombre (compatibilidad/último recurso)."""
+    if pid and str(pid).isdigit():
+        p = request.env['product.product'].sudo().browse(int(pid))
+        if p.exists():
+            return p
+    return _find_product(name)
 
 
 def _contact_type(name):
@@ -31,6 +46,8 @@ class EnWizard(http.Controller):
             [('partner_id', '=', company.id), ('en_party_role', '!=', False)],
             order='create_date desc', limit=1)
         # Un lead activo (no rechazado) = ya tiene oportunidad → importOnly.
+        # No hace falta haber pasado la etapa de acreditación: simplemente tener
+        # una oportunidad abierta significa que no hay que crear otra.
         has_active_lead = bool(lead and not lead.stage_id.is_rejection_stage)
         # Sin ?op=1: si ya tiene proceso en curso, redirigir a seguimiento.
         if not kw.get('op'):
@@ -52,7 +69,8 @@ class EnWizard(http.Controller):
 
     @http.route('/en/wizard/enviado', type='http', auth='user', website=True)
     def wizard_done(self, **kw):
-        return request.render('pyxel_enetradex_website.en_wizard_done', {'wz_op': bool(kw.get('op'))})
+        return request.render('pyxel_enetradex_website.en_wizard_done',
+                               {'wz_op': bool(kw.get('op')), 'wz_offer': bool(kw.get('offer'))})
 
     @http.route('/check_duplicate_nit', type='json', auth='user', website=True)
     def check_duplicate_nit(self, nit, **kw):
@@ -69,6 +87,16 @@ class EnWizard(http.Controller):
     def get_form_countries(self, **kw):
         countries = request.env['res.country'].sudo().search([])
         return {str(c.id): c.name for c in countries}
+
+    @http.route('/en/wizard/fuel_products', type='json', auth='user', website=True)
+    def wizard_fuel_products(self, **kw):
+        """Productos reales de combustible (id + nombre) para los desplegables
+        de Solicitud/Oferta — evita adivinar el producto por nombre."""
+        P = request.env['product.product'].sudo().with_context(lang='en_US')
+        products = P.search([('name', 'in', FUEL_PRODUCT_NAMES)])
+        by_name = {p.name: p for p in products}
+        ordered = [by_name[n] for n in FUEL_PRODUCT_NAMES if n in by_name]
+        return [{'id': p.id, 'name': p.name} for p in ordered]
 
     @http.route('/en/wizard/portfolio', type='json', auth='user', website=True)
     def wizard_portfolio(self, **kw):
@@ -88,6 +116,26 @@ class EnWizard(http.Controller):
                 nit = nit[:4] + '…' + nit[-3:]
             res.append({'id': s.id, 'name': s.name,
                         'nit': nit, 'accredited': bool(s.is_accredited)})
+        return res
+
+    @http.route('/en/wizard/my_clients', type='json', auth='user', website=True)
+    def wizard_my_clients(self, **kw):
+        """Clientes reales del proveedor (su cartera) para elegir en la oferta."""
+        env = request.env
+        person = env.user.partner_id
+        company = person.parent_id if (person.parent_id and person.parent_id.is_company) else person
+        rels = env['en.counterparty.relation'].sudo().search([('supplier_id', '=', company.id)])
+        res, seen = [], set()
+        for r in rels:
+            c = r.client_id
+            if not c or c.id in seen or c.id == company.id:
+                continue
+            seen.add(c.id)
+            nit = c.vat or ''
+            if len(nit) > 7:
+                nit = nit[:4] + '…' + nit[-3:]
+            res.append({'id': c.id, 'name': c.name,
+                        'nit': nit, 'accredited': bool(c.is_accredited)})
         return res
 
     @http.route('/en/wizard/photo_to_pdf', type='json', auth='user', website=True)
@@ -198,11 +246,15 @@ class EnWizard(http.Controller):
             [('partner_id', '=', company_existing.id), ('en_party_role', '!=', False)],
             order='create_date desc', limit=1)
         # importOnly: basta con tener una oportunidad activa (no rechazada).
+        # No se requiere haber pasado la etapa de acreditación.
         _has_active_lead = bool(
             lead_existing and not lead_existing.stage_id.is_rejection_stage)
         import_only = (bool(payload.get('importOnly')) and role == 'cliente'
                        and _has_active_lead)
-        if import_only:
+        offer_only = (bool(payload.get('offerOnly')) and role == 'proveedor'
+                      and _has_active_lead)
+        skip_accreditation = import_only or offer_only
+        if skip_accreditation:
             company = company_existing
             created['lead'] = False
         else:
@@ -291,12 +343,26 @@ class EnWizard(http.Controller):
 
         Lead = env['crm.lead'].sudo()
         lead = Lead.search([('partner_id', '=', company.id)], limit=1)
+        client_type_val = 'Proveedor' if role == 'proveedor' else (mt.name if mt else False)
+        # Campos nativos de CRM (enlace contacto): persona de contacto + datos.
+        native_contact = {
+            'contact_name': contact.get('name') or person.name or False,
+            'email_from': contact.get('email') or person.email or False,
+            'phone': contact.get('phone') or person.phone or False,
+        }
         if not lead:
-            lead = Lead.create({
+            lead = Lead.create(dict({
                 'name': company.name or 'Acreditación',
                 'partner_id': company.id, 'type': 'opportunity', 'en_initiated_by': 'self',
-                'user_id': False,  # sin comercial: la revisa el abogado (no el usuario portal)
-            })
+                'user_id': False,
+                'accreditation_client_type': client_type_val or False,
+            }, **native_contact))
+        else:
+            lvals = {k: v for k, v in native_contact.items() if v}
+            if client_type_val and not lead.accreditation_client_type:
+                lvals['accreditation_client_type'] = client_type_val
+            if lvals:
+                lead.write(lvals)
         created['lead'] = lead.id
         created['docs'] = 0
 
@@ -343,8 +409,15 @@ class EnWizard(http.Controller):
         Lead = env['crm.lead'].sudo()
         lead = Lead.browse(created['lead']) if created.get('lead') else Lead
         # 2) PROVEEDOR: oferta + clientes
-        if role == 'proveedor':
-            company.sudo().write({'en_is_public_provider': True})
+        co = payload.get('company') or {}
+        offer_payload_peek = payload.get('offer') or {}
+        has_provider_activity = bool(
+            offer_payload_peek.get('lines') or payload.get('clients')
+            or payload.get('newClients') or payload.get('diffused'))
+        if role == 'proveedor' and has_provider_activity:
+            # Visible en el catálogo solo si de verdad marcó la casilla — antes
+            # quedaba público siempre que llegara a enviar oferta/clientes.
+            company.sudo().write({'en_is_public_provider': bool(co.get('visible_to_clients'))})
             # Socio cubano residente en el exterior (si la empresa lo declara)
             socio = payload.get('socio') or {}
             sd = socio.get('data') or {}
@@ -394,45 +467,284 @@ class EnWizard(http.Controller):
                     created['socio_pdf'] = False
             offer = payload.get('offer') or {}
             lines = []
+            resolved_lines = []  # (product, qty, packaging, price) — se reutiliza para los bloques de cliente/OC
             for ln in (offer.get('lines') or []):
-                prod = _find_product(ln.get('prod'))
+                prod = _resolve_product(ln.get('pid'), ln.get('prod'))
+                pkg = 'isotanque' if ln.get('env') == 'Isotanque' else 'isomodulo'
+                qty = float(ln.get('qty') or 0)
+                price = float(ln.get('price') or 0)
                 lines.append((0, 0, {
                     'product_id': prod.id if prod else False,
-                    'packaging': 'isotanque' if ln.get('env') == 'Isotanque' else 'isomodulo',
-                    'qty': float(ln.get('qty') or 0), 'unit_price': float(ln.get('price') or 0),
+                    'packaging': pkg, 'qty': qty, 'unit_price': price,
                 }))
-            off = env['en.supply.offer'].sudo().create({
-                'supplier_id': company.id, 'state': 'published',
-                'validity': VALIDITY.get(offer.get('vigencia'), '3m'),
-                'port': offer.get('port') or False,
-                'flete': float(offer.get('flete') or 0), 'seguro': float(offer.get('seguro') or 0),
-                'line_ids': lines,
-            })
-            created['offer'] = off.id
-            for cname in (payload.get('clients') or []):
-                cli = env['res.partner'].sudo().create({
-                    'name': cname, 'company_type': 'company',
-                    'contact_type_id': (_contact_type('Cliente nacional').id or False),
+                if prod and qty:
+                    resolved_lines.append({'product': prod, 'qty': qty, 'packaging': pkg, 'price': price})
+            if lines:
+                off = env['en.supply.offer'].sudo().create({
+                    'supplier_id': company.id, 'state': 'published',
+                    'validity': VALIDITY.get(offer.get('vigencia'), '3m'),
+                    'port': offer.get('port') or False,
+                    'flete': float(offer.get('flete') or 0), 'seguro': float(offer.get('seguro') or 0),
+                    'line_ids': lines,
                 })
+                created['offer'] = off.id
+
+            # --- Clientes del envío: hasta 3 orígenes posibles, cada uno con una
+            # "key" que coincide con el esquema del front (embarqueClients()) para
+            # poder enlazar después BL/documentos por bloque. ---
+            resolved_clients = []  # [(key, partner_record)]
+
+            # 1) Cartera real ("tengo"): ids reales, ya tienen relación —
+            # no se crea nada, solo se reutiliza el partner existente.
+            for cid in (payload.get('clients') or []):
                 try:
-                    Rel.create({'client_id': cli.id, 'supplier_id': company.id,
-                                'initiated_by': 'supplier', 'state': 'pending'})
-                    created['clients'] += 1
+                    cid_int = int(cid)
+                except (TypeError, ValueError):
+                    continue
+                cand = env['res.partner'].sudo().browse(cid_int)
+                if cand.exists():
+                    resolved_clients.append(('cartera:%s' % cid_int, cand))
+
+            # 2) Clientes nuevos con datos completos ("sumar"): antes el botón
+            # "+ Agregar cliente" no leía nada del formulario y solo guardaba un
+            # nombre genérico — ahora crea el partner con sus datos reales,
+            # contacto y documentos. Busca primero por NIT: si el cliente ya
+            # existe (acreditado o no), se reutiliza en vez de crear un
+            # duplicado sin acreditar que dejaría la operación bloqueada.
+            for idx, ncli in enumerate(payload.get('newClients') or []):
+                cli = False
+                if ncli.get('nit'):
+                    cli = env['res.partner'].sudo().search(
+                        [('vat', '=', ncli['nit']), ('company_type', '=', 'company')], limit=1)
+                if not cli:
+                    ct = _contact_type('Cliente nacional')
+                    mt = False
+                    if ncli.get('ctype'):
+                        mt = env['res.partner.management.type'].sudo().search(
+                            [('name', '=', ncli['ctype'])], limit=1)
+                    cvals = {
+                        'name': ncli.get('name') or 'Cliente (registrado por %s)' % (company.name or 'proveedor'),
+                        'company_type': 'company',
+                        'contact_type_id': (ct.id if ct else False),
+                        'visible_to_providers': bool(ncli.get('visibleToProviders')),
+                    }
+                    if mt:
+                        cvals['management_type_id'] = mt.id
+                    if ncli.get('nit'):
+                        cvals['vat'] = ncli['nit']
+                    if ncli.get('address'):
+                        cvals['street'] = ncli['address']
+                    if ncli.get('state'):
+                        try:
+                            cvals['state_id'] = int(ncli['state'])
+                        except (TypeError, ValueError):
+                            pass
+                    if ncli.get('city'):
+                        try:
+                            city = env['res.city'].sudo().browse(int(ncli['city']))
+                            if city.exists():
+                                cvals['city_id'] = city.id
+                                cvals['city'] = city.name
+                        except (TypeError, ValueError):
+                            pass
+                    cli = env['res.partner'].sudo().create(cvals)
+                    if ncli.get('contactName') or ncli.get('contactEmail') or ncli.get('contactPhone'):
+                        env['res.partner'].sudo().create({
+                            'parent_id': cli.id, 'company_type': 'person',
+                            'name': ncli.get('contactName') or False,
+                            'email': ncli.get('contactEmail') or False,
+                            'phone': ncli.get('contactPhone') or False,
+                        })
+                prefix = 'newclient:%d:' % idx
+                for fkey, ff in request.httprequest.files.items():
+                    if not fkey.startswith(prefix) or not (ff and ff.filename):
+                        continue
+                    doc_label = fkey[len(prefix):]
+                    doc_label = doc_label.split('|')[-1] if '|' in doc_label else doc_label
+                    env['ir.attachment'].sudo().create({
+                        'name': '%s (%s)' % (doc_label, ff.filename),
+                        'datas': base64.b64encode(ff.read()),
+                        'res_model': 'res.partner', 'res_id': cli.id, 'type': 'binary',
+                    })
+                if not Rel.search([('client_id', '=', cli.id), ('supplier_id', '=', company.id)], limit=1):
+                    try:
+                        Rel.create({'client_id': cli.id, 'supplier_id': company.id,
+                                    'initiated_by': 'supplier', 'state': 'pending'})
+                        created['clients'] += 1
+                    except Exception:
+                        pass
+                resolved_clients.append(('new:%d' % idx, cli))
+
+            # 3) Consignación: la mercancía llega sin cliente final definido —
+            # se usa un partner fijo (ENETEC como responsable temporal), igual
+            # patrón que "Proveedor por designar" del lado cliente.
+            if payload.get('cpHas') == 'consignacion':
+                consig = env['res.partner'].sudo().search(
+                    [('name', '=', 'Enetec_Consignacion'), ('company_type', '=', 'company')], limit=1)
+                if not consig:
+                    consig = env['res.partner'].sudo().create({
+                        'name': 'Enetec_Consignacion', 'company_type': 'company',
+                        'contact_type_id': (_contact_type('Cliente nacional').id or False),
+                    })
+                resolved_clients.append(('consignacion', consig))
+
+            # Si el proveedor llenó el paso Clientes con datos reales, ya no es
+            # solo una oferta suelta: se crea una importación real (misma
+            # arquitectura que usa el equipo desde "Crear Clientes del envío"),
+            # con un bloque por cada cliente y las líneas de la oferta — y la
+            # OC correspondiente en borrador, con el precio ya resuelto.
+            if resolved_clients and resolved_lines:
+                # País de origen: el elegido en el paso "Documentos del embarque"
+                # tiene prioridad (es la señal más explícita para esta solicitud
+                # en concreto); si no se llenó, cae al país declarado en "Mis
+                # datos" y, como último recurso, al país registrado del proveedor.
+                origin = False
+                ship = payload.get('shipData') or {}
+                if ship.get('country_id') and str(ship['country_id']).isdigit():
+                    origin = int(ship['country_id'])
+                if not origin and prov.get('country_id'):
+                    try:
+                        origin = int(prov['country_id'])
+                    except (TypeError, ValueError):
+                        origin = False
+                if not origin and company.country_id:
+                    origin = company.country_id.id
+                if not origin and cuba:
+                    origin = cuba.id
+                if origin:
+                    prov_bl = payload.get('provBl') or {}
+                    blocks = []
+                    for i, (key, cli) in enumerate(resolved_clients):
+                        block_lines = [(0, 0, {
+                            'product_id': rl['product'].id,
+                            'product_name': rl['product'].name,
+                            'qty': rl['qty'],
+                            'packaging': rl['packaging'],
+                            'product_uom_id': rl['product'].uom_id.id,
+                        }) for rl in resolved_lines]
+                        blocks.append((0, 0, {
+                            'sequence': (i + 1) * 10,
+                            'customer_id': cli.id,
+                            'bl_number': prov_bl.get(key) or False,
+                            'product_line_ids': block_lines,
+                        }))
+                    proc = env['importation.process'].sudo().create({
+                        'provider_id': company.id,
+                        'country_origin_id': origin,
+                        'en_request_client_ids': blocks,
+                    })
+                    proc._compute_filtered_hubs()
+                    created['process'] = proc.id
+
+                    # OC en borrador por cada bloque: el comercial la revisa y
+                    # confirma, pero el precio y los documentos ya llegan cargados.
+                    default_ccy = env.ref('base.USD', raise_if_not_found=False)
+                    doc_type_map = {
+                        'Oferta firmada': 'oferta_firmada',
+                        'Factura comercial': 'factura_comercial',
+                        'Lista de empaque': 'lista_empaque',
+                        'Permisos regulatorios': 'permisos',
+                    }
+                    for block, (key, cli) in zip(proc.en_request_client_ids, resolved_clients):
+                        po_lines = [(0, 0, {
+                            'product_id': rl['product'].id, 'name': rl['product'].display_name,
+                            'product_qty': rl['qty'] or 0.0, 'price_unit': rl['price'] or 0.0,
+                            'product_uom': rl['product'].uom_po_id.id or rl['product'].uom_id.id,
+                            'taxes_id': [(6, 0, [])],
+                        }) for rl in resolved_lines]
+                        po = env['purchase.order'].sudo().create({
+                            'partner_id': company.id,
+                            'customer_id': cli.id,
+                            'importation_id': proc.id,
+                            'bl_number': prov_bl.get(key) or False,
+                            'currency_id': default_ccy.id if default_ccy else False,
+                            'origin': proc.name,
+                            'order_line': po_lines,
+                        })
+                        block.purchase_order_id = po.id
+
+                        doc_prefix = 'provship:%s|' % key
+                        for fkey, ff in request.httprequest.files.items():
+                            if not fkey.startswith(doc_prefix) or not (ff and ff.filename):
+                                continue
+                            doc_label = fkey[len(doc_prefix):]
+                            env['en.import.request.document'].sudo().create({
+                                'client_block_id': block.id,
+                                'document_type': doc_type_map.get(doc_label, 'otro'),
+                                'name': doc_label,
+                                'attachment': base64.b64encode(ff.read()),
+                                'filename': ff.filename,
+                            })
+
+            # Certificados compartidos del embarque (aplican a todo el proceso,
+            # no a una OC en particular) — mismo mecanismo que usa cliente.
+            if created.get('process'):
+                proc_ship = env['importation.process'].sudo().browse(created['process'])
+                nship = 0
+                for fkey, ff in request.httprequest.files.items():
+                    if not fkey.startswith('ship:') or not (ff and ff.filename):
+                        continue
+                    doc_name = fkey.split(':', 1)[-1]
+                    env['ir.attachment'].sudo().create({
+                        'name': '%s (%s)' % (doc_name, ff.filename),
+                        'datas': base64.b64encode(ff.read()),
+                        'res_model': 'importation.process', 'res_id': proc_ship.id,
+                        'type': 'binary',
+                    })
+                    nship += 1
+                if nship:
+                    created['ship_docs'] = nship
+                NATIVE_FIELDS = {'documentation_file', 'export_certificate',
+                                 'quality_certificate', 'origin_certificate'}
+                nat_vals = {}
+                for fkey, ff in request.httprequest.files.items():
+                    if not fkey.startswith('shipnat:') or not (ff and ff.filename):
+                        continue
+                    fname = fkey.split(':', 1)[-1]
+                    if fname in NATIVE_FIELDS:
+                        nat_vals[fname] = base64.b64encode(ff.read())
+                        nat_vals[fname + '_filename'] = ff.filename
+                if nat_vals:
+                    proc_ship.write(nat_vals)
+                    created['ship_native_docs'] = len([k for k in nat_vals if not k.endswith('_filename')])
+
+            # Clientes invitados por email: solo enviar correo + nota en el lead
+            base_url = env['ir.config_parameter'].sudo().get_param('web.base.url')
+            signup_url = '%s/web/signup?redirect=/en/wizard' % base_url
+            lead_prov = env['crm.lead'].sudo().search([('partner_id', '=', company.id)], limit=1)
+            for inv_email in (payload.get('inviteEmails') or []):
+                try:
+                    env['mail.mail'].sudo().create({
+                        'subject': 'Invitación para acreditarse en ENETRADEX',
+                        'email_to': inv_email,
+                        'body_html': (
+                            '<p>Estimado cliente,</p>'
+                            '<p><b>%s</b> le ha invitado a acreditarse en la plataforma ENETRADEX.</p>'
+                            '<p><a href="%s">Haga clic aquí para registrarse y comenzar su acreditación</a></p>'
+                        ) % (company.name or 'Un proveedor', signup_url),
+                    }).send()
                 except Exception:
                     pass
+                if lead_prov:
+                    lead_prov.message_post(body='Se invitó al cliente: %s' % inv_email)
+            created['invited_clients'] = len(payload.get('inviteEmails') or [])
             # Difundir oferta: clientes que aceptan recibir ofertas
             created['diffused'] = 0
             for cname in (payload.get('diffused') or []):
-                cli = env['res.partner'].sudo().create({
-                    'name': cname, 'company_type': 'company', 'en_accepts_offers': True,
-                    'contact_type_id': (_contact_type('Cliente nacional').id or False),
-                })
-                try:
-                    Rel.create({'client_id': cli.id, 'supplier_id': company.id,
-                                'initiated_by': 'supplier', 'state': 'pending', 'source': 'panel'})
-                    created['diffused'] += 1
-                except Exception:
-                    pass
+                cli = env['res.partner'].sudo().search(
+                    [('name', '=', cname), ('company_type', '=', 'company')], limit=1)
+                if not cli:
+                    cli = env['res.partner'].sudo().create({
+                        'name': cname, 'company_type': 'company', 'en_accepts_offers': True,
+                        'contact_type_id': (_contact_type('Cliente nacional').id or False),
+                    })
+                if not Rel.search([('client_id', '=', cli.id), ('supplier_id', '=', company.id)], limit=1):
+                    try:
+                        Rel.create({'client_id': cli.id, 'supplier_id': company.id,
+                                    'initiated_by': 'supplier', 'state': 'pending', 'source': 'panel'})
+                        created['diffused'] += 1
+                    except Exception:
+                        pass
 
         # 3) CLIENTE: contraparte (proveedor) + solicitud (operación)
         if role == 'cliente':
@@ -445,7 +757,7 @@ class EnWizard(http.Controller):
             # Datos de la solicitud (se guardan en la importation.process para
             # que el comercial los revise).
             def _sol_vals():
-                prod = _find_product(sol.get('product'))
+                prod = _resolve_product(sol.get('productId'), sol.get('product'))
                 pm = sol.get('payment_method_id')
                 vals = {
                     'en_requested_product_id': prod.id if prod else False,
@@ -456,7 +768,7 @@ class EnWizard(http.Controller):
                 # Líneas multiproducto de la solicitud.
                 lines = []
                 for i, ln in enumerate(sol.get('lines') or []):
-                    lp = _find_product(ln.get('prod'))
+                    lp = _resolve_product(ln.get('pid'), ln.get('prod'))
                     pkg = ln.get('env')
                     lines.append((0, 0, {
                         'sequence': (i + 1) * 10,
@@ -482,7 +794,7 @@ class EnWizard(http.Controller):
                 return vals
 
             if cphas == 'cotiza':
-                prod = _find_product(sol.get('product'))
+                prod = _resolve_product(sol.get('productId'), sol.get('product'))
                 t = env['en.tender'].sudo().create({
                     'client_id': company.id, 'product_id': prod.id if prod else False,
                     'qty': float(sol.get('qty') or 0), 'state': 'open',
@@ -497,27 +809,72 @@ class EnWizard(http.Controller):
                 if cand.exists():
                     supplier = cand
             elif cphas == 'si' and cp == 'info':
-                sup_name = (payload.get('cpInfo') or {}).get('name') \
+                cpinfo = payload.get('cpInfo') or {}
+                sup_name = cpinfo.get('name') \
                     or 'Proveedor (registrado por %s)' % (company.name or 'cliente')
-                supplier = env['res.partner'].sudo().create({
-                    'name': sup_name,
-                    'company_type': 'company',
-                    'contact_type_id': (_contact_type('Proveedor extranjero').id or False),
-                })
-                # Lead de acreditación del proveedor (lo registró el cliente) para
-                # que entre a la bandeja del abogado y pueda acreditarse.
-                Lead.create({
-                    'name': sup_name, 'partner_id': supplier.id, 'type': 'opportunity',
-                    'en_initiated_by': 'counterparty', 'user_id': False,
-                    'en_inviter_partner_id': company.id,
-                })
+                # Proveedor se identifica por código MINCEX (license_holder), no
+                # por NIT — si ya existe (acreditado o no), se reutiliza en vez
+                # de crear un duplicado que dejaría la operación bloqueada. Si
+                # no llegó MINCEX, se cae a buscar por nombre como último recurso.
+                supplier = False
+                if cpinfo.get('mincex'):
+                    supplier = env['res.partner'].sudo().search(
+                        [('license_holder', '=', cpinfo['mincex']), ('company_type', '=', 'company')], limit=1)
+                if not supplier and sup_name:
+                    supplier = env['res.partner'].sudo().search(
+                        [('name', '=', sup_name), ('company_type', '=', 'company')], limit=1)
+                if not supplier:
+                    supplier = env['res.partner'].sudo().create({
+                        'name': sup_name,
+                        'company_type': 'company',
+                        'contact_type_id': (_contact_type('Proveedor extranjero').id or False),
+                        'license_holder': cpinfo.get('mincex') or False,
+                    })
+                    # Lead de acreditación del proveedor (lo registró el cliente)
+                    # para que entre a la bandeja del abogado y pueda acreditarse.
+                    # Solo si se creó de verdad: si se reutilizó uno existente,
+                    # ya tiene (o no necesita) su propio lead de acreditación.
+                    Lead.create({
+                        'name': sup_name, 'partner_id': supplier.id, 'type': 'opportunity',
+                        'en_initiated_by': 'counterparty', 'user_id': False,
+                        'en_inviter_partner_id': company.id,
+                    })
             elif cphas == 'si' and cp == 'invitar' and payload.get('inviteEmail'):
-                rel = Rel.create({'client_id': company.id,
-                                  'supplier_id': company.id,  # placeholder; se reemplaza al aceptar
-                                  'initiated_by': 'client', 'state': 'invited'}) if False else False
-                inv = Inv.create({'email': payload.get('inviteEmail'), 'expected_role': 'supplier',
-                                  'inviter_partner_id': company.id, 'state': 'sent'})
-                created['invitations'].append(inv.id)
+                invite_email = payload.get('inviteEmail')
+                base_url = env['ir.config_parameter'].sudo().get_param('web.base.url')
+                signup_url = '%s/web/signup?redirect=/en/wizard' % base_url
+                try:
+                    env['mail.mail'].sudo().create({
+                        'subject': 'Invitación para acreditarse en ENETRADEX',
+                        'email_to': invite_email,
+                        'body_html': (
+                            '<p>Estimado proveedor,</p>'
+                            '<p><b>%s</b> le ha invitado a acreditarse en la plataforma ENETRADEX.</p>'
+                            '<p><a href="%s">Haga clic aquí para registrarse y comenzar su acreditación</a></p>'
+                            '<p>Si el enlace no funciona, copie esta dirección en su navegador:<br/>%s</p>'
+                        ) % (company.name or 'Un cliente', signup_url, signup_url),
+                    }).send()
+                except Exception:
+                    pass
+                if created.get('lead'):
+                    env['crm.lead'].sudo().browse(created['lead']).message_post(
+                        body='Se invitó al proveedor: %s' % invite_email)
+                created['invitations'].append(invite_email)
+
+            # Sin proveedor resuelto (no eligió vía, o "que me coticen"): en vez de
+            # perder la solicitud, se usa un proveedor placeholder compartido, sin
+            # acreditar. El proceso queda igual en el gate (nunca avanza porque el
+            # placeholder no está acreditado) hasta que un comercial reemplace
+            # provider_id por el proveedor real cuando lo consiga.
+            if not supplier:
+                supplier = env['res.partner'].sudo().search(
+                    [('name', '=', 'Proveedor por designar'), ('company_type', '=', 'company')], limit=1)
+                if not supplier:
+                    supplier = env['res.partner'].sudo().create({
+                        'name': 'Proveedor por designar',
+                        'company_type': 'company',
+                        'contact_type_id': (_contact_type('Proveedor extranjero').id or False),
+                    })
 
             if supplier:
                 # La relación cliente-proveedor es única: reusar si ya existe
@@ -546,6 +903,12 @@ class EnWizard(http.Controller):
                     }
                     proc_vals.update(_sol_vals())
                     proc = env['importation.process'].sudo().create(proc_vals)
+                    # _compute_filtered_hubs es un @api.onchange: solo corre cuando
+                    # alguien cambia el país a mano en el formulario. Al crear el
+                    # proceso por API ese paso nunca se dispara y el comercial ve el
+                    # puerto sin opciones hasta reseleccionar el país — se calcula
+                    # aquí una vez para que ya quede resuelto desde el principio.
+                    proc._compute_filtered_hubs()
                     created['process'] = proc.id
                     if created['relation']:
                         Rel.browse(created['relation']).process_id = proc.id
