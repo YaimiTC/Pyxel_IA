@@ -24,10 +24,19 @@ desktop.ini
 
 # Backups / temporales
 backup/
+backups/
 *.zip
 tmp_*/
 *.sql
+*.sql.gz
+*.backup
 screenshots/
+
+# Instalación local de Odoo (entorno virtual y datos en ejecución, no es código)
+odoo17/venv/
+odoo17/data/
+odoo17/data_dev/
+odoo17/*/venv/
 
 # Documentos generados (PDFs y scripts de generación)
 documentos/*.pdf
