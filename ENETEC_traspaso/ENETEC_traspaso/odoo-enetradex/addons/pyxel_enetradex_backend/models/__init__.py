@@ -5,7 +5,10 @@ from . import counterparty
 from . import en_cuban_partner
 from . import en_payment_method
 from . import en_import_request_line
+from . import en_import_request_client
+from . import en_import_request_document
 from . import res_config_settings
+from . import crm_lead_wizard
 from . import lead_document
 from . import lead_document_page
 from . import supply_offer

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         RESTRICCIONES DE MENÚ POR ROL
+         - Inteligencia Comercial (group_commercial): CRM todo, NO importaciones
+         - Comercial (group_comercial): CRM + importaciones todo
+         - Abogada (group_lawyer): solo expediente acreditación
+         - Apoderado de aduana (group_customs_agent): solo trámites aduana
+    ═══════════════════════════════════════════════════════════ -->
+
+    <!-- Menú raíz de Importaciones: Comercial + Apoderado + Admin -->
+    <record id="pyxel_import_backend.menu_importation_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [
+            ref('pyxel_enetradex_backend.group_comercial'),
+            ref('pyxel_customs_agent.group_customs_agent'),
+            ref('base.group_system'),
+        ])]"/>
+    </record>
+
+    <!-- Submenú Imports (procesos): Comercial + Admin, NO Apoderado -->
+    <record id="pyxel_import_backend.menu_importation_process" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [
+            ref('pyxel_enetradex_backend.group_comercial'),
+            ref('base.group_system'),
+        ])]"/>
+    </record>
+
+    <!-- Configuración de Importaciones: solo Admin -->
+    <record id="pyxel_import_backend.menu_importation_config" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
+    </record>
+
+    <!-- Import Management: solo Admin -->
+    <record id="pyxel_import_backend.menu_import_manager_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
+    </record>
+
+
+    <!-- Menú CRM raíz: Inteligencia Comercial + Comercial + Admin -->
+    <record id="crm.crm_menu_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [
+            ref('pyxel_enetradex_backend.group_commercial'),
+            ref('pyxel_enetradex_backend.group_comercial'),
+            ref('base.group_system'),
+        ])]"/>
+    </record>
+
+    <!-- Menú Ventas raíz: Inteligencia Comercial + Comercial + Admin -->
+    <record id="sale.sale_menu_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [
+            ref('pyxel_enetradex_backend.group_commercial'),
+            ref('pyxel_enetradex_backend.group_comercial'),
+            ref('base.group_system'),
+        ])]"/>
+    </record>
+
+    <!-- Menú Acreditación pendiente para Abogada -->
+    <record id="action_lawyer_pending_docs" model="ir.actions.act_window">
+        <field name="name">Documentos pendientes de revisión</field>
+        <field name="res_model">pyxel.lead.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('lawyer_state', '=', 'to_review')]</field>
+        <field name="context">{'search_default_to_review': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No hay documentos pendientes</p>
+            <p>Aquí aparecen los documentos de acreditación que requieren revisión legal.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_lawyer_root"
+              name="Acreditación"
+              sequence="5"
+              groups="pyxel_enetradex_backend.group_lawyer"/>
+
+    <menuitem id="menu_lawyer_pending"
+              name="Documentos por revisar"
+              parent="menu_lawyer_root"
+              action="action_lawyer_pending_docs"
+              sequence="1"
+              groups="pyxel_enetradex_backend.group_lawyer"/>
+
+</odoo>

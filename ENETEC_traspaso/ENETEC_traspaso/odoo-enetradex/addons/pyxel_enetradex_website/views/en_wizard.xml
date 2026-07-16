@@ -92,7 +92,7 @@
                 </div>
                 <script><![CDATA[
 (function(){
-  var S={role:null,ctype:null,cpHas:null,cp:'cartera',cpCtype:null,cpSel:null,clients:[],newClients:[],editingClient:null,editingIndex:null,diffused:[],offerLines:[],vigencia:'3 meses',flete:0,seguro:0,solProduct:'',search:'',offers:[],offersLoaded:false,inviteEmail:'',cpName:'',cpCountry:'',cpMincex:'',cpProvClass:'',cpAddress:'',cpReqMincex:false,cpContactName:'',cpContactEmail:'',cpContactPhone:'',cpVisibleToClients:false,cpCliName:'',cpCliNit:'',cpCliAddress:'',cpCliState:'',cpCliCity:'',cpCliContactName:'',cpCliContactEmail:'',cpCliContactPhone:'',cpCliVisibleToProviders:false,docFiles:{},docVerdict:{},coName:'',coNit:'',visibleToClients:false,visibleToProviders:false,contactName:'',coEmail:'',coPhone:'',coAddress:'',coState:'',coCity:'',provinces:[],provincesLoaded:false,cities:[],provClass:'',provCountry:'',reqMincex:false,socio:false,socioData:{},socioFiles:{},shipFiles:{},shipNatFiles:{},shipCountry:'',provShipDocs:{},provBl:{},portfolio:[],portfolioLoaded:false,myClients:[],myClientsLoaded:false,solLines:[{prod:'',pid:null,qty:'',env:'isotanque'}],solDelivery:'',solPay:'',solBudget:'',solSpecs:'',solObs:'',payMethods:[],mincex:'',countries:[],countriesLoaded:false,nitDup:false,solQty:'',skippedSol:false,offerOnly:false,products:[],productsLoaded:false,inviteEmails:[],sent:false,result:null};
+  var S={role:null,ctype:null,cpHas:null,cp:'cartera',cpCtype:null,cpSel:null,clients:[],newClients:[],editingClient:null,editingIndex:null,diffused:[],offerLines:[],vigencia:'3 meses',flete:0,seguro:0,solProduct:'',search:'',offers:[],offersLoaded:false,inviteEmail:'',cpName:'',cpCountry:'',cpMincex:'',cpProvClass:'',cpAddress:'',cpReqMincex:false,cpContactName:'',cpContactEmail:'',cpContactPhone:'',cpVisibleToClients:false,cpCliName:'',cpCliNit:'',cpCliAddress:'',cpCliState:'',cpCliCity:'',cpCliContactName:'',cpCliContactEmail:'',cpCliContactPhone:'',cpCliVisibleToProviders:false,docFiles:{},docVerdict:{},coName:'',coNit:'',visibleToClients:false,visibleToProviders:false,contactName:'',coEmail:'',coPhone:'',coAddress:'',coState:'',coCity:'',provinces:[],provincesLoaded:false,cities:[],provClass:'',provCountry:'',reqMincex:false,socio:false,socioData:{},socioFiles:{},shipFiles:{},shipNatFiles:{},shipCountry:'',provShipDocs:{},provBl:{},reqLinesByClient:{},portfolio:[],portfolioLoaded:false,myClients:[],myClientsLoaded:false,solLines:[{prod:'',pid:null,qty:'',env:'isotanque'}],solDelivery:'',solPay:'',solBudget:'',solSpecs:'',solObs:'',payMethods:[],mincex:'',countries:[],countriesLoaded:false,nitDup:false,solQty:'',skippedSol:false,offerOnly:false,products:[],productsLoaded:false,inviteEmails:[],sent:false,result:null};
   var CAM={open:false,key:null,stream:null,pages:[],busy:false};
   var SCAN_DS='http://localhost:8900';
   (function(){
@@ -613,7 +613,7 @@
     };
   })();
   var cur=0;
-  var DOCS={'Pymes':['Escritura notarial','Registro mercantil','Identificación fiscal única RC05','Contrato de banco','Certifico de no adeudo'],'Estatal':['Resoluciones constitutivas','Código REUP','NIT','Contrato de banco'],'CNA':['ONAT','Código REANE','Escritura notarial','Registro mercantil','Identificación fiscal única RC05','Contrato de banco','Certifico de no adeudo'],'Sucursal Extranjera':['Escrituras de constitución','Inscripción registro mercantil','Licencia de la cámara comercial','Carnet de ACORE o PALCO','Planilla de contribuyente','Contrato de banco','Resolución del MINCEX'],'Proveedor':['Escritura de constitución','Inscripción registro mercantil','Poder acreditativo','Certifico de cuenta bancaria','Código MINCEX']};
+  var DOCS={'Pymes':['Escritura notarial','Registro mercantil','Identificación fiscal única RC05','Contrato de banco','Certifico de no adeudo'],'Estatal':['Resoluciones constitutivas','Código REUP','NIT','Contrato de banco'],'CNA':['ONAT','Código REANE','Escritura notarial','Registro mercantil','Identificación fiscal única RC05','Contrato de banco','Certifico de no adeudo'],'Sucursal Extranjera':['Escrituras de constitución','Inscripción registro mercantil','Licencia de la cámara comercial','Carnet de ACORE o PALCO','Planilla de contribuyente','Contrato de banco','Resolución del MINCEX'],'Proveedor':['Escritura de constitución','Inscripción registro mercantil','Poder acreditativo','Certifico de cuenta bancaria','Perfil de la compañía','Solvencia o reporte financiero']};
   var docState={};
   var body=document.getElementById('en-body'),stepper=document.getElementById('en-stepper'),back=document.getElementById('en-back'),next=document.getElementById('en-next');
   var EN=document.querySelector('.enwz');
@@ -627,6 +627,21 @@
   function checkNit(v){var box=document.getElementById('en-nit-dup');v=(v||'').trim();if(!v){S.nitDup=false;if(box)box.style.display='none';return;}rpc('/check_duplicate_nit',{nit:v}).then(function(free){S.nitDup=!free;if(box)box.style.display=free?'none':'block';}).catch(function(){});}
   function checkNitLength(v){var box=document.getElementById('en-nit-len');v=(v||'').trim();var bad=v.length>0&&(!/^[0-9]+$/.test(v)||v.length!==11);if(box)box.style.display=bad?'block':'none';return !bad;}
   function fmt(n){return '$'+(Math.round((+n||0)*100)/100).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  // La gasolina no puede entrar al país en isomódulo: se excluye esa opción de envase.
+  function isGasoline(name){return /^GASOLINA/i.test(name||'');}
+  // useCode=true -> value son los códigos ('isotanque'/'isomodulo', como espera
+  // Solicitud/backend). useCode=false -> value es el texto ('Isotanque'/'Isomódulo',
+  // como espera hoy la tabla de Oferta del proveedor).
+  function envaseOptions(prodName,sel,useCode){
+    var opts=isGasoline(prodName)?[['isotanque','Isotanque']]:[['isotanque','Isotanque'],['isomodulo','Isomódulo']];
+    if(useCode&&sel==='isomodulo'&&isGasoline(prodName))sel='isotanque';
+    return opts.map(function(o){var val=useCode?o[0]:o[1];return '<option value="'+val+'"'+(sel===val?' selected':'')+'>'+o[1]+'</option>';}).join('');
+  }
+  // Litro (11) / Galón US (25): se elige por línea según lo que declare la
+  // factura de cada envío, no un default fijo.
+  var UOM_OPTS=[[11,'Litro'],[25,'Galón (US)']];
+  function uomOptions(sel){sel=sel?+sel:11;return UOM_OPTS.map(function(o){return '<option value="'+o[0]+'"'+(sel===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('');}
+  function uomLabel(id){var o=UOM_OPTS.filter(function(x){return x[0]===+id;})[0];return o?o[1]:'';}
   function subtotal(){return S.offerLines.reduce(function(a,l){return a+(+l.qty||0)*(+l.price||0);},0);}
   function grandTotal(){return subtotal()+(+S.flete||0)+(+S.seguro||0);}
   function paintTotals(){var a=document.getElementById('of-subtotal');if(a)a.textContent=fmt(subtotal());var b=document.getElementById('of-total');if(b)b.textContent=fmt(grandTotal());}
@@ -637,7 +652,7 @@
   function loadPortfolio(cb){if(S.portfolioLoaded){cb&&cb();return;}rpc('/en/wizard/portfolio',{}).then(function(list){S.portfolio=list||[];S.portfolioLoaded=true;cb&&cb();}).catch(function(){S.portfolio=[];S.portfolioLoaded=true;cb&&cb();});}
   function loadMyClients(cb){if(S.myClientsLoaded){cb&&cb();return;}rpc('/en/wizard/my_clients',{}).then(function(list){S.myClients=list||[];S.myClientsLoaded=true;cb&&cb();}).catch(function(){S.myClients=[];S.myClientsLoaded=true;cb&&cb();});}
   function loadCountries(cb){if(S.countriesLoaded){cb&&cb();return;}rpc('/get_form_countries',{}).then(function(d){S.countries=Object.keys(d||{}).map(function(k){return [k,d[k]];}).sort(function(a,b){return a[1].localeCompare(b[1]);});S.countriesLoaded=true;cb&&cb();}).catch(function(){S.countries=[];S.countriesLoaded=true;cb&&cb();});}
-  function loadProducts(cb){if(S.productsLoaded){cb&&cb();return;}rpc('/en/wizard/fuel_products',{}).then(function(list){S.products=(list||[]).map(function(p){return [p.id,p.name];});S.productsLoaded=true;S.solLines.forEach(function(l){if(!l.pid&&S.products.length){l.pid=S.products[0][0];l.prod=S.products[0][1];}});if(!S.solProduct&&S.solLines[0])S.solProduct=S.solLines[0].prod;cb&&cb();}).catch(function(){S.products=[];S.productsLoaded=true;cb&&cb();});}
+  function loadProducts(cb){if(S.productsLoaded){cb&&cb();return;}rpc('/en/wizard/fuel_products',{}).then(function(list){S.products=(list||[]).map(function(p){return [p.id,p.name,p.uom_name||''];});S.productsLoaded=true;S.solLines.forEach(function(l){if(!l.pid&&S.products.length){l.pid=S.products[0][0];l.prod=S.products[0][1];}});if(!S.solProduct&&S.solLines[0])S.solProduct=S.solLines[0].prod;cb&&cb();}).catch(function(){S.products=[];S.productsLoaded=true;cb&&cb();});}
   function providerAddress(){
     if(!S.countriesLoaded){loadCountries(function(){render();});}
     var co='<option value="">País…</option>'+(S.countries||[]).map(function(c){return '<option value="'+c[0]+'"'+(String(S.provCountry)===String(c[0])?' selected':'')+'>'+c[1]+'</option>';}).join('');
@@ -699,7 +714,7 @@
     var doneClass=(done?(rej?'':' is-done'):'');
     return '<div class="en-doccard'+doneClass+'"'+cardStyle+'>'+ic+'<div class="en-doc-name">'+name+'</div>'+status+iaBadge(verdict)+pdfBtn+camBtn+scanBtn+dlBtn+delBtn+'</div>';
   }
-  function docGrid(type,label){return '<p class="en-sechead">'+(label||('Documentos de '+type))+'</p><div class="en-docgrid">'+DOCS[type].map(function(n){var k=type+'|'+n;var enc=encodeURIComponent(k);return docCard(n,S.docFiles[k],'data-docf="'+enc+'"',S.docVerdict[k],enc);}).join('')+'</div>';}
+  function docGrid(type,label){var note=type==='Proveedor'?'<p class="en-hint">Los documentos deben tener una antigüedad no mayor a 1 año — de lo contrario deberán actualizarse.</p>':'';return '<p class="en-sechead">'+(label||('Documentos de '+type))+'</p>'+note+'<div class="en-docgrid">'+DOCS[type].map(function(n){var k=type+'|'+n;var enc=encodeURIComponent(k);var disp=n==='Certifico de no adeudo'?'Certifico de no adeudo (o último comprobante de pago a la ONAT)':n;return docCard(disp,S.docFiles[k],'data-docf="'+enc+'"',S.docVerdict[k],enc);}).join('')+'</div>';}
   function typeCards(a,c){var t=[['Pymes','5 docs'],['Estatal','4 docs'],['CNA','7 docs'],['Sucursal Extranjera','7 docs']];return '<div class="en-grid2">'+t.map(function(x){return '<button class="en-typecard'+(c===x[0]?" sel":"")+'" '+a+'="'+x[0]+'"><span style="font-weight:500;font-size:13.5px">'+x[0]+'</span><span style="font-size:11.5px;color:var(--cts)">'+x[1]+'</span></button>';}).join('')+'</div>';}
   function tagsOf(arr,attr,label){if(!arr.length)return '';return '<p class="en-sechead">'+label+' ('+arr.length+')</p><div>'+arr.map(function(n,i){return '<span class="en-tag">'+n+' <button '+attr+'="'+i+'">✕</button></span>';}).join('')+'</div>';}
   function rowG(r,attr,sel,chk,extra){var badge=extra?extra:(r[2]?'<span class="en-badge en-ok">Acreditado</span>':'<span class="en-badge en-pend">Pendiente</span>');var c=chk?(sel?'☑ ':'☐ '):'';return '<div class="en-row'+(sel?' sel':'')+'" '+attr+'="'+r[0]+'"><span>'+c+'<span style="font-weight:500">'+r[0]+'</span> · NIT '+r[1]+'</span>'+badge+'</div>';}
@@ -712,10 +727,12 @@
   }
   function solLineRow(l,i){
     var po=(S.products||[]).map(function(p){return '<option value="'+p[0]+'"'+(String(l.pid)===String(p[0])?' selected':'')+'>'+p[1]+'</option>';}).join('');
-    var eo=[['isotanque','Isotanque'],['isomodulo','Isomódulo']].map(function(o){return '<option value="'+o[0]+'"'+(l.env===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('');
+    if(l.env==='isomodulo'&&isGasoline(l.prod))l.env='isotanque';
+    var eo=envaseOptions(l.prod,l.env,true);
     var rm=S.solLines.length>1?'<button class="en-chip" data-rmsol="'+i+'">✕</button>':'';
     return '<tr><td><select data-li="'+i+'" data-lf="prod">'+po+'</select></td>'+
-      '<td><input type="number" data-li="'+i+'" data-lf="qty" value="'+(l.qty||'')+'" placeholder="0"/></td>'+
+      '<td><input type="number" data-li="'+i+'" data-lf="qty" value="'+(l.qty||'')+'" placeholder="0" min="0" step="any"/></td>'+
+      '<td><select data-li="'+i+'" data-lf="uom">'+uomOptions(l.uom)+'</select></td>'+
       '<td><select data-li="'+i+'" data-lf="env">'+eo+'</select></td>'+
       '<td class="num">'+rm+'</td></tr>';
   }
@@ -723,7 +740,7 @@
     if(!S.productsLoaded){loadProducts(function(){render();});}
     var payOpts='<option value="">-- Seleccione --</option>'+S.payMethods.map(function(m){return '<option value="'+m.id+'"'+(String(S.solPay)===String(m.id)?' selected':'')+'>'+m.name+'</option>';}).join('');
     var rows=S.solLines.map(solLineRow).join('');
-    var table='<p class="en-sechead">Productos</p><table class="ot"><thead><tr><th>Producto</th><th>Cantidad</th><th>Tipo de envase</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    var table='<p class="en-sechead">Productos</p><table class="ot"><thead><tr><th>Producto</th><th>Cantidad</th><th>Unidad</th><th>Tipo de envase</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+
       '<button class="en-btn ghost" data-addsol="1" style="margin:8px 0 14px">+ Agregar producto</button>';
     return '<p class="en-h">Solicitud de importación</p><p class="en-sub">Añade uno o varios productos. Según ellos te mostraremos proveedores.</p>'+
       table+
@@ -765,10 +782,11 @@
     var vigs=['1 mes','3 meses','6 meses','1 año','Personalizada'];
     var po=(S.products||[]).map(function(p){return '<option value="'+p[0]+'">'+p[1]+'</option>';}).join('');
     var head='<div class="en-grid2">'+field('Vigencia','<select id="of-vig">'+vigs.map(function(v){return '<option'+(S.vigencia===v?' selected':'')+'>'+v+'</option>';}).join('')+'</select>')+field('Incoterm','<select><option>CIF</option><option>CFR</option><option>FOB</option></select>')+field('Puerto de origen','<input id="of-port" placeholder="Puerto"/>')+field('Forma de pago','<select><option>Transferencia</option><option>Carta de crédito</option></select>')+'</div>';
-    var rows=S.offerLines.length?S.offerLines.map(function(l,i){var imp=(+l.qty||0)*(+l.price||0);return '<tr><td style="font-weight:500">'+l.prod+'</td><td>'+l.env+'</td><td class="num">'+(l.qty||'—')+'</td><td class="num">'+fmt(l.price)+'</td><td class="imp">'+fmt(imp)+'</td><td class="num"><button class="en-chip" data-rmline="'+i+'">✕</button></td></tr>';}).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--cts);padding:14px">Aún no hay líneas. Agrega una abajo.</td></tr>';
-    var table='<p class="en-sechead">Productos de la oferta</p><table class="ot"><thead><tr><th>Producto</th><th>Envase</th><th class="num">Cant.</th><th class="num">Precio</th><th class="num">Importe</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
-    var addbar='<div class="addbar"><div class="en-fld"><label>Producto</label><select id="ol-prod">'+po+'</select></div><div class="en-fld"><label>Envase</label><select id="ol-env"><option>Isotanque</option><option>Isomódulo</option></select></div><div class="en-fld"><label>Cantidad</label><input id="ol-qty" type="number"/></div><div class="en-fld"><label>Precio (USD)</label><input id="ol-price" type="number"/></div><button class="en-btn" data-addline="1">+ Agregar</button></div>';
-    var totals='<div class="totbox"><div class="totrow"><span style="color:var(--cts)">Subtotal</span><span id="of-subtotal" style="font-weight:500">$0.00</span></div><div class="totrow"><span style="color:var(--cts)">Flete</span><input id="of-flete" type="number"/></div><div class="totrow"><span style="color:var(--cts)">Seguro</span><input id="of-seguro" type="number"/></div><div class="totend"><span style="font-weight:500">Total</span><span id="of-total" style="font-weight:500;color:var(--ctsu)">$0.00</span></div></div>';
+    var rows=S.offerLines.length?S.offerLines.map(function(l,i){var imp=(+l.qty||0)*(+l.price||0);return '<tr><td style="font-weight:500">'+l.prod+'</td><td>'+l.env+'</td><td class="num">'+(l.qty||'—')+'</td><td>'+uomLabel(l.uom)+'</td><td class="num">'+fmt(l.price)+'</td><td class="imp">'+fmt(imp)+'</td><td class="num"><button class="en-chip" data-rmline="'+i+'">✕</button></td></tr>';}).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--cts);padding:14px">Aún no hay líneas. Agrega una abajo.</td></tr>';
+    var table='<p class="en-sechead">Productos de la oferta</p><table class="ot"><thead><tr><th>Producto</th><th>Envase</th><th class="num">Cant.</th><th>Unidad</th><th class="num">Precio</th><th class="num">Importe</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+    var olFirstProd=(S.products&&S.products[0])?S.products[0][1]:'';
+    var addbar='<div class="addbar"><div class="en-fld"><label>Producto</label><select id="ol-prod">'+po+'</select></div><div class="en-fld"><label>Envase</label><select id="ol-env">'+envaseOptions(olFirstProd)+'</select></div><div class="en-fld"><label>Cantidad</label><input id="ol-qty" type="number" min="0.01" step="any"/></div><div class="en-fld"><label>Unidad</label><select id="ol-uom">'+uomOptions()+'</select></div><div class="en-fld"><label>Precio (USD)</label><input id="ol-price" type="number" min="0.01" step="any"/></div><button class="en-btn" data-addline="1">+ Agregar</button></div>';
+    var totals='<div class="totbox"><div class="totrow"><span style="color:var(--cts)">Subtotal</span><span id="of-subtotal" style="font-weight:500">$0.00</span></div><div class="totrow"><span style="color:var(--cts)">Flete</span><input id="of-flete" type="number" min="0" step="any"/></div><div class="totrow"><span style="color:var(--cts)">Seguro</span><input id="of-seguro" type="number" min="0" step="any"/></div><div class="totend"><span style="font-weight:500">Total</span><span id="of-total" style="font-weight:500;color:var(--ctsu)">$0.00</span></div></div>';
     var omit=(S.offerOnly?'':'<div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--cb);text-align:center"><button class="en-btn ghost" data-omitsol="1" style="font-size:13px;color:var(--cts)">Omitir → Solo quiero acreditarme</button></div>');
     return '<p class="en-h">Oferta de suministro</p><p class="en-sub">Cotización: líneas valoradas, flete, seguro y total.</p>'+head+table+addbar+totals+omit;
   }
@@ -776,11 +794,13 @@
     if(!S.role)return needRole();var head='<p class="en-h">Tus clientes</p>';
     if(S.cpHas==null)return head+'<p class="en-sub">¿Cómo defines a los clientes de tu oferta?</p><div class="en-grid2">'+bigcard('data-has','tengo','Ya tengo clientes','De mi cartera (uno o varios).','Elegir')+bigcard('data-has','sumar','Sumar clientes nuevos','Acredito o invito a uno o varios.','Continuar')+bigcard('data-has','consignacion','Es consignación','Aún no tengo cliente definido.','Continuar')+bigcard('data-has','difundir','Difundir mi oferta','A clientes que reciben ofertas.','Elegir')+'</div>';
     var backb='<button class="en-btn ghost" data-has="back" style="margin-bottom:12px">← Cambiar respuesta</button>';
+    var resolvedCount=(S.cpHas==='tengo'?S.clients.length:0)+(S.cpHas==='sumar'?S.newClients.length:0)+(S.cpHas==='consignacion'?1:0);
+    var statusBanner=(S.cpHas==='tengo'||S.cpHas==='sumar')?('<div class="en-note" style="background:'+(resolvedCount>0?'var(--csucc)':'var(--cwarn)')+';color:'+(resolvedCount>0?'var(--ctsu)':'var(--ctw)')+';margin-bottom:12px">'+(resolvedCount>0?('✓ '+resolvedCount+' cliente(s) agregado(s) hasta ahora.'):'Todavía no has agregado ningún cliente en esta vía.')+'</div>'):'';
     if(S.cpHas==='tengo'){
       if(!S.myClientsLoaded){loadMyClients(function(){render();});return head+'<p class="en-sub">Cargando tu cartera…</p>'+backb;}
       if(!S.myClients.length)return head+'<p class="en-sub">No tienes clientes en tu cartera todavía. Usa «Sumar clientes nuevos».</p>'+backb;
       var mcNames=S.clients.map(function(id){var m=S.myClients.filter(function(p){return String(p.id)===String(id);})[0];return m?m.name:id;});
-      return head+'<p class="en-sub">Marca uno o varios clientes de tu cartera.</p>'+backb+S.myClients.map(function(p){var sel=S.clients.indexOf(String(p.id))>=0;var badge=p.accredited?'<span class="en-badge en-ok">Acreditado</span>':'<span class="en-badge en-pend">Pendiente</span>';return '<div class="en-row'+(sel?' sel':'')+'" data-multi="'+p.id+'"><span><span style="font-weight:500">'+p.name+'</span>'+(p.nit?(' · NIT '+p.nit):'')+'</span>'+badge+'</div>';}).join('')+tagsOf(mcNames,'data-rm','Clientes');
+      return head+'<p class="en-sub">Marca uno o varios clientes de tu cartera.</p>'+backb+statusBanner+S.myClients.map(function(p){var sel=S.clients.indexOf(String(p.id))>=0;var badge=p.accredited?'<span class="en-badge en-ok">Acreditado</span>':'<span class="en-badge en-pend">Pendiente</span>';return '<div class="en-row'+(sel?' sel':'')+'" data-multi="'+p.id+'"><span><span style="font-weight:500">'+p.name+'</span>'+(p.nit?(' · NIT '+p.nit):'')+'</span>'+badge+'</div>';}).join('')+tagsOf(mcNames,'data-rm','Clientes');
     }
     if(S.cpHas==='consignacion')return head+'<p class="en-sub">La mercancía llega en consignación: aún no hay un cliente final asignado. ENETEC queda como responsable temporal del envío hasta asignar comprador.</p>'+backb+'<div class="en-note" style="background:var(--csucc);color:var(--ctsu)">✓ Consignación seleccionada — continúa al siguiente paso.</div>';
     if(S.cpHas==='difundir'){var rows=[['Transporte Habana','3001…900'],['Logística Caribe','3001…044']];return head+'<p class="en-sub">Clientes que aceptan recibir ofertas. Marca a quiénes enviar tu oferta.</p>'+backb+rows.map(function(r){return rowG(r,'data-diff',S.diffused.indexOf(r[0])>=0,true,'<span class="en-badge en-pub">Recibe ofertas</span>');}).join('')+tagsOf(S.diffused,'data-rmd','Difusión a');}
@@ -790,7 +810,7 @@
     var editingNote=S.editingClient?('<div class="en-note" style="background:var(--cbg2)">✎ Editando <b>'+(S.editingClient.name||'este cliente')+'</b> — corrige los datos abajo y pulsa «Guardar cambios» para actualizarlo.</div>'):'';
     var newClientTags=S.newClients.length?('<p class="en-sechead">Clientes agregados ('+S.newClients.length+')</p>'+S.newClients.map(function(c,i){return '<div class="en-row" style="cursor:default"><span><span style="font-weight:500">'+(c.name||'(sin nombre)')+'</span>'+(c.nit?(' · NIT '+c.nit):'')+(c.ctype?(' · '+c.ctype):'')+'</span><span style="display:flex;gap:6px"><button class="en-chip" data-editnc="'+i+'" style="padding:2px 10px;font-size:11px">✎ Editar</button><button class="en-tag-rm" data-rmnc="'+i+'">✕</button></span></div>';}).join('')):'';
     var content=S.cp==='invitar'?field('Correo del cliente','<input id="en-invite-email" placeholder="correo@empresa.com"/>')+'<button class="en-btn" data-add="invite">+ Agregar</button>'+invTags:editingNote+'<p class="en-sechead">Tipo del cliente cubano</p>'+typeCards('data-cpctype',S.cpCtype)+(S.cpCtype?('<div class="en-grid2" style="margin-top:12px">'+field('Nombre de la empresa','<input id="cp-cli-name" placeholder="Nombre de la empresa"/>'+'')+field('NIT','<input id="cp-cli-nit" placeholder="NIT"/>')+'</div>'+'<p class="en-sechead">Dirección de la empresa</p>'+field('Dirección','<input id="cp-cli-address" placeholder="Calle, número, reparto"/>')+'<div class="en-grid2">'+field('Provincia','<select id="cp-cli-state">'+cpCliProv+'</select>')+field('Municipio','<select id="cp-cli-city">'+cpCliCity+'</select>')+'</div>'+'<p class="en-sechead">Datos del contacto</p>'+field('Nombre y apellido del contacto','<input id="cp-cli-contact" placeholder="Nombre y apellido de la persona"/>')+'<div class="en-grid2">'+field('Correo electrónico','<input id="cp-cli-email" type="email" placeholder="correo@empresa.com"/>'+'')+field('Teléfono','<input id="cp-cli-phone" placeholder="Teléfono"/>')+'</div>'+docGrid(S.cpCtype,'Documentos del cliente')+'<p class="en-sechead">Otros documentos legales</p><div class="en-docgrid">'+docCard('Otros documentos legales',S.docFiles['otros-cli|Otros'],'data-docf="'+encodeURIComponent('otros-cli|Otros')+'"',S.docVerdict['otros-cli|Otros'],encodeURIComponent('otros-cli|Otros'))+'</div>'+'<div style="margin-top:16px"><label style="display:flex;gap:8px;align-items:center;font-size:13.5px;font-weight:500;margin:0;color:var(--ctp)"><input type="checkbox" id="cp-cli-visible-providers" style="width:auto"'+(S.cpCliVisibleToProviders?' checked':'')+'/> Mis datos pueden ser visibles para proveedores</label></div>'+'<button class="en-btn" data-add="client" style="margin-top:10px">'+(S.editingClient?'Guardar cambios':'+ Agregar cliente')+'</button>'):'<div class="en-hint" style="margin-top:12px">Elige un tipo para ver sus documentos.</div>')+newClientTags;
-    return head+'<p class="en-sub">Suma uno o varios clientes: acredítalos o invítalos.</p>'+backb+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+oc+'</div>'+content;
+    return head+'<p class="en-sub">Suma uno o varios clientes: acredítalos o invítalos.</p>'+backb+statusBanner+'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">'+oc+'</div>'+content;
   }
   function p2(){if(!S.role)return needRole();return S.role==='proveedor'?panelOferta():panelSolCli();}
   function p3(){if(!S.role)return needRole();return S.role==='proveedor'?panelClientes():panelCp();}
@@ -828,6 +848,19 @@
   }
   function solGate(){var st=steps();if(st.p[cur]!==panelSolCli)return;var msg=stepBad();next.disabled=hasRejected()||!!msg;next.title=msg;}
   function datosGate(){var st=steps();if(st.p[cur]!==panelDatos)return;var msg=stepBad();next.disabled=hasRejected()||!!msg;next.title=msg;}
+  function costBlockHtml(key){
+    if(!S.productsLoaded){loadProducts(function(){render();});}
+    var enck=encodeURIComponent(key);
+    var po=(S.products||[]).map(function(p){return '<option value="'+p[0]+'">'+p[1]+'</option>';}).join('');
+    var lines=S.reqLinesByClient[key]||[];
+    var rows=lines.length?lines.map(function(l,i){var imp=(+l.qty||0)*(+l.price||0);return '<tr><td style="font-weight:500">'+l.prod+'</td><td>'+l.env+'</td><td class="num">'+(l.qty||'—')+'</td><td>'+uomLabel(l.uom)+'</td><td class="num">'+fmt(l.price)+'</td><td class="imp">'+fmt(imp)+'</td><td class="num"><button class="en-chip" data-rmlinec="'+enck+':'+i+'">✕</button></td></tr>';}).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--cts);padding:10px;font-size:12.5px">Sin productos todavía.</td></tr>';
+    var table='<table class="ot"><thead><tr><th>Producto</th><th>Envase</th><th class="num">Cant.</th><th>Unidad</th><th class="num">Precio</th><th class="num">Importe</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+    var firstProd=(S.products&&S.products[0])?S.products[0][1]:'';
+    var addbar='<div class="addbar"><div class="en-fld"><label>Producto</label><select id="cl-prod-'+enck+'">'+po+'</select></div><div class="en-fld"><label>Envase</label><select id="cl-env-'+enck+'">'+envaseOptions(firstProd)+'</select></div><div class="en-fld"><label>Cantidad</label><input id="cl-qty-'+enck+'" type="number" min="0.01" step="any"/></div><div class="en-fld"><label>Unidad</label><select id="cl-uom-'+enck+'">'+uomOptions()+'</select></div><div class="en-fld"><label>Precio (USD)</label><input id="cl-price-'+enck+'" type="number" min="0.01" step="any"/></div><button class="en-btn" data-addlinec="'+enck+'">+ Agregar</button></div>';
+    var sub=lines.reduce(function(a,l){return a+(+l.qty||0)*(+l.price||0);},0);
+    var subTxt=lines.length?('<div style="text-align:right;margin-top:6px;font-size:12.5px;color:var(--cts)">Subtotal: <b style="color:var(--ctp)">'+fmt(sub)+'</b></div>'):'';
+    return '<p class="en-sechead" style="margin-top:0">Costos</p>'+table+addbar+subTxt;
+  }
   function panelEmbarque(){
     if(!S.countriesLoaded){loadCountries(function(){render();});}
     var co='<option value="">Seleccione el origen…</option>'+(S.countries||[]).map(function(c){return '<option value="'+c[0]+'"'+(String(S.shipCountry)===String(c[0])?' selected':'')+'>'+c[1]+'</option>';}).join('');
@@ -838,16 +871,18 @@
       var blocksHtml=cli.map(function(c){
         var k=c.key,enck=encodeURIComponent(k);
         return '<div style="margin-bottom:14px;padding:12px;border:1px solid var(--cb);border-radius:8px">'+
-          '<p class="en-sechead" style="margin-top:0">'+c.label+'</p>'+
-          field('No. BL / AWB','<input data-provbl="'+enck+'" value="'+(S.provBl[k]||'')+'" placeholder="Número de BL o AWB"/>')+
+          '<p class="en-sechead" style="margin-top:0;font-size:14px">'+c.label+'</p>'+
+          costBlockHtml(k)+
+          '<p class="en-sechead">Embarque</p>'+
+          field('No. BL / AWB','<input data-provbl="'+enck+'" value="'+(S.provBl[k]||'')+'" placeholder="Número de BL o AWB" style="text-transform:uppercase"/><div class="en-hint" style="margin:4px 0 0">Se guarda en mayúsculas.</div>')+
           '<div class="en-docgrid">'+PROV_SHIP_DOCS.map(function(d){var fk=k+'|'+d;var enc=encodeURIComponent('provship:'+fk);return docCard(d,S.provShipDocs[fk],'data-provshipf="'+encodeURIComponent(fk)+'"',null,enc);}).join('')+'</div>'+
         '</div>';
       }).join('');
-      return '<p class="en-h">Documentos del embarque</p><p class="en-sub">Datos y documentos de la operación de importación. <b>Este paso es opcional</b>: puedes continuar y aportarlos después. Los revisará un comercial.</p>'+
+      return '<p class="en-h">Solicitud</p><p class="en-sub">Para cada cliente: qué le vendes (costos) y los documentos de su embarque. <b>Este paso es opcional</b>: puedes continuar y completarlo después. Lo revisará un comercial.</p>'+
         '<div class="en-grid2">'+field('País de origen','<select id="ship-country">'+co+'</select>')+'</div>'+
         certsHtml+
-        '<p class="en-sechead">Documentos por cliente / orden de compra <span style="font-weight:400;color:var(--cts)">(opcional)</span></p>'+
-        (blocksHtml||'<div class="en-hint">No hay clientes para asociar documentos.</div>');
+        '<p class="en-sechead">Por cliente / orden de compra <span style="font-weight:400;color:var(--cts)">(opcional)</span></p>'+
+        (blocksHtml||'<div class="en-hint">No hay clientes para asociar costos y documentos.</div>');
     }
     return '<p class="en-h">Documentos del embarque</p><p class="en-sub">Datos y documentos de la operación de importación. <b>Este paso es opcional</b>: si aún no tienes los documentos, puedes continuar y aportarlos después. Los revisará un comercial.</p>'+
       '<div class="en-grid2">'+field('País de origen','<select id="ship-country">'+co+'</select>')+'</div>'+
@@ -897,14 +932,34 @@
     var ship=showEmbarque();
     if(S.skippedSol)return{l:['Rol','Mis datos','Resumen'],p:[panelRol,panelDatos,panelRes]};
     if(S.importOnly){var li=['Solicitud','Proveedor'],pi=[panelSolCli,panelCp];if(ship){li.push('Documentos del embarque');pi.push(panelEmbarque);}li.push('Resumen');pi.push(panelRes);return{l:li,p:pi};}
-    if(S.offerOnly){var lo=['Oferta','Clientes'],po=[panelOferta,panelClientes];if(ship){lo.push('Documentos del embarque');po.push(panelEmbarque);}lo.push('Resumen');po.push(panelRes);return{l:lo,p:po};}
-    if(S.role==='proveedor'){var lp=['Rol','Mis datos','Oferta','Clientes'],pp=[panelRol,panelDatos,panelOferta,panelClientes];if(ship){lp.push('Documentos del embarque');pp.push(panelEmbarque);}lp.push('Resumen');pp.push(panelRes);return{l:lp,p:pp};}
+    if(S.offerOnly){var lo=['Oferta','Clientes'],po=[panelOferta,panelClientes];if(ship){lo.push('Solicitud');po.push(panelEmbarque);}lo.push('Resumen');po.push(panelRes);return{l:lo,p:po};}
+    if(S.role==='proveedor'){var lp=['Rol','Mis datos','Oferta','Clientes'],pp=[panelRol,panelDatos,panelOferta,panelClientes];if(ship){lp.push('Solicitud');pp.push(panelEmbarque);}lp.push('Resumen');pp.push(panelRes);return{l:lp,p:pp};}
     var lc=['Rol','Mis datos','Solicitud','Proveedor'],pc=[panelRol,panelDatos,panelSolCli,panelCp];if(ship){lc.push('Documentos del embarque');pc.push(panelEmbarque);}lc.push('Resumen');pc.push(panelRes);return{l:lc,p:pc};
   }
   function loadOffers(cb){if(S.offersLoaded){cb&&cb();return;}rpc('/en/catalog/offers',{}).then(function(list){S.offers=list||[];S.offersLoaded=true;cb&&cb();}).catch(function(){S.offers=[];S.offersLoaded=true;cb&&cb();});}
   function go(i){cur=i;render();}
+  // Indicador temporal de diagnóstico (2026-07-15) — visible en pantalla, sin
+  // necesidad de F12, para diagnosticar el reporte de "un cliente y no sale
+  // Solicitud" sin depender de capturas de consola.
+  function paintDebugBadge(stepsInfo){
+    var b=document.getElementById('en-debug-badge');
+    if(!b){
+      b=document.createElement('div');
+      b.id='en-debug-badge';
+      b.style.cssText='position:fixed;bottom:8px;right:8px;z-index:99999;background:#111827;color:#e5e7eb;font:11px/1.5 monospace;padding:8px 10px;border-radius:6px;max-width:280px;opacity:.92;box-shadow:0 2px 8px rgba(0,0,0,.3)';
+      document.body.appendChild(b);
+    }
+    var snap={cur:cur,step:stepsInfo.l[cur],role:S.role,cpHas:S.cpHas,cp:S.cp,clients:S.clients.length,newClients:S.newClients.length,diffused:S.diffused.length,showEmb:showEmbarque()};
+    b.textContent='DEBUG cur='+snap.cur+'/'+(stepsInfo.l.length-1)+' step='+snap.step+' role='+snap.role+' cpHas='+snap.cpHas+' cp='+snap.cp+' clients='+snap.clients+' newClients='+snap.newClients+' diffused='+snap.diffused+' showEmb='+snap.showEmb;
+    var sig=JSON.stringify(snap);
+    if(sig!==window.__wzLastDebugSig){
+      window.__wzLastDebugSig=sig;
+      rpc('/en/wizard/debug_ping',snap).catch(function(){});
+    }
+  }
   function render(){
     var st=steps();var STEPS=st.l;var last=st.p.length-1;
+    paintDebugBadge(st);
     stepper.innerHTML=STEPS.map(function(t,i){var cls=i===cur?'active':(i<cur?'done':'');return '<button class="en-step '+cls+'" data-go="'+i+'"><div class="dot">'+(i<cur?'✓':(i+1))+'</div><div class="lbl">'+t+'</div></button>';}).join('');
     body.innerHTML=st.p[cur]();
     back.style.visibility=cur===0?'hidden':'visible';
@@ -964,10 +1019,31 @@
     body.querySelectorAll('[data-shipf]').forEach(function(b){b.onchange=function(){var k=decodeURIComponent(b.getAttribute('data-shipf'));if(b.files&&b.files[0])S.shipFiles[k]=b.files[0];render();};});
     body.querySelectorAll('[data-shipnat]').forEach(function(b){b.onchange=function(){var k=b.getAttribute('data-shipnat');if(b.files&&b.files[0])S.shipNatFiles[k]=b.files[0];render();};});
     body.querySelectorAll('[data-provshipf]').forEach(function(b){b.onchange=function(){var k=decodeURIComponent(b.getAttribute('data-provshipf'));if(b.files&&b.files[0])S.provShipDocs[k]=b.files[0];render();};});
-    body.querySelectorAll('[data-provbl]').forEach(function(b){b.oninput=function(){var k=decodeURIComponent(b.getAttribute('data-provbl'));S.provBl[k]=b.value;};});
+    body.querySelectorAll('[data-provbl]').forEach(function(b){b.oninput=function(){var k=decodeURIComponent(b.getAttribute('data-provbl'));S.provBl[k]=b.value.toUpperCase();};});
     var shc=document.getElementById('ship-country');if(shc)shc.onchange=function(){S.shipCountry=shc.value;};
-    var al=body.querySelector('[data-addline]');if(al)al.onclick=function(){var p=document.getElementById('ol-prod'),e=document.getElementById('ol-env'),q=document.getElementById('ol-qty'),pr=document.getElementById('ol-price');var popt=p?p.options[p.selectedIndex]:null;S.offerLines.push({prod:popt?popt.textContent:'',pid:p?p.value:null,env:e?e.value:'Isotanque',qty:(q&&q.value)?+q.value:0,price:(pr&&pr.value)?+pr.value:0});render();};
+    var al=body.querySelector('[data-addline]');if(al)al.onclick=function(){var p=document.getElementById('ol-prod'),e=document.getElementById('ol-env'),q=document.getElementById('ol-qty'),u=document.getElementById('ol-uom'),pr=document.getElementById('ol-price');var popt=p?p.options[p.selectedIndex]:null;var qv=+((q&&q.value)||0),pv=+((pr&&pr.value)||0);if(!(qv>0)||!(pv>0)){alert('La cantidad y el precio deben ser mayores que cero.');return;}S.offerLines.push({prod:popt?popt.textContent:'',pid:p?p.value:null,env:e?e.value:'Isotanque',qty:qv,uom:u?u.value:11,price:pv});render();};
+    var olp=document.getElementById('ol-prod');if(olp)olp.onchange=function(){var opt=olp.options[olp.selectedIndex];var olv=document.getElementById('ol-env');if(olv)olv.innerHTML=envaseOptions(opt?opt.textContent:'');};
     body.querySelectorAll('[data-rmline]').forEach(function(b){b.onclick=function(){S.offerLines.splice(+b.getAttribute('data-rmline'),1);render();};});
+    body.querySelectorAll('[data-addlinec]').forEach(function(b){b.onclick=function(){
+      var enck=b.getAttribute('data-addlinec'),k=decodeURIComponent(enck);
+      var p=document.getElementById('cl-prod-'+enck),e=document.getElementById('cl-env-'+enck),q=document.getElementById('cl-qty-'+enck),u=document.getElementById('cl-uom-'+enck),pr=document.getElementById('cl-price-'+enck);
+      var popt=p?p.options[p.selectedIndex]:null;
+      var qv=+((q&&q.value)||0),pv=+((pr&&pr.value)||0);
+      if(!(qv>0)||!(pv>0)){alert('La cantidad y el precio deben ser mayores que cero.');return;}
+      if(!S.reqLinesByClient[k])S.reqLinesByClient[k]=[];
+      S.reqLinesByClient[k].push({prod:popt?popt.textContent:'',pid:p?p.value:null,env:e?e.value:'Isotanque',qty:qv,uom:u?u.value:11,price:pv});
+      render();
+    };});
+    body.querySelectorAll('[data-rmlinec]').forEach(function(b){b.onclick=function(){
+      var raw=b.getAttribute('data-rmlinec'),idx=raw.lastIndexOf(':'),enck=raw.slice(0,idx),i=+raw.slice(idx+1),k=decodeURIComponent(enck);
+      if(S.reqLinesByClient[k])S.reqLinesByClient[k].splice(i,1);
+      render();
+    };});
+    body.querySelectorAll('[id^="cl-prod-"]').forEach(function(p){p.onchange=function(){
+      var enck=p.id.slice('cl-prod-'.length);
+      var opt=p.options[p.selectedIndex];
+      var ev=document.getElementById('cl-env-'+enck);if(ev)ev.innerHTML=envaseOptions(opt?opt.textContent:'');
+    };});
     body.querySelectorAll('[data-add]').forEach(function(b){b.onclick=function(){var em=document.getElementById('en-invite-email');var t=b.getAttribute('data-add');if(t==='invite'&&em&&em.value){S.inviteEmails.push(em.value);em.value='';}else if(t==='client'){
       var docf={},docv={};
       Object.keys(S.docFiles).forEach(function(k){if(k==='otros-cli|Otros'||k.indexOf(S.cpCtype+'|')===0){docf[k]=S.docFiles[k];docv[k]=S.docVerdict[k];delete S.docFiles[k];delete S.docVerdict[k];}});
@@ -988,7 +1064,8 @@
     body.querySelectorAll('[data-rmd]').forEach(function(b){b.onclick=function(){S.diffused.splice(+b.getAttribute('data-rmd'),1);render();};});
     body.querySelectorAll('[data-rminv]').forEach(function(b){b.onclick=function(){S.inviteEmails.splice(+b.getAttribute('data-rminv'),1);render();};});
     body.querySelectorAll('[data-li]').forEach(function(b){var i=+b.getAttribute('data-li'),f=b.getAttribute('data-lf');var ev=(f==='qty')?'oninput':'onchange';b[ev]=function(){
-      if(f==='prod'){var opt=b.options[b.selectedIndex];S.solLines[i].pid=b.value;S.solLines[i].prod=opt?opt.textContent:'';S.solProduct=S.solLines[0].prod;}
+      if(f==='prod'){var opt=b.options[b.selectedIndex];S.solLines[i].pid=b.value;S.solLines[i].prod=opt?opt.textContent:'';S.solProduct=S.solLines[0].prod;render();return;}
+      else if(f==='qty'){if(+b.value<0)b.value='';S.solLines[i][f]=b.value;}
       else{S.solLines[i][f]=b.value;}
       solGate();
     };});
@@ -1003,8 +1080,8 @@
     var sob=document.getElementById('sol-obs');if(sob){sob.value=S.solObs||'';sob.oninput=function(){S.solObs=sob.value;};}
     var srch=document.getElementById('of-search');if(srch){srch.value=S.search||'';srch.oninput=function(){S.search=srch.value;var ol=document.getElementById('offer-list');if(ol){ol.innerHTML=renderOfferList();ol.querySelectorAll('[data-pick]').forEach(function(b){b.onclick=function(){S.cpSel=b.getAttribute('data-pick');render();};});}};}
     var vg=document.getElementById('of-vig');if(vg)vg.onchange=function(){S.vigencia=vg.value;};
-    var fl=document.getElementById('of-flete');if(fl){fl.value=S.flete||'';fl.oninput=function(){S.flete=+fl.value||0;paintTotals();};}
-    var sg=document.getElementById('of-seguro');if(sg){sg.value=S.seguro||'';sg.oninput=function(){S.seguro=+sg.value||0;paintTotals();};}
+    var fl=document.getElementById('of-flete');if(fl){fl.value=S.flete||'';fl.oninput=function(){if(+fl.value<0)fl.value='';S.flete=+fl.value||0;paintTotals();};}
+    var sg=document.getElementById('of-seguro');if(sg){sg.value=S.seguro||'';sg.oninput=function(){if(+sg.value<0)sg.value='';S.seguro=+sg.value||0;paintTotals();};}
     var nm=document.getElementById('en-name');if(nm){nm.value=S.coName||'';nm.oninput=function(){S.coName=nm.value;datosGate();};}
     var vc=document.getElementById('en-visible-clients');if(vc){vc.checked=!!S.visibleToClients;vc.onchange=function(){S.visibleToClients=vc.checked;};}
     var vp=document.getElementById('en-visible-providers');if(vp){vp.checked=!!S.visibleToProviders;vp.onchange=function(){S.visibleToProviders=vp.checked;};}
@@ -1045,7 +1122,7 @@
     var em=document.getElementById('en-invite-email');if(em)S.inviteEmail=em.value;
     var first=S.solLines[0]||{};var qty=first.qty||'';
     var verdicts={};Object.keys(S.docVerdict).forEach(function(k){var lbl=k.indexOf('|')>=0?k.split('|')[1]:k;verdicts[lbl]=S.docVerdict[k];});
-    var payload={role:S.role,importOnly:!!S.importOnly,offerOnly:!!S.offerOnly,ctype:S.ctype,verdicts:verdicts,company:{name:S.coName,nit:S.coNit,address:S.coAddress,state_id:S.coState,city_id:S.coCity,visible_to_clients:S.visibleToClients,visible_to_providers:S.visibleToProviders},contact:{name:S.contactName,email:S.coEmail,phone:S.coPhone},prov:{clasificacion:S.provClass,country_id:S.provCountry,requiere_mincex:S.reqMincex,mincex:S.mincex,socio_cubano:S.socio},socio:{enabled:S.socio,data:S.socioData},cpHas:S.cpHas,cp:S.cp,cpSel:S.cpSel,inviteEmail:S.inviteEmail,cpInfo:{name:S.cpName,clasificacion:S.cpProvClass,address:S.cpAddress,country:S.cpCountry,mincex:S.cpMincex,requiere_mincex:S.cpReqMincex,contact_name:S.cpContactName,contact_email:S.cpContactEmail,contact_phone:S.cpContactPhone,visible_to_clients:S.cpVisibleToClients},cpCliInfo:{name:S.cpCliName,nit:S.cpCliNit,address:S.cpCliAddress,state_id:S.cpCliState,city_id:S.cpCliCity,contact_name:S.cpCliContactName,contact_email:S.cpCliContactEmail,contact_phone:S.cpCliContactPhone,visible_to_providers:S.cpCliVisibleToProviders},sol:{product:first.prod,productId:first.pid,qty:qty,envase:first.env,lines:S.solLines,delivery:S.solDelivery,payment_method_id:S.solPay,budget:S.solBudget,specifications:S.solSpecs,observations:S.solObs},shipData:{country_id:S.shipCountry},offer:{vigencia:S.vigencia,flete:S.flete,seguro:S.seguro,lines:S.offerLines},clients:S.clients,newClients:S.newClients.map(function(c){return {name:c.name,nit:c.nit,ctype:c.ctype,address:c.address,state:c.state,city:c.city,contactName:c.contactName,contactEmail:c.contactEmail,contactPhone:c.contactPhone,visibleToProviders:c.visibleToProviders};}),diffused:S.diffused,inviteEmails:S.inviteEmails,provBl:S.provBl};
+    var payload={role:S.role,importOnly:!!S.importOnly,offerOnly:!!S.offerOnly,ctype:S.ctype,verdicts:verdicts,company:{name:S.coName,nit:S.coNit,address:S.coAddress,state_id:S.coState,city_id:S.coCity,visible_to_clients:S.visibleToClients,visible_to_providers:S.visibleToProviders},contact:{name:S.contactName,email:S.coEmail,phone:S.coPhone},prov:{clasificacion:S.provClass,country_id:S.provCountry,requiere_mincex:S.reqMincex,mincex:S.mincex,socio_cubano:S.socio},socio:{enabled:S.socio,data:S.socioData},cpHas:S.cpHas,cp:S.cp,cpSel:S.cpSel,inviteEmail:S.inviteEmail,cpInfo:{name:S.cpName,clasificacion:S.cpProvClass,address:S.cpAddress,country:S.cpCountry,mincex:S.cpMincex,requiere_mincex:S.cpReqMincex,contact_name:S.cpContactName,contact_email:S.cpContactEmail,contact_phone:S.cpContactPhone,visible_to_clients:S.cpVisibleToClients},cpCliInfo:{name:S.cpCliName,nit:S.cpCliNit,address:S.cpCliAddress,state_id:S.cpCliState,city_id:S.cpCliCity,contact_name:S.cpCliContactName,contact_email:S.cpCliContactEmail,contact_phone:S.cpCliContactPhone,visible_to_providers:S.cpCliVisibleToProviders},sol:{product:first.prod,productId:first.pid,qty:qty,envase:first.env,lines:S.solLines,delivery:S.solDelivery,payment_method_id:S.solPay,budget:S.solBudget,specifications:S.solSpecs,observations:S.solObs},shipData:{country_id:S.shipCountry},offer:{vigencia:S.vigencia,flete:S.flete,seguro:S.seguro,lines:S.offerLines},clients:S.clients,newClients:S.newClients.map(function(c){return {name:c.name,nit:c.nit,ctype:c.ctype,address:c.address,state:c.state,city:c.city,contactName:c.contactName,contactEmail:c.contactEmail,contactPhone:c.contactPhone,visibleToProviders:c.visibleToProviders};}),diffused:S.diffused,inviteEmails:S.inviteEmails,provBl:S.provBl,reqByClient:S.reqLinesByClient};
     var fd=new FormData();fd.append('payload',JSON.stringify(payload));
     S.newClients.forEach(function(c,i){Object.keys(c.docFiles||{}).forEach(function(k){fd.append('newclient:'+i+':'+k,c.docFiles[k],c.docFiles[k].name);});});
     Object.keys(S.docFiles).forEach(function(k){fd.append('doc:'+k,S.docFiles[k],S.docFiles[k].name);});
@@ -1054,7 +1131,7 @@
     Object.keys(S.shipNatFiles).forEach(function(k){fd.append('shipnat:'+k,S.shipNatFiles[k],S.shipNatFiles[k].name);});
     Object.keys(S.provShipDocs).forEach(function(k){fd.append('provship:'+k,S.provShipDocs[k],S.provShipDocs[k].name);});
     next.disabled=true;next.textContent='Enviando…';
-    fetch('/en/wizard/submit',{method:'POST',credentials:'same-origin',body:fd}).then(function(r){return r.json();}).then(function(res){if(res&&res.ok){window.location.href='/en/wizard/enviado'+(S.importOnly?'?op=1':(S.offerOnly?'?offer=1':''));return;}next.disabled=false;next.textContent='Enviar';var s=document.getElementById('en-sent');if(s)s.innerHTML='<div class="en-note" style="background:#fdeef0;color:#d33a4b">No se pudo enviar. Inténtalo de nuevo.</div>';}).catch(function(e){next.disabled=false;next.textContent='Enviar';var s=document.getElementById('en-sent');if(s)s.innerHTML='<div class="en-note" style="background:#fdeef0;color:#d33a4b">Error al enviar.</div>';});
+    fetch('/en/wizard/submit',{method:'POST',credentials:'same-origin',body:fd}).then(function(r){return r.json();}).then(function(res){if(res&&res.ok){window.location.href='/en/wizard/enviado'+(S.importOnly?'?op=1':(S.offerOnly?'?offer=1':''));return;}next.disabled=false;next.textContent='Enviar';var s=document.getElementById('en-sent');if(s)s.innerHTML='<div class="en-note" style="background:#fdeef0;color:#d33a4b">No se pudo enviar'+((res&&res.error)?(': '+res.error):'. Inténtalo de nuevo.')+'</div>';}).catch(function(e){next.disabled=false;next.textContent='Enviar';var s=document.getElementById('en-sent');if(s)s.innerHTML='<div class="en-note" style="background:#fdeef0;color:#d33a4b">Error al enviar. Inténtalo de nuevo.</div>';});
   }
   next.onclick=function(){var last=steps().p.length-1;if(cur<last)go(cur+1);else doSubmit();};
   back.onclick=function(){if(cur>0){if(S.skippedSol){S.skippedSol=false;}go(cur-1);}};

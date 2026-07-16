@@ -21,6 +21,14 @@ access_en_payment_method_manager,en.payment.method.manager,model_en_payment_meth
 access_en_payment_method_portal,en.payment.method.portal,model_en_payment_method,base.group_portal,1,0,0,0
 access_en_import_request_line_user,en.import.request.line.user,model_en_import_request_line,base.group_user,1,1,1,1
 access_en_import_request_line_portal,en.import.request.line.portal,model_en_import_request_line,base.group_portal,1,0,0,0
+access_en_import_request_client_user,en.import.request.client.user,model_en_import_request_client,base.group_user,1,1,1,1
+access_en_import_request_client_portal,en.import.request.client.portal,model_en_import_request_client,base.group_portal,1,0,0,0
+access_en_import_request_client_line_user,en.import.request.client.line.user,model_en_import_request_client_line,base.group_user,1,1,1,1
+access_en_import_request_client_line_portal,en.import.request.client.line.portal,model_en_import_request_client_line,base.group_portal,1,0,0,0
+access_en_import_request_document_user,en.import.request.document.user,model_en_import_request_document,base.group_user,1,1,1,1
+access_en_import_request_document_portal,en.import.request.document.portal,model_en_import_request_document,base.group_portal,1,0,0,0
+access_crm_lead_create_wizard_user,crm.lead.create.wizard.user,model_crm_lead_create_wizard,base.group_user,1,1,1,1
+access_crm_lead_wizard_doc_user,crm.lead.wizard.doc.user,model_crm_lead_wizard_doc,base.group_user,1,1,1,1
 access_pyxel_import_document_user,pyxel.import.document.user,model_pyxel_import_document,base.group_user,1,1,1,1
 access_pyxel_import_document_portal,pyxel.import.document.portal,model_pyxel_import_document,base.group_portal,1,1,0,0
 access_pyxel_import_document_check_user,pyxel.import.document.check.user,model_pyxel_import_document_check,base.group_user,1,1,1,1

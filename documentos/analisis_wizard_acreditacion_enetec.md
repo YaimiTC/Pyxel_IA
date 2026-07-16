@@ -1,6 +1,6 @@
 # Análisis del wizard de acreditación/importación — ENETRADEX
 
-Fecha: 2026-07-10, actualizado 2026-07-14. Verificado contra el código **realmente desplegado** en `localhost:8469`.
+Fecha: 2026-07-10, actualizado 2026-07-14, actualizado 2026-07-15. Verificado contra el código **realmente desplegado** en `localhost:8469` y en el servidor real (`192.168.1.247:8469`).
 
 **Repo correcto:** `D:\trabajo\Pyxel\IA\ENETEC_traspaso\ENETEC_traspaso\odoo-enetradex\addons` (confirmado con `docker inspect enetradex_odoo` → los volúmenes montan desde ahí, NO desde `enetradex-git`).
 
@@ -59,6 +59,74 @@ Consecuencia esperada (no es un bug, es diseño consistente con "Proveedor por d
 
 ---
 
+### 0ter. Estado de implementación — sesión 2026-07-15: 10 incidencias + reestructuración Oferta/Solicitud + unidad de medida
+
+Implementado, actualizado en Docker (`-u pyxel_enetradex_backend,pyxel_enetradex_website`) y **verificado con pruebas E2E de punta a punta tanto en local como en el servidor real** (192.168.1.247, con verificación directa en su base de datos).
+
+#### Bugs de registro encontrados y corregidos (previos a esta sesión, no introducidos hoy)
+
+Antes de poder tocar nada de lo de abajo hubo que arreglar el arranque del módulo backend, que llevaba tiempo con piezas nuevas creadas pero nunca conectadas:
+
+| Archivo | Problema | Fix |
+|---|---|---|
+| `pyxel_enetradex_backend/models/__init__.py` | No importaba `en_import_request_client`, `en_import_request_document` ni `crm_lead_wizard` — esos modelos existían en disco pero Odoo nunca los cargaba | Se agregaron los `from . import` faltantes |
+| `pyxel_enetradex_backend/security/ir.model.access.csv` | Sin permisos para `en.import.request.client`, `.client.line`, `en.import.request.document`, `crm.lead.create.wizard`, `crm.lead.wizard.doc` — al activarse los modelos, cualquier intento de abrirlos daba "Error de acceso" | Filas nuevas siguiendo el mismo patrón que `en.import.request.line` (user: CRUD completo, portal: según el modelo) |
+| `pyxel_enetradex_backend/__manifest__.py` | `views/crm_lead_wizard_views.xml`, `views/purchase_order_views.xml` y `views/menu_access.xml` existían en disco pero no estaban en la lista `data` — nunca se cargaban | Se agregaron las 3 rutas |
+| `pyxel_enetradex_backend/security/groups.xml` | `menu_access.xml` referenciaba un grupo `group_comercial` que nunca se creó (solo existía `group_commercial`, "Inteligencia Comercial") — habría roto la carga del módulo al agregar `menu_access.xml` al manifest | Se creó `group_comercial` ("Comercial", superset de `group_commercial` vía `implied_ids`) |
+
+**Hallazgo importante post-fix:** al comparar el código local contra el servidor real antes de desplegar, se confirmó que **el servidor tenía código más completo que el local** en `crm_lead.py` y `en_backend_views.xml` (vistas de acreditación multi-cliente en el backend — `en_customer_ids`, árbol/formulario detallado por cliente, vista de lista de Importaciones) — el local había perdido ese trabajo en algún momento (sospecha de la usuaria: al liberar espacio en Docker). No se sobrescribieron esos 2 archivos al desplegar.
+
+#### Las 10 incidencias de la lista de la usuaria
+
+| # | Incidencia | Fix |
+|---|---|---|
+| 1 | Unidad de medida del volumen de combustible no visible en el front | Selector real Litro/Galón (ids 11/25) agregado como columna "Unidad" en las 3 tablas de líneas (Solicitud del cliente, Oferta del proveedor, Solicitud/costos del proveedor). Requirió agregar el campo `product_uom_id` a `en.import.request.line` y `en.supply.offer.line` (que no lo tenían); `en.import.request.client.line` ya lo tenía. El backend ahora respeta la elección del usuario en vez de forzar siempre la unidad por defecto del producto |
+| 2 | No dejaba seleccionar el país al acreditar un proveedor | No era un bug de lógica — era consecuencia de los bugs de registro de arriba (el modelo `en.import.request.client` daba error de acceso, lo cual rompía el flujo). Se resolvió al arreglar el registro |
+| 3 | Documentos del proveedor se mezclaban con los del cliente al acreditar | El backend adjuntaba TODO lo que llegara con prefijo `doc:` al lead/partner del que envía el formulario, sin distinguir para quién era cada documento. Ahora se filtra por prefijo (`Proveedor\|` se salta cuando el que envía es un cliente, y viceversa con los tipos de cliente cuando el que envía es un proveedor) y se adjunta al partner correcto. Se revisó también el sentido inverso (proveedor acreditando cliente): el flujo normal ya separaba bien; se cerró un caso límite (edición de cliente abandonada a medias) |
+| 4 | Nota de antigüedad máxima (1 año) en documentos del proveedor | Aviso agregado arriba de la cuadrícula de documentos del proveedor, en `docGrid()` |
+| 5 | Certificado de no adeudo del cliente no aceptaba comprobante ONAT | Etiqueta de la tarjeta actualizada a "Certifico de no adeudo (o último comprobante de pago a la ONAT)" — solo el texto visible, la clave interna se mantuvo igual para no romper el expediente de acreditación que ya distingue ese documento por su nombre original |
+| 6 | Envase de gasolina permitía Isomódulo (no puede entrar así al país) | Filtrado en las 3 tablas de líneas (front, dinámico según producto elegido) + corrección de respaldo en el backend (`_safe_packaging()`, aplica a oferta, solicitud del cliente y costos por cliente) |
+| 7 | Campo de documento de MINCEX (no existe ese documento) | Se quitó "Código MINCEX" de la lista `DOCS.Proveedor` (era una tarjeta de subida de archivo). El campo de texto "Código MINCEX" (el número, no un documento) se mantuvo intacto |
+| 8 | Agregar Perfil de compañía y Solvencia/reporte financiero a docs del proveedor | Agregados a `DOCS.Proveedor` |
+| 9 | Notificar el error exacto en el llenado de información | `wizard_submit` ahora envuelve toda la lógica en un wrapper `_wizard_submit_impl` con try/except: si algo falla a mitad de proceso, hace rollback de la transacción y devuelve `{'ok': false, 'error': '<mensaje real>'}` en JSON en vez de dejar que Odoo devuelva una página de error HTML que el front no puede leer. El front ahora muestra ese mensaje específico en vez de "Inténtalo de nuevo" genérico |
+| — | (la 10ª incidencia, la reestructuración Oferta/Clientes/Solicitud del proveedor) | ver más abajo |
+
+#### Reestructuración Oferta → Clientes → Solicitud (proveedor, corrección de fondo)
+
+**Antes:** el proveedor llenaba UNA sola tabla de Oferta (productos/cantidad/precio), y esa misma tabla se copiaba sin cambios a la Orden de Compra de **cada** cliente elegido — imposible vender productos o cantidades distintas a cada uno.
+
+**Ahora:**
+- **Oferta** se queda como estaba, pero su propósito se acotó explícitamente a catálogo/difusión pública (opciones "Difundir mi oferta" y "Publicar oferta").
+- **Clientes** sin cambios (cartera, sumar nuevos, consignación, difundir).
+- Nuevo paso **"Solicitud"** (reemplaza a "Documentos del embarque" solo para el rol proveedor) — un bloque por cada cliente elegido, con:
+  - **Costos**: su propia tabla de producto/cantidad/unidad/precio (mismo patrón de validación y de bloqueo de gasolina+isomódulo que la Oferta).
+  - **Embarque**: lo que ya existía (BL/AWB + documentos por cliente), ahora dentro del mismo bloque.
+- Backend: `resolved_lines_by_key` (construido desde `payload.reqByClient`) reemplaza al `resolved_lines` compartido — cada Orden de Compra y cada bloque de `en.import.request.client` ahora usa las líneas de **su propio** cliente. El gate de creación pasó de exigir "clientes Y oferta con líneas" a solo "clientes" (los costos son opcionales, se completan después si hace falta, igual que el embarque).
+
+#### Validación de cantidades y precios (no negativos, no cero)
+
+- HTML: `min` en todos los campos numéricos de cantidad/precio (0.01 en líneas de producto, 0 en flete/seguro).
+- JS: no se puede escribir un número negativo en la Solicitud del cliente (se limpia el campo al instante); el botón "+ Agregar" de Oferta y de Costos por cliente rechaza con aviso si cantidad o precio no son mayores que cero.
+- Backend: mismas reglas replicadas como respaldo en las 3 rutas (oferta, solicitud del cliente, costos por cliente) — una línea con cantidad o precio ≤0 se descarta silenciosamente en vez de crearse.
+
+#### Número de BL en mayúsculas
+
+Aviso "Se guarda en mayúsculas" bajo el campo, con `text-transform:uppercase` visual y conversión real a mayúsculas del valor guardado (`S.provBl[k] = b.value.toUpperCase()`), sin importar cómo lo escriba el usuario.
+
+#### Campos nuevos en `purchase.order`
+
+`en_purchase_order.py` no tenía `customer_id` (real, escribible) ni `bl_number` — el código del wizard llevaba tiempo intentando escribirlos y fallando con `Invalid field`. Se agregaron ambos; el campo legado `en_customer_id` (related, solo lectura, apuntaba al `customer_id` único del proceso — vacío en multi-cliente) se dejó intacto por compatibilidad, ya no se usa para nada nuevo.
+
+#### Despliegue y validación en el servidor real (192.168.1.247)
+
+Dos rondas de despliegue esta sesión, cada una con: backup de BD (`pg_dump`) antes de tocar nada, comparación de código servidor-vs-local archivo por archivo antes de sobrescribir (para no pisar trabajo que solo existiera en el servidor), `-u` del módulo, reinicio del contenedor, verificación de salud (`/web/health`).
+
+Prueba E2E completa en el servidor (usuarios de prueba `QA-SRV *`, verificado por consulta SQL directa):
+- Proveedor con 2 clientes: cada Orden de Compra con su propio producto/cantidad/precio/unidad (uno en litros, otro en galones), BL guardado en mayúsculas, gasolina bloqueó Isomódulo, cantidad negativa rechazada con aviso.
+- Cliente: unidad de medida en la tabla de Solicitud, cantidad negativa se limpia sola, país seleccionable al registrar un proveedor nuevo, comprobante ONAT visible, envío completo generó el proveedor y la solicitud con la unidad correcta.
+
+---
+
 ## 1. Flujo verificado
 
 ### Entrada — usuario no autenticado
@@ -75,18 +143,19 @@ Tarjetas **Cliente** / **Proveedor**.
 5. **Documentos del embarque** (opcional) — solo si `showEmbarque()`.
 6. **Resumen** → Enviar.
 
-### Camino PROVEEDOR (5 pasos, sin embarque)
+### Camino PROVEEDOR (5-6 pasos — actualizado 2026-07-15)
 1. **Rol** → Proveedor
-2. **Mis datos** → empresa extranjera + 5 documentos.
-3. **Oferta** → líneas producto/envase/cantidad/precio (productos reales), flete, seguro, total.
-4. **Clientes** → 3 vías: "ya tengo", "sumar nuevos", "difundir oferta".
-5. **Resumen** → Enviar.
+2. **Mis datos** → empresa extranjera + documentos (5 + Perfil de la compañía + Solvencia/reporte financiero, ya sin el documento de MINCEX que no existe).
+3. **Oferta** → líneas producto/envase/cantidad/unidad/precio (productos reales), flete, seguro, total. **Alcance acotado**: es para catálogo/difusión pública, no para la operación puntual con clientes.
+4. **Clientes** → 4 vías: "ya tengo" (cartera real), "sumar nuevos", "es consignación", "difundir oferta".
+5. **Solicitud** (opcional, solo si hay ≥1 cliente resuelto — cartera/nuevos/consignación, no "difundir") → un bloque por cada cliente, con su propia tabla de costos (producto/cantidad/unidad/precio) **y** sus documentos de embarque (BL/AWB en mayúsculas + 4 documentos), reemplaza al viejo paso "Documentos del embarque" para este rol.
+6. **Resumen** → Enviar.
 
 ### "Ya estoy acreditado" — ahora simétrico
 - **Sin `?op=1`**, cualquier rol con lead activo → 303 a `/my/seguimiento`.
 - **Con `?op=1`**:
   - **CLIENTE** → arranca en Solicitud → Proveedor → (Embarque) → Resumen.
-  - **PROVEEDOR** → arranca en Oferta → Clientes → Resumen (ya arreglado).
+  - **PROVEEDOR** → arranca en Oferta → Clientes → (Solicitud) → Resumen (ya arreglado).
 - Sigue existiendo la plantilla huérfana `en_already_accredited` (`en_accredited.xml`), no la llama ninguna ruta.
 
 ### Después de enviar
@@ -94,16 +163,14 @@ Enviar → crea lead(s) en CRM → abogado acredita cada empresa → `importatio
 
 ---
 
-## 2. La duplicidad "dos formularios" (cliente vs backend) — resuelto el porqué
+## 2. La duplicidad "dos formularios" (cliente vs backend) — resuelto el porqué (actualizado 2026-07-15)
 
 Hay **dos estructuras de datos separadas** para "productos solicitados" del mismo `importation.process`:
 
-1. **`en_request_line_ids`** (`en.import.request.line`) — la que llena el **wizard público**. Producto, Cantidad, Tipo de envase. **Sin Unidad de medida.**
-2. **`en_request_client_ids` → `product_line_ids`** (`en.import.request.client` / `.client.line`) — la que llena el **equipo manualmente** desde el backend ("Crear Clientes del envío"). Soporta varios clientes por envío y **sí tiene Unidad** (litro/galón, ids 11/25).
+1. **`en_request_line_ids`** (`en.import.request.line`) — la que llena la **Solicitud del wizard público del cliente**. Producto, Cantidad, Tipo de envase y, **desde 2026-07-15, también Unidad de medida** (`product_uom_id`, litro/galón, ids 11/25 — se agregó el campo que faltaba).
+2. **`en_request_client_ids` → `product_line_ids`** (`en.import.request.client` / `.client.line`) — la que llena el **equipo manualmente** desde el backend ("Crear Clientes del envío"), y **desde 2026-07-15 también la Solicitud del wizard público del proveedor** (el nuevo paso "Solicitud" por cliente, ver sección 0ter). Soporta varios clientes por envío y ya tenía Unidad.
 
-No es un accidente: `action_en_approve_request()` en `importation_process.py` dice explícitamente *"por cada bloque de cliente genera OC+OV; si no hay bloques de cliente usa el flujo legado (customer_id único)"*. El wizard público nunca crea bloques de cliente → siempre cae al flujo legado → nunca pasa por el modelo que tiene Unidad. Las dos estructuras **no se sincronizan entre sí**.
-
-**Implicación:** si se quiere que las solicitudes hechas desde el wizard público también tengan Unidad, hay que agregar el campo directamente a `en.import.request.line` (mismo patrón: `product_uom_id` con dominio restringido a litro/galón) — no tiene sentido intentar rutear el wizard hacia el sistema de bloques de cliente, que está pensado para uso interno del equipo con envíos consolidados de varios compradores.
+No es un accidente que sigan siendo dos modelos distintos: `action_en_approve_request()` en `importation_process.py` dice explícitamente *"por cada bloque de cliente genera OC+OV; si no hay bloques de cliente usa el flujo legado (customer_id único)"*. La Solicitud del **cliente** sigue sin crear bloques → sigue cayendo al flujo legado de un solo `customer_id`. La Solicitud del **proveedor**, en cambio, desde esta sesión sí crea bloques reales por cada cliente (ese era justamente el problema de fondo que motivó la reestructuración de la incidencia #10). Las dos estructuras siguen sin sincronizarse entre sí, pero **ya ninguna de las dos carece de Unidad de medida** — ese pendiente quedó resuelto.
 
 ---
 
@@ -131,22 +198,38 @@ No es un accidente: `action_en_approve_request()` en `importation_process.py` di
 | 18 | Proceso con bloque de cliente no acreditado fallaba al crearse (`ValidationError` en el constraint de acreditación) porque `create()` no miraba los bloques para decidir la etapa inicial | **Arreglado 2026-07-14** — bug preexistente, no de esta feature; ver sección 0bis |
 | 19 | Botón "Omitir" del paso Oferta (proveedor) visible incluso en modo `offerOnly`, donde no tiene sentido ("Omitir → Solo quiero acreditarme" para alguien ya acreditado) | **Arreglado 2026-07-14** — ver sección 0bis, punto A |
 | 20 | "Ya tengo clientes" (proveedor) mostraba 3 filas inventadas en el JS, sin conexión real a la cartera; "Difundir oferta" y "Sumar clientes nuevos" creaban partners por nombre sin buscar si ya existían (mismo patrón que el bug #12, ahora confirmado y arreglado también del lado proveedor) | **Arreglado 2026-07-14** — ver sección 0bis, puntos F e I |
+| 21 | Unidad de medida del volumen (litro/galón) no existía como selector en ninguna de las 3 tablas de líneas | **Arreglado 2026-07-15** — ver sección 0ter |
+| 22 | País no seleccionable al acreditar un proveedor | **Arreglado 2026-07-15** — no era un bug de lógica, era el modelo `en.import.request.client` dando "Error de acceso" por falta de permisos (bug de registro, ver sección 0ter) |
+| 23 | Documentos del proveedor se mezclaban con los del cliente (y viceversa) al acreditar una contraparte | **Arreglado 2026-07-15** — filtrado por prefijo en el backend, ver sección 0ter |
+| 24 | Sin nota de antigüedad máxima en documentos del proveedor | **Arreglado 2026-07-15** |
+| 25 | Certificado de no adeudo (cliente) no aceptaba comprobante de pago ONAT como alternativa | **Arreglado 2026-07-15** — solo cambio de etiqueta visible |
+| 26 | Envase Isomódulo disponible para gasolina (no puede entrar así al país) | **Arreglado 2026-07-15** — front + respaldo en backend |
+| 27 | Documento de MINCEX en la lista de documentos del proveedor (ese documento no existe, solo el código como texto) | **Arreglado 2026-07-15** |
+| 28 | Faltaban Perfil de la compañía y Solvencia/reporte financiero en documentos del proveedor | **Arreglado 2026-07-15** |
+| 29 | Errores del envío del wizard mostraban siempre "Inténtalo de nuevo" sin el motivo real | **Arreglado 2026-07-15** — backend ahora captura la excepción, hace rollback y devuelve el mensaje real en JSON |
+| 30 | Oferta compartida entre todos los clientes del proveedor — imposible vender productos/cantidades/precios distintos a cada uno | **Arreglado 2026-07-15** — reestructuración Oferta(catálogo)/Clientes/Solicitud(costos por cliente), ver sección 0ter |
+| 31 | Cantidad y precio de las líneas de producto aceptaban valores negativos o cero | **Arreglado 2026-07-15** — bloqueado en front (HTML + JS) y como respaldo en el backend |
+| 32 | Número de BL/AWB se guardaba tal cual lo escribiera el usuario (mayúsculas/minúsculas mezcladas) | **Arreglado 2026-07-15** — se normaliza a mayúsculas siempre |
 
-## 4. Validaciones — confirmado, ninguna existe en el back
+## 4. Validaciones — actualizado 2026-07-15, ya hay algunas del lado del servidor
 
-Auditoría completa de `wizard_submit`: **cero** `raise`/`ValidationError`/chequeo de negocio para cantidad, nombre, NIT, vía de proveedor u oferta vacía. Todo el bloqueo vive únicamente en `next.disabled` del JavaScript (`stepBad()`). Quien desactive JS, o mande el POST directo a `/en/wizard/submit`, se salta las 5 validaciones sin ningún obstáculo del servidor.
+Auditoría original de `wizard_submit`: **cero** `raise`/`ValidationError`/chequeo de negocio para cantidad, nombre, NIT, vía de proveedor u oferta vacía. Todo el bloqueo vivía únicamente en `next.disabled` del JavaScript (`stepBad()`). Quien desactivara JS, o mandara el POST directo a `/en/wizard/submit`, se saltaba esas validaciones sin ningún obstáculo del servidor.
 
-**Riesgo real:** bajo — es el mismo nivel de protección que ya tenía el resto del wizard antes de esta ronda (todo el diseño actual confía en JS del lado cliente). Pero es una brecha de integridad de datos: nada impide que llegue una solicitud con cantidad 0 o sin proveedor por una vía distinta al formulario normal.
+**Actualizado 2026-07-15 — ya hay 3 validaciones espejo en el backend:**
+- Cantidad y precio de cada línea de producto deben ser mayores que cero (oferta, solicitud del cliente, costos por cliente) — una línea que no cumpla se descarta silenciosamente en vez de crearse.
+- Envase Isomódulo se corrige a Isotanque si el producto es gasolina, sin importar lo que llegue en el payload (`_safe_packaging()`).
+- Cualquier excepción no controlada durante el envío ya no revienta con una página de error HTML — se captura, se hace rollback de la transacción, y se devuelve `{'ok': false, 'error': '<mensaje real>'}` en JSON (bug #29/incidencia #9 de la lista de la usuaria).
 
-**Pendiente de decidir:** ¿se agregan también validaciones espejo en `wizard_submit` (rechazar con `{'ok': False, 'error': '...'}` si falta algo crítico), o se acepta que el JS es suficiente por ahora?
+**Sigue sin réplica en el back** (queda igual que antes): nombre de empresa obligatorio, NIT con 11 dígitos, elegir una vía de proveedor/clientes, al menos una línea en Oferta. Riesgo real sigue siendo bajo por la misma razón de siempre (nivel de protección históricamente aceptado en este wizard), pero sigue siendo una brecha de integridad de datos pendiente de decisión.
 
 ## 5. Pendientes de reproducir/decidir
 
 - Causa exacta de por qué `has_active_lead` a veces da falso en visitas repetidas (bug #7) — único punto que sigue sin explicación confirmada tras la validación E2E.
-- Confirmar visualmente en navegador (no solo por shell): desplegables de producto, botones bloqueados.
-- Decidir si se agregan validaciones espejo en el backend (sección 4).
-- Decidir si se agrega Unidad de medida a `en.import.request.line` (sección 2).
-- Consignación (cliente vacío, solo proveedor+país) — sigue sin decidir si se implementa como funcionalidad nueva.
+- Confirmar visualmente en navegador (no solo por shell): desplegables de producto, botones bloqueados. *(Actualizado: ya se hizo para las incidencias de 2026-07-15, en local y en servidor real — pendiente solo para lo de sesiones anteriores a esa fecha.)*
+- Decidir si se agregan validaciones espejo en el backend para lo que falta (nombre, NIT, elegir vía) — sección 4.
+- ~~Decidir si se agrega Unidad de medida a `en.import.request.line`~~ — hecho 2026-07-15, sección 2.
+- Consignación (cliente vacío, solo proveedor+país) — sigue sin decidir si se implementa como funcionalidad nueva (nota: ya existe como una de las 4 vías del paso Clientes del proveedor desde 2026-07-14, esto se refiere a si también debe existir del lado cliente).
+- Decidir si conviene limpiar el campo legado `en_customer_id` de `purchase.order` (related, solo lectura) ahora que existe `customer_id` real — no se tocó esta sesión por prudencia, ver sección 0ter.
 
 ## 5bis. Validación E2E en el servidor real (192.168.1.247) — 2026-07-13
 
@@ -220,7 +303,9 @@ Leyenda: **OK** = bloquea correctamente · **ARREGLADO** = corregido y verificad
 | Decisión | Clase válida | Clase inválida | Caso de prueba | Resultado esperado | Estado |
 |---|---|---|---|---|---|
 | Producto de la línea | Producto real seleccionado | — | Elegir del desplegable | Coincide con el id real en la base | ARREGLADO — probado en shell (6/6 productos resuelven) |
-| Cantidad por línea | > 0 | 0 o vacía | Dejar en blanco | Bloquear | ARREGLADO (front) — sin réplica en back |
+| Envase gasolina | Isotanque | Isomódulo | Elegir gasolina, revisar envase | Isomódulo no aparece | **ARREGLADO 2026-07-15**, confirmado |
+| Unidad por línea | Litro o Galón | — | Elegir Galón | Se guarda esa unidad (antes el modelo ni tenía el campo) | **ARREGLADO 2026-07-15**, confirmado en BD (servidor) |
+| Cantidad por línea | > 0 | 0, vacía o negativa | Escribir -30 | El campo se limpia solo al escribir un negativo; 0/vacío bloquea "Siguiente" | **ARREGLADO 2026-07-15** — ahora también limpia negativos en vivo, confirmado en servidor; validación de 0/vacío sigue solo en front |
 | Forma de pago | Seleccionada | Vacía | No elegir | Bloquear | OK |
 | Presupuesto | > 0 | ≤0 o vacío | Dejar vacío | Bloquear | OK |
 | Botón "Omitir" visible | Solo si NO importOnly | En importOnly | Entrar con `?op=1` acreditado | No debería aparecer | ARREGLADO |
@@ -232,32 +317,47 @@ Leyenda: **OK** = bloquea correctamente · **ARREGLADO** = corregido y verificad
 | Elección de vía | Una de las 3 tarjetas | Ninguna | Avanzar sin elegir | Bloquear | ARREGLADO (front) — sin réplica en back |
 | "Ya tengo" → cartera | Proveedor marcado | Ninguno | No marcar y avanzar | Bloquear | revisar en vivo |
 | "Buscar en catálogo" | Oferta seleccionada | Ninguna | No elegir y avanzar | Bloquear | revisar en vivo |
+| "Acreditar nuevo" → País del proveedor extranjero | Seleccionable y persiste | Bloqueado/no respondía | Elegir un país del desplegable | Se guarda y se mantiene seleccionado | **ARREGLADO 2026-07-15** — confirmado en local y servidor; causa real era el modelo `en.import.request.client` sin permisos (ver sección 0ter), no un bug de este selector en sí |
 | Envío con "cotiza" o sin vía | Crea proceso con placeholder | — | Completar y enviar | Proceso visible, en gate | ARREGLADO — probado en shell (placeholder + gate confirmados) |
 
-### Oferta (proveedor)
+### Oferta (proveedor) — actualizado 2026-07-15, alcance acotado a catálogo/difusión
 
 | Decisión | Clase válida | Clase inválida | Caso de prueba | Resultado esperado | Estado |
 |---|---|---|---|---|---|
 | Producto de la línea | Producto real seleccionado | — | Elegir del desplegable | Coincide con id real | ARREGLADO |
-| Líneas de producto | ≥1 con cantidad y precio >0 | 0 líneas o en 0 | No agregar y avanzar | Bloquear | ARREGLADO (front) — sin réplica en back |
+| Envase gasolina | Isotanque | Isomódulo | Elegir gasolina, revisar opciones de envase | Isomódulo no aparece en la lista | **ARREGLADO 2026-07-15**, confirmado en local y servidor |
+| Unidad de la línea | Litro o Galón, elegido por el usuario | — | Elegir Galón y agregar línea | Se guarda esa unidad, no la del producto por defecto | **ARREGLADO 2026-07-15**, confirmado en BD (servidor) |
+| Cantidad y precio de la línea | Ambos > 0 | Alguno ≤0 (incluye negativos) | Escribir -50 o 0 y pulsar "+ Agregar" | Bloquear con aviso, no agregar la línea | **ARREGLADO 2026-07-15 (front + backend)** — confirmado: rechazo con aviso probado en servidor |
+| Líneas de producto | ≥1 | 0 líneas | No agregar y avanzar | Bloquear | ARREGLADO (front) — sin réplica en back |
 
-### Clientes (paso proveedor) — actualizado 2026-07-14, ahora 4 vías
+### Clientes (paso proveedor) — 4 vías desde 2026-07-14
 
 | Decisión | Clase válida | Clase inválida | Caso de prueba | Resultado esperado | Estado |
 |---|---|---|---|---|---|
 | Elección de vía | Una de las 4 tarjetas | Ninguna | Avanzar sin elegir | Bloquear | OK (front) — sin réplica en back |
 | "Ya tengo clientes" (cartera real) | ≥1 marcado, de la cartera real (`/en/wizard/my_clients`) | Ninguno | No marcar y avanzar | Bloquear | **Confirmado en navegador** — carga el cliente real con NIT y estado de acreditación |
 | "Sumar clientes nuevos" | ≥1 con datos completos | Ninguno | No agregar y avanzar | Bloquear | OK — dedup por NIT confirmado (no duplica cliente existente) |
-| "Es consignación" (nueva) | Se selecciona, no requiere datos | — | Elegir y avanzar | Crea bloque con `Enetec_Consignacion`, proceso queda en gate | **Confirmado en navegador** de punta a punta |
+| "Es consignación" | Se selecciona, no requiere datos | — | Elegir y avanzar | Crea bloque con `Enetec_Consignacion`, proceso queda en gate | **Confirmado en navegador** de punta a punta |
 | "Difundir mi oferta" | ≥1 marcado | Ninguno | No marcar y avanzar | Bloquear | revisar en vivo — dedup por nombre confirmado en shell |
-| Paso "Documentos del embarque" tras Clientes | Aparece si hay ≥1 cliente resuelto (cartera/nuevos/consignación) | "Difundir" o ningún cliente | Marcar un cliente | Stepper pasa de 3 a 4 pasos | **Confirmado en navegador** |
-| Envío con cartera/nuevos/consignación | Crea `importation.process` + bloques + **1 OC en borrador por bloque**, precio real de la oferta | — | Completar y enviar | Proceso + N OC visibles en el back | **Confirmado en navegador y shell** |
+| Paso "Solicitud" tras Clientes (renombrado desde "Documentos del embarque", 2026-07-15) | Aparece si hay ≥1 cliente resuelto (cartera/nuevos/consignación), aunque sea uno solo | "Difundir" o ningún cliente | Marcar un solo cliente | Stepper muestra el paso "Solicitud" y se puede entrar | **ARREGLADO/confirmado 2026-07-15 en local y servidor** — se probó explícitamente que con un solo cliente ya alcanza (reporte inicial de la usuaria sugería que hacían falta 2, no se pudo reproducir con el código actual) |
 
-### Documentos del embarque (opcional)
+### Solicitud — costos + embarque por cliente (proveedor, nuevo 2026-07-15)
 
 | Decisión | Clase válida | Clase inválida | Caso de prueba | Resultado esperado | Estado |
 |---|---|---|---|---|---|
-| Visibilidad del paso | Solo si `cpHas≠cotiza` y NO("ya tengo"+"invitar") | Fuera de esa regla | Probar las 5 combinaciones | Coincide con `showEmbarque()` | OK en código, confirmar en vivo |
+| Costos de cada cliente | Independientes entre sí (producto/cantidad/unidad/precio propios) | Copiados de otro cliente o de la Oferta | Cargar productos distintos a 2 clientes | Cada Orden de Compra queda con SU producto/cantidad/precio | **ARREGLADO 2026-07-15** — confirmado en BD (local y servidor): 2 OC con productos y precios distintos |
+| Envase gasolina (bloque de costos) | Isotanque | Isomódulo | Elegir gasolina en un bloque de cliente | Isomódulo no aparece | **ARREGLADO 2026-07-15**, confirmado |
+| Unidad por línea de costos | Litro o Galón, por cliente | — | Cliente A en litros, Cliente B en galones | Cada OC guarda su propia unidad | **ARREGLADO 2026-07-15**, confirmado en BD |
+| Cantidad y precio de costos | Ambos > 0 | ≤0 | Escribir negativo y agregar | Bloquear con aviso | **ARREGLADO 2026-07-15**, confirmado |
+| Número de BL/AWB | Cualquier texto | — | Escribir en minúscula | Se guarda en MAYÚSCULAS | **ARREGLADO 2026-07-15**, confirmado en BD (servidor) |
+| Costos vacíos al enviar | Se permite (paso opcional) | — | Avanzar sin cargar costos de un cliente | Proceso y OC se crean igual, sin líneas, para completar después | OK por diseño |
+
+### Documentos del embarque (opcional, cliente) / documentos dentro de Solicitud (proveedor)
+
+| Decisión | Clase válida | Clase inválida | Caso de prueba | Resultado esperado | Estado |
+|---|---|---|---|---|---|
+| Visibilidad del paso (cliente) | Solo si `cpHas≠cotiza` y NO("ya tengo"+"invitar") | Fuera de esa regla | Probar las 5 combinaciones | Coincide con `showEmbarque()` | OK en código, confirmar en vivo |
+| Documentos del proveedor no se mezclan con los del cliente al acreditar una contraparte | Cada documento va al partner correcto | Mezclados en el mismo lead/partner | Cliente acredita proveedor con documentos, y viceversa | Cada set de documentos queda en su propio partner/expediente | **ARREGLADO 2026-07-15** — ambos sentidos revisados, incluyendo caso límite de edición abandonada |
 
 ### Envío final
 
@@ -280,9 +380,9 @@ Esta sección explica el wizard en lenguaje sencillo, como guía para quien lo u
 1. Entra a la web y pulsa **"Acreditarme"**.
 2. Si no tienes cuenta, el sistema te pide crearla primero (o iniciar sesión si ya la tienes) — después te lleva directo al asistente.
 3. Elige la tarjeta **"Cliente"**.
-4. En "Mis datos", elige tu tipo de empresa (Pymes, Estatal, CNA o Sucursal Extranjera) — al elegirlo aparece la lista de documentos que te corresponde subir. Escribe el nombre de tu empresa (obligatorio) y, si tienes NIT a mano, escríbelo — debe tener exactamente 11 números.
+4. En "Mis datos", elige tu tipo de empresa (Pymes, Estatal, CNA o Sucursal Extranjera) — al elegirlo aparece la lista de documentos que te corresponde subir. Escribe el nombre de tu empresa (obligatorio) y, si tienes NIT a mano, escríbelo — debe tener exactamente 11 números. *(Para el certificado de no adeudo puedes subir el certificado en sí, o en su lugar el último comprobante de pago a la ONAT.)*
    - *Si solo quieres acreditarte y todavía no vas a pedir una importación*, hay un botón **"Omitir → Solo quiero acreditarme"** que te salta directo al resumen.
-5. En "Solicitud", indica qué combustible necesitas, cuánto, y elige forma de pago y presupuesto disponible. Puedes agregar varios productos con el botón "+ Agregar producto".
+5. En "Solicitud", indica qué combustible necesitas, cuánto (con su unidad: litro o galón, según lo que diga tu factura), y elige forma de pago y presupuesto disponible. Puedes agregar varios productos con el botón "+ Agregar producto". La gasolina solo admite envase Isotanque. Las cantidades no pueden ser cero ni negativas.
 6. En "Proveedor", dinos cómo prefieres conseguirlo:
    - **"Ya tengo un proveedor"** — lo buscas en tu cartera, lo registras si aún no está en el sistema, o lo invitas por correo.
    - **"Buscar en el catálogo"** — te mostramos ofertas ya publicadas de proveedores acreditados para el producto que pediste.
@@ -300,22 +400,26 @@ Después de enviar: un abogado revisa tus documentos y te acredita. Tu solicitud
 
 **Para acreditarte por primera vez:**
 1. Entra y pulsa **"Acreditarme"** → elige la tarjeta **"Proveedor"**.
-2. En "Mis datos" completa el nombre de tu empresa, país, clasificación (Productor/Comerciante) y los 5 documentos requeridos.
-3. En "Oferta", arma tu cotización: elige el producto real del desplegable (ya no hace falta adivinar el nombre, se cargan los productos verdaderos del catálogo), cantidad, envase, precio; agrega flete y seguro — el total se calcula solo.
+2. En "Mis datos" completa el nombre de tu empresa, país, clasificación (Productor/Comerciante) y los documentos requeridos: escritura de constitución, inscripción en registro mercantil, poder acreditativo, certificado de cuenta bancaria, perfil de la compañía y solvencia/reporte financiero. *(El código MINCEX se pide como dato de texto, no hace falta subir ningún documento para eso. Los documentos no deben tener más de un año de antigüedad — si son más viejos, hay que actualizarlos.)*
+3. En "Oferta", registra tu catálogo público: producto real del desplegable, envase (para gasolina solo se permite Isotanque, Isomódulo no está disponible), cantidad, **unidad (litro o galón)**, precio; agrega flete y seguro — el total se calcula solo. *Esta oferta es para el catálogo/difusión pública — el detalle real de cada venta a un cliente concreto se completa más adelante, en "Solicitud".*
 4. En "Clientes", dinos a quién le ofreces (4 opciones):
    - **"Ya tengo clientes"** — marca uno o varios de tu cartera real (los clientes con los que ya tienes una relación registrada).
    - **"Sumar clientes nuevos"** — acredítalos con sus datos completos (nombre, NIT, dirección, contacto) o invítalos por correo. Si el NIT que escribes ya pertenece a un cliente existente, el sistema lo reconoce y no crea uno duplicado.
    - **"Es consignación"** — úsala cuando la mercancía viaja sin un cliente final definido todavía; ENETEC queda como responsable temporal del envío hasta que se asigne un comprador.
    - **"Difundir mi oferta"** — se la mandamos a los clientes que aceptan recibir ofertas de proveedores (esta opción no genera una importación, solo publicidad de tu oferta).
 
-   Si elegiste cartera, clientes nuevos o consignación, aparece un paso más:
-5. **"Documentos del embarque"** (opcional): país de origen, certificados que aplican a todo el envío (calidad/exportación/origen), y — por cada cliente que agregaste — el número de BL/AWB y sus documentos propios (oferta firmada, factura comercial, lista de empaque, permisos). Puedes dejarlo en blanco y completarlo después.
+   Si elegiste cartera, clientes nuevos o consignación (con al menos un cliente marcado), aparece un paso más:
+5. **"Solicitud"** (opcional): país de origen y certificados que aplican a todo el envío (calidad/exportación/origen), y — por cada cliente que agregaste, con un solo cliente ya es suficiente — un bloque con:
+   - **Costos**: los productos, cantidades, unidad (litro/galón) y precios que le vendes específicamente a ESE cliente (no se repite la oferta del catálogo, cada cliente tiene lo suyo).
+   - **Embarque**: el número de BL/AWB (se guarda siempre en mayúsculas, sin importar cómo lo escribas) y sus documentos propios (oferta firmada, factura comercial, lista de empaque, permisos).
+
+   Puedes dejar los costos y/o los documentos en blanco y completarlos después.
 6. Revisa en "Resumen" y pulsa **Enviar**.
 
-**Qué pasa al enviar con clientes reales:** además de tu oferta, se crea una importación real con una Orden de Compra en borrador por cada cliente (con el precio de tu oferta ya cargado) — el equipo comercial la revisa, la completa y la aprueba; tú no tienes que volver a escribir esos datos.
+**Qué pasa al enviar con clientes reales:** además de tu oferta de catálogo, se crea una importación real con una Orden de Compra en borrador **por cada cliente**, ya con los productos, cantidades y precios que le cargaste a ese cliente en "Solicitud" — el equipo comercial la revisa, la completa y la aprueba; tú no tienes que volver a escribir esos datos.
 
 **Si ya estás acreditado y quieres actualizar tu oferta:**
-- Pulsa **"Importar"** igual que el cliente — ahora también te lleva directo a "Oferta", sin repetir Rol/Mis datos (antes tenías que volver a empezar desde cero; ya se corrigió). El paso de Clientes y Documentos del embarque funcionan exactamente igual que la primera vez.
+- Pulsa **"Importar"** igual que el cliente — ahora también te lleva directo a "Oferta", sin repetir Rol/Mis datos (antes tenías que volver a empezar desde cero; ya se corrigió). El paso de Clientes y Solicitud funcionan exactamente igual que la primera vez.
 
 **Para que tu empresa aparezca en el catálogo público** (donde los clientes te buscan sin que tú los invites), marca la casilla "Mis datos pueden ser visibles para clientes" en Mis datos — pero recuerda: además de marcar esa casilla, necesitas tener al menos una oferta publicada con productos y precios; si no, aunque seas visible, no vas a aparecer con nada que ofrecer.
 

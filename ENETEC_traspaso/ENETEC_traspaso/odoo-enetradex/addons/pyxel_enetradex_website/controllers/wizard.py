@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import base64
 import json
+import logging
 
 from odoo import http
 from odoo.http import request
+
+_logger = logging.getLogger(__name__)
 
 VALIDITY = {'1 mes': '1m', '3 meses': '3m', '6 meses': '6m', '1 año': '1y', 'Personalizada': 'custom'}
 
@@ -11,6 +14,12 @@ VALIDITY = {'1 mes': '1m', '3 meses': '3m', '6 meses': '6m', '1 año': '1y', 'Pe
 # el wizard. Buscar en ese idioma evita el problema de tildes/traducciones
 # vacías al hacer match por nombre.
 FUEL_PRODUCT_NAMES = ['DIESEL', 'GASOLINA-91', 'GASOLINA-83', 'Jet A-1', 'Fuel oíl', 'GLP']
+
+# Prefijos de docGrid() para tipos de cliente cubano (en_wizard.xml, var DOCS).
+# Solo válidos dentro de newClients[i].docFiles (prefijo newclient:N:); si
+# aparecen sueltos con el prefijo genérico doc: es que quedaron pegados de una
+# edición de cliente abandonada a medias — no son del proveedor que los envía.
+CLIENT_TYPE_PREFIXES = ('Pymes', 'Estatal', 'CNA', 'Sucursal Extranjera')
 
 
 def _find_product(name):
@@ -28,6 +37,31 @@ def _resolve_product(pid, name):
         if p.exists():
             return p
     return _find_product(name)
+
+
+# Litro (11) / Galón US (25) — las únicas 2 unidades de volumen que el front
+# deja elegir por línea, según lo que declare la factura de cada envío.
+UOM_IDS = {11, 25}
+
+
+def _line_uom_id(ln):
+    try:
+        uid = int(ln.get('uom'))
+    except (TypeError, ValueError):
+        return 11
+    return uid if uid in UOM_IDS else 11
+
+
+def _safe_packaging(product, pkg):
+    """La gasolina no puede entrar al país en isomódulo — si llega esa
+    combinación (el front ya la filtra, pero esto cubre envíos directos a la
+    API), se corrige a isotanque. Válida también del lado del servidor lo que
+    el JS de en_wizard.xml ya restringe en el desplegable de envase."""
+    if pkg != 'isomodulo' or not product:
+        return pkg
+    is_gasoline = bool(request.env['product.product'].sudo().with_context(lang='en_US').search(
+        [('id', '=', product.id), ('name', 'in', ['GASOLINA-91', 'GASOLINA-83'])], limit=1))
+    return 'isotanque' if is_gasoline else pkg
 
 
 def _contact_type(name):
@@ -96,7 +130,24 @@ class EnWizard(http.Controller):
         products = P.search([('name', 'in', FUEL_PRODUCT_NAMES)])
         by_name = {p.name: p for p in products}
         ordered = [by_name[n] for n in FUEL_PRODUCT_NAMES if n in by_name]
-        return [{'id': p.id, 'name': p.name} for p in ordered]
+        return [{'id': p.id, 'name': p.name, 'uom_name': p.uom_id.name} for p in ordered]
+
+    @http.route('/en/wizard/debug_ping', type='json', auth='user', website=True)
+    def wizard_debug_ping(self, **kw):
+        """Diagnóstico temporal (2026-07-15): registra el estado del wizard en
+        cada paso, para investigar el reporte de 'un cliente y no sale
+        Solicitud' sin depender de capturas de pantalla de la usuaria. Escribe
+        a un archivo plano en vez de solo al log — docker logs no lo mostraba
+        de forma confiable en el servidor real."""
+        import datetime
+        line = '%s user=%s %s\n' % (datetime.datetime.now().isoformat(), request.env.user.login, kw)
+        try:
+            with open('/tmp/wz_debug.log', 'a', encoding='utf-8') as f:
+                f.write(line)
+        except Exception:
+            pass
+        _logger.info('WZ_DEBUG user=%s %s', request.env.user.login, kw)
+        return {'ok': True}
 
     @http.route('/en/wizard/portfolio', type='json', auth='user', website=True)
     def wizard_portfolio(self, **kw):
@@ -225,6 +276,20 @@ class EnWizard(http.Controller):
 
     @http.route('/en/wizard/submit', type='http', auth='user', website=True, csrf=False)
     def wizard_submit(self, **post):
+        try:
+            return self._wizard_submit_impl(**post)
+        except Exception as e:
+            # Sin este try/except, cualquier error a mitad del proceso (NIT
+            # duplicado, campo obligatorio faltante, etc.) hace que Odoo devuelva
+            # una página de error HTML en vez de JSON: el front no puede leer el
+            # motivo real y solo muestra "No se pudo enviar. Inténtalo de nuevo."
+            _logger.exception('Error en /en/wizard/submit')
+            request.env.cr.rollback()
+            return request.make_response(
+                json.dumps({'ok': False, 'error': str(e)}),
+                headers=[('Content-Type', 'application/json')])
+
+    def _wizard_submit_impl(self, **post):
         try:
             payload = json.loads(post.get('payload') or '{}')
         except Exception:
@@ -377,6 +442,13 @@ class EnWizard(http.Controller):
                 continue  # adjuntos del socio cubano: se procesan aparte
             if field.startswith('ship:') or field.startswith('shipnat:'):
                 continue  # documentos del embarque: van a la solicitud de importación
+            if role == 'cliente' and field.startswith('doc:Proveedor|'):
+                continue  # documentos del proveedor que este cliente está acreditando:
+                          # se adjuntan más abajo al partner del proveedor, no al del cliente
+            if role == 'proveedor' and field.startswith('doc:') and \
+                    field[len('doc:'):].split('|', 1)[0] in CLIENT_TYPE_PREFIXES:
+                continue  # documentos de un cliente nuevo (newClients) que quedaron
+                          # sueltos por una edición abandonada: no son del proveedor
             doc_label = field.split('|')[-1] if (field.startswith('doc:') and '|' in field) else None
             if doc_label and doc_label in rejected_labels:
                 continue  # IA rechazó: no se adjunta, queda pendiente
@@ -465,20 +537,22 @@ class EnWizard(http.Controller):
                     created['socio_pdf'] = True
                 except Exception:
                     created['socio_pdf'] = False
+            # Oferta: catálogo/difusión únicamente — el detalle real por cliente
+            # (costos, cantidades) vive en reqByClient, más abajo.
             offer = payload.get('offer') or {}
             lines = []
-            resolved_lines = []  # (product, qty, packaging, price) — se reutiliza para los bloques de cliente/OC
             for ln in (offer.get('lines') or []):
-                prod = _resolve_product(ln.get('pid'), ln.get('prod'))
-                pkg = 'isotanque' if ln.get('env') == 'Isotanque' else 'isomodulo'
                 qty = float(ln.get('qty') or 0)
                 price = float(ln.get('price') or 0)
+                if qty <= 0 or price <= 0:
+                    continue  # cantidad/precio deben ser positivos y distintos de cero
+                prod = _resolve_product(ln.get('pid'), ln.get('prod'))
+                pkg = _safe_packaging(prod, 'isotanque' if ln.get('env') == 'Isotanque' else 'isomodulo')
                 lines.append((0, 0, {
                     'product_id': prod.id if prod else False,
                     'packaging': pkg, 'qty': qty, 'unit_price': price,
+                    'product_uom_id': _line_uom_id(ln),
                 }))
-                if prod and qty:
-                    resolved_lines.append({'product': prod, 'qty': qty, 'packaging': pkg, 'price': price})
             if lines:
                 off = env['en.supply.offer'].sudo().create({
                     'supplier_id': company.id, 'state': 'published',
@@ -588,12 +662,33 @@ class EnWizard(http.Controller):
                     })
                 resolved_clients.append(('consignacion', consig))
 
+            # Costos por cliente (paso "Solicitud"): cada cliente tiene sus
+            # propios productos/cantidades/precios — ya NO se reutiliza la
+            # oferta compartida (esa es solo para el catálogo/difusión).
+            resolved_lines_by_key = {}
+            for key, rlines in (payload.get('reqByClient') or {}).items():
+                resolved = []
+                for ln in (rlines or []):
+                    rqty = float(ln.get('qty') or 0)
+                    rprice = float(ln.get('price') or 0)
+                    if rqty <= 0 or rprice <= 0:
+                        continue  # cantidad/precio deben ser positivos y distintos de cero
+                    rprod = _resolve_product(ln.get('pid'), ln.get('prod'))
+                    if not rprod:
+                        continue
+                    rpkg = _safe_packaging(rprod, 'isotanque' if ln.get('env') == 'Isotanque' else 'isomodulo')
+                    resolved.append({'product': rprod, 'qty': rqty, 'packaging': rpkg,
+                                      'price': rprice, 'uom_id': _line_uom_id(ln)})
+                if resolved:
+                    resolved_lines_by_key[key] = resolved
+
             # Si el proveedor llenó el paso Clientes con datos reales, ya no es
             # solo una oferta suelta: se crea una importación real (misma
             # arquitectura que usa el equipo desde "Crear Clientes del envío"),
-            # con un bloque por cada cliente y las líneas de la oferta — y la
-            # OC correspondiente en borrador, con el precio ya resuelto.
-            if resolved_clients and resolved_lines:
+            # con un bloque por cada cliente — y la OC correspondiente en
+            # borrador, con los costos de ESE cliente si ya los cargó (si no,
+            # queda vacía y el comercial la completa después).
+            if resolved_clients:
                 # País de origen: el elegido en el paso "Documentos del embarque"
                 # tiene prioridad (es la señal más explícita para esta solicitud
                 # en concreto); si no se llenó, cae al país declarado en "Mis
@@ -620,8 +715,8 @@ class EnWizard(http.Controller):
                             'product_name': rl['product'].name,
                             'qty': rl['qty'],
                             'packaging': rl['packaging'],
-                            'product_uom_id': rl['product'].uom_id.id,
-                        }) for rl in resolved_lines]
+                            'product_uom_id': rl['uom_id'],
+                        }) for rl in resolved_lines_by_key.get(key, [])]
                         blocks.append((0, 0, {
                             'sequence': (i + 1) * 10,
                             'customer_id': cli.id,
@@ -649,9 +744,9 @@ class EnWizard(http.Controller):
                         po_lines = [(0, 0, {
                             'product_id': rl['product'].id, 'name': rl['product'].display_name,
                             'product_qty': rl['qty'] or 0.0, 'price_unit': rl['price'] or 0.0,
-                            'product_uom': rl['product'].uom_po_id.id or rl['product'].uom_id.id,
+                            'product_uom': rl['uom_id'],
                             'taxes_id': [(6, 0, [])],
-                        }) for rl in resolved_lines]
+                        }) for rl in resolved_lines_by_key.get(key, [])]
                         po = env['purchase.order'].sudo().create({
                             'partner_id': company.id,
                             'customer_id': cli.id,
@@ -768,20 +863,24 @@ class EnWizard(http.Controller):
                 # Líneas multiproducto de la solicitud.
                 lines = []
                 for i, ln in enumerate(sol.get('lines') or []):
+                    if float(ln.get('qty') or 0) <= 0:
+                        continue  # cantidad debe ser positiva y distinta de cero
                     lp = _resolve_product(ln.get('pid'), ln.get('prod'))
                     pkg = ln.get('env')
+                    pkg = _safe_packaging(lp, pkg) if pkg in ('isotanque', 'isomodulo') else False
                     lines.append((0, 0, {
                         'sequence': (i + 1) * 10,
                         'product_id': lp.id if lp else False,
                         'product_name': ln.get('prod') or False,
                         'qty': float(ln.get('qty') or 0),
-                        'packaging': pkg if pkg in ('isotanque', 'isomodulo') else False,
+                        'packaging': pkg,
+                        'product_uom_id': _line_uom_id(ln),
                     }))
                 if lines:
                     vals['en_request_line_ids'] = lines
                 env_pkg = sol.get('envase')
                 if env_pkg in ('isotanque', 'isomodulo'):
-                    vals['en_packaging_type'] = env_pkg
+                    vals['en_packaging_type'] = _safe_packaging(prod, env_pkg)
                 if sol.get('delivery'):
                     vals['en_delivery_date'] = sol.get('delivery')
                 if pm and str(pm).isdigit():
@@ -839,6 +938,26 @@ class EnWizard(http.Controller):
                         'en_initiated_by': 'counterparty', 'user_id': False,
                         'en_inviter_partner_id': company.id,
                     })
+                # Documentos del proveedor (docGrid('Proveedor')) subidos por este
+                # cliente: se adjuntan al partner del proveedor y a su propio lead
+                # de acreditación — nunca al lead/partner del cliente que los sube.
+                supplier_lead = Lead.search(
+                    [('partner_id', '=', supplier.id), ('en_party_role', '!=', False)],
+                    order='create_date desc', limit=1)
+                for pfield, pf in request.httprequest.files.items():
+                    if not pfield.startswith('doc:Proveedor|') or not (pf and pf.filename):
+                        continue
+                    pdata = base64.b64encode(pf.read())
+                    pdoc_name = pfield.split(':', 1)[-1].replace('|', ' · ')
+                    env['ir.attachment'].sudo().create({
+                        'name': '%s (%s)' % (pdoc_name, pf.filename),
+                        'datas': pdata, 'res_model': 'res.partner', 'res_id': supplier.id, 'type': 'binary',
+                    })
+                    if supplier_lead:
+                        env['ir.attachment'].sudo().create({
+                            'name': '%s (%s)' % (pdoc_name, pf.filename),
+                            'datas': pdata, 'res_model': 'crm.lead', 'res_id': supplier_lead.id, 'type': 'binary',
+                        })
             elif cphas == 'si' and cp == 'invitar' and payload.get('inviteEmail'):
                 invite_email = payload.get('inviteEmail')
                 base_url = env['ir.config_parameter'].sudo().get_param('web.base.url')

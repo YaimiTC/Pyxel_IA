@@ -41,6 +41,10 @@ class SupplyOfferLine(models.Model):
     product_id = fields.Many2one('product.product', string="Producto", required=True)
     packaging = fields.Selection([('isotanque', 'Isotanque'), ('isomodulo', 'Isomódulo')], string="Envase")
     qty = fields.Float(string="Cantidad")
+    # Litro/Galón (US): categoría Volumen (id 6) restringida a esas 2 unidades.
+    product_uom_id = fields.Many2one(
+        'uom.uom', string="Unidad de medida",
+        domain="['&', ('category_id.name', '=', 'Volume'), ('id', 'in', [11, 25])]")
     unit_price = fields.Monetary(string="Precio unit.", currency_field='currency_id')
     amount = fields.Monetary(compute='_compute_amount', store=True, currency_field='currency_id', string="Importe")
     currency_id = fields.Many2one(related='offer_id.currency_id', string="Moneda")

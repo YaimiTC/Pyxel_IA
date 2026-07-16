@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_crm_lead_create_wizard_form" model="ir.ui.view">
+        <field name="name">crm.lead.create.wizard.form</field>
+        <field name="model">crm.lead.create.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Nueva acreditación">
+                <sheet>
+
+                    <!-- ══════════════════════════════════════════════
+                         STEPPER DE PROGRESO
+                    ══════════════════════════════════════════════ -->
+                    <div class="wz-stepper-bar">
+
+                        <!-- 1 ROL -->
+                        <div class="wz-stp wz-active" invisible="step != 'rol'">
+                            <div class="wz-stp-num">1</div>
+                            <div class="wz-stp-lbl">Rol</div>
+                        </div>
+                        <div class="wz-stp" invisible="step == 'rol'">
+                            <div class="wz-stp-num">1</div>
+                            <div class="wz-stp-lbl">Rol</div>
+                        </div>
+
+                        <div class="wz-line"/>
+
+                        <!-- 2 MIS DATOS (datos + docs = mismo paso visual) -->
+                        <div class="wz-stp wz-active"
+                             invisible="step != 'datos' and step != 'docs'">
+                            <div class="wz-stp-num">2</div>
+                            <div class="wz-stp-lbl">Mis datos</div>
+                        </div>
+                        <div class="wz-stp"
+                             invisible="step == 'datos' or step == 'docs'">
+                            <div class="wz-stp-num">2</div>
+                            <div class="wz-stp-lbl">Mis datos</div>
+                        </div>
+
+                        <!-- Línea directa a Resumen (sin solicitud) -->
+                        <div class="wz-line"
+                             invisible="has_solicitud and en_party_role == 'client'"/>
+
+                        <!-- Línea hacia Solicitud (con solicitud) -->
+                        <div class="wz-line"
+                             invisible="not has_solicitud or en_party_role != 'client'"/>
+
+                        <!-- 3 SOLICITUD (condicional) -->
+                        <div class="wz-stp wz-active" invisible="step != 'solicitud'">
+                            <div class="wz-stp-num">3</div>
+                            <div class="wz-stp-lbl">Solicitud</div>
+                        </div>
+                        <div class="wz-stp"
+                             invisible="step == 'solicitud' or not has_solicitud or en_party_role != 'client'">
+                            <div class="wz-stp-num">3</div>
+                            <div class="wz-stp-lbl">Solicitud</div>
+                        </div>
+
+                        <div class="wz-line"
+                             invisible="not has_solicitud or en_party_role != 'client'"/>
+
+                        <!-- 4 PROVEEDOR (condicional) -->
+                        <div class="wz-stp wz-active" invisible="step != 'proveedor'">
+                            <div class="wz-stp-num">4</div>
+                            <div class="wz-stp-lbl">Proveedor</div>
+                        </div>
+                        <div class="wz-stp"
+                             invisible="step == 'proveedor' or not has_solicitud or en_party_role != 'client'">
+                            <div class="wz-stp-num">4</div>
+                            <div class="wz-stp-lbl">Proveedor</div>
+                        </div>
+
+                        <div class="wz-line"/>
+
+                        <!-- RESUMEN -->
+                        <div class="wz-stp wz-active" invisible="step != 'resumen'">
+                            <div class="wz-stp-num">
+                                <i class="fa fa-check" style="font-size:12px"/>
+                            </div>
+                            <div class="wz-stp-lbl">Resumen</div>
+                        </div>
+                        <div class="wz-stp" invisible="step == 'resumen'">
+                            <div class="wz-stp-num">
+                                <i class="fa fa-check" style="font-size:12px"/>
+                            </div>
+                            <div class="wz-stp-lbl">Resumen</div>
+                        </div>
+
+                    </div><!-- /wz-stepper-bar -->
+
+                    <!-- Campo de control: step (oculto) -->
+                    <field name="step" invisible="1"/>
+
+                    <!-- ══════════════════════════════════════════════
+                         PASO ROL
+                    ══════════════════════════════════════════════ -->
+                    <div invisible="step != 'rol'">
+                        <div class="wz-step-title">¿Cómo te vas a acreditar?</div>
+                        <p class="wz-step-sub">
+                            Selecciona el rol de la empresa. El flujo y los documentos
+                            se adaptan automáticamente.
+                        </p>
+
+                        <div class="wz-role-picker">
+                            <field name="en_party_role" widget="radio" nolabel="1"
+                                   options="{'horizontal': true}"/>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════════
+                         PASO DATOS — información de la empresa
+                    ══════════════════════════════════════════════ -->
+                    <div invisible="step != 'datos'">
+
+                        <!-- Encabezado dinámico -->
+                        <div class="wz-step-title" invisible="en_party_role != 'client'">
+                            Mis datos · Cliente
+                        </div>
+                        <div class="wz-step-title" invisible="en_party_role != 'supplier'">
+                            Datos del proveedor
+                        </div>
+                        <p class="wz-step-sub" invisible="en_party_role != 'client'">
+                            Elige el tipo de entidad — los documentos del expediente
+                            se asignan automáticamente según tu selección.
+                        </p>
+                        <p class="wz-step-sub" invisible="en_party_role != 'supplier'">
+                            Completa los datos de la empresa proveedora.
+                        </p>
+
+                        <!-- Tipo de entidad (clientes) -->
+                        <div class="mb-3" invisible="en_party_role != 'client'">
+                            <field name="client_type" widget="radio"
+                                   options="{'horizontal': true}" nolabel="1"/>
+                        </div>
+
+                        <!-- Clasificación proveedor -->
+                        <div class="mb-3" invisible="en_party_role != 'supplier'">
+                            <field name="supplier_class" widget="radio"
+                                   options="{'horizontal': true}" nolabel="1"/>
+                        </div>
+
+                        <!-- Sección: Empresa -->
+                        <div class="wz-section">
+                            <div class="wz-section-title">
+                                <i class="fa fa-building-o"/>Datos de la empresa
+                            </div>
+                            <group col="2">
+                                <field name="company_name"
+                                       required="step == 'datos'"
+                                       string="Nombre de la empresa"/>
+                                <field name="company_vat" string="NIT"
+                                       invisible="en_party_role != 'client'"/>
+                                <field name="company_mincex" string="Código MINCEX"
+                                       invisible="en_party_role != 'supplier'"/>
+                                <field name="company_req_mincex"
+                                       string="¿Requiere código MINCEX?"
+                                       invisible="en_party_role != 'supplier'"/>
+                            </group>
+                        </div>
+
+                        <!-- Sección: Dirección -->
+                        <div class="wz-section">
+                            <div class="wz-section-title">
+                                <i class="fa fa-map-marker"/>Dirección
+                            </div>
+                            <group col="2">
+                                <field name="company_street" string="Dirección"/>
+                                <field name="company_state_id" string="Provincia"
+                                       invisible="en_party_role != 'client'"/>
+                                <field name="company_city_id" string="Municipio"
+                                       invisible="en_party_role != 'client'"
+                                       options="{'no_create': True, 'no_open': True}"/>
+                                <field name="company_country_id" string="País"
+                                       invisible="en_party_role != 'supplier'"/>
+                            </group>
+                        </div>
+
+                        <!-- Sección: Contacto -->
+                        <div class="wz-section">
+                            <div class="wz-section-title">
+                                <i class="fa fa-user-o"/>Datos del contacto
+                            </div>
+                            <group col="2">
+                                <field name="contact_name"
+                                       string="Nombre y apellido"/>
+                                <field name="company_email" string="Correo electrónico"/>
+                                <field name="company_phone" string="Teléfono"/>
+                            </group>
+                        </div>
+
+                        <!-- Visibilidad -->
+                        <group invisible="en_party_role != 'client'">
+                            <field name="visible_to_providers"
+                                   string="Mis datos pueden ser visibles para proveedores"/>
+                        </group>
+                        <group invisible="en_party_role != 'supplier'">
+                            <field name="visible_to_clients"
+                                   string="Mis datos pueden ser visibles para clientes"/>
+                        </group>
+
+                        <!-- ¿Tiene solicitud? -->
+                        <div class="wz-solicitud-toggle" invisible="en_party_role != 'client'">
+                            <div class="wz-sol-title">
+                                <i class="fa fa-file-text-o"/>
+                                Solicitud de importación
+                            </div>
+                            <field name="has_solicitud"
+                                   string="¿Deseas registrar también una solicitud de importación?"/>
+                            <p class="text-muted small mt-1 mb-0">
+                                Activa esta opción si también quieres registrar un pedido
+                                de producto y asignarle un proveedor.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════════
+                         PASO DOCS — subida de documentos
+                    ══════════════════════════════════════════════ -->
+                    <div invisible="step != 'docs'">
+                        <div class="wz-step-title">Mis datos · Documentos</div>
+                        <p class="wz-step-sub">
+                            Sube los documentos del expediente de acreditación.
+                            Puedes usar el escáner, la cámara o subir archivos PDF.
+                            La IA validará cada documento automáticamente.
+                        </p>
+                        <field name="doc_line_ids" widget="wz_accred_docs" nolabel="1"/>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════════
+                         PASO SOLICITUD
+                    ══════════════════════════════════════════════ -->
+                    <div invisible="step != 'solicitud'">
+                        <div class="wz-step-title">Solicitud de importación</div>
+                        <p class="wz-step-sub">
+                            Indica el producto, cantidad y condiciones de entrega deseadas.
+                        </p>
+
+                        <div class="wz-section">
+                            <div class="wz-section-title">
+                                <i class="fa fa-cube"/>Producto solicitado
+                            </div>
+                            <group col="2">
+                                <field name="sol_product" string="Producto"/>
+                                <field name="sol_qty" string="Cantidad"/>
+                                <field name="sol_env" string="Tipo de envase"/>
+                            </group>
+                        </div>
+
+                        <div class="wz-section">
+                            <div class="wz-section-title">
+                                <i class="fa fa-calendar"/>Condiciones de entrega
+                            </div>
+                            <group col="2">
+                                <field name="sol_delivery"
+                                       string="Fecha de entrega deseada"/>
+                                <field name="sol_budget"
+                                       required="step == 'solicitud'"
+                                       string="Presupuesto disponible (USD)"/>
+                            </group>
+                        </div>
+
+                        <div class="wz-section">
+                            <div class="wz-section-title">
+                                <i class="fa fa-commenting-o"/>Notas adicionales
+                            </div>
+                            <group>
+                                <field name="sol_specs"
+                                       string="Especificaciones técnicas"
+                                       colspan="2"/>
+                                <field name="sol_obs"
+                                       string="Observaciones"
+                                       colspan="2"/>
+                            </group>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════════
+                         PASO PROVEEDOR
+                    ══════════════════════════════════════════════ -->
+                    <div invisible="step != 'proveedor'">
+                        <div class="wz-step-title">Proveedor de la operación</div>
+                        <p class="wz-step-sub">
+                            Selecciona cómo deseas gestionar el proveedor para esta solicitud.
+                        </p>
+
+                        <div class="mb-3">
+                            <field name="cp_mode" widget="radio" nolabel="1"/>
+                        </div>
+
+                        <!-- De cartera -->
+                        <div class="wz-section" invisible="cp_mode != 'cartera'">
+                            <div class="wz-section-title">
+                                <i class="fa fa-search"/>Buscar en mi cartera
+                            </div>
+                            <group>
+                                <field name="cp_partner_id"
+                                       domain="[('supplier_rank','>',0)]"
+                                       required="step == 'proveedor' and cp_mode == 'cartera'"
+                                       string="Proveedor"
+                                       placeholder="Escribe para buscar un proveedor acreditado…"/>
+                            </group>
+                        </div>
+
+                        <!-- Nuevo proveedor -->
+                        <div class="wz-section" invisible="cp_mode != 'nuevo'">
+                            <div class="wz-section-title">
+                                <i class="fa fa-building-o"/>Empresa proveedora (extranjera)
+                            </div>
+                            <group col="2">
+                                <field name="cp_name"
+                                       required="step == 'proveedor' and cp_mode == 'nuevo'"
+                                       string="Nombre de la empresa"/>
+                                <field name="cp_country_id" string="País"/>
+                                <field name="cp_mincex" string="Código MINCEX"/>
+                                <field name="cp_contact_name"
+                                       string="Nombre del contacto"/>
+                                <field name="cp_contact_email"
+                                       string="Correo electrónico"/>
+                                <field name="cp_contact_phone" string="Teléfono"/>
+                            </group>
+                            <group col="2">
+                                <field name="cp_accredit"
+                                       string="Acreditar también a este proveedor en el sistema"/>
+                            </group>
+                        </div>
+
+                        <!-- ENETEC cotiza -->
+                        <div class="wz-section"
+                             style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-color:#86efac"
+                             invisible="cp_mode != 'cotiza'">
+                            <div class="wz-section-title" style="color:#15803d">
+                                <i class="fa fa-envelope-o"/>ENETEC cotizará por ti
+                            </div>
+                            <p class="mb-0" style="font-size:13px;color:#166534">
+                                Se registrará la solicitud y ENETEC saldrá al mercado
+                                a buscar la mejor oferta mediante pliego de concurrencia.
+                                Recibirás las propuestas por correo electrónico.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════════════════
+                         PASO RESUMEN
+                    ══════════════════════════════════════════════ -->
+                    <div invisible="step != 'resumen'">
+                        <div class="wz-step-title">Resumen y envío</div>
+                        <p class="wz-step-sub">
+                            Revisa la solicitud de acreditación antes de confirmarla.
+                            Una vez confirmada se creará el expediente en el sistema.
+                        </p>
+                        <div class="wz-summary-wrap">
+                            <field name="summary_html" nolabel="1" readonly="1"/>
+                        </div>
+                    </div>
+
+                </sheet>
+
+                <footer>
+                    <button string="← Atrás" name="action_back" type="object"
+                            class="btn-secondary"
+                            invisible="step == 'rol'"/>
+                    <button string="Siguiente →" name="action_next" type="object"
+                            class="btn-primary"
+                            invisible="step == 'resumen'"/>
+                    <button string="✓ Confirmar acreditación"
+                            name="action_confirm" type="object"
+                            class="btn-success"
+                            invisible="step != 'resumen'"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_crm_lead_create_wizard" model="ir.actions.act_window">
+        <field name="name">Nueva acreditación</field>
+        <field name="res_model">crm.lead.create.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="view_crm_lead_create_wizard_form"/>
+    </record>
+
+</odoo>

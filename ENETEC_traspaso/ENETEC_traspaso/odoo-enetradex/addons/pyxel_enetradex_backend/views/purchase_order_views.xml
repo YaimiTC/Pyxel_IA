@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="purchase_order_form_inherit_en" model="ir.ui.view">
+    <field name="name">purchase.order.form.inherit.en</field>
+    <field name="model">purchase.order</field>
+    <field name="inherit_id" ref="pyxel_import_backend.purchase_order_form_inherit_provider_evaluation"/>
+    <field name="arch" type="xml">
+      <xpath expr="//page[@name='purchase_delivery_invoice']//group[@name='other_info']" position="inside">
+        <field name="customer_id"/>
+        <field name="bl_number"/>
+        <field name="cert_no_adeudo" filename="cert_no_adeudo_filename" string="Cert. No Adeudo"/>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

@@ -14,6 +14,11 @@ class EnImportRequestLine(models.Model):
     product_id = fields.Many2one('product.product', string="Producto")
     product_name = fields.Char(string="Producto (texto)")
     qty = fields.Float(string="Cantidad")
+    # Litro/Galón (US): categoría Volumen (id 6) restringida a esas 2 unidades.
+    # Se carga según lo que declare la factura de cada envío, no un default fijo.
+    product_uom_id = fields.Many2one(
+        'uom.uom', string="Unidad de medida",
+        domain="['&', ('category_id.name', '=', 'Volume'), ('id', 'in', [11, 25])]")
     packaging = fields.Selection(
         [('isotanque', 'Isotanque'), ('isomodulo', 'Isomódulo')],
         string="Tipo de envase")
