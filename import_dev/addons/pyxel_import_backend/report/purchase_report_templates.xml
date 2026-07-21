@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ===== RFQ (purchase.report_purchasequotation_document) ===== -->
+  <template id="report_purchasequotation_document_uom"
+            inherit_id="purchase.report_purchasequotation_document">
+
+    <!-- HEADER: insertar "No" justo Antes de 'Description' -->
+    <xpath expr="//table[contains(@class,'table')]/thead/tr/th[@name='th_description']"
+           position="before">
+      <th class="text-start"><strong>N°</strong></th>
+    </xpath>
+
+    <xpath expr="//table[contains(@class,'table')]/tbody//td[@id='product']"
+           position="before">
+      <td class="text-start">
+        <!-- En RFQ el alias de línea es 'order_line' -->
+        <t t-esc="(order_line.line_number) or ''"/>
+      </td>
+    </xpath>
+
+    <!-- HEADER: insertar "UoM" justo DESPUÉS de 'Description' -->
+    <xpath expr="//table[contains(@class,'table')]/thead/tr/th[@name='th_description']"
+           position="after">
+      <th class="text-start"><strong>UoM</strong></th>
+    </xpath>
+
+    <!-- BODY: insertar la celda UoM justo DESPUÉS de la celda de descripción (td con id='product') -->
+    <xpath expr="//table[contains(@class,'table')]/tbody//td[@id='product']"
+           position="after">
+      <td class="text-start">
+        <!-- En RFQ el alias de línea es 'order_line' -->
+        <t t-esc="(order_line.product_uom and order_line.product_uom.name) or ''"/>
+      </td>
+    </xpath>
+
+  </template>
+
+  <!-- ===== PO confirmada (purchase.report_purchaseorder_document) ===== -->
+  <template id="report_purchaseorder_document_uom"
+            inherit_id="purchase.report_purchaseorder_document">
+
+     <!-- HEADER: insertar "UoM" justo ANTES de 'Description' -->
+    <xpath expr="//table[contains(@class,'table')]/thead/tr/th[@name='th_description']"
+           position="before">
+      <th class="text-start"><strong>N°</strong></th>
+    </xpath>
+
+    <!-- BODY: insertar la celda UoM justo DESPUÉS de la celda de descripción (td con id='product') -->
+    <xpath expr="//table[contains(@class,'table')]/tbody//td[@id='product']"
+           position="before">
+      <td class="text-start">
+        <!-- En PO el alias de línea suele ser 'line' -->
+        <t t-esc="(line.line_number) or ''"/>
+      </td>
+    </xpath>
+
+    <!-- HEADER: insertar "UoM" justo DESPUÉS de 'Description' -->
+    <xpath expr="//table[contains(@class,'table')]/thead/tr/th[@name='th_description']"
+           position="after">
+      <th class="text-start"><strong>UoM</strong></th>
+    </xpath>
+
+    <!-- BODY: insertar la celda UoM justo DESPUÉS de la celda de descripción (td con id='product') -->
+    <xpath expr="//table[contains(@class,'table')]/tbody//td[@id='product']"
+           position="after">
+      <td class="text-start">
+        <!-- En PO el alias de línea suele ser 'line' -->
+        <t t-esc="(line.product_uom and line.product_uom.name) or ''"/>
+      </td>
+    </xpath>
+
+  </template>
+
+</odoo>

@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+<t t-name="pyxel_import_backend.ImportDashboard">
+    <div class="o_import_dashboard p-3 h-100 overflow-auto" style="max-height: 100vh;">
+
+        <!-- Header -->
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="mb-0 fw-bold text-dark">
+                <i class="fa fa-ship me-2 text-primary"/>
+                Tablero — Contenedores en Mariel
+            </h4>
+            <button class="btn btn-sm btn-outline-secondary" t-on-click="refresh">
+                <i class="fa fa-refresh"/> Actualizar
+            </button>
+        </div>
+
+        <!-- Loading -->
+        <t t-if="state.loading">
+            <div class="text-center py-5 text-muted">
+                <i class="fa fa-spinner fa-spin fa-2x"/>
+                <p class="mt-2">Cargando datos...</p>
+            </div>
+        </t>
+
+        <!-- Error -->
+        <t t-elif="state.error">
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-triangle me-2"/>
+                <t t-esc="state.error"/>
+            </div>
+        </t>
+
+        <t t-elif="state.data">
+
+            <!-- BLOQUE 1: KPIs -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="card border-primary h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['extraction_date','=',false],['arrival_date','!=',false]], 'En el Mariel')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-primary"><t t-esc="state.data.kpis.en_mariel"/></div>
+                            <div class="text-muted small">En el Mariel</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="card border-danger h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['extraction_date','=',false],['arrival_date','!=',false],['pre_appointment_date','=',false]], 'Sin Habilitar')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-danger"><t t-esc="state.data.kpis.sin_habilitar"/></div>
+                            <div class="text-muted small">Sin Habilitar</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="card border-success h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['extraction_date','=',false],['arrival_date','!=',false],['pre_appointment_date','!=',false]], 'Habilitados (con precita)')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-success"><t t-esc="state.data.kpis.habilitados"/></div>
+                            <div class="text-muted small">Habilitados</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="card border-info h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['extraction_date','=',new Date().toISOString().split('T')[0]]], 'Extraídos hoy')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-info"><t t-esc="state.data.kpis.extraidos_hoy"/></div>
+                            <div class="text-muted small">Extraídos hoy</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="card border-warning h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['appointment_date','=',new Date().toISOString().split('T')[0]],['extraction_date','=',false]], 'Plan hoy')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-warning"><t t-esc="state.data.kpis.plan_hoy"/></div>
+                            <div class="text-muted small">Plan extracción hoy</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-4 col-xl-2">
+                    <div class="card bg-light h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['extraction_date','=',false],['arrival_date','!=',false],['arrival_date','&lt;',new Date(Date.now() - 30*86400000).toISOString().split('T')[0]]], 'Envejecidos +30d')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-secondary"><t t-esc="state.data.alertas.envejecidos"/></div>
+                            <div class="text-muted small">Envejecidos +30d</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 1.5: Avance de reconciliación -->
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h6 class="mb-0 fw-bold text-dark">
+                    <i class="fa fa-tasks me-2 text-primary"/>
+                    Avance de reconciliación — datos por completar
+                </h6>
+                <span class="badge bg-light text-muted border small">
+                    <t t-esc="state.data.avance_reconciliacion.total"/> contenedores en total
+                </span>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="card border-warning h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['importation_id','=',false]], 'Sin importación')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-warning"><t t-esc="state.data.avance_reconciliacion.sin_importacion"/></div>
+                            <div class="text-muted small">Sin importación (huérfanos)</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-success h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['provider_ids','=',false]], 'Sin proveedor')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-success"><t t-esc="state.data.avance_reconciliacion.sin_proveedor"/></div>
+                            <div class="text-muted small">Sin proveedor</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-success h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['customer_id','=',false]], 'Sin cliente')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-success"><t t-esc="state.data.avance_reconciliacion.sin_cliente"/></div>
+                            <div class="text-muted small">Sin cliente</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card border-danger h-100 cursor-pointer shadow-sm"
+                         t-on-click="() => this.openList([['customer_id','=',false],['provider_ids','=',false]], 'Sin cliente ni proveedor')">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-2 fw-bold text-danger"><t t-esc="state.data.avance_reconciliacion.sin_cliente_ni_proveedor"/></div>
+                            <div class="text-muted small">Sin cliente NI proveedor</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+
+                <!-- BLOQUE 2: Mapa de antigüedad -->
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold">
+                            <i class="fa fa-bar-chart me-2"/>Antigüedad en Mariel (sin extracción)
+                        </div>
+                        <div class="card-body">
+                            <t t-foreach="agingBars" t-as="b" t-key="b.key">
+                                <div class="mb-3 cursor-pointer" t-on-click="() => this.openList(domainForAging(b), b.label)">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="small fw-semibold" t-esc="b.label"/>
+                                        <span class="small text-muted"><t t-esc="b.count"/> cont. (<t t-esc="b.pct"/>%)</span>
+                                    </div>
+                                    <div class="progress" style="height:18px;">
+                                        <div class="progress-bar"
+                                             t-attf-style="width:{{b.pct}}%; background-color:{{b.color}};"
+                                             t-att-aria-valuenow="b.pct" aria-valuemin="0" aria-valuemax="100"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE 4: Del día -->
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold">
+                            <i class="fa fa-calendar-check-o me-2"/>Movimiento del día
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-sm table-bordered text-center mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th></th>
+                                        <th>Diesel</th>
+                                        <th>Gasolina</th>
+                                        <th>GLP</th>
+                                        <th>Otro</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-start fw-semibold text-success">
+                                            <i class="fa fa-check-circle me-1"/>Habilitados
+                                        </td>
+                                        <td><t t-esc="state.data.del_dia_hab.DIESEL"/></td>
+                                        <td><t t-esc="state.data.del_dia_hab.GASOLINA"/></td>
+                                        <td><t t-esc="state.data.del_dia_hab.GLP"/></td>
+                                        <td><t t-esc="state.data.del_dia_hab.OTRO"/></td>
+                                        <td class="fw-bold"><t t-esc="state.data.del_dia_hab.total"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start fw-semibold text-info">
+                                            <i class="fa fa-truck me-1"/>Extraídos
+                                        </td>
+                                        <td><t t-esc="state.data.del_dia_ext.DIESEL"/></td>
+                                        <td><t t-esc="state.data.del_dia_ext.GASOLINA"/></td>
+                                        <td><t t-esc="state.data.del_dia_ext.GLP"/></td>
+                                        <td><t t-esc="state.data.del_dia_ext.OTRO"/></td>
+                                        <td class="fw-bold"><t t-esc="state.data.del_dia_ext.total"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- Alertas inline -->
+                            <div class="mt-3">
+                                <t t-if="state.data.alertas.precita_vencida > 0">
+                                    <div class="alert alert-warning py-2 mb-2 cursor-pointer"
+                                         t-on-click="() => this.openList([['appointment_date','&lt;',new Date().toISOString().split('T')[0]],['appointment_date','!=',false],['extraction_date','=',false]], 'Precita vencida')">
+                                        <i class="fa fa-clock-o me-2"/>
+                                        <strong><t t-esc="state.data.alertas.precita_vencida"/></strong> contenedor(es) con precita vencida sin extraer
+                                    </div>
+                                </t>
+                                <t t-if="state.data.alertas.sin_identificar > 0">
+                                    <div class="alert alert-danger py-2 mb-0 cursor-pointer"
+                                         t-on-click="() => this.openList([['arrival_date','!=',false],['transit_agency','=',false],['extraction_date','=',false]], 'Sin identificar')">
+                                        <i class="fa fa-question-circle me-2"/>
+                                        <strong><t t-esc="state.data.alertas.sin_identificar"/></strong> contenedor(es) sin transitaria/identificar
+                                    </div>
+                                </t>
+                                <t t-if="state.data.alertas.precita_vencida === 0 and state.data.alertas.sin_identificar === 0">
+                                    <div class="text-center text-muted small pt-2">
+                                        <i class="fa fa-check-circle text-success me-1"/>Sin alertas activas
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3: Plan de extracción próximos 3 días -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header fw-bold">
+                    <i class="fa fa-calendar me-2"/>Plan de extracción — próximos 3 días
+                </div>
+                <div class="card-body p-0">
+                    <t t-if="state.data.plan.length === 0">
+                        <div class="text-center text-muted py-4">
+                            <i class="fa fa-inbox fa-2x mb-2 d-block"/>
+                            No hay contenedores con cita en los próximos 3 días
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Contenedor</th>
+                                    <th>Cliente</th>
+                                    <th>Carga</th>
+                                    <th>Transitaria</th>
+                                    <th>Días en el Terminal</th>
+                                    <th>Fecha cita</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-foreach="state.data.plan" t-as="row" t-key="row.id">
+                                    <tr>
+                                        <td class="fw-semibold text-monospace"><t t-esc="row.name"/></td>
+                                        <td><t t-esc="row.customer || '—'"/></td>
+                                        <td><t t-esc="cargoLabel(row.cargo_type)"/></td>
+                                        <td><t t-esc="row.transit_agency || '—'"/></td>
+                                        <td>
+                                            <span t-attf-class="badge {{row.days_in_tcm >= 30 ? 'bg-danger' : row.days_in_tcm >= 20 ? 'bg-warning text-dark' : row.days_in_tcm >= 15 ? 'bg-warning text-dark' : 'bg-success'}}">
+                                                <t t-esc="row.days_in_tcm"/> d
+                                            </span>
+                                        </td>
+                                        <td><t t-esc="formatDate(row.appointment_date)"/></td>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+                    </t>
+                </div>
+            </div>
+
+
+            <!-- BLOQUE 5: Histórico mensual -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="fa fa-history me-2"/>Histórico — Operaciones completadas (últimos 12 meses)</span>
+                </div>
+                <div class="card-body p-0">
+                    <t t-if="!state.data.historico or state.data.historico.length === 0">
+                        <div class="text-center text-muted py-4">
+                            <i class="fa fa-inbox fa-2x mb-2 d-block"/>
+                            Sin operaciones completadas en los últimos 12 meses
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <!-- Leyenda -->
+                        <div class="d-flex gap-4 px-3 pt-2 pb-1">
+                            <span class="small d-flex align-items-center gap-1">
+                                <span style="display:inline-block;width:12px;height:12px;background:#198754;border-radius:2px;"/>
+                                Retornados
+                            </span>
+                            <span class="small d-flex align-items-center gap-1">
+                                <span style="display:inline-block;width:12px;height:12px;background:#dc3545;border-radius:2px;"/>
+                                Sin retornar
+                            </span>
+                        </div>
+                        <!-- Barras horizontales por mes -->
+                        <t t-set="max_val" t-value="Math.max(...state.data.historico.map(r => r.extraidos)) || 1"/>
+                        <div class="px-3 pb-2">
+                            <t t-foreach="state.data.historico" t-as="mes" t-key="mes.mes">
+                                <div class="d-flex align-items-center gap-2 mb-2 cursor-pointer"
+                                     t-on-click="() => this.openHistoricoMes(mes.mes)">
+                                    <!-- Etiqueta mes -->
+                                    <div class="text-end text-muted fw-semibold" style="width:80px; flex-shrink:0; font-size:13px;">
+                                        <t t-esc="mes.label"/>
+                                    </div>
+                                    <!-- Barra horizontal apilada -->
+                                    <div style="flex:1; height:28px; background:#e9ecef; border-radius:4px; overflow:hidden; display:flex;">
+                                        <t t-set="pct_ret" t-value="Math.round((mes.retornados / max_val) * 100)"/>
+                                        <t t-set="pct_sin" t-value="Math.round((mes.sin_retorno / max_val) * 100)"/>
+                                        <div t-attf-style="width:{{pct_ret}}%; background:#198754; height:100%;"/>
+                                        <div t-attf-style="width:{{pct_sin}}%; background:#dc3545; height:100%;"/>
+                                    </div>
+                                    <!-- Totales -->
+                                    <div class="d-flex align-items-center gap-2" style="width:180px; flex-shrink:0;">
+                                        <span class="badge bg-success fs-6 px-2 py-1"><t t-esc="mes.retornados"/></span>
+                                        <span t-attf-class="badge fs-6 px-2 py-1 {{mes.sin_retorno > 0 ? 'bg-danger' : 'bg-secondary'}}"><t t-esc="mes.sin_retorno"/></span>
+                                        <span class="text-muted" style="font-size:12px; white-space:nowrap;">
+                                            <t t-esc="mes.dias_prom"/>d prom
+                                        </span>
+                                    </div>
+                                    <!-- Ver -->
+                                    <button class="btn btn-sm btn-outline-secondary py-0 px-2" style="flex-shrink:0;"
+                                            t-on-click.stop="() => this.openHistoricoMes(mes.mes)">
+                                        <i class="fa fa-list"/>
+                                    </button>
+                                </div>
+                            </t>
+                            <!-- Totales -->
+                            <div class="d-flex align-items-center gap-2 mt-1 pt-2 border-top">
+                                <div class="text-end fw-bold" style="width:80px; flex-shrink:0; font-size:13px;">Total</div>
+                                <div style="flex:1;"/>
+                                <div class="d-flex align-items-center gap-2" style="width:180px; flex-shrink:0;">
+                                    <span class="badge bg-success fs-6 px-2 py-1">
+                                        <t t-esc="state.data.historico.reduce((s,r) => s + r.retornados, 0)"/>
+                                    </span>
+                                    <span class="badge bg-danger fs-6 px-2 py-1">
+                                        <t t-esc="state.data.historico.reduce((s,r) => s + r.sin_retorno, 0)"/>
+                                    </span>
+                                </div>
+                                <div style="width:38px; flex-shrink:0;"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+
+            <!-- ============ EXTENSIONES DEL TABLERO (docx OPERACIONES 02/06/2026) ============ -->
+
+            <!-- ① Totales del docx (P3 · P4 · P5) -->
+            <div class="card shadow-sm mb-4" t-if="state.data.totales">
+                <div class="card-header fw-bold">
+                    <i class="fa fa-cubes me-2 text-primary"/>Totales del sistema (histórico)
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-6 col-md-4">
+                            <div class="card border-primary h-100 cursor-pointer shadow-sm"
+                                 t-on-click="() => this.openList(['|', ['state','=','returned'], '&amp;', ['state','in',['to_extract','to_return']], ['extraction_date','!=',false]], 'Importados hasta la fecha')">
+                                <div class="card-body text-center p-3">
+                                    <div class="fs-2 fw-bold text-primary"><t t-esc="state.data.totales.importados"/></div>
+                                    <div class="text-muted small">Importados hasta la fecha</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="card border-warning h-100 cursor-pointer shadow-sm"
+                                 t-on-click="() => this.openList([['state','=','to_arrive']], 'En tránsito (por llegar)')">
+                                <div class="card-body text-center p-3">
+                                    <div class="fs-2 fw-bold text-warning"><t t-esc="state.data.totales.en_transito"/></div>
+                                    <div class="text-muted small">En tránsito (por llegar)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="card border-danger h-100 cursor-pointer shadow-sm"
+                                 t-on-click="() => this.openList(['|', '&amp;', '&amp;', ['state','in',['to_extract','to_return']], ['return_date','=',false], ['extraction_date','!=',false], ['state','=','to_return']], 'Por devolver hasta la fecha')">
+                                <div class="card-body text-center p-3">
+                                    <div class="fs-2 fw-bold text-danger"><t t-esc="state.data.totales.por_devolver"/></div>
+                                    <div class="text-muted small">Por devolver hasta la fecha</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ① Producto × estado (conteo + volumen) -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-cube me-2"/>Contenedores por producto × estado</div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-end">Por llegar</th>
+                                        <th class="text-end">En Terminal</th>
+                                        <th class="text-end">Extraído</th>
+                                        <th class="text-end">Por devolver</th>
+                                        <th class="text-end">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.data.producto_estado_conteo" t-as="r" t-key="r.producto">
+                                        <tr>
+                                            <td><t t-esc="r.producto"/></td>
+                                            <td class="text-end"><t t-esc="r['Por llegar']"/></td>
+                                            <td class="text-end"><t t-esc="r['En Terminal']"/></td>
+                                            <td class="text-end"><t t-esc="r['Extraído']"/></td>
+                                            <td class="text-end"><t t-esc="r['Por devolver']"/></td>
+                                            <td class="text-end fw-bold"><t t-esc="r['Total']"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="state.data.producto_estado_conteo.length === 0">
+                                        <td colspan="6" class="text-muted text-center py-3">Sin datos</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-flask me-2"/>Volumen por producto × estado (litros)</div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-end">Por llegar</th>
+                                        <th class="text-end">En Terminal</th>
+                                        <th class="text-end">Extraído</th>
+                                        <th class="text-end">Por devolver</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.data.producto_estado_volumen" t-as="r" t-key="r.producto">
+                                        <tr>
+                                            <td><t t-esc="r.producto"/></td>
+                                            <td class="text-end"><t t-esc="fmtNum(r['Por llegar'])"/></td>
+                                            <td class="text-end"><t t-esc="fmtNum(r['En Terminal'])"/></td>
+                                            <td class="text-end"><t t-esc="fmtNum(r['Extraído'])"/></td>
+                                            <td class="text-end"><t t-esc="fmtNum(r['Por devolver'])"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="state.data.producto_estado_volumen.length === 0">
+                                        <td colspan="5" class="text-muted text-center py-3">Sin datos</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="small text-muted p-2 fst-italic">Unidad: litros por defecto. Ajustar UoM más adelante.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ① Precios promedio por producto -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header fw-bold"><i class="fa fa-tag me-2"/>Precios promedio por producto (histórico)</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Producto</th>
+                                <th class="text-end">Precio promedio</th>
+                                <th class="text-end">Litros totales</th>
+                                <th class="text-end">Contenedores</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.data.precios_promedio" t-as="r" t-key="r.producto">
+                                <tr>
+                                    <td><t t-esc="r.producto"/></td>
+                                    <td class="text-end"><t t-esc="r.precio_prom.toFixed(4)"/></td>
+                                    <td class="text-end"><t t-esc="fmtNum(r.litros_total)"/></td>
+                                    <td class="text-end"><t t-esc="r.contenedores"/></td>
+                                </tr>
+                            </t>
+                            <tr t-if="state.data.precios_promedio.length === 0">
+                                <td colspan="4" class="text-muted text-center py-3">Sin datos</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ① Rankings -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-trophy me-2 text-warning"/>Proveedores × producto × país</div>
+                        <div class="card-body">
+                            <ol class="list-unstyled mb-0 small">
+                                <t t-foreach="state.data.ranking_proveedores" t-as="r" t-key="r_index">
+                                    <li class="d-flex justify-content-between border-bottom py-1">
+                                        <span><span class="text-muted"><t t-esc="r_index + 1"/>.</span> <t t-esc="r.label"/></span>
+                                        <span class="fw-bold"><t t-esc="r.cantidad"/></span>
+                                    </li>
+                                </t>
+                                <li t-if="state.data.ranking_proveedores.length === 0" class="text-muted text-center py-3">Sin datos</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-users me-2 text-info"/>Clientes × producto × provincia</div>
+                        <div class="card-body">
+                            <ol class="list-unstyled mb-0 small">
+                                <t t-foreach="state.data.ranking_clientes" t-as="r" t-key="r_index">
+                                    <li class="d-flex justify-content-between border-bottom py-1">
+                                        <span><span class="text-muted"><t t-esc="r_index + 1"/>.</span> <t t-esc="r.label"/></span>
+                                        <span class="fw-bold"><t t-esc="r.cantidad"/></span>
+                                    </li>
+                                </t>
+                                <li t-if="state.data.ranking_clientes.length === 0" class="text-muted text-center py-3">Sin datos</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-ship me-2 text-primary"/>Navieras × producto × país × puerto</div>
+                        <div class="card-body">
+                            <ol class="list-unstyled mb-0 small">
+                                <t t-foreach="state.data.ranking_navieras" t-as="r" t-key="r_index">
+                                    <li class="d-flex justify-content-between border-bottom py-1">
+                                        <span><span class="text-muted"><t t-esc="r_index + 1"/>.</span> <t t-esc="r.label"/></span>
+                                        <span class="fw-bold"><t t-esc="r.cantidad"/></span>
+                                    </li>
+                                </t>
+                                <li t-if="state.data.ranking_navieras.length === 0" class="text-muted text-center py-3">Sin datos</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ② Inteligencia comercial -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-user-tie me-2 text-success"/>Clientes</div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4 cursor-pointer" t-on-click="() => this.openLeads('client', 'acreditados', 'Clientes acreditados')">
+                                    <div class="fs-4 fw-bold text-success text-decoration-underline"><t t-esc="state.data.comercial.clientes.acreditados"/></div>
+                                    <div class="small text-muted">Acreditados</div>
+                                </div>
+                                <div class="col-4 cursor-pointer" t-on-click="() => this.openLeads('client', 'en_aprobacion', 'Clientes en aprobación')">
+                                    <div class="fs-4 fw-bold text-warning text-decoration-underline"><t t-esc="state.data.comercial.clientes.en_aprobacion"/></div>
+                                    <div class="small text-muted">En aprobación</div>
+                                </div>
+                                <div class="col-4 cursor-pointer" t-on-click="() => this.openLeads('client', 'potenciales', 'Clientes potenciales')">
+                                    <div class="fs-4 fw-bold text-secondary text-decoration-underline"><t t-esc="state.data.comercial.clientes.potenciales"/></div>
+                                    <div class="small text-muted">Potenciales</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-industry me-2 text-info"/>Proveedores</div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-4 cursor-pointer" t-on-click="() => this.openLeads('supplier', 'acreditados', 'Proveedores acreditados')">
+                                    <div class="fs-4 fw-bold text-success text-decoration-underline"><t t-esc="state.data.comercial.proveedores.acreditados"/></div>
+                                    <div class="small text-muted">Acreditados</div>
+                                </div>
+                                <div class="col-4 cursor-pointer" t-on-click="() => this.openLeads('supplier', 'en_aprobacion', 'Proveedores en aprobación')">
+                                    <div class="fs-4 fw-bold text-warning text-decoration-underline"><t t-esc="state.data.comercial.proveedores.en_aprobacion"/></div>
+                                    <div class="small text-muted">En aprobación</div>
+                                </div>
+                                <div class="col-4 cursor-pointer" t-on-click="() => this.openLeads('supplier', 'potenciales', 'Proveedores potenciales')">
+                                    <div class="fs-4 fw-bold text-secondary text-decoration-underline"><t t-esc="state.data.comercial.proveedores.potenciales"/></div>
+                                    <div class="small text-muted">Potenciales</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ③ Serviciadores -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-gavel me-2"/>Aduana</div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between py-1 small border-bottom"><span>Aranceles</span><span>USD <t t-esc="fmtNum(state.data.aduana.aranceles_usd)"/></span></div>
+                            <div class="d-flex justify-content-between py-1 small"><span>Servicio de aduana</span><span>MN <t t-esc="fmtNum(state.data.aduana.servicio_mn)"/></span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-ship me-2"/>Navieras</div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between py-1 small border-bottom"><span>Trámite documentario</span><span>USD <t t-esc="fmtNum(state.data.navieras_total.tramite_doc_usd)"/></span></div>
+                            <div class="d-flex justify-content-between py-1 small border-bottom"><span>Contenedores no devueltos</span><span><t t-esc="state.data.navieras_total.no_devueltos_count"/></span></div>
+                            <div class="d-flex justify-content-between py-1 small"><span>Costo no devueltos</span><span>USD <t t-esc="fmtNum(state.data.navieras_total.no_devueltos_costo_usd)"/></span></div>
+                            <div class="small text-muted fst-italic mt-2">Trámite y costo dependen de Fase 2</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-warehouse me-2"/>Terminal de Contenedores</div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between py-1 small border-bottom"><span>Estadía facturada</span><span>MN <t t-esc="fmtNum(state.data.terminal.estadia_facturada_mn)"/></span></div>
+                            <div class="d-flex justify-content-between py-1 small border-bottom"><span>Contenedores activos</span><span><t t-esc="state.data.terminal.contenedores_activos"/></span></div>
+                            <div class="d-flex justify-content-between py-1 small"><span>Días promedio</span><span><t t-esc="state.data.terminal.dias_promedio"/> d</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ③ Desglose contenedores no devueltos por naviera -->
+            <div class="card shadow-sm mb-4" t-if="state.data.no_devueltos_por_naviera.length > 0">
+                <div class="card-header fw-bold"><i class="fa fa-exclamation-triangle me-2 text-warning"/>Contenedores no devueltos por naviera</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Naviera</th>
+                                <th class="text-end">No devueltos</th>
+                                <th class="text-end">Trámite doc. (USD)</th>
+                                <th class="text-end">Costo no devol. (USD)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="state.data.no_devueltos_por_naviera" t-as="r" t-key="r.naviera">
+                                <tr>
+                                    <td><t t-esc="r.naviera"/></td>
+                                    <td class="text-end"><t t-esc="r.no_devueltos"/></td>
+                                    <td class="text-end"><t t-esc="fmtNum(r.tramite_doc_usd)"/></td>
+                                    <td class="text-end"><t t-esc="fmtNum(r.no_devueltos_costo_usd)"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ④ Ventas -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-md-4">
+                    <div class="card border-success h-100 shadow-sm">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-3 fw-bold text-success">USD <t t-esc="fmtNum(state.data.ventas.facturado_mes)"/></div>
+                            <div class="text-muted small">Facturado del mes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card border-primary h-100 shadow-sm">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-3 fw-bold text-primary">USD <t t-esc="fmtNum(state.data.ventas.facturado_ytd)"/></div>
+                            <div class="text-muted small">Facturado YTD</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="card border-info h-100 shadow-sm">
+                        <div class="card-body text-center p-3">
+                            <div class="fs-3 fw-bold text-info">USD <t t-esc="fmtNum(state.data.ventas.refacturado_mes)"/></div>
+                            <div class="text-muted small">Refacturado del mes</div>
+                            <div class="small text-muted fst-italic">Fase 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ④ CxC + CxP -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-arrow-down text-success me-2"/>Cuentas por cobrar (clientes)</div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr><th>Cliente</th><th class="text-end">Saldo</th><th class="text-end">Días</th></tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.data.cxc" t-as="r" t-key="r_index">
+                                        <tr>
+                                            <td><t t-esc="r.cliente"/></td>
+                                            <td class="text-end"><t t-esc="fmtNum(r.saldo)"/></td>
+                                            <td class="text-end"><t t-esc="r.dias"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="state.data.cxc.length === 0"><td colspan="3" class="text-muted text-center py-3">Sin saldos pendientes</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-arrow-up text-danger me-2"/>Cuentas por pagar (proveedores/serviciadores)</div>
+                        <div class="card-body p-0">
+                            <table class="table table-sm mb-0">
+                                <thead class="table-light">
+                                    <tr><th>Proveedor</th><th class="text-end">Saldo</th><th class="text-end">Días</th></tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="state.data.cxp" t-as="r" t-key="r_index">
+                                        <tr>
+                                            <td><t t-esc="r.proveedor"/></td>
+                                            <td class="text-end"><t t-esc="fmtNum(r.saldo)"/></td>
+                                            <td class="text-end"><t t-esc="r.dias"/></td>
+                                        </tr>
+                                    </t>
+                                    <tr t-if="state.data.cxp.length === 0"><td colspan="3" class="text-muted text-center py-3">Sin saldos pendientes</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="small text-muted p-2 fst-italic">Desglose por serviciador (Aduana/Naviera/Terminal): Fase 2.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </t>
+    </div>
+</t>
+</templates>

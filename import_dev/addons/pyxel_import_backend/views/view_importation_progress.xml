@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_importation_process_kanban" model="ir.ui.view">
+        <field name="name">importation.process.kanban</field>
+        <field name="model">importation.process</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" group_create="false" group_order="sequence">
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record">
+                            <!-- Resto de campos -->
+                            <div class="o_kanban_details">
+                                <div>
+                                    <strong>
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                                <div>
+                                    <field name="provider_id"/>
+                                </div>
+                                <div>
+                                    <field name="country_origin_id"/>
+                                </div>
+                                <div>
+                                    <field name="purchase_condition_number"/>
+                                </div>
+                                <div>
+                                    <strong>Days in the stage:</strong>
+                                    <field name="days_in_stage"/>
+                                </div>
+                            </div>
+                            <!-- Avatar del usuario que creó el registro -->
+                            <div class="o_kanban_avatar">
+                                <field name="create_uid" widget="many2one_avatar_user"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_importation_process_tree" model="ir.ui.view">
+        <field name="name">importation.process.tree</field>
+        <field name="model">importation.process</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="create_uid" optional="show"/>
+                <field name="activity_user_id" optional="show" string="Asignada a"/>
+                <field name="name"/>
+                <field name="provider_id" optional="show"/>
+                <field name="customer_id" optional="show"/>
+                <field name="bl_numbers" optional="show"/>
+                <field name="import_type_id" optional="show"/>
+                <field name="is_third_party_contract" optional="hide"/>
+                <field name="purchase_order_count" optional="show"/>
+                <field name="sale_order_count" optional="hide"/>
+                <field name="invoice_count" optional="hide"/>
+                <field name="load_tracking_count" optional="show"/>
+                <field name="stage_id"/>
+                <field name="activity_state" optional="show" widget="badge" decoration-danger="activity_state == 'overdue'" decoration-warning="activity_state == 'today'" decoration-success="activity_state == 'planned'"/>
+                <field name="country_origin_id" optional="show"/>
+                <field name="estimated_start_date" optional="hide"/>
+                <field name="estimated_end_date" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_importation_process_form" model="ir.ui.view">
+        <field name="name">importation.process.form</field>
+        <field name="model">importation.process</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="final_sale_order_id" invisible="1"/>
+                    <field name="cost_sale_order_count" invisible="1"/>
+                    <button name="action_create_cost_sale_order"
+                            type="object"
+                            string="Generar Venta de Costos"
+                            class="btn-primary"
+                            invisible="not cost_line_ids or final_sale_order_id"/>
+                    <button name="action_create_cost_sale_order"
+                            type="object"
+                            string="Regenerar Venta de Costos"
+                            class="btn-secondary"
+                            invisible="not cost_line_ids or not final_sale_order_id"/>
+
+                    <button name="action_start_progress" string="Start Import" type="object" class="btn-primary"
+                            invisible="state != 'evaluating'"/>
+                    <!--                                <button name="action_finish_progress" string="Finish" type="object" class="btn-success" invisible="state != 'in_progress'"/>-->
+                    <!--                                <field name="state" widget="statusbar" statusbar_visible="draft,evaluating,in_progress,done"/>-->
+                    <field name="stage_id" widget="statusbar" options="{'clickable': True}" domain="[]" context="{}"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_sale_orders"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shopping-cart">
+                            <field name="sale_order_count" widget="statinfo" string="Sale Orders"/>
+                        </button>
+                        <button name="action_view_related_invoices"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-file-invoice-dollar">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                        <button name="action_view_purchase_orders"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shopping-cart">
+                            <field name="purchase_order_count" widget="statinfo" string="Purchase Orders"/>
+                        </button>
+                        <button name="action_view_load_tracking"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shopping-cart">
+                            <field name="load_tracking_count" widget="statinfo" string="Importation Load"/>
+                        </button>
+
+                    </div>
+                    <group name="main_group">
+                        <group name="info_group">
+                            <field name="process_id" options="{'no_create': True, 'no_open': True}" readonly="True"
+                                   context="{'default_importation_id': id}"/>
+                            <field name="name" readonly="1"/>
+                            <field name="provider_id" domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]"/>
+                            <field name="country_origin_id"/>
+                            <field name="filtered_incoterm" invisible="True"/>
+                            <field name="filtered_import_type" invisible="True"/>
+                            <field name="incoterm_import_type_id" invisible="True"/>
+                            <field name="incoterm_id" domain="filtered_incoterm" readonly="True"/>
+                            <field name="import_type_id" domain="filtered_import_type"/>
+                            <field name="use_port" invisible="True"/>
+                            <field name="use_airport" invisible="True"/>
+                            <field name="filtered_port" invisible="True"/>
+                            <field name="filtered_airport" invisible="True"/>
+                            <field name="port" invisible="use_port == False" domain="filtered_port"/>
+                            <field name="airport" invisible="use_airport == False" domain="filtered_airport"/>
+                            <field name="state" readonly="1"/>
+                        </group>
+
+                        <group name="date_group">
+                            <field name="estimated_start_date"/>
+                            <field name="estimated_end_date"/>
+                            <field name="departure_date"/>
+                            <field name="documentation_sent_date"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Documents" name="documents">
+                            <field name="has_origin_certificate" invisible="True"/>
+                            <field name="has_export_certificate" invisible="True"/>
+                            <field name="has_quality_certificate" invisible="True"/>
+                            <field name="has_packing_list" invisible="True"/>
+                            <field name="has_awb" invisible="True"/>
+                            <field name="has_bl" invisible="True"/>
+                            <group>
+                                <field name="origin_certificate" filename="origin_certificate_filename"
+                                       invisible="has_origin_certificate == False"/>
+                                <field name="export_certificate" filename="export_certificate_filename"
+                                       invisible="has_export_certificate == False"/>
+                                <field name="quality_certificate" filename="quality_certificate_filename"
+                                       invisible="has_quality_certificate == False"/>
+                            </group>
+                        </page>
+
+                        <page string="Importation Load" name="importation_load">
+                            <field name="load_tracking_ids" context="{'default_importation_id': active_id}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="bl_number"/>
+                                    <field name="cargo_type" optional="show" readonly="1"/>
+                                    <field name="size"/>
+                                    <field name="weight" optional="show"/>
+                                    <field name="net_weight" optional="show"/>
+                                    <field name="volume" optional="show"/>
+                                    <field name="arrival_date" optional="show"/>
+                                    <field name="release_date" optional="show"/>
+                                    <field name="return_date" optional="show"/>
+                                    <field name="extraction_date" optional="show"/>
+                                    <field name="days_in_tcm"/>
+                                    <field name="days_extracted"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Purchase Orders" name="purchase_orders">
+                            <field name="purchase_order_ids"
+                                   domain="['|', ('importation_id', '=', False), ('importation_id', '=', active_id)]" context="{'default_importation_id': active_id}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="partner_id" string="Proveedor"/>
+                                    <field name="customer_id" string="Cliente"/>
+                                    <field name="amount_total"/>
+                                    <field name="state"/>
+                                    <button name="action_export_excel_aduana" type="object" icon="fa-download" string="Trámites de la Aduana" class="btn-link" help="Exportar esta PO a Excel"/>
+                                </tree>
+                            </field>
+                        </page>
+
+                        <page string="Import costs" name="import_costs">
+                            <field name="cost_line_ids">
+                                <tree editable="top" create="true" edit="true">
+                                    <field name="product_id"
+                                           context="{'default_detailed_type': 'service', 'default_taxes_id': [], 'default_supplier_taxes_id': []}"/>
+                                    <field name="amount"/>
+                                    <field name="distribution_type"/>
+                                    <field name="purchase_ids"
+                                           domain="[('id', 'in', parent.purchase_order_ids)]"
+                                           widget="many2many_tags"/>
+                                    <field name="is_cost_special"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_importation_process" model="ir.actions.act_window">
+        <field name="name">Imports</field>
+        <field name="res_model">importation.process</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>Manage import processes from this view.</p>
+        </field>
+    </record>
+
+
+    <menuitem id="menu_importation_root" name="Imports" sequence="10"
+              web_icon="pyxel_import_backend,static/src/imgs/menu_icon.png"/>
+    <menuitem id="menu_importation_process" name="Imports" parent="menu_importation_root">
+        <menuitem id="menu_importation_solicitud" sequence="1" name="Imports" action="action_importation_process"/>
+    </menuitem>
+
+
+</odoo>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="crm.stage" id="crm.stage_lead1">
+        <field name="name">CLIENTE O PROVEEDOR POTENCIAL</field>
+    </record>
+
+    <record model="crm.stage" id="crm.stage_lead2">
+        <field name="name">EN PROCESO DE APROBACIÓN</field>
+    </record>
+
+    <record model="crm.stage" id="crm.stage_lead3">
+        <field name="name">APROBADOS EN CARTERA</field>
+    </record>
+    
+    <record model="crm.stage" id="crm.stage_lead4">
+        <field name="name">GANADO</field>
+    </record>
+</odoo>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="purchase_order_tree_inherit_provider_evaluation" model="ir.ui.view">
+    <field name="name">purchase.order.tree.inherit.provider.evaluation</field>
+    <field name="model">purchase.order</field>
+    <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+    <field name="arch" type="xml">
+      <xpath expr="//tree/field[@name='name']" position="after">
+        <field name="evaluation_id" />
+      </xpath>
+    </field>
+  </record>
+
+
+  <record id="purchase_order_form_inherit_provider_evaluation" model="ir.ui.view">
+    <field name="name">purchase.order.form.inherit.provider.evaluation</field>
+    <field name="model">purchase.order</field>
+    <field name="inherit_id" ref="purchase.purchase_order_form" />
+    <field name="arch" type="xml">
+      <xpath expr="//group" position="inside">
+        <field name="evaluation_id" readonly="1"/>
+        <field name="bl_number"/>
+        <field name="declaration"/>
+        <field name="declaration_date"/>
+      </xpath>
+
+      <xpath expr="//field[@name='partner_id']" position="attributes">
+        <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]</attribute>
+      </xpath>
+
+       <xpath expr="//page[@name='purchase_delivery_invoice']//group[@name='other_info']" position="inside">
+            <field name="customer_id"
+                   domain="[('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]"
+                   help="Cliente al que corresponde esta OC, cuando el proceso de importación tiene varios clientes."/>
+            <field name="is_third_party_contract"/>
+            <field name="commercial_invoice" filename="commercial_invoice_filename"/>
+            <field name="signed_offer" filename="signed_offer_filename"/>
+            <field name="packing_list" filename="packing_list_filename" string="Packing List"/>
+        </xpath>
+        <!-- Árbol en la pestaña de líneas -->
+        <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="before">
+            <field name="line_number" readonly="1" string="N°" width="40"/>
+        </xpath>
+        <xpath expr="//field[@name='order_line']/tree//field[@name='name']" position="before">
+          <field name="product_uom_category_id" invisible="1"/>
+          <field name="product_uom" optional="show"
+                 domain="['&amp;', ('category_id', '=', product_uom_category_id), '|', ('category_id', '!=', 6), ('id', 'in', [11, 25])]"/>
+        </xpath>
+        <!-- Form de línea -->
+         <xpath expr="//field[@name='order_line']/form//field[@name='product_id']" position="before">
+            <field name="line_number" readonly="1" string="N°" width="40"/>
+         </xpath>
+        <xpath expr="//field[@name='order_line']/form//field[@name='name']" position="before">
+          <field name="product_uom_category_id" invisible="1"/>
+          <field name="product_uom"
+                 domain="['&amp;', ('category_id', '=', product_uom_category_id), '|', ('category_id', '!=', 6), ('id', 'in', [11, 25])]"/>
+        </xpath>
+    </field>
+  </record>
+</odoo>

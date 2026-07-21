@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_importation_cargo_tree" model="ir.ui.view">
+        <field name="name">importation.load.tree</field>
+        <field name="model">importation.load</field>
+        <field name="arch" type="xml">
+            <tree string="Importation Loads">
+                <field name="name"/>
+                <field name="bl_number"/>
+                <field name="supplier_invoice_number" optional="show"/>
+                <field name="importation_id"/>
+                <field name="purchase_condition" optional="show"/>
+                <field name="days_in_tcm"/>
+                <field name="days_extracted"/>
+                <field name="create_uid" optional="show"/>
+                <field name="carrier" optional="show"/>
+                <field name="is_transferred" optional="hide"/>
+                <field name="is_transshipment" optional="hide"/>
+                <field name="transshipment_type" optional="hide"/>
+                <field name="cargo_line_count" optional="show"/>
+                <field name="provider_ids" optional="show" widget="many2many_tags"/>
+                <field name="customer_id" optional="show"/>
+                <field name="transport_company" optional="hide"/>
+                <field name="state"/>
+                <field name="arrival_date"/>
+                <field name="release_date" optional="hide"/>
+                <field name="appointment_date" optional="hide"/>
+                <field name="extraction_date"/>
+                <field name="return_date"/>
+                <field name="cargo_type"/>
+                <field name="size" optional="hide"/>
+                <field name="weight" optional="hide"/>
+                <field name="net_weight" optional="hide"/>
+                <field name="currency_id" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_importation_load_form" model="ir.ui.view">
+        <field name="name">importation.load.form</field>
+        <field name="model">importation.load</field>
+        <field name="arch" type="xml">
+            <form string="Importation Load">
+                <header>
+                    <button name="%(action_x_container_fill_wizard)d"
+                            type="action"
+                            string="Line Fill"
+                            class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <!-- Fila 1: identidad/relaciones a la izquierda, fechas a la derecha -->
+                    <group>
+                        <group string="Información general">
+                            <field name="hide_cargo_type" invisible="1"/>
+
+                            <field name="name"/>
+                            <field name="bl_number"/>
+                            <field name="master_bl_number" readonly="1"/>
+                            <field name="container_release_partner" readonly="1"/>
+                            <field name="importation_id"/>
+                            <field name="customer_id"/>
+                            <field name="provider_ids" widget="many2many_tags"/>
+                            <field name="cargo_type" invisible="hide_cargo_type" readonly="1"/>
+                            <field name="size"/>
+                            <field name="weight"/>
+                            <field name="net_weight"/>
+                        </group>
+
+                        <!-- Fechas: todas vienen del reporte de la Terminal (TCM),
+                             solo lectura para que nadie las edite a mano. Orden:
+                             arribo, lib. BL, lib. contenedor, DM (las tres
+                             anteriores alimentan a "release_date", que va
+                             justo después de ellas), precita, cita,
+                             extracción, devolución. -->
+                        <group string="Fechas">
+                            <field name="hide_arrival_date" invisible="1"/>
+                            <field name="hide_release_date" invisible="1"/>
+                            <field name="hide_extraction_date" invisible="1"/>
+                            <field name="hide_return_date" invisible="1"/>
+
+                            <field name="arrival_date" invisible="hide_arrival_date" readonly="1"/>
+                            <field name="mbl_release_date" readonly="1"/>
+                            <field name="container_release_date" readonly="1"/>
+                            <field name="declaration_date_probable" readonly="1"/>
+                            <field name="release_date" invisible="hide_release_date" readonly="1"/>
+                            <field name="pre_appointment_date" readonly="1"/>
+                            <field name="appointment_date" readonly="1"/>
+                            <field name="extraction_date" invisible="hide_extraction_date" readonly="1"/>
+                            <field name="return_date" invisible="hide_return_date" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <!-- Fila 2: transporte/logística a la izquierda, resto a la derecha -->
+                    <group>
+                        <group string="Transporte">
+                            <field name="hide_shipping_company" invisible="1"/>
+                            <field name="hide_airline" invisible="1"/>
+                            <field name="hide_transit_agency" invisible="1"/>
+
+                            <field name="shipping_company" invisible="hide_shipping_company" readonly="1"/>
+                            <field name="airline" invisible="hide_airline"/>
+                            <field name="transit_agency" invisible="hide_transit_agency"/>
+                            <field name="transport_company" readonly="1"/>
+                            <field name="truck_plate" readonly="1"/>
+                            <field name="province" readonly="1"/>
+                            <field name="destination"/>
+                            <field name="driver"/>
+                        </group>
+
+                        <group string="Otros">
+                            <field name="hide_volume" invisible="1"/>
+                            <field name="hide_bulk" invisible="1"/>
+                            <field name="hide_opening_date" invisible="1"/>
+
+                            <field name="volume" invisible="hide_volume == True"/>
+                            <field name="bulk" invisible="hide_bulk == True"/>
+                            <field name="supplier_invoice_number"/>
+                            <field name="opening_date" invisible="hide_opening_date"/>
+                            <field name="state" readonly="1"/>
+                            <field name="currency_id" readonly="1"/>
+                            <field name="days_in_tcm" readonly="1"/>
+                            <field name="days_extracted" readonly="1"/>
+                            <field name="is_transferred"/>
+                            <field name="is_transshipment"/>
+                            <field name="transshipment_type" invisible="is_transshipment == False"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Product Lines">
+                            <field name="purchase_order_ids" invisible="True"/>
+                            <field name="cargo_line_ids" context="{'default_cargo_id': active_id}">
+                                <tree editable="bottom">
+                                    <field name="purchase_order_line_id"
+                                           domain="[('order_id', 'in', parent.purchase_order_ids)]"/>
+                                    <field name="product_id" readonly="1"/>
+                                    <field name="quantity"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action and Menu -->
+    <record id="action_importation_load" model="ir.actions.act_window">
+        <field name="name">Importation Loads</field>
+        <field name="res_model">importation.load</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="action_open_importation_wizard" model="ir.actions.server">
+        <field name="name">Conciliación</field>
+        <field name="model_id" ref="model_importation_load"/>
+        <field name="binding_model_id" ref="model_importation_load"/>
+        <field name="state">code</field>
+        <field name="code">
+            action = {
+            'type': 'ir.actions.act_window',
+            'name': 'Conciliación',
+            'res_model': 'average.container',
+            'view_mode': 'form',
+            'target': 'new',
+            }
+        </field>
+    </record>
+
+
+    <menuitem id="menu_importation_load" name="Loads" parent="menu_importation_process" sequence="2"
+              action="action_importation_load"/>
+</odoo>

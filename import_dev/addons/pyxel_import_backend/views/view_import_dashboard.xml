@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_import_dashboard" model="ir.actions.client">
+        <field name="name">Tablero de Importación</field>
+        <field name="tag">import_dashboard</field>
+    </record>
+
+    <!-- Reemplaza la acción del menú "Tableros" del sistema con nuestro dashboard -->
+    <record id="spreadsheet_dashboard.spreadsheet_dashboard_menu_dashboard" model="ir.ui.menu">
+        <field name="action" ref="action_import_dashboard"/>
+        <field name="name">Tablero</field>
+    </record>
+
+    <!-- La app "Tableros" abre directamente nuestro dashboard al entrar -->
+    <record id="spreadsheet_dashboard.spreadsheet_dashboard_menu_root" model="ir.ui.menu">
+        <field name="action" ref="action_import_dashboard"/>
+    </record>
+
+</odoo>

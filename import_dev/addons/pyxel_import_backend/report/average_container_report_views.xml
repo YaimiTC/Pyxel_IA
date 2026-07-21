@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Layout interno personalizado -->
+        <template id="average_container_internal_layout" inherit_id="web.internal_layout" primary="True">
+            <xpath expr="//div[hasclass('header')]" position="replace">
+                <div class="header">
+                    <div class="row">
+                        <div class="col-2">
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                        </div>
+                        <div class="col-5 offset-1 text-center">
+                            <span class="text-center; font-size:16px">
+                                Promedio de tiempo de descarga de los contenedores
+                            </span><br/>
+                            <span>Desde: </span><span t-esc="start_date"/>
+                            <span>Hasta: </span><span t-esc="end_date"/>
+                        </div>
+                        <div class="col-2 offset-2 text-end">
+                            <ul class="list-inline">
+                                <li class="list-inline-item"><span class="page"/></li>
+                                <li class="list-inline-item">/</li>
+                                <li class="list-inline-item"><span class="topage"/></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+
+        <!-- Reporte PDF -->
+        <template id="average_container_report_template">
+            <t t-set="data_report_landscape" t-value="True"/>
+            <t t-call="pyxel_fruxelimport.average_container_internal_layout">
+                <t t-call="web.html_container">
+                    <div class="page">
+                        <table class="table table-condensed" style="width: 100%; table-layout:fixed; font-size:11px">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Contenedor</th>
+                                    <th>No. Importación</th>
+                                    <th>(BL)/(AWB)</th>
+                                    <th>Tipo de Carga</th>
+                                    <th>Condición de compra</th>
+                                    <th>Valor de la mercancía</th>
+                                    <th>Moneda</th>
+                                    <th>Estado</th>
+                                    <th>Tiempo en Trámites (Días)</th>
+                                    <th>Tiempo en Extracción (Días)</th>
+                                    <th>Tiempo en Devolución (Días)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="index" t-value="0"/>
+                                <t t-set="arrival_total" t-value="0"/>
+                                <t t-set="extraction_total" t-value="0"/>
+                                <t t-set="return_total" t-value="0"/>
+                                <t t-set="count_arrival" t-value="0"/>
+                                <t t-set="count_extraction" t-value="0"/>
+                                <t t-set="count_return" t-value="0"/>
+                                <tr t-foreach="docs" t-as="o">
+                                    <t t-set="index" t-value="index + 1"/>
+                                    <td><span t-esc="index"/></td>
+                                    <td><span t-esc="o['container_number']"/></td>
+                                    <td><span t-esc="o['import_id.name']"/></td>
+                                    <td><span t-esc="o['bill_of_lading_number']"/></td>
+                                    <td><span t-esc="o['type_of_load']"/></td>
+                                    <td><span t-esc="o['purchase_condition']"/></td>
+                                    <td><span t-esc="o['total_import_lines']"/></td>
+                                    <td><span t-esc="o['currency_id.name']"/></td>
+                                    <td><span t-esc="o['state']"/></td>
+                                    <td><span t-esc="o['days_to_arrival']"/></td>
+                                    <td><span t-esc="o['days_to_extraction']"/></td>
+                                    <td><span t-esc="o['days_to_return']"/></td>
+
+                                    <!-- Totales para promedio -->
+                                    <t t-set="arrival_total" t-value="arrival_total + (o['days_to_arrival']or 0)"/>
+                                    <t t-set="extraction_total" t-value="extraction_total + (o['days_to_extraction'] or 0)"/>
+                                    <t t-set="return_total" t-value="return_total + (o['days_to_return'] or 0)"/>
+                                    <t t-set="count_arrival" t-value="count_arrival + (1 if o['days_to_arrival'] else 0)"/>
+                                    <t t-set="count_extraction" t-value="count_extraction + (1 if o['days_to_extraction'] else 0)"/>
+                                    <t t-set="count_return" t-value="count_return + (1 if o['days_to_return'] else 0)"/>
+                                </tr>
+                                <tr style="font-weight: bold;">
+                                    <td colspan="6"/>
+                                    <td>Importe total:</td>
+                                    <td colspan="2">
+                                        <t t-set="total_valor" t-value="sum([x.['total_import_lines'] or 0 for x in docs])"/>
+                                        <span t-esc="'{:,.2f}'.format(total_valor)"/>
+                                    </td>
+                                    <td>Promedio</td>
+                                    <td t-esc="round(arrival_total / count_arrival, 2) if count_arrival else 0"/>
+                                    <td t-esc="round(extraction_total / count_extraction, 2) if count_extraction else 0"/>
+                                    <td t-esc="round(return_total / count_return, 2) if count_return else 0"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- Formato del papel -->
+        <record id="paperformat_average_container" model="report.paperformat">
+            <field name="name">Average container</field>
+            <field name="default" eval="True"/>
+            <field name="format">custom</field>
+            <field name="page_height">297</field>
+            <field name="page_width">210</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">30</field>
+            <field name="margin_bottom">23</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">20</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <!-- Acción del reporte -->
+        <record id="report_average_container" model="ir.actions.report">
+            <field name="name">Average Container</field>
+            <field name="model">importation.load</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pyxel_import_backend.average_container_report_template</field>
+            <field name="report_file">pyxel_import_backend.average_container_report_template</field>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="pyxel_import_backend.paperformat_average_container"/>
+        </record>
+    </data>
+</odoo>

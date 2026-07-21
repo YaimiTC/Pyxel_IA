@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="crm_stage_tree_inherit" model="ir.ui.view">
+        <field name="name">crm.stage.tree.inherit</field>
+        <field name="model">crm.stage</field>
+        <field name="inherit_id" ref="crm.crm_stage_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_won']" position="after">
+                <field name="is_accreditation_stage"/>
+                <field name="is_rejection_stage"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_stage_form_inherit" model="ir.ui.view">
+        <field name="name">crm.stage.form.inherit</field>
+        <field name="model">crm.stage</field>
+        <field name="inherit_id" ref="crm.crm_stage_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_won']" position="after">
+                <field name="is_accreditation_stage" readonly="is_rejection_stage or is_won"/>
+                <field name="is_rejection_stage" readonly="is_accreditation_stage or is_won"/>
+            </xpath>
+
+            <xpath expr="//field[@name='is_won']" position="attributes">
+                <attribute name="readonly">is_rejection_stage or is_accreditation_stage</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

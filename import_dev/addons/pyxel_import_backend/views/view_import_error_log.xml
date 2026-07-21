@@ -1,0 +1,145 @@
+<odoo>
+         <record id="view_import_error_log_tree" model="ir.ui.view">
+            <field name="name">import.error.log.tree</field>
+            <field name="model">import.error.log</field>
+            <field name="arch" type="xml">
+                <tree string="Reportes" create="false" edit="false">
+                    <field name="name"/>
+                    <field name="import_date"/>
+                    <field name="total_filas_count" string="Filas"/>
+                    <field name="arribados_count" string="Arribados"/>
+                    <field name="habilitados_count" string="Habilitados"/>
+                    <field name="liberados_count" string="Liberados"/>
+                    <field name="extraidos_count" string="Extraídos"/>
+                    <field name="devueltos_count" string="Devueltos"/>
+                </tree>
+            </field>
+        </record>
+     <record id="action_generate_error_report" model="ir.actions.server">
+            <field name="name">Contenedores no procesados</field>
+            <field name="model_id" ref="model_import_error_log"/>
+            <field name="state">code</field>
+            <field name="code">
+                action = model.browse(context.get('active_id')).action_generate_error_report()
+            </field>
+        </record>
+
+        <record id="view_import_error_log_form" model="ir.ui.view">
+            <field name="name">import.error.log.form</field>
+            <field name="model">import.error.log</field>
+            <field name="arch" type="xml">
+                <form string="Detalle del Reporte" create="false" edit="false">
+                    <header>
+                       <button name="action_generate_error_report" string="Contenedores no procesados" type="object" class="btn-primary"/>
+                    </header>
+                    <group>
+                        <field name="name"/>
+                        <field name="import_date"/>
+                        <field name="filename"/>
+                        <field name="import_file" filename="filename"/>
+                        <field name="total_filas_count"/>
+                        <field name="nuevos_count"/>
+                    </group>
+                    <group>
+                        <group string="Cambios de estado en esta corrida">
+                            <field name="estado_por_llegar" string="Por llegar"/>
+                            <field name="arribados_count" string="Arribados"/>
+                            <field name="habilitados_count" string="Habilitados"/>
+                            <field name="liberados_count" string="Liberados"/>
+                            <field name="extraidos_count" string="Extraídos"/>
+                            <field name="devueltos_count" string="Devueltos"/>
+                            <field name="estado_total" string="Total de contenedores"/>
+                        </group>
+                        <group string="Clasificación de las filas del archivo">
+                            <field name="nativos_count"/>
+                            <field name="consignados_count"/>
+                            <field name="cambio_importadora_count"/>
+                            <field name="otro_valor_count"/>
+                            <field name="sin_dato_count"/>
+                            <field name="no_en_fichero_count"/>
+                            <field name="clasificacion_total" class="oe_inline"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Contenedores no procesados (nuevos)">
+                            <field name="nuevos_lines">
+                                <tree readonly="1">
+                                    <field name="line_number"/>
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="arrival_date"/>
+                                    <field name="release_date"/>
+                                    <field name="dm_date"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Cambiaron de importadora">
+                            <field name="cambio_lines">
+                                <tree readonly="1">
+                                    <field name="line_number"/>
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="En el sistema, no en el fichero">
+                            <field name="no_fichero_lines">
+                                <tree readonly="1">
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Otro valor, ya en el sistema">
+                            <field name="otro_valor_lines">
+                                <tree readonly="1">
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Sin dato, ya en el sistema">
+                            <field name="sin_dato_lines">
+                                <tree readonly="1">
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Con error de proceso">
+                            <field name="error_lines">
+                                <tree readonly="1">
+                                    <field name="line_number"/>
+                                    <field name="error_message"/>
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="action_import_error_log" model="ir.actions.act_window">
+            <field name="name">Reportes</field>
+            <field name="res_model">import.error.log</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+        </record>
+
+        <menuitem id="menu_import_error_logs"
+              name="Reportes"
+              parent="menu_import_manager_root"
+              action="action_import_error_log"
+              sequence="30"/>
+
+
+
+</odoo>

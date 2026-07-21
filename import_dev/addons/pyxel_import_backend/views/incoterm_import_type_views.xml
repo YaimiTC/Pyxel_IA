@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="view_incoterm_import_type_form" model="ir.ui.view">
+            <field name="model">incoterm.import.type</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group name="main_group">
+                            <group name="left_group">
+                                <field name="incoterm_id"/>
+                                <field name="active"/>
+                            </group>
+                            <group name="right_group">
+                                <field name="import_type_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_incoterm_import_type_tree" model="ir.ui.view">
+            <field name="model">incoterm.import.type</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="incoterm_id"/>
+                    <field name="import_type_id"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_incoterm_import_type_search" model="ir.ui.view">
+            <field name="model">incoterm.import.type</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="incoterm_id"/>
+                    <field name="import_type_id"/>
+                    <field name="active"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Acción y menú para ICOTERM Import Type -->
+        <record id="action_icoterm_import_type_config" model="ir.actions.act_window">
+            <field name="name">Incoterm Import Type</field>
+            <field name="res_model">incoterm.import.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="pyxel_import_backend.view_incoterm_import_type_tree"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Start by creating a relation between Incoterm and Import type.
+                </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_icoterm_import_type_config"
+                  name="Incoterm Import Type"
+                  parent="menu_importation_config"
+                  action="action_icoterm_import_type_config"
+                  sequence="30"/>
+    </data>
+</odoo>

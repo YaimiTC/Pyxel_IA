@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="report_saleorder_document_line_number"
+            inherit_id="sale.report_saleorder_document">
+
+    <!-- HEADER: insertar "N°" ANTES de 'Description' -->
+    <xpath expr="//table[contains(@class,'table')]/thead/tr/th[@name='th_description']"
+           position="before">
+      <th class="text-start"><strong>N°</strong></th>
+    </xpath>
+
+    <!-- BODY: insertar celda con el índice ANTES de la celda de descripción -->
+    <!-- En el reporte de ventas, el alias suele ser 'l' y la descripción está en l.name -->
+    <xpath expr="//table[contains(@class,'table')]/tbody//td[@name='td_name']"
+           position="before">
+      <td class="text-start">
+        <!-- QWeb expone 'l_index' automáticamente al usar t-foreach="o.order_line" t-as="l" -->
+         <t t-esc="(line.line_number) or ''"/>
+      </td>
+    </xpath>
+
+  </template>
+</odoo>

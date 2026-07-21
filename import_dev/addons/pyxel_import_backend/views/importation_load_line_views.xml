@@ -1,0 +1,48 @@
+<odoo>
+  <record id="action_importation_load_line" model="ir.actions.act_window">
+    <field name="name">Import Load Lines</field>
+    <field name="res_model">importation.load.line</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <!-- Vista árbol -->
+    <record id="view_importation_load_line_tree" model="ir.ui.view">
+        <field name="name">importation.load.line.tree</field>
+        <field name="model">importation.load.line</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="cargo_id"/>
+                <field name="purchase_order_line_id"/>
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="price"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista formulario -->
+    <record id="view_importation_load_line_form" model="ir.ui.view">
+        <field name="name">importation.load.line.form</field>
+        <field name="model">importation.load.line</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="cargo_id"/>
+                        <field name="purchase_order_line_id"/>
+                        <field name="product_id" readonly="1"/>
+                        <field name="quantity"/>
+                        <field name="price"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+  <menuitem id="menu_importation_config_root" name="Import Settings" parent="base.menu_config" sequence="90"/>
+
+  <menuitem id="menu_importation_load_line" name="Load Lines"
+            parent="menu_importation_process"
+            action="action_importation_load_line"
+            sequence="3"/>
+</odoo>

@@ -1,0 +1,21 @@
+<odoo>
+    <data noupdate="1">
+        <!-- ENETRADEX: tipos de cliente para acreditación.
+             (Eliminados TCP, Persona Natural y PDL por requisito del cliente.) -->
+        <record id="res_partner_management_type_mipyme" model="res.partner.management.type">
+            <field name="name">Pymes</field>
+        </record>
+
+        <record id="res_partner_management_type_foreign_branch" model="res.partner.management.type">
+            <field name="name">Sucursal Extranjera</field>
+        </record>
+
+        <record id="res_partner_management_type_state" model="res.partner.management.type">
+            <field name="name">Estatal</field>
+        </record>
+
+        <record id="res_partner_management_type_cna" model="res.partner.management.type">
+            <field name="name">CNA</field>
+        </record>
+    </data>
+</odoo>

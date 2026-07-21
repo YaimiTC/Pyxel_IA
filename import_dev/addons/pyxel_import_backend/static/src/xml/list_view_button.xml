@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<templates>
+    <t t-extend="ListView.buttons" t-name="purchase_provider_evaluation_buttons">
+         <t t-jquery="button.o_list_button_add" t-operation="after">
+             <button type="object" class="btn btn-primary myButton"  t-on-click="onClickPurchaseProviderEvaluation">New</button>
+         </t>
+    </t>
+</templates>

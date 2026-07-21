@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_account_move_tree_inherit_container" model="ir.ui.view">
+            <field name="name">account.move.tree.inherit.container</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_date']" position="after">
+                    <field name="invoice_type"/>
+                    <field name="importation_process_id"/>
+                    <field name="container_names"/>
+                 </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>
