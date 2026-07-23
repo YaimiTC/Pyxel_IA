@@ -25,9 +25,20 @@ Su trabajo en el sistema consiste en:
 2. En el menú superior hacer clic en **Importación**
 3. Seleccionar **Trámites de aduana**
 
-> Solo aparecen los procesos que están en etapa **TRÁMITES EN DESTINO** y que tienen
-> los documentos de entrada aprobados. Si un proceso no aparece, significa que el
-> área comercial aún no ha terminado de revisar los documentos.
+> Solo aparecen los procesos que ya están **en tránsito hacia el puerto de destino
+> o en una etapa posterior** (es decir, desde EN TRÁNSITO A PUERTO DE DESTINO en
+> adelante — ya no hace falta esperar a que llegue exactamente a TRÁMITES EN
+> DESTINO) y que tienen al menos una Orden de Compra lista (BL/AWB, factura y
+> lista de empaque aprobados). Si un proceso no aparece, significa que aún no
+> alcanzó esa etapa o que el área comercial no ha aprobado los documentos de
+> ninguna OC todavía.
+>
+> **Importante — envíos con varios clientes:** un mismo proceso puede tener más
+> de un cliente (un bloque/Orden de Compra por cliente dentro del mismo envío).
+> El proceso aparece en la lista en cuanto **una sola** de esas OC cumple los
+> requisitos, aunque las demás sigan con documentos pendientes. El apoderado
+> puede empezar a tramitar la DM de esa OC mientras el área comercial sigue
+> revisando a los otros clientes.
 
 ---
 
@@ -39,7 +50,7 @@ Al entrar verá una lista con todos los procesos listos para trabajar:
 |---------|-------------|
 | Referencia | Código del proceso (ej. IMP00003) |
 | Proveedor | Empresa que envía la mercancía |
-| Cliente | Empresa receptora |
+| Cliente | Empresa(s) receptora(s) — se muestra como una o varias etiquetas si el envío tiene más de un cliente |
 | Apoderado asignado | Quién está trabajando ese proceso (foto de perfil) |
 | DM lista | Indica si todas las DM del proceso están confirmadas |
 
@@ -62,23 +73,28 @@ Hacer clic en cualquier fila de la lista para abrir el formulario del proceso.
 
 ## Formulario del proceso — cabecera
 
-En la parte superior verá la información general del proceso:
+Arriba del todo, una **barra de estado** (statusbar) muestra la etapa actual del
+proceso dentro de todo el flujo (SOLICITUD → TRÁMITES EN ORIGEN → EN TRÁNSITO A
+PUERTO DE DESTINO → TRÁMITES EN DESTINO → …). Es de solo lectura: el apoderado no
+la cambia, solo la consulta como referencia — para que el trámite sea visible
+alcanza con que esté en EN TRÁNSITO A PUERTO DE DESTINO o cualquier etapa
+posterior.
+
+Debajo, la información general del proceso:
 
 | Campo | Descripción |
 |-------|-------------|
 | Referencia | Código único del proceso |
 | Proveedor | Empresa exportadora |
-| Cliente | Empresa importadora |
-| Tipo de importación | Modalidad (Ocean Freight, Air, etc.) |
-| Etapa del proceso | Debe decir TRÁMITES EN DESTINO |
-| Lista para despacho aduanero | Indicador verde cuando los docs de entrada están OK |
+| Cliente | Empresa(s) importadora(s) — una etiqueta por cada cliente del envío |
+| Lista para despacho aduanero | Indicador (toggle) activo cuando al menos una OC tiene sus documentos de entrada aprobados |
 | **Apoderado asignado** | Aquí se asigna usted mismo |
 | DM completadas | Se activa automáticamente cuando confirma todas las DM |
 
 ### Asignarse el proceso
 
 1. En el campo **Apoderado asignado** hacer clic
-2. Buscar su nombre de usuario y seleccionarlo
+2. Buscar su nombre de usuario y seleccionarlo (solo aparecen apoderados ya dados de alta en el sistema; no se pueden crear usuarios nuevos desde aquí)
 3. Guardar con el botón **Guardar** o simplemente navegando a otra pestaña
 
 Una vez asignado, su foto de perfil aparecerá en la lista principal para que
@@ -89,16 +105,18 @@ otros apoderados sepan que ese proceso ya está siendo trabajado.
 ## Pestaña 1 — Documentos de entrada
 
 Esta pestaña es **solo de consulta**. El apoderado no puede modificar nada aquí.
-Los documentos los sube el proveedor y los aprueba el área comercial.
+Los documentos los sube el proveedor y los aprueba el área comercial. Está
+dividida en dos listas.
 
-### Sección BL / AWB
+### Sección Documentos de la importación
 
-Muestra el conocimiento de embarque (Bill of Lading) o guía aérea (Air Waybill):
+Documentos generales que aplican a **todo el proceso**, no a un cliente/OC en
+particular: certificado de calidad, certificado de exportación y certificado de
+origen.
 
 | Columna | Descripción |
 |---------|-------------|
 | Documento | Nombre del documento |
-| Archivo | Nombre del PDF subido |
 | Dictamen IA | Resultado del análisis automático |
 | Estado | Estado de aprobación comercial |
 | Ver | Abre el PDF en una nueva pestaña |
@@ -115,18 +133,26 @@ Muestra el conocimiento de embarque (Bill of Lading) o guía aérea (Air Waybill
 
 ### Sección Documentos por Orden de Compra
 
-Muestra los documentos de cada orden de compra vinculada al proceso.
-Las órdenes aparecen como **encabezados en negrita** (P00010, P00011, etc.)
-con sus documentos debajo:
+Muestra los documentos de cada orden de compra (OC) vinculada al proceso — una
+OC por cliente cuando el envío tiene varios. Ya no se agrupan como encabezados en
+negrita: cada fila indica su propia **OC** y su **Cliente**, y las filas de una
+misma OC se distinguen con un sombreado alterno. Por cada OC aparecen:
 
+- **BL / AWB** (conocimiento de embarque o guía aérea — ahora es un documento por OC/cliente, no uno solo para todo el proceso)
 - Oferta firmada
 - Factura comercial
 - Lista de empaque
-- Declaración de Mercancía (DM)
 - Permisos por entidades regulatorias
+- Declaración de Mercancía (DM)
 
-> Para que el proceso esté disponible para el apoderado, la **Factura comercial**
-> y la **Lista de empaque** de al menos una OC deben estar aprobadas.
+Usa los mismos estados de la tabla anterior (Pendiente / Validando / Opcional /
+Aprobado / Rechazado).
+
+> Para que el proceso esté disponible para el apoderado, el **BL/AWB**, la
+> **Factura comercial** y la **Lista de empaque** de **al menos una** OC deben
+> estar aprobados. No hace falta que todos los clientes del proceso tengan sus
+> documentos completos — con que una sola OC cumpla los tres, el proceso ya es
+> tramitable (y esa OC en particular queda lista para su DM).
 
 ---
 
@@ -135,8 +161,12 @@ con sus documentos debajo:
 Aquí se realiza el trabajo principal del apoderado.
 
 > Si ve un **aviso amarillo** que dice "Los documentos de entrada aún no están
-> aprobados", significa que el comercial no ha terminado su revisión. En ese caso
-> no puede gestionar la DM todavía.
+> aprobados", significa que **ninguna** OC del proceso tiene todavía su BL/AWB,
+> factura y lista de empaque aprobados (normalmente no debería ver este aviso,
+> ya que el proceso solo aparece en la lista cuando al menos una OC está lista;
+> puede pasar si el estado cambió justo mientras tenía el formulario abierto).
+> En ese caso no puede gestionar ninguna DM todavía — recargue la página o vuelva
+> más tarde.
 
 ### Tabla de DM por Orden de Compra
 
@@ -159,14 +189,23 @@ Hay una fila por cada orden de compra del proceso. Cada fila muestra:
 
 ### Campos extraídos automáticamente por OCR
 
-Al subir el PDF, el sistema extrae automáticamente:
+Al subir el PDF, el sistema extrae automáticamente, anclando cada dato a su
+casilla real del formulario (no adivina por palabras sueltas, porque "CIF",
+"Arancel" o "DM" aparecen repetidos en la DM con otros significados):
 
 | Campo | Origen en la DM |
 |-------|-----------------|
-| Nº DM | Escaque 2 — número de declaración |
-| CIF (USD) | Escaque 54 — "Valor estadístico" |
-| Aranceles (MN) | Fila "Arancel" en la tabla de liquidación |
-| Servicio Aduana (MN) | Fila "Servicio" en la tabla de liquidación |
+| Nº DM | Casilla 2 — "No. de declaración" (no confundir con "No. int. DM", un número de trámite interno distinto que aparece en la casilla 66) |
+| CIF (USD) | Casilla 54 — "Valor estadístico" |
+| Aranceles (MN) | Casilla 32 "Importe a pagar", fila "Arancel" |
+| Servicio Aduana (MN) | Casilla 32 "Importe a pagar", fila "Servicio de aduana" |
+
+> **Aranceles en 0,00 no siempre es un error.** Cuando la importación tiene una
+> exoneración/estímulo fiscal, la casilla 32 "Importe a pagar" del Arancel
+> queda en 0,00 legítimamente — el monto que sí aparece en la DM (casilla 33
+> "Sacrificio fiscal") es solo informativo, no lo que se paga, y el sistema
+> no lo usa. Si la DM no trae exoneración, revise que el 0,00 no sea un fallo
+> de lectura.
 
 > Si el PDF es una fotografía escaneada, el sistema usa OCR (reconocimiento óptico
 > de caracteres). La calidad del escaneo afecta la precisión — revise siempre los
@@ -273,11 +312,16 @@ Cuando **todas las OC** tienen su DM confirmada:
 
 ### El proceso no aparece en la lista
 
-**Causa posible 1:** Los documentos de entrada aún no están aprobados.
-- Contactar al área comercial para que apruebe BL/AWB, Factura y Lista de empaque.
+**Causa posible 1:** Ninguna OC del proceso tiene sus documentos de entrada aprobados.
+- Contactar al área comercial para que apruebe BL/AWB, Factura y Lista de empaque
+  de al menos una OC (si el envío tiene varios clientes, basta con que la de uno
+  de ellos quede aprobada).
 
-**Causa posible 2:** El proceso no está en etapa "TRÁMITES EN DESTINO".
-- El proceso debe avanzar a esa etapa primero (lo hace el área de operaciones).
+**Causa posible 2:** El proceso todavía no llegó a la etapa "EN TRÁNSITO A PUERTO DE DESTINO".
+- El proceso debe avanzar al menos hasta esa etapa (lo hace el área de operaciones).
+  Una vez alcanzada, el proceso queda visible para el apoderado en esa etapa y en
+  todas las posteriores (TRÁMITES EN DESTINO, LISTO PARA EXTRAER, etc.) — ya no
+  hace falta que esté clavado exactamente en TRÁMITES EN DESTINO.
 
 **Causa posible 3:** Todas las DM ya están confirmadas.
 - El proceso está completo y fue retirado de la lista automáticamente.
@@ -345,28 +389,49 @@ con "DM lista = Sí" o buscar por referencia directamente.
 No. La pestaña "Documentos de entrada" es solo lectura para el apoderado.
 La aprobación de documentos la hace exclusivamente el área comercial.
 
+**El proceso tiene varios clientes y solo uno tiene los documentos completos, ¿qué pasa?**
+El proceso aparece igual en la lista de Trámites de aduana en cuanto una OC
+(un cliente) está lista. El apoderado puede subir y confirmar la DM de esa OC
+mientras las demás siguen su revisión comercial en paralelo — no hay que esperar
+a que todos los clientes del envío estén listos a la vez.
+
 ---
 
 ## Resumen visual del flujo
 
 ```
-COMERCIAL aprueba docs          APODERADO trabaja DM
-─────────────────────           ──────────────────────────────────────
-BL/AWB      ✓ Aprobado    →    1. Ver proceso en "Trámites de aduana"
-Factura     ✓ Aprobado    →    2. Asignarse el proceso
-Lista emp.  ✓ Aprobado    →    3. Consultar docs de entrada (readonly)
-                               4. Subir PDF de DM por cada OC
-en_ready_for_customs = True    5. OCR extrae: Nº DM, CIF, Aranceles MN,
-                                  Servicio Aduana MN automáticamente
-                               6. Revisar campos — corregir si hace falta
-                                  (Servicio Aduana en 0 = ingresar manual)
-                               7. Confirmar → sistema valida cliente,
-                                  proveedor, apoderado, BL, contenedores
-                                  y líneas de costo; muestra alertas
-                               8. Revisar alertas y corregir si procede
-                                  (o ignorar si son esperadas)
-                               9. Repetir por cada OC del proceso
-                              10. Proceso desaparece de la lista ✓
+Etapa del proceso ≥ EN TRÁNSITO A PUERTO DE DESTINO
+(en_customs_stage_reached = True)
+        │
+        ▼
+Por cada OC (cliente) del proceso:
+  BL/AWB      ✓ Aprobado
+  Factura     ✓ Aprobado     ──►  ¿AL MENOS UNA OC con las 3? ──► en_ready_for_customs = True
+  Lista emp.  ✓ Aprobado                                                    │
+                                                                             ▼
+en_customs_stage_reached = True  Y  en_ready_for_customs = True
+        │
+        ▼
+      PROCESO VISIBLE EN "TRÁMITES DE ADUANA"          APODERADO trabaja DM
+      ────────────────────────────────────────         ──────────────────────────────────────
+                                                    1. Ver proceso en "Trámites de aduana"
+                                                    2. Asignarse el proceso
+                                                    3. Consultar docs de entrada (readonly)
+                                                    4. Subir PDF de DM por cada OC que ya esté lista
+                                                    5. OCR extrae: Nº DM, CIF, Aranceles MN,
+                                                       Servicio Aduana MN automáticamente
+                                                    6. Revisar campos — corregir si hace falta
+                                                       (Servicio Aduana en 0 = ingresar manual)
+                                                    7. Confirmar → sistema valida cliente,
+                                                       proveedor, apoderado, BL, contenedores
+                                                       y líneas de costo; muestra alertas
+                                                    8. Revisar alertas y corregir si procede
+                                                       (o ignorar si son esperadas)
+                                                    9. Repetir por cada OC del proceso (las OC de
+                                                       otros clientes que aún no estén listas se
+                                                       habilitan solas cuando comercial las apruebe)
+                                                   10. Proceso desaparece de la lista cuando TODAS
+                                                       las OC tienen su DM confirmada ✓
 
 Si el PDF es incorrecto en cualquier momento:
     → Reemplazar → sube nuevo PDF → vuelve al paso 5
@@ -374,4 +439,6 @@ Si el PDF es incorrecto en cualquier momento:
 
 ---
 
-*Manual generado para ODIN 2.0 · ENETEC S.A. · Versión junio 2026*
+*Manual generado para ODIN 2.0 · ENETEC S.A. · Versión julio 2026 — actualizado
+con el requisito multi-cliente por OC y la visibilidad desde EN TRÁNSITO A
+PUERTO DE DESTINO.*
