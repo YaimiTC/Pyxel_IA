@@ -1032,7 +1032,7 @@ msgstr ""
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_load__pre_appointment_date
 msgid "Date Prior to the Appointment"
-msgstr "Fecha anterior a la cita"
+msgstr "Fecha de precita"
 
 #. module: pyxel_import_backend
 #: model:ir.model.fields,field_description:pyxel_import_backend.field_importation_process__date_import_closed
