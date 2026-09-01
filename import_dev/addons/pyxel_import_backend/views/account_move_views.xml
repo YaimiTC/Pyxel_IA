@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="view_account_move_form_inherit_factura_comercial" model="ir.ui.view">
+            <field name="name">account.move.form.inherit.factura.comercial</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <field name="importation_process_id" invisible="1"/>
+                    <button name="action_export_comercial_invoice_excel"
+                            type="object"
+                            string="Descargar Factura Comercial (Excel)"
+                            class="btn-secondary"
+                            invisible="move_type not in ('out_invoice', 'out_refund') or not importation_process_id"/>
+                </xpath>
+            </field>
+        </record>
+
         <record id="view_account_move_tree_inherit_container" model="ir.ui.view">
             <field name="name">account.move.tree.inherit.container</field>
             <field name="model">account.move</field>

@@ -26,6 +26,11 @@ class ResPartner(models.Model):
     activity_number = fields.Char(string="Activity Number")
     hiring_number = fields.Char(string="Agreement Number")
 
+    registro_comercial = fields.Char(string='No. Inscripción Registro Comercial (REEUP)')
+    registro_mercantil = fields.Char(string='No. Inscripción Registro Mercantil')
+    bank_account_usd = fields.Char(string='Cuenta Bancaria USD')
+    bank_account_cup = fields.Char(string='Cuenta Bancaria CUP')
+
     legal_activity_ids = fields.One2many('res.partner.legal.activity', 'partner_id', string="Activities")
     contract_import_ids = fields.One2many('res.partner.contract.import', 'partner_id', string="Contracts")
 
@@ -90,6 +95,7 @@ class ResPartnerLegalActivity(models.Model):
 class ResPartnerContractImport(models.Model):
     _name = 'res.partner.contract.import'
     _description = 'Contract Associated with Importation'
+    _rec_name = 'contract_number'
 
     partner_id = fields.Many2one('res.partner', string="Contact", ondelete='cascade')
     contract_number = fields.Char(string="Contract Number", required=True)
@@ -103,6 +109,21 @@ class ResPartnerContractImport(models.Model):
     parent_contract_id = fields.Many2one('res.partner.contract.import', string="Parent Contract")
     contract_file = fields.Binary(string="Contract File")
     contract_file_filename = fields.Char(string="File Name")
+
+    purchase_order_ids = fields.One2many(
+        'purchase.order', 'client_contract_id', string="Órdenes de compra (como contrato de cliente)")
+    importation_process_ids = fields.One2many(
+        'importation.process', 'provider_contract_id', string="Operaciones (como contrato de proveedor)")
+
+    related_reference = fields.Char(
+        string="Importación / OC asociada", compute='_compute_related_reference', store=True,
+        help="OC (si es contrato de cliente) u operación (si es contrato de proveedor) que usa este contrato.")
+
+    @api.depends('purchase_order_ids.name', 'importation_process_ids.name')
+    def _compute_related_reference(self):
+        for record in self:
+            refs = record.purchase_order_ids.mapped('name') + record.importation_process_ids.mapped('name')
+            record.related_reference = ', '.join(refs) if refs else ''
 
     @api.constrains('start_date', 'end_date')
     def _check_dates(self):

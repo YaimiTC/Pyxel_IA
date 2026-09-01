@@ -37,6 +37,7 @@
     ],
     "assets": {
         "web.assets_backend": [
+            "pyxel_enetradex_backend/static/src/scan_overlay/scan_overlay.js",
             "pyxel_enetradex_backend/static/src/import_doc_photo/import_doc_photo.js",
             "pyxel_enetradex_backend/static/src/import_doc_photo/import_doc_photo.xml",
             "pyxel_enetradex_backend/static/src/wz_accred/wz_accred.js",

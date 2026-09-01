@@ -17,4 +17,21 @@
         <field name="action" ref="action_import_dashboard"/>
     </record>
 
+    <!-- Mismo componente OWL (tag="import_dashboard"), pero con
+         ventaEnetecOnly=True: get_dashboard_data() recibe venta_enetec_only=True
+         y todo el tablero sale filtrado a los contenedores del cliente
+         "VENTA ENETEC..." en vez del tablero global. -->
+    <record id="action_import_dashboard_venta" model="ir.actions.client">
+        <field name="name">Tablero Venta</field>
+        <field name="tag">import_dashboard</field>
+        <field name="params" eval="{'ventaEnetecOnly': True}"/>
+    </record>
+
+    <record id="menu_import_dashboard_venta" model="ir.ui.menu">
+        <field name="name">Venta</field>
+        <field name="parent_id" ref="spreadsheet_dashboard.spreadsheet_dashboard_menu_root"/>
+        <field name="action" ref="action_import_dashboard_venta"/>
+        <field name="sequence">50</field>
+    </record>
+
 </odoo>

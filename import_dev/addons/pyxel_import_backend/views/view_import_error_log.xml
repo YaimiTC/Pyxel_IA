@@ -53,10 +53,16 @@
                         <group string="Clasificación de las filas del archivo">
                             <field name="nativos_count"/>
                             <field name="consignados_count"/>
-                            <field name="cambio_importadora_count"/>
+                            <field name="otras_importadoras_count"/>
                             <field name="otro_valor_count"/>
                             <field name="sin_dato_count"/>
+                            <field name="por_llegar_no_en_fichero_count"/>
+                            <field name="purgado_count"/>
+                            <field name="otro_viaje_count"/>
                             <field name="no_en_fichero_count"/>
+                            <field name="duplicado_count"/>
+                            <field name="cuarentena_count"/>
+                            <field name="cambio_importadora_count" invisible="cambio_importadora_count == 0"/>
                             <field name="clasificacion_total" class="oe_inline"/>
                         </group>
                     </group>
@@ -74,10 +80,46 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Cambiaron de importadora">
-                            <field name="cambio_lines">
+                        <page string="Duplicados a unificar" invisible="duplicado_count == 0">
+                            <field name="duplicado_lines">
+                                <tree readonly="1">
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="En cuarentena (BL corto)" invisible="cuarentena_count == 0">
+                            <field name="cuarentena_lines">
                                 <tree readonly="1">
                                     <field name="line_number"/>
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Dejaron de venir en el reporte" invisible="purgado_count == 0">
+                            <field name="purgado_lines">
+                                <tree readonly="1">
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Todavía por llegar" invisible="por_llegar_no_en_fichero_count == 0">
+                            <field name="por_llegar_lines">
+                                <tree readonly="1">
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="El contenedor sí, ese viaje no">
+                            <field name="otro_viaje_lines">
+                                <tree readonly="1">
                                     <field name="container_number"/>
                                     <field name="bl_number"/>
                                     <field name="error_message" string="Detalle"/>
@@ -93,7 +135,27 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Otro valor, ya en el sistema">
+                        <page string="Cambiaron de importadora (histórico)"
+                              invisible="cambio_importadora_count == 0">
+                            <field name="cambio_lines">
+                                <tree readonly="1">
+                                    <field name="line_number"/>
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Otra importadora del catálogo" invisible="otras_importadoras_count == 0">
+                            <field name="otras_importadoras_lines">
+                                <tree readonly="1">
+                                    <field name="container_number"/>
+                                    <field name="bl_number"/>
+                                    <field name="error_message" string="Detalle"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Otro valor, ya en el sistema (nuestro, vía un tercero)">
                             <field name="otro_valor_lines">
                                 <tree readonly="1">
                                     <field name="container_number"/>
@@ -128,17 +190,17 @@
         </record>
 
         <record id="action_import_error_log" model="ir.actions.act_window">
-            <field name="name">Reportes</field>
+            <field name="name">Reportes de Sincronización (Terminal)</field>
             <field name="res_model">import.error.log</field>
             <field name="view_mode">tree,form</field>
             <field name="context">{}</field>
         </record>
 
         <menuitem id="menu_import_error_logs"
-              name="Reportes"
+              name="Terminal: Historial de sincronizaciones"
               parent="menu_import_manager_root"
               action="action_import_error_log"
-              sequence="30"/>
+              sequence="2"/>
 
 
 

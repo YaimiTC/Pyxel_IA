@@ -3,6 +3,15 @@
     <record id="view_importation_cargo_tree" model="ir.ui.view">
         <field name="name">importation.load.tree</field>
         <field name="model">importation.load</field>
+        <!-- Prioridad mas baja a proposito: es la vista de lista general,
+             debe ganar siempre como default del modelo frente a las vistas
+             especializadas del tablero (extraidos, cupet_pendientes), que
+             solo deben verse en sus propias acciones (ya traen su propio
+             view_id). Sin esto, cualquier accion que abra importation.load
+             sin fijar vista (accion "Carga", smart button "Load tracking",
+             wizards de sincronizacion) puede terminar mostrando la vista
+             equivocada por empate de prioridad. -->
+        <field name="priority">1</field>
         <field name="arch" type="xml">
             <tree string="Importation Loads">
                 <field name="name"/>
@@ -20,20 +29,90 @@
                 <field name="cargo_line_count" optional="show"/>
                 <field name="provider_ids" optional="show" widget="many2many_tags"/>
                 <field name="customer_id" optional="show"/>
+                <field name="buyer_ids" optional="show" widget="many2many_tags"/>
                 <field name="transport_company" optional="hide"/>
                 <field name="state"/>
+                <field name="mbl_release_date" optional="hide"/>
+                <field name="container_release_date" optional="hide"/>
                 <field name="arrival_date"/>
+                <field name="pre_appointment_date" optional="hide"/>
                 <field name="release_date" optional="hide"/>
                 <field name="appointment_date" optional="hide"/>
+                <field name="is_ventanilla" optional="hide"/>
+                <field name="ventanilla_date" optional="hide"/>
                 <field name="extraction_date"/>
+                <field name="declaration_date_probable" optional="hide"/>
                 <field name="return_date"/>
                 <field name="cargo_type"/>
                 <field name="size" optional="hide"/>
+                <field name="packaging_type_id" optional="hide"/>
                 <field name="weight" optional="hide"/>
                 <field name="net_weight" optional="hide"/>
                 <field name="currency_id" optional="hide"/>
             </tree>
         </field>
+    </record>
+
+    <!-- Reporte "Extraídos" del tablero: acceso directo desde la tarjeta
+         de KPI, columnas fijas pedidas por Oficina Central CUPET
+         (proveedor, cliente, producto, transportista y destino). -->
+    <record id="view_importation_load_tree_extraidos" model="ir.ui.view">
+        <field name="name">importation.load.tree.extraidos</field>
+        <field name="model">importation.load</field>
+        <field name="arch" type="xml">
+            <tree string="Extraídos" create="false">
+                <field name="name" string="Contenedor"/>
+                <field name="bl_number"/>
+                <field name="provider_ids" widget="many2many_tags" string="Proveedor"/>
+                <field name="customer_id" string="Cliente"/>
+                <field name="product_names" string="Producto"/>
+                <field name="transport_company" string="Transportista"/>
+                <field name="province" string="Provincia"/>
+                <field name="destination_id" string="Destino"/>
+                <field name="extraction_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Reporte 5 (Oficina Central CUPET): totales de los contenedores
+         adquiridos por CUPET (cliente "VENTA ENETEC"), por Proveedor y por
+         Transportista, y pendientes de extraer separando habilitados
+         (state=ready_extract) de no habilitados (state=to_extract).
+         Listas normales agrupadas (no pivote), igual que el resto del
+         tablero; el grupo lo puede cambiar el usuario desde "Agrupar por". -->
+    <record id="action_importation_load_cupet_extraidos" model="ir.actions.act_window">
+        <field name="name">Extraídos CUPET — por Proveedor / Transportista</field>
+        <field name="res_model">importation.load</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_importation_load_tree_extraidos"/>
+        <field name="domain">[['extraction_date','!=',False],['customer_id.name','ilike','VENTA ENETEC']]</field>
+        <field name="context">{'group_by': ['provider_ids']}</field>
+    </record>
+
+    <record id="view_importation_load_tree_cupet_pendientes" model="ir.ui.view">
+        <field name="name">importation.load.tree.cupet.pendientes</field>
+        <field name="model">importation.load</field>
+        <field name="arch" type="xml">
+            <tree string="Pendientes CUPET" create="false">
+                <field name="name" string="Contenedor"/>
+                <field name="bl_number"/>
+                <field name="provider_ids" widget="many2many_tags" string="Proveedor"/>
+                <field name="customer_id" string="Cliente"/>
+                <field name="product_names" string="Producto"/>
+                <field name="transport_company" string="Transportista"/>
+                <field name="state"/>
+                <field name="days_in_tcm"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_importation_load_cupet_pendientes" model="ir.actions.act_window">
+        <field name="name">Pendientes de extraer CUPET — por Proveedor (habilitado/no habilitado)</field>
+        <field name="res_model">importation.load</field>
+        <field name="view_mode">list,form</field>
+        <field name="view_id" ref="view_importation_load_tree_cupet_pendientes"/>
+        <field name="domain">[['extraction_date','=',False],['arrival_date','!=',False],['customer_id.name','ilike','VENTA ENETEC']]</field>
+        <field name="context">{'group_by': ['provider_ids','state']}</field>
     </record>
 
     <record id="view_importation_load_form" model="ir.ui.view">
@@ -42,12 +121,18 @@
         <field name="arch" type="xml">
             <form string="Importation Load">
                 <header>
+                    <field name="active" invisible="1"/>
                     <button name="%(action_x_container_fill_wizard)d"
                             type="action"
                             string="Line Fill"
                             class="btn-secondary"/>
                 </header>
                 <sheet>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="not pending_alloc_warning">
+                        <strong>⚠ Cantidad pendiente en la importación: </strong>
+                        <field name="pending_alloc_warning" readonly="1" nolabel="1"/>
+                    </div>
                     <!-- Fila 1: identidad/relaciones a la izquierda, fechas a la derecha -->
                     <group>
                         <group string="Información general">
@@ -60,8 +145,10 @@
                             <field name="importation_id"/>
                             <field name="customer_id"/>
                             <field name="provider_ids" widget="many2many_tags"/>
+                            <field name="buyer_ids" widget="many2many_tags"/>
                             <field name="cargo_type" invisible="hide_cargo_type" readonly="1"/>
                             <field name="size"/>
+                            <field name="packaging_type_id"/>
                             <field name="weight"/>
                             <field name="net_weight"/>
                         </group>
@@ -103,7 +190,10 @@
                             <field name="transport_company" readonly="1"/>
                             <field name="truck_plate" readonly="1"/>
                             <field name="province" readonly="1"/>
-                            <field name="destination"/>
+                            <field name="destination_domain" invisible="1"/>
+                            <field name="destination_id"/>
+                            <field name="destination_is_own" invisible="1"/>
+                            <field name="destination_own_text" invisible="not destination_is_own"/>
                             <field name="driver"/>
                         </group>
 
@@ -116,6 +206,8 @@
                             <field name="bulk" invisible="hide_bulk == True"/>
                             <field name="supplier_invoice_number"/>
                             <field name="opening_date" invisible="hide_opening_date"/>
+                            <field name="is_ventanilla"/>
+                            <field name="ventanilla_date" invisible="not is_ventanilla" required="is_ventanilla"/>
                             <field name="state" readonly="1"/>
                             <field name="currency_id" readonly="1"/>
                             <field name="days_in_tcm" readonly="1"/>
@@ -132,10 +224,29 @@
                                 <tree editable="bottom">
                                     <field name="purchase_order_line_id"
                                            domain="[('order_id', 'in', parent.purchase_order_ids)]"/>
+                                    <!-- OC real a la que pertenece este contenedor: se deriva de la
+                                         linea de compra asignada. El many2many purchase_order_ids
+                                         apunta a TODAS las OC del proceso y no sirve para saberlo. -->
+                                    <field name="purchase_order_id" readonly="1" optional="show"/>
                                     <field name="product_id" readonly="1"/>
                                     <field name="quantity"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Depósito">
+                            <group>
+                                <group>
+                                    <field name="deposit_code"/>
+                                    <field name="deposit_quantity_received"/>
+                                    <field name="deposit_quality_certificate_number"/>
+                                </group>
+                                <group>
+                                    <field name="deposit_reception_datetime"/>
+                                    <field name="deposit_unload_start_datetime"/>
+                                    <field name="deposit_unload_end_datetime"/>
+                                </group>
+                            </group>
+                            <field name="deposit_observations"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -159,6 +270,7 @@
         <field name="name">Conciliación</field>
         <field name="model_id" ref="model_importation_load"/>
         <field name="binding_model_id" ref="model_importation_load"/>
+        <field name="groups_id" eval="[(4, ref('base.group_system')), (4, ref('pyxel_customs_agent.group_customs_agent')), (4, ref('pyxel_enetradex_backend.group_lawyer'))]"/>
         <field name="state">code</field>
         <field name="code">
             action = {

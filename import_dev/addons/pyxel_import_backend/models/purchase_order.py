@@ -47,6 +47,13 @@ class PurchaseOrder(models.Model):
     # en_request_client_ids (que pueden no existir en OC creadas a mano).
     customer_id = fields.Many2one('res.partner', string='Cliente')
 
+    client_contract_id = fields.Many2one(
+        'res.partner.contract.import', string='Contrato del cliente',
+        domain="[('partner_id', '=', customer_id)]",
+        help="Contrato formalizado con este cliente. La lista sale de los "
+             "contratos ya cargados en su ficha de contacto (pestaña "
+             "Importation); no se teclea el número aquí.")
+
     declaration = fields.Char(string='Declaración de Mercancía')
     declaration_date = fields.Date(string='Fecha de Declaración')
 
@@ -54,6 +61,13 @@ class PurchaseOrder(models.Model):
     packing_list_filename = fields.Char()
     packing_list_filename_date = fields.Datetime(string='Packing List upload date')
     alerted_late = fields.Boolean(string='Packing List uploaded late', default=False)
+
+    # Mapa: campo binary en OC -> (document_key en pyxel.import.document, campo filename)
+    _OC_DOC_BINARY_MAP = {
+        'commercial_invoice': ('factura_comercial', 'commercial_invoice_filename'),
+        'signed_offer':       ('oferta',            'signed_offer_filename'),
+        'packing_list':       ('lista_empaque',     'packing_list_filename'),
+    }
 
     def write(self, vals):
         res = super().write(vals)
@@ -66,6 +80,36 @@ class PurchaseOrder(models.Model):
                         eval_rec.state = 'draft'
                     elif all(o.state == 'cancel' for o in orders):
                         eval_rec.state = 'cancelled'
+        doc_fields = [f for f in self._OC_DOC_BINARY_MAP if f in vals]
+        if doc_fields:
+            ImpDoc = self.env['pyxel.import.document']
+            for po in self:
+                for field_name in doc_fields:
+                    doc_key, fname_field = self._OC_DOC_BINARY_MAP[field_name]
+                    doc = ImpDoc.search([
+                        ('purchase_order_id', '=', po.id),
+                        ('document_key', '=', doc_key),
+                    ], limit=1)
+                    if not doc:
+                        continue
+                    binary_data = po[field_name]
+                    if binary_data:
+                        filename = po[fname_field] or (doc.document_label + '.pdf')
+                        if doc.attachment_id:
+                            doc.attachment_id.write({'datas': binary_data, 'name': filename})
+                        else:
+                            att = self.env['ir.attachment'].create({
+                                'name': filename,
+                                'datas': binary_data,
+                                'res_model': ImpDoc._name,
+                                'res_id': doc.id,
+                                'type': 'binary',
+                            })
+                            doc.write({'attachment_id': att.id, 'upload_date': fields.Datetime.now()})
+                    else:
+                        if doc.attachment_id:
+                            doc.attachment_id.unlink()
+                            doc.write({'attachment_id': False, 'upload_date': False})
         return res
 
     def unlink(self):

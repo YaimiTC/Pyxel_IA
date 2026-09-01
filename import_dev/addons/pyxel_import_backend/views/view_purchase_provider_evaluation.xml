@@ -36,10 +36,11 @@
                                 string="Re-evaluate"
                                 class="btn-secondary"
                                 invisible =" state != 'draft' and  purchase_order_count  > 0" />
+                        <!-- Generate Offer desactivado en ENETRADEX; flujo retomable en el futuro -->
                         <button name="action_generate_eval_offer"
                                 type="object"
                                 string="Generate Offer"
-                                class="btn-secondary" invisible="purchase_order_count == 0 or not cost_line_temp_ids or final_sale_order_id or (purchase_order_count > 0 and not has_evaluations_to_apply)"/>
+                                class="btn-secondary" invisible="1"/>
 
                         <button name="action_send_all_rfq_emails"
                             type="object"

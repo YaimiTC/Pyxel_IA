@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_deposit_sync_log_tree" model="ir.ui.view">
+        <field name="name">deposit.sync.log.tree</field>
+        <field name="model">deposit.sync.log</field>
+        <field name="arch" type="xml">
+            <tree string="Reportes de Sincronización (Depósito)" create="false" edit="false">
+                <field name="name"/>
+                <field name="import_date"/>
+                <field name="actualizados_count" string="Actualizados"/>
+                <field name="sin_datos_count" string="Sin datos"/>
+                <field name="no_encontrados_count" string="No emparejados"/>
+                <field name="atrasados_count" string="Atrasados +3d"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_deposit_sync_log_form" model="ir.ui.view">
+        <field name="name">deposit.sync.log.form</field>
+        <field name="model">deposit.sync.log</field>
+        <field name="arch" type="xml">
+            <form string="Detalle de Sincronización de Depósito" create="false" edit="false">
+                <group>
+                    <field name="name"/>
+                    <field name="import_date"/>
+                    <field name="filename"/>
+                    <field name="import_file" filename="filename"/>
+                </group>
+                <group>
+                    <field name="actualizados_count"/>
+                    <field name="sin_datos_count"/>
+                    <field name="no_encontrados_count"/>
+                    <field name="atrasados_count"/>
+                </group>
+                <notebook>
+                    <page string="Actualizados">
+                        <field name="actualizado_lines" readonly="1">
+                            <tree>
+                                <field name="container_number"/>
+                                <field name="bl_number"/>
+                                <field name="message"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="No emparejados">
+                        <field name="no_encontrado_lines" readonly="1">
+                            <tree>
+                                <field name="container_number"/>
+                                <field name="bl_number"/>
+                                <field name="message"/>
+                            </tree>
+                        </field>
+                    </page>
+                    <page string="Atrasados (+3 días sin sincronizar)">
+                        <field name="atrasado_lines" readonly="1">
+                            <tree>
+                                <field name="container_number"/>
+                                <field name="bl_number"/>
+                                <field name="message"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_deposit_sync_log" model="ir.actions.act_window">
+        <field name="name">Reportes de Sincronización (Depósito)</field>
+        <field name="res_model">deposit.sync.log</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_deposit_sync_log"
+              name="Depósito: Historial de sincronizaciones"
+              parent="menu_import_manager_root"
+              action="action_deposit_sync_log"
+              sequence="13"/>
+</odoo>

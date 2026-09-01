@@ -18,12 +18,22 @@
     <field name="model">purchase.order</field>
     <field name="inherit_id" ref="purchase.purchase_order_form" />
     <field name="arch" type="xml">
+      <!-- RETIRADO (28-07-2026): este bloque usaba un xpath generico //group, que
+           engancha el PRIMER group del formulario (el de cabecera, con proveedor y
+           moneda) y dejaba cuatro campos sueltos y sin etiqueta visible:
+           evaluation_id, bl_number, declaration y declaration_date. Ademas
+           bl_number quedaba duplicado, porque pyxel_enetradex_backend ya lo pone
+           en "Otra informacion" con su etiqueta. Los campos siguen existiendo en
+           el modelo; solo se retiran de este formulario.
       <xpath expr="//group" position="inside">
         <field name="evaluation_id" readonly="1"/>
         <field name="bl_number"/>
         <field name="declaration"/>
         <field name="declaration_date"/>
       </xpath>
+      -->
+
+
 
       <xpath expr="//field[@name='partner_id']" position="attributes">
         <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]</attribute>
@@ -33,6 +43,7 @@
             <field name="customer_id"
                    domain="[('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]"
                    help="Cliente al que corresponde esta OC, cuando el proceso de importación tiene varios clientes."/>
+            <field name="client_contract_id"/>
             <field name="is_third_party_contract"/>
             <field name="commercial_invoice" filename="commercial_invoice_filename"/>
             <field name="signed_offer" filename="signed_offer_filename"/>

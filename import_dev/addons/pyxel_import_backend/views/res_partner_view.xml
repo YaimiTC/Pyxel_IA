@@ -42,6 +42,10 @@
                             </div>
                             <field name="legal_document" filename="legal_document_filename" />
                             <field name="license_holder" invisible="contact_type_id in (1, 3)"/>
+                            <field name="registro_comercial"/>
+                            <field name="registro_mercantil"/>
+                            <field name="bank_account_usd"/>
+                            <field name="bank_account_cup"/>
                         </group>
                         <group string="Initial Hiring">
                             <field name="contact_type_id"/>
@@ -72,6 +76,7 @@
                             <form>
                                 <group>
                                     <field name="contract_number" />
+                                    <field name="related_reference" readonly="1" />
                                     <field name="activity_number" />
                                     <field name="hiring_number" />
                                     <field name="start_date" />
@@ -111,6 +116,9 @@
                             <field name="contract_file" filename="contract_file_filename" />
                         </group>
                     </group>
+                    <group>
+                        <field name="related_reference" readonly="1" />
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -122,6 +130,8 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="contract_number" />
+                <field name="partner_id" />
+                <field name="related_reference" />
                 <field name="activity_number" />
                 <field name="hiring_number" />
                 <field name="start_date" />

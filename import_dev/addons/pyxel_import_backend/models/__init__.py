@@ -7,6 +7,10 @@ from . import crm_lead
 from . import crm_stage
 from . import purchase_provider_evaluation
 from . import purchase_order
+from . import deposit_sync_log
+from . import importation_destination
+from . import importation_importer
+from . import importation_packaging_type
 from . import importation_process
 from . import sale_order
 from . import importation_load

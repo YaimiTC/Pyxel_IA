@@ -341,15 +341,10 @@ class PyxelImportDocument(models.Model):
         elif not any(re.sub(r'[^A-Za-z0-9]', '', c).upper() in text_alnum for c in containers):
             graves.append('Ningún contenedor (%s) encontrado en la DM.' % ', '.join(containers))
 
-        # 6. Líneas de costo: Arancel y Servicio de Aduana (no bloquea: es un
-        # dato de la importación, no una señal de que la DM esté cambiada)
-        cost_lines = imp.cost_line_ids if hasattr(imp, 'cost_line_ids') else []
-        has_arancel = any('arancel' in (l.product_id.name or '').lower() for l in cost_lines)
-        has_servicio = any('aduana' in (l.product_id.name or '').lower() for l in cost_lines)
-        if not has_arancel:
-            informativas.append('No existe línea de costo <b>Arancel</b> en la importación.')
-        if not has_servicio:
-            informativas.append('No existe línea de costo <b>Servicio de Aduana</b> en la importación.')
+        # 6. Líneas de costo (Arancel/Servicio de Aduana): ya no se verifica
+        # aquí -- action_dm_confirm() las crea/actualiza siempre con
+        # _sync_dm_cost_lines() al confirmar, así que esta advertencia
+        # saldría en todos los casos (se revisaba antes de que existieran).
 
         _logger.info("DM _validar_dm: %d graves, %d informativas: %s | %s",
                      len(graves), len(informativas), graves, informativas)
@@ -359,6 +354,73 @@ class PyxelImportDocument(models.Model):
                    ''.join('<li>%s</li>' % w for w in todas) + '</ul>'
             imp.message_post(body=body, subtype_xmlid='mail.mt_note')
         return {'graves': graves, 'informativas': informativas}
+
+    # ----- Costos de importación desde la DM -----
+    def _sync_dm_cost_lines(self):
+        """Carga en la pestaña Costos de la importación el arancel y el
+        servicio de aduana de esta DM, más el margen comercial y el uso de
+        software calculados sobre el CIF -- todo por la OC específica de
+        esta DM (self.purchase_order_id), no para todo el proceso, porque
+        cada OC del proceso puede tener su propia DM con sus propios
+        montos. Si ya existe línea de ese tipo para esta OC se actualiza el
+        monto (nunca se duplica); si hay una línea en blanco sin OC
+        asignada (la plantilla que se precarga al aprobar la solicitud, o
+        una cargada a mano antes de subir la DM) se adopta esa en vez de
+        crear una nueva.
+
+        Devuelve una lista de líneas de texto (una por costo) para avisarle
+        a quien confirma la DM qué se cargó y si se reutilizó una línea
+        existente -- ver action_dm_confirm()."""
+        self.ensure_one()
+        po = self.purchase_order_id
+        imp = self.importation_id
+        if not po or not imp:
+            return []
+
+        CostLine = self.env['importation.cost.line']
+        cup = self.env['res.currency'].search([('name', '=', 'CUP')], limit=1)
+        resumen = []
+
+        def _set_line(product_name, amount, currency=None):
+            product = self.env['product.product'].search([
+                ('name', '=', product_name), ('detailed_type', '=', 'service')], limit=1)
+            if not product:
+                _logger.warning(
+                    "DM: falta el producto de costo '%s' (Servicio), no se "
+                    "carga esa línea en %s.", product_name, imp.name)
+                resumen.append(_("%s: no se cargó (falta el producto de costo)") % product_name)
+                return
+            line = CostLine.search([
+                ('importation_id', '=', imp.id),
+                ('product_id', '=', product.id),
+                '|', ('purchase_ids', 'in', po.id), ('purchase_ids', '=', False),
+            ], limit=1)
+            vals = {'amount': amount, 'distribution_type': 'fixed'}
+            if currency:
+                vals['currency_id'] = currency.id
+            ccy_name = currency.name if currency else 'USD'
+            if line:
+                reutilizada = not line.purchase_ids
+                if reutilizada:
+                    vals['purchase_ids'] = [(4, po.id)]
+                line.write(vals)
+                estado = _("línea existente reutilizada") if reutilizada else _("actualizada")
+            else:
+                vals.update({
+                    'importation_id': imp.id,
+                    'product_id': product.id,
+                    'purchase_ids': [(6, 0, [po.id])],
+                })
+                CostLine.create(vals)
+                estado = _("nueva")
+            resumen.append("%s: %.2f %s (%s)" % (product_name, amount, ccy_name, estado))
+
+        cif = self.dm_cif_value or 0.0
+
+        _set_line('Arancel de Aduana', self.dm_arancel_total or 0.0, currency=cup)
+        _set_line('Servicios Aduanales', self.dm_servicio_aduana or 0.0, currency=cup)
+        _set_line('Servicio de Importación', round(cif * 0.021, 2))  # USD, 2,1% fijo del CIF de la DM
+        return resumen
 
     # ----- Acciones del apoderado -----
     @staticmethod
@@ -392,18 +454,27 @@ class PyxelImportDocument(models.Model):
             ) % detalle)
 
         all_informativas = []
+        resumen_costos = []
         for d, r in resultados:
             d.write({'dm_confirmed': True})
+            resumen_costos.extend(d._sync_dm_cost_lines())
             all_informativas.extend(r['informativas'])
+
+        bloques = []
+        if resumen_costos:
+            bloques.append(_("Costos cargados en la OC:\n") + '\n'.join(resumen_costos))
         if all_informativas:
+            bloques.append(_("Avisos:\n") + '\n'.join(self._plain(all_informativas)))
+
+        if bloques:
             return {
                 'type': 'ir.actions.client',
                 'tag': 'display_notification',
                 'params': {
-                    'title': 'Avisos en la DM',
-                    'message': '\n'.join(self._plain(all_informativas)),
-                    'type': 'warning',
-                    'sticky': True,
+                    'title': 'DM confirmada',
+                    'message': '\n\n'.join(bloques),
+                    'type': 'warning' if all_informativas else 'success',
+                    'sticky': bool(all_informativas),
                 },
             }
         return True

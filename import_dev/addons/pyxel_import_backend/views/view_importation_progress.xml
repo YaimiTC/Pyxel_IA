@@ -47,9 +47,16 @@
         <field name="arch" type="xml">
             <tree>
                 <field name="create_uid" optional="show"/>
-                <field name="activity_user_id" optional="show" string="Asignada a"/>
+                <!-- 30/07/2026: «Asignada a» pasa a mostrar la COMERCIAL.
+                     Antes apuntaba a activity_user_id, que es el responsable de
+                     la ACTIVIDAD pendiente: de solo lectura, sin almacenar y
+                     vacio en las 288 importaciones, asi que no se podia ni
+                     rellenar ni agrupar por el. `comercial_id` sale del
+                     Comprador de las OC y si esta almacenado. -->
+                <field name="comercial_id" optional="show" string="Asignada a"/>
                 <field name="name"/>
                 <field name="provider_id" optional="show"/>
+                <field name="importer_id" optional="show"/>
                 <field name="customer_id" optional="show"/>
                 <field name="bl_numbers" optional="show"/>
                 <field name="import_type_id" optional="show"/>
@@ -73,16 +80,17 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <field name="active" invisible="1"/>
                     <field name="final_sale_order_id" invisible="1"/>
                     <field name="cost_sale_order_count" invisible="1"/>
                     <button name="action_create_cost_sale_order"
                             type="object"
-                            string="Generar Venta de Costos"
+                            string="Generar Venta"
                             class="btn-primary"
                             invisible="not cost_line_ids or final_sale_order_id"/>
                     <button name="action_create_cost_sale_order"
                             type="object"
-                            string="Regenerar Venta de Costos"
+                            string="Regenerar Venta"
                             class="btn-secondary"
                             invisible="not cost_line_ids or not final_sale_order_id"/>
 
@@ -127,6 +135,8 @@
                                    context="{'default_importation_id': id}"/>
                             <field name="name" readonly="1"/>
                             <field name="provider_id" domain="[('contact_type_id', '!=', False),('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]"/>
+                            <field name="importer_id"/>
+                            <field name="provider_contract_id"/>
                             <field name="country_origin_id"/>
                             <field name="filtered_incoterm" invisible="True"/>
                             <field name="filtered_import_type" invisible="True"/>
@@ -194,6 +204,7 @@
                                    domain="['|', ('importation_id', '=', False), ('importation_id', '=', active_id)]" context="{'default_importation_id': active_id}">
                                 <tree>
                                     <field name="name"/>
+                                    <field name="bl_number" string="BL / AWB"/>
                                     <field name="partner_id" string="Proveedor"/>
                                     <field name="customer_id" string="Cliente"/>
                                     <field name="amount_total"/>
@@ -238,6 +249,52 @@
         </field>
     </record>
 
+
+    <!-- AÑADIDA 30/07/2026 — la lista de Importacion no tenia vista de busqueda
+         propia (`search_view_id` vacio en la accion), asi que Odoo le daba la de
+         Tramites de aduana, que no trae ni comercial ni agrupaciones. Para
+         agrupar por mes habia que usar el agrupado personalizado.
+
+         Tramites de aduana tiene la suya fijada en su accion, asi que esta no le
+         afecta. Prioridad 1 para que gane en la accion de Importacion. -->
+    <record id="view_importation_process_search" model="ir.ui.view">
+        <field name="name">importation.process.search</field>
+        <field name="model">importation.process</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <search string="Importaciones">
+                <field name="name" string="Referencia"/>
+                <field name="provider_id" string="Proveedor"/>
+                <field name="importer_id" string="Importadora"/>
+                <field name="comercial_id" string="Comercial"/>
+                <field name="bl_numbers" string="BL / AWB"/>
+                <field name="stage_id" string="Etapa"/>
+
+                <filter name="mias" string="Mías"
+                        domain="[('comercial_id', '=', uid)]"/>
+                <filter name="sin_comercial" string="Sin comercial"
+                        domain="[('comercial_id', '=', False)]"/>
+                <separator/>
+                <filter name="sin_cerrar" string="Sin cerrar"
+                        domain="[('date_import_closed', '=', False)]"/>
+                <separator/>
+                <filter name="arribo" string="Arribo" date="estimated_start_date"/>
+
+                <group expand="0" string="Agrupar por">
+                    <filter name="g_comercial" string="Comercial"
+                            context="{'group_by': 'comercial_id'}"/>
+                    <filter name="g_proveedor" string="Proveedor"
+                            context="{'group_by': 'provider_id'}"/>
+                    <filter name="g_importadora" string="Importadora"
+                            context="{'group_by': 'importer_id'}"/>
+                    <filter name="g_etapa" string="Etapa"
+                            context="{'group_by': 'stage_id'}"/>
+                    <filter name="g_mes" string="Mes de arribo"
+                            context="{'group_by': 'estimated_start_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
 
     <menuitem id="menu_importation_root" name="Imports" sequence="10"
               web_icon="pyxel_import_backend,static/src/imgs/menu_icon.png"/>

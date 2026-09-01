@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ENETRADEX Fase 0: bandeja única del abogado con chip y agrupar/filtrar
+         por Tipo de empresa (Cliente / Proveedor). -->
+
+    <!-- Búsqueda de oportunidades: filtros + group by -->
+    <record id="view_crm_case_opportunities_filter_enetec" model="ir.ui.view">
+        <field name="name">crm.lead.search.enetec.party</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <separator/>
+                <filter name="en_filter_client" string="Clientes"
+                        domain="[('en_party_role', '=', 'client')]"/>
+                <filter name="en_filter_supplier" string="Proveedores"
+                        domain="[('en_party_role', '=', 'supplier')]"/>
+                <separator/>
+                <filter name="en_group_party" string="Tipo de empresa"
+                        context="{'group_by': 'en_party_role'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tarjeta del kanban de CRM (Pipeline): badges de acreditación en vez de
+         la tarjeta de ventas genérica. -->
+    <record id="crm_kanban_enetec_accred" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.enetec.accred</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_kanban_view_leads"/>
+        <field name="arch" type="xml">
+            <xpath expr="//templates" position="before">
+                <field name="en_party_role"/>
+                <field name="en_accred_state"/>
+                <field name="en_partner_vat"/>
+                <field name="en_origin_label"/>
+                <field name="en_doc_count"/>
+                <field name="en_also_registered"/>
+            </xpath>
+            <xpath expr="//strong[hasclass('o_kanban_record_title')]" position="after">
+                <div t-attf-class="en_acc_kard #{record.en_party_role.raw_value == 'supplier' ? 'is-sup' : 'is-cli'}">
+                    <div class="en_acc_head">
+                        <span class="en_acc_chip">
+                            <i t-attf-class="fa #{record.en_party_role.raw_value == 'supplier' ? 'fa-ship' : 'fa-building-o'}" title="Tipo"/>
+                            <t t-esc="record.en_party_role.raw_value == 'supplier' ? 'Proveedor' : 'Cliente'"/>
+                        </span>
+                        <span t-attf-class="en_acc_state #{record.en_accred_state.raw_value == 'accredited' ? 'ok' : 'wait'}"
+                              t-esc="record.en_accred_state.raw_value == 'accredited' ? 'Acreditado' : 'Pendiente'"/>
+                    </div>
+                    <div class="en_acc_meta"><i class="fa fa-user-circle-o" title="Origen"/> <t t-esc="record.en_origin_label.value"/></div>
+                    <div class="en_acc_meta"><i class="fa fa-paperclip" title="Documentos"/>
+                        <t t-if="record.en_doc_count.raw_value"><t t-esc="record.en_doc_count.raw_value"/> documento(s) subido(s)</t>
+                        <t t-else="">Sin documentos aún</t>
+                    </div>
+                    <div t-if="record.en_also_registered.value" class="en_acc_link">
+                        <i class="fa fa-sitemap" title="Vínculo"/> También registró a: <t t-esc="record.en_also_registered.value"/>
+                    </div>
+                    <div t-if="record.en_partner_vat.raw_value" class="en_acc_meta">
+                        <i class="fa fa-id-card-o" title="NIT"/> NIT: <t t-esc="record.en_partner_vat.raw_value"/>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Formulario del lead: panel de acreditación tipo "vista de importación" -->
+    <record id="crm_lead_form_enetec_accred" model="ir.ui.view">
+        <field name="name">crm.lead.form.enetec.accreditation</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Quitar botón Nuevo del formulario: los leads se crean solo desde la vista de lista/kanban -->
+            <xpath expr="//form" position="attributes">
+                <attribute name="create">0</attribute>
+            </xpath>
+            <!-- Ocultar el ruido de ventas (no aplica a un proceso de acreditación) -->
+            <xpath expr="//field[@name='expected_revenue']/ancestor::h2[1]" position="attributes">
+                <attribute name="class" add="d-none" separator=" "/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="attributes">
+                <attribute name="class" add="d-none" separator=" "/>
+            </xpath>
+            <xpath expr="//button[@name='action_sale_quotations_new']" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_set_won_rainbowman']" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_set_won_rainbowman']" position="after">
+                <button name="action_en_revertir" string="Revertir" type="object"
+                        class="btn-secondary"
+                        invisible="en_party_role == False"
+                        confirm="¿Revertir este expediente a 'En proceso de aprobación'?"/>
+            </xpath>
+            <field name="date_deadline" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="tag_ids" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </field>
+            <field name="partner_id" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </field>
+            <field name="email_from" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </field>
+            <field name="phone" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </field>
+            <field name="user_id" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </field>
+            <field name="priority" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </field>
+            <!-- Panel de acreditación (banner + pipeline + datos + recorrido) arriba -->
+            <xpath expr="//sheet/group[1]" position="before">
+                <field name="en_timeline_html" nolabel="1" readonly="1"/>
+                <field name="en_party_role" invisible="1"/>
+                <!-- Enlace nativo CRM ↔ contacto (restaurado para leads ENETEC) -->
+                <group invisible="en_party_role == False" col="2">
+                    <group string="Contacto">
+                        <field name="partner_id" string="Empresa"
+                               context="{'show_vat': True}"/>
+                        <field name="contact_name" string="Persona de contacto"/>
+                    </group>
+                    <group string="Datos de contacto">
+                        <field name="email_from" string="Correo"/>
+                        <field name="phone" string="Teléfono"/>
+                    </group>
+                </group>
+            </xpath>
+            <!-- Ocultar tabs estándar que no aplican al proceso de acreditación -->
+            <xpath expr="//page[@name='internal_notes']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='extra']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//page[@name='lead']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <!-- Ocultar grupo principal de CRM cuando es una acreditación ENETRADEX -->
+            <xpath expr="//sheet/group[1]" position="attributes">
+                <attribute name="invisible">en_party_role != False</attribute>
+            </xpath>
+            <!-- Documentos de acreditación + tabla de expediente, antes del notebook -->
+            <xpath expr="//notebook" position="before">
+                <separator string="Documentos de acreditación" invisible="accreditation_doc_count == 0"/>
+                <!-- Tabla de revisión de documentos (antes en pestaña "Documentación de acreditación") -->
+                <group>
+                    <field name="accreditation_client_type" required="1"/>
+                </group>
+                <button name="action_generate_expediente"
+                        type="object"
+                        string="Generar expediente"
+                        class="btn-primary mb-3"
+                        invisible="accreditation_doc_count != 0"/>
+                <div class="d-flex gap-3 flex-wrap mb-3" invisible="accreditation_doc_count == 0">
+                    <div class="border rounded px-3 py-2 text-center" style="min-width:100px">
+                        <div class="fw-bold fs-4"><field name="accreditation_doc_count" readonly="1" nolabel="1"/></div>
+                        <div class="text-muted small">Requeridos</div>
+                    </div>
+                    <div class="border rounded px-3 py-2 text-center bg-success bg-opacity-10" style="min-width:100px">
+                        <div class="fw-bold fs-4 text-success"><field name="accreditation_approved_count" readonly="1" nolabel="1"/></div>
+                        <div class="text-muted small">Aprobados</div>
+                    </div>
+                    <div class="border rounded px-3 py-2 text-center bg-warning bg-opacity-10" style="min-width:100px">
+                        <div class="fw-bold fs-4 text-warning"><field name="accreditation_review_count" readonly="1" nolabel="1"/></div>
+                        <div class="text-muted small">En revisión</div>
+                    </div>
+                    <div class="border rounded px-3 py-2 text-center bg-secondary bg-opacity-10" style="min-width:100px">
+                        <div class="fw-bold fs-4 text-secondary"><field name="accreditation_pending_count" readonly="1" nolabel="1"/></div>
+                        <div class="text-muted small">Pendientes</div>
+                    </div>
+                </div>
+                <field name="accreditation_document_ids" create="0" delete="0"
+                       invisible="accreditation_doc_count == 0">
+                    <tree create="0" delete="0">
+                        <field name="document_label" readonly="1"/>
+                        <field name="attachment_id" readonly="1"/>
+                        <field name="ai_state" readonly="1" widget="badge"
+                               decoration-success="ai_state == 'passed'" decoration-warning="ai_state == 'doubt'"
+                               decoration-danger="ai_state == 'rejected'" decoration-info="ai_state == 'validating'"
+                               decoration-muted="ai_state == 'unavailable'" optional="show"/>
+                        <field name="ai_confidence" readonly="1"/>
+                        <field name="lawyer_state" string="Abogada" readonly="1" widget="badge"
+                               decoration-success="lawyer_state == 'approved'" decoration-danger="lawyer_state == 'rejected'"/>
+                        <field name="commercial_state" string="Comercial" readonly="1" widget="badge"
+                               decoration-success="commercial_state == 'approved'" decoration-danger="commercial_state == 'rejected'"/>
+                        <field name="portal_state" string="Estado cliente" readonly="1" widget="badge"
+                               decoration-success="portal_state == 'approved'"
+                               decoration-warning="portal_state in ('in_review','validating')"
+                               decoration-danger="portal_state == 'rejected'"/>
+                        <button name="action_open_review" type="object" string="Revisar"
+                                class="btn-link" invisible="not attachment_id"/>
+                        <button name="action_view_document" type="object" string="Ver"
+                                class="btn-link" invisible="not attachment_id"/>
+                    </tree>
+                </field>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Ocultar "Generar leads" de lista y kanban CRM -->
+    <record id="crm_lead_list_hide_generate" model="ir.ui.view">
+        <field name="name">crm.lead.list.hide.generate.enetec</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm_iap_mine.crm_lead_view_tree_opportunity"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_generate_leads']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_lead_kanban_hide_generate" model="ir.ui.view">
+        <field name="name">crm.lead.kanban.hide.generate.enetec</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm_iap_mine.view_crm_lead_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_generate_leads']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Lista de oportunidades: columna badge -->
+    <record id="crm_case_tree_view_oppor_enetec" model="ir.ui.view">
+        <field name="name">crm.lead.tree.enetec.party</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="en_party_role" widget="badge" optional="show"
+                       decoration-info="en_party_role == 'client'"
+                       decoration-warning="en_party_role == 'supplier'"/>
+            </field>
+        </field>
+    </record>
+</odoo>

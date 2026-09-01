@@ -20,6 +20,7 @@ class ImportationProcess(models.Model):
     _description = 'Importation Process'
     _inherit = ['mail.thread', 'mail.activity.mixin']
 
+    active = fields.Boolean(default=True)
     name = fields.Char(string='Reference', required=True, default='New')
     stage_id = fields.Many2one('importation.stage', string='Process Stage',
                                default=lambda self: self.env['importation.stage'].search([], limit=1),
@@ -59,6 +60,17 @@ class ImportationProcess(models.Model):
     final_sale_order_id = fields.Many2one('sale.order', string='Final Generated Offer', readonly=True)
     customer_id = fields.Many2one('res.partner', string='Customer', required=False)
     provider_id = fields.Many2one('res.partner', string='Supplier', required=True)
+    importer_id = fields.Many2one('importation.importer', string='Importadora',
+                                  ondelete='restrict', tracking=True,
+                                  help="Empresa a nombre de la cual se gestiona esta importacion "
+                                       "(ENETEC directo, o un tercero como PROMAX, SERLOVEM...).")
+
+    provider_contract_id = fields.Many2one(
+        'res.partner.contract.import', string='Contrato del proveedor',
+        domain="[('partner_id', '=', provider_id)]",
+        help="Contrato formalizado con este proveedor. La lista sale de los "
+             "contratos ya cargados en su ficha de contacto (pestaña "
+             "Importation); no se teclea el número aquí.")
 
     country_origin_id = fields.Many2one('res.country', string='Country of Origin', required=True)
 
@@ -108,6 +120,36 @@ class ImportationProcess(models.Model):
         string="Cargo Model"
     )
     load_tracking_count = fields.Integer(string='Load Tracking Count', compute='_compute_load_tracking_count')
+
+    en_max_days_in_tcm = fields.Integer(
+        string="Días en TCM",
+        compute='_compute_en_max_days_in_tcm',
+        help="El mayor 'días en TCM' entre los contenedores de este proceso "
+             "(no se guarda: se calcula cada vez a partir de los contenedores, "
+             "para que nunca quede desactualizado).")
+
+    @api.depends('load_tracking_ids.arrival_date', 'load_tracking_ids.extraction_date')
+    def _compute_en_max_days_in_tcm(self):
+        for rec in self:
+            rec.en_max_days_in_tcm = max(rec.load_tracking_ids.mapped('days_in_tcm'), default=0)
+
+    # AÑADIDO 30/07/2026 — clasificar las importaciones por comercial.
+    #
+    # La comercial que lleva la importacion se guarda en el COMPRADOR de sus
+    # ordenes de compra (`purchase.order.user_id`), que es un campo que ya
+    # existe y significa eso. Este campo solo lo refleja en la operacion para
+    # poder FILTRAR Y AGRUPAR desde la lista de Importaciones, que de otro modo
+    # obliga a un filtro personalizado por la relacion y no permite agrupar.
+    #
+    # No duplica el dato: la verdad sigue estando en la OC. Al ser store=True
+    # se puede agrupar, y se recalcula solo si cambia el comprador de una OC.
+    comercial_id = fields.Many2one(
+        'res.users',
+        string='Comercial',
+        compute='_compute_comercial_id',
+        store=True,
+        help='Comercial de ENETEC que lleva la importacion. Se toma del '
+             'Comprador de sus ordenes de compra.')
 
     sale_order_count = fields.Integer(string='Sale Orders Count', compute='_compute_sale_order_count')
 
@@ -208,8 +250,20 @@ class ImportationProcess(models.Model):
             end = record.estimated_end_date
 
             # Validar start >= hoy
-            if start and start < today:
-                raise ValidationError(_("The start date cannot be earlier than today."))
+            #
+            # DESACTIVADO TEMPORALMENTE — carga inicial de historico (30/07/2026)
+            #
+            # Se esta cargando el historico de importaciones de 2026 y en esas
+            # operaciones `estimated_start_date` lleva la FECHA DE ARRIBO del
+            # envio, que es pasada por definicion. Sin esto no se pueden agrupar
+            # las importaciones por mes en las vistas.
+            #
+            # PARA VOLVER A ACTIVARLO al terminar la carga inicial: descomentar
+            # las dos lineas de abajo. Solo afecta al entorno de TEST
+            # (C:\DevOps\envs\test\src); produccion no lleva este cambio.
+            #
+            # if start and start < today:
+            #     raise ValidationError(_("The start date cannot be earlier than today."))
 
             # Validar end >= start
             if start and end and end < start:
@@ -247,6 +301,22 @@ class ImportationProcess(models.Model):
     def _compute_load_tracking_count(self):
         for rec in self:
             rec.load_tracking_count = len(rec.load_tracking_ids)
+
+    @api.depends('purchase_order_ids.user_id')
+    def _compute_comercial_id(self):
+        """La comercial es el Comprador de las OC de la importacion.
+
+        Si sus OC tuvieran compradores distintos —no deberia pasar, porque una
+        operacion la lleva una sola comercial— se toma el de la primera y se
+        deja constancia en el log para revisarlo."""
+        for rec in self:
+            users = rec.purchase_order_ids.mapped('user_id')
+            rec.comercial_id = users[0] if users else False
+            if len(users) > 1:
+                _logger.info(
+                    "Importacion %s: sus OC tienen %d compradores distintos (%s); "
+                    "se usa %s", rec.name, len(users),
+                    ", ".join(users.mapped('name')), users[0].name)
 
     def action_view_load_tracking(self):
         self.ensure_one()
@@ -355,10 +425,35 @@ class ImportationProcess(models.Model):
             # Enviar correo
             template.send_mail(self.id, force_send=True)
 
+    def _check_containers_fully_allocated(self):
+        """Valida que la suma de líneas de contenedor = cantidad de cada línea de OC.
+        Lanza ValidationError si alguna línea de OC queda sin cubrir completamente.
+        """
+        for imp in self:
+            pendientes = []
+            for po in imp.purchase_order_ids:
+                for line in po.order_line:
+                    if line.display_type:
+                        continue  # secciones/notas
+                    remaining = (line.product_uom_qty or 0.0) - (line.quantity_allocated or 0.0)
+                    if remaining > 0.001:
+                        pendientes.append(
+                            f"  • OC {po.name} / {line.product_id.display_name}: "
+                            f"faltan {remaining:,.2f} {line.product_uom.name or ''}"
+                        )
+            if pendientes:
+                detalle = '\n'.join(pendientes)
+                raise ValidationError(
+                    f"No se puede avanzar: las siguientes líneas de OC no están "
+                    f"completamente distribuidas en contenedores:\n{detalle}"
+                )
+
     def action_start_progress(self):
+        self._check_containers_fully_allocated()
         self.write({'state': 'in_progress'})
 
     def action_finish_progress(self):
+        self._check_containers_fully_allocated()
         self.write({'state': 'done'})
 
     @api.model
@@ -366,57 +461,53 @@ class ImportationProcess(models.Model):
         return self.env['importation.stage'].search([], order=order)
 
     def action_create_cost_sale_order(self):
-        SaleOrder = self.env['sale.order']
-        SaleOrderLine = self.env['sale.order.line']
-
         if not self.provider_id:
             raise ValidationError("Debe estar definido el proveedor en el proceso de importación.")
 
         product_amounts = {}
-
         for cost_line in self.cost_line_ids:
-            total_value = 0.0
-
             if not cost_line.purchase_ids:
-                continue  # si no hay órdenes asociadas, omitir
-
+                continue
+            total_value = 0.0
             if cost_line.distribution_type == 'fixed':
                 total_value = cost_line.amount * len(cost_line.purchase_ids)
-
             elif cost_line.distribution_type == 'percentage':
                 for purchase in cost_line.purchase_ids:
                     total_value += purchase.amount_total * (cost_line.amount / 100.0)
-
             product_id = cost_line.product_id.id
-
             if product_id not in product_amounts:
                 product_amounts[product_id] = {
                     'product': cost_line.product_id,
                     'price_unit': 0.0,
                     'name': cost_line.name or cost_line.product_id.name,
                 }
-
             product_amounts[product_id]['price_unit'] += total_value
 
-        # providers_names = self.purchase_order_ids.mapped('partner_id.name')
+        order_lines = [(0, 0, {
+            'product_id': val['product'].id,
+            'name': val['name'],
+            'product_uom_qty': 1.0,
+            'price_unit': val['price_unit'],
+            'product_uom': val['product'].uom_id.id,
+        }) for val in product_amounts.values()]
 
-        # Crear el sale.order con líneas acumuladas por producto
-        sale_order = SaleOrder.create({
-            'partner_id': self.sale_order_id.partner_id.id,
-            'importation_process_id': self.id,
-            # 'providers_names':  ', '.join(sorted(set(providers_names))),
-            'origin': self.name,
-            'order_type': 'importation_process',
-            'order_line': [(0, 0, {
-                'product_id': val['product'].id,
-                'name': val['name'],
-                'product_uom_qty': 1.0,
-                'price_unit': val['price_unit'],
-                'product_uom': val['product'].uom_id.id,
-            }) for val in product_amounts.values()]
-        })
-
-        self.final_sale_order_id = sale_order.id
+        if self.final_sale_order_id:
+            # Regenerar: reemplazar las líneas de la OV existente
+            self.final_sale_order_id.sudo().order_line.unlink()
+            self.final_sale_order_id.sudo().write({'order_line': order_lines})
+            sale_order = self.final_sale_order_id
+        else:
+            # Generar: crear OV nueva
+            partner_id = (self.sale_order_id.partner_id.id or self.customer_id.id)
+            sale_order = self.env['sale.order'].create({
+                'partner_id': partner_id,
+                'importation_process_id': self.id,
+                'origin': self.name,
+                'order_type': 'importation_process',
+                'is_cost_order': True,
+                'order_line': order_lines,
+            })
+            self.final_sale_order_id = sale_order.id
 
         return {
             'type': 'ir.actions.act_window',

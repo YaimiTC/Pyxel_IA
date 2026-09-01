@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+        <record id="importation_importer_enetec" model="importation.importer">
+            <field name="name">ENETEC S.A</field>
+            <field name="logo" type="base64" file="pyxel_import_backend/static/img/enetec_logo.png"/>
+            <field name="vat">30004148361</field>
+            <field name="registro_comercial">17129</field>
+            <field name="registro_mercantil">Tomo XXXV Folio 161 Hoja 62</field>
+            <field name="street">Calle 3ra #4005 e/40 y 40a playa. La Habana</field>
+            <field name="phone">7 204 80 56</field>
+            <field name="email">comercial@enetec.telmark.net</field>
+            <field name="bank_account_cup">*0524120050010016</field>
+        </record>
+        <record id="importation_importer_enersa" model="importation.importer">
+            <field name="name">ENERSA (Empresa de Energia S.A)</field>
+        </record>
+        <record id="importation_importer_coreydan" model="importation.importer">
+            <field name="name">COREYDAN S.A</field>
+        </record>
+        <record id="importation_importer_einarbo" model="importation.importer">
+            <field name="name">EINARBO S.A</field>
+        </record>
+        <record id="importation_importer_tradecen" model="importation.importer">
+            <field name="name">TRADECEN S.A</field>
+        </record>
+        <record id="importation_importer_promax" model="importation.importer">
+            <field name="name">PROMAX S.A</field>
+        </record>
+        <record id="importation_importer_emserpet" model="importation.importer">
+            <field name="name">EMSERPET</field>
+        </record>
+
+</odoo>

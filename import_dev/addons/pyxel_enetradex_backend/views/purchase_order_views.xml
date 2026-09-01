@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <record id="purchase_order_form_inherit_en" model="ir.ui.view">
+    <field name="name">purchase.order.form.inherit.en</field>
+    <field name="model">purchase.order</field>
+    <field name="inherit_id" ref="pyxel_import_backend.purchase_order_form_inherit_provider_evaluation"/>
+    <field name="arch" type="xml">
+      <!-- Renombrar "Referencia de proveedor" a "No. Factura del Proveedor" -->
+      <xpath expr="//field[@name='partner_ref']" position="attributes">
+        <attribute name="string">No. Factura del Proveedor</attribute>
+      </xpath>
+      <xpath expr="//page[@name='purchase_delivery_invoice']//group[@name='other_info']" position="inside">
+        <!-- RETIRADOS (28-07-2026):
+             - en_customer_id ("Cliente"): es un related a importation_id.customer_id,
+               es decir el cliente del PROCESO, no el de la OC. En un proceso con
+               varios clientes mostraba uno distinto del real de la OC (p. ej.
+               PEDROCARR en una OC que es de BALSA AUTO) y se prestaba a confusion.
+             - customer_id: ya lo declara pyxel_import_backend en este mismo grupo,
+               y con dominio de clientes acreditados. Aqui salia por segunda vez. -->
+        <field name="bl_number"/>
+        <field name="cert_no_adeudo" filename="cert_no_adeudo_filename" string="Cert. No Adeudo"/>
+      </xpath>
+    </field>
+  </record>
+
+</odoo>

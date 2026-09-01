@@ -7,11 +7,17 @@
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h4 class="mb-0 fw-bold text-dark">
                 <i class="fa fa-ship me-2 text-primary"/>
-                Tablero — Contenedores en Mariel
+                <t t-if="state.data and state.data.venta_enetec_only">Tablero Venta — Contenedores en Mariel</t>
+                <t t-else="">Tablero — Contenedores en Mariel</t>
             </h4>
-            <button class="btn btn-sm btn-outline-secondary" t-on-click="refresh">
-                <i class="fa fa-refresh"/> Actualizar
-            </button>
+            <div>
+                <button class="btn btn-sm btn-outline-danger me-2" t-on-click="exportPdf">
+                    <i class="fa fa-file-pdf-o"/> Exportar PDF
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" t-on-click="refresh">
+                    <i class="fa fa-refresh"/> Actualizar
+                </button>
+            </div>
         </div>
 
         <!-- Loading -->
@@ -63,19 +69,19 @@
                 </div>
                 <div class="col-6 col-md-4 col-xl-2">
                     <div class="card border-info h-100 cursor-pointer shadow-sm"
-                         t-on-click="() => this.openList([['extraction_date','=',new Date().toISOString().split('T')[0]]], 'Extraídos hoy')">
+                         t-on-click="() => this.openExtraidos()">
                         <div class="card-body text-center p-3">
                             <div class="fs-2 fw-bold text-info"><t t-esc="state.data.kpis.extraidos_hoy"/></div>
-                            <div class="text-muted small">Extraídos hoy</div>
+                            <div class="text-muted small">Extraídos (<t t-esc="state.data.fecha_extraccion"/>)</div>
                         </div>
                     </div>
                 </div>
                 <div class="col-6 col-md-4 col-xl-2">
                     <div class="card border-warning h-100 cursor-pointer shadow-sm"
-                         t-on-click="() => this.openList([['appointment_date','=',new Date().toISOString().split('T')[0]],['extraction_date','=',false]], 'Plan hoy')">
+                         t-on-click="() => this.openList(['&amp;',['extraction_date','=',false],'|','&amp;',['appointment_date','!=',false],['appointment_date','&lt;',new Date(Date.now() + 3*86400000).toISOString().split('T')[0]],'&amp;','&amp;',['is_ventanilla','=',true],['ventanilla_date','!=',false],['ventanilla_date','&lt;',new Date(Date.now() + 3*86400000).toISOString().split('T')[0]]], 'Plan de extracción')">
                         <div class="card-body text-center p-3">
                             <div class="fs-2 fw-bold text-warning"><t t-esc="state.data.kpis.plan_hoy"/></div>
-                            <div class="text-muted small">Plan extracción hoy</div>
+                            <div class="text-muted small">Plan extracción (<t t-esc="state.data.fecha_cita"/>)</div>
                         </div>
                     </div>
                 </div>
@@ -90,23 +96,108 @@
                 </div>
             </div>
 
-            <!-- BLOQUE 1.5: Avance de reconciliación -->
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <h6 class="mb-0 fw-bold text-dark">
-                    <i class="fa fa-tasks me-2 text-primary"/>
-                    Avance de reconciliación — datos por completar
-                </h6>
-                <span class="badge bg-light text-muted border small">
+            <!-- BLOQUE 1.5: Desgloses mensuales (huérfanos · extraídos · pendientes) -->
+            <h6 class="mb-2 fw-bold text-dark">
+                <i class="fa fa-calendar me-2 text-primary"/>
+                Desglose por mes
+                <span class="badge bg-light text-muted border small fw-normal ms-2">desde <t t-esc="state.data.desglose_desde"/></span>
+            </h6>
+            <div class="row g-3 mb-4 align-items-start">
+                <!-- Huérfanos por mes -->
+                <div class="col-12 col-md-4">
+                    <div class="card border-warning shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-baseline mb-1">
+                                <span class="small fw-semibold text-warning">
+                                    <i class="fa fa-unlink me-1"/>Huérfanos por mes
+                                </span>
+                                <span class="fw-bold text-warning"><t t-esc="state.data.huerfanos_en_lista"/></span>
+                            </div>
+                            <ul class="list-unstyled mb-0 small" style="max-height:150px; overflow-y:auto;">
+                                <t t-foreach="state.data.huerfanos_por_mes" t-as="m" t-key="m.mes">
+                                    <li class="d-flex justify-content-between border-bottom py-1 cursor-pointer"
+                                        t-on-click="() => this.openHuerfanosMes(m.mes)">
+                                        <span><t t-esc="m.label"/></span>
+                                        <span class="fw-semibold"><t t-esc="m.n"/></span>
+                                    </li>
+                                </t>
+                                <li t-if="state.data.huerfanos_por_mes.length === 0" class="text-muted text-center py-2">Sin datos</li>
+                            </ul>
+                            <div class="text-muted mt-1" style="font-size:11px;">
+                                Total sin importación: <t t-esc="state.data.avance_reconciliacion.sin_importacion"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Extraídos por mes -->
+                <div class="col-12 col-md-4">
+                    <div class="card border-info shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-baseline mb-1">
+                                <span class="small fw-semibold text-info">
+                                    <i class="fa fa-truck me-1"/>Extraídos por mes
+                                </span>
+                                <span class="fw-bold text-info">
+                                    <t t-esc="state.data.extraidos_por_mes.reduce((s, r) => s + r.n, 0)"/>
+                                </span>
+                            </div>
+                            <ul class="list-unstyled mb-0 small" style="max-height:150px; overflow-y:auto;">
+                                <t t-foreach="state.data.extraidos_por_mes" t-as="m" t-key="m.mes">
+                                    <li class="d-flex justify-content-between border-bottom py-1 cursor-pointer"
+                                        t-on-click="() => this.openExtraidosMes(m.mes)">
+                                        <span><t t-esc="m.label"/></span>
+                                        <span class="fw-semibold"><t t-esc="m.n"/></span>
+                                    </li>
+                                </t>
+                                <li t-if="state.data.extraidos_por_mes.length === 0" class="text-muted text-center py-2">Sin datos</li>
+                            </ul>
+                            <div class="text-muted mt-1" style="font-size:11px;">Por fecha de extracción</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Pendientes de extraer por mes -->
+                <div class="col-12 col-md-4">
+                    <div class="card border-secondary shadow-sm h-100">
+                        <div class="card-body p-3">
+                            <div class="d-flex justify-content-between align-items-baseline mb-1">
+                                <span class="small fw-semibold text-secondary">
+                                    <i class="fa fa-hourglass-half me-1"/>Pendientes de extraer
+                                </span>
+                                <span class="fw-bold text-secondary">
+                                    <t t-esc="state.data.pendientes_por_mes.reduce((s, r) => s + r.n, 0)"/>
+                                </span>
+                            </div>
+                            <ul class="list-unstyled mb-0 small" style="max-height:150px; overflow-y:auto;">
+                                <t t-foreach="state.data.pendientes_por_mes" t-as="m" t-key="m.mes">
+                                    <li class="d-flex justify-content-between border-bottom py-1 cursor-pointer"
+                                        t-on-click="() => this.openPendientesMes(m.mes)">
+                                        <span><t t-esc="m.label"/></span>
+                                        <span class="fw-semibold"><t t-esc="m.n"/></span>
+                                    </li>
+                                </t>
+                                <li t-if="state.data.pendientes_por_mes.length === 0" class="text-muted text-center py-2">Sin datos</li>
+                            </ul>
+                            <div class="text-muted mt-1" style="font-size:11px;">Por fecha de llegada</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 1.6: Avance de reconciliación — sumario -->
+            <h6 class="mb-2 fw-bold text-dark">
+                <i class="fa fa-tasks me-2 text-primary"/>
+                Avance de reconciliación
+                <span class="badge bg-light text-muted border small fw-normal ms-2">
                     <t t-esc="state.data.avance_reconciliacion.total"/> contenedores en total
                 </span>
-            </div>
+            </h6>
             <div class="row g-3 mb-4">
                 <div class="col-6 col-md-3">
                     <div class="card border-warning h-100 cursor-pointer shadow-sm"
-                         t-on-click="() => this.openList([['importation_id','=',false]], 'Sin importación')">
+                         t-on-click="() => this.openList([['importation_id','=',false],['arrival_date','!=',false]], 'Sin importación (huérfanos)')">
                         <div class="card-body text-center p-3">
                             <div class="fs-2 fw-bold text-warning"><t t-esc="state.data.avance_reconciliacion.sin_importacion"/></div>
-                            <div class="text-muted small">Sin importación (huérfanos)</div>
+                            <div class="text-muted small">Sin importación</div>
                         </div>
                     </div>
                 </div>
@@ -120,10 +211,10 @@
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="card border-success h-100 cursor-pointer shadow-sm"
+                    <div class="card border-info h-100 cursor-pointer shadow-sm"
                          t-on-click="() => this.openList([['customer_id','=',false]], 'Sin cliente')">
                         <div class="card-body text-center p-3">
-                            <div class="fs-2 fw-bold text-success"><t t-esc="state.data.avance_reconciliacion.sin_cliente"/></div>
+                            <div class="fs-2 fw-bold text-info"><t t-esc="state.data.avance_reconciliacion.sin_cliente"/></div>
                             <div class="text-muted small">Sin cliente</div>
                         </div>
                     </div>
@@ -169,7 +260,7 @@
                 <div class="col-12 col-lg-6">
                     <div class="card shadow-sm h-100">
                         <div class="card-header fw-bold">
-                            <i class="fa fa-calendar-check-o me-2"/>Movimiento del día
+                            <i class="fa fa-calendar-check-o me-2"/>Movimiento del último dato sincronizado
                         </div>
                         <div class="card-body">
                             <table class="table table-sm table-bordered text-center mb-0">
@@ -184,25 +275,30 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <!-- Cada cifra abre sus contenedores. La celda a cero
+                                         no se marca como pinchable: llevaría a una lista
+                                         vacía, que parece un fallo. -->
                                     <tr>
                                         <td class="text-start fw-semibold text-success">
-                                            <i class="fa fa-check-circle me-1"/>Habilitados
+                                            <i class="fa fa-check-circle me-1"/>Habilitados (<t t-esc="state.data.fecha_habilitacion"/>)
                                         </td>
-                                        <td><t t-esc="state.data.del_dia_hab.DIESEL"/></td>
-                                        <td><t t-esc="state.data.del_dia_hab.GASOLINA"/></td>
-                                        <td><t t-esc="state.data.del_dia_hab.GLP"/></td>
-                                        <td><t t-esc="state.data.del_dia_hab.OTRO"/></td>
-                                        <td class="fw-bold"><t t-esc="state.data.del_dia_hab.total"/></td>
+                                        <t t-foreach="['DIESEL','GASOLINA','GLP','OTRO','total']" t-as="col" t-key="col">
+                                            <td t-att-class="(col === 'total' ? 'fw-bold' : '') + (state.data.del_dia_hab[col] ? ' cursor-pointer text-decoration-underline' : '')"
+                                                t-on-click="() => this.openDelDia('hab', col)">
+                                                <t t-esc="state.data.del_dia_hab[col]"/>
+                                            </td>
+                                        </t>
                                     </tr>
                                     <tr>
                                         <td class="text-start fw-semibold text-info">
-                                            <i class="fa fa-truck me-1"/>Extraídos
+                                            <i class="fa fa-truck me-1"/>Extraídos (<t t-esc="state.data.fecha_extraccion"/>)
                                         </td>
-                                        <td><t t-esc="state.data.del_dia_ext.DIESEL"/></td>
-                                        <td><t t-esc="state.data.del_dia_ext.GASOLINA"/></td>
-                                        <td><t t-esc="state.data.del_dia_ext.GLP"/></td>
-                                        <td><t t-esc="state.data.del_dia_ext.OTRO"/></td>
-                                        <td class="fw-bold"><t t-esc="state.data.del_dia_ext.total"/></td>
+                                        <t t-foreach="['DIESEL','GASOLINA','GLP','OTRO','total']" t-as="col" t-key="col">
+                                            <td t-att-class="(col === 'total' ? 'fw-bold' : '') + (state.data.del_dia_ext[col] ? ' cursor-pointer text-decoration-underline' : '')"
+                                                t-on-click="() => this.openDelDia('ext', col)">
+                                                <t t-esc="state.data.del_dia_ext[col]"/>
+                                            </td>
+                                        </t>
                                     </tr>
                                 </tbody>
                             </table>
@@ -243,7 +339,7 @@
                     <t t-if="state.data.plan.length === 0">
                         <div class="text-center text-muted py-4">
                             <i class="fa fa-inbox fa-2x mb-2 d-block"/>
-                            No hay contenedores con cita en los próximos 3 días
+                            No hay contenedores con cita o ventanilla en los próximos 3 días
                         </div>
                     </t>
                     <t t-else="">
@@ -251,26 +347,34 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Contenedor</th>
+                                    <th>BL</th>
+                                    <th>Proveedor</th>
                                     <th>Cliente</th>
-                                    <th>Carga</th>
-                                    <th>Transitaria</th>
+                                    <th>Producto</th>
+                                    <th>Destino</th>
+                                    <th>Transportista</th>
                                     <th>Días en el Terminal</th>
-                                    <th>Fecha cita</th>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <t t-foreach="state.data.plan" t-as="row" t-key="row.id">
                                     <tr>
                                         <td class="fw-semibold text-monospace"><t t-esc="row.name"/></td>
+                                        <td class="text-monospace"><t t-esc="row.bl_number || '—'"/></td>
+                                        <td><t t-esc="row.providers || '—'"/></td>
                                         <td><t t-esc="row.customer || '—'"/></td>
-                                        <td><t t-esc="cargoLabel(row.cargo_type)"/></td>
-                                        <td><t t-esc="row.transit_agency || '—'"/></td>
+                                        <td><t t-esc="row.product_names || '—'"/></td>
+                                        <td><t t-esc="row.destination || '—'"/></td>
+                                        <td><t t-esc="row.transport_company || '—'"/></td>
                                         <td>
                                             <span t-attf-class="badge {{row.days_in_tcm >= 30 ? 'bg-danger' : row.days_in_tcm >= 20 ? 'bg-warning text-dark' : row.days_in_tcm >= 15 ? 'bg-warning text-dark' : 'bg-success'}}">
                                                 <t t-esc="row.days_in_tcm"/> d
                                             </span>
                                         </td>
-                                        <td><t t-esc="formatDate(row.appointment_date)"/></td>
+                                        <td><t t-esc="formatDate(row.plan_fecha)"/></td>
+                                        <td><t t-esc="row.plan_fuente"/></td>
                                     </tr>
                                 </t>
                             </tbody>
@@ -279,17 +383,44 @@
                 </div>
             </div>
 
+            <!-- BLOQUE 3.5: Accesos CUPET (reporte 5 de Oficina Central) -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header fw-bold">
+                    <i class="fa fa-external-link me-2"/>VENTA — reportes de totales
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-center justify-content-between border rounded p-3 cursor-pointer"
+                                 t-on-click="() => this.openCupetExtraidos()">
+                                <span><i class="fa fa-check-circle text-success me-2"/>Extraídos — totales por Proveedor / Transportista</span>
+                                <i class="fa fa-chevron-right text-muted"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-center justify-content-between border rounded p-3 cursor-pointer"
+                                 t-on-click="() => this.openCupetPendientes()">
+                                <span><i class="fa fa-hourglass-half text-warning me-2"/>Pendientes de extraer — por Proveedor (habilitado/no habilitado)</span>
+                                <i class="fa fa-chevron-right text-muted"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="small text-muted mt-2">Contenedores adquiridos por «VENTA».</div>
+                </div>
+            </div>
+
 
             <!-- BLOQUE 5: Histórico mensual -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header fw-bold d-flex justify-content-between align-items-center">
-                    <span><i class="fa fa-history me-2"/>Histórico — Operaciones completadas (últimos 12 meses)</span>
+                    <span><i class="fa fa-history me-2"/>Histórico de contenedores devueltos por mes</span>
+                    <span class="badge bg-light text-muted border small fw-normal">últimos 12 meses</span>
                 </div>
                 <div class="card-body p-0">
                     <t t-if="!state.data.historico or state.data.historico.length === 0">
                         <div class="text-center text-muted py-4">
                             <i class="fa fa-inbox fa-2x mb-2 d-block"/>
-                            Sin operaciones completadas en los últimos 12 meses
+                            Sin contenedores devueltos en los últimos 12 meses
                         </div>
                     </t>
                     <t t-else="">
@@ -359,20 +490,15 @@
 
             <!-- ① Totales del docx (P3 · P4 · P5) -->
             <div class="card shadow-sm mb-4" t-if="state.data.totales">
-                <div class="card-header fw-bold">
-                    <i class="fa fa-cubes me-2 text-primary"/>Totales del sistema (histórico)
+                <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                    <span><i class="fa fa-cubes me-2 text-primary"/>Totales del sistema (histórico)</span>
+                    <span class="badge bg-secondary">
+                        <t t-esc="state.data.totales.en_transito + state.data.totales.en_puerto + state.data.totales.importados"/>
+                        contenedores en total
+                    </span>
                 </div>
                 <div class="card-body">
                     <div class="row g-3">
-                        <div class="col-6 col-md-4">
-                            <div class="card border-primary h-100 cursor-pointer shadow-sm"
-                                 t-on-click="() => this.openList(['|', ['state','=','returned'], '&amp;', ['state','in',['to_extract','to_return']], ['extraction_date','!=',false]], 'Importados hasta la fecha')">
-                                <div class="card-body text-center p-3">
-                                    <div class="fs-2 fw-bold text-primary"><t t-esc="state.data.totales.importados"/></div>
-                                    <div class="text-muted small">Importados hasta la fecha</div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="col-6 col-md-4">
                             <div class="card border-warning h-100 cursor-pointer shadow-sm"
                                  t-on-click="() => this.openList([['state','=','to_arrive']], 'En tránsito (por llegar)')">
@@ -383,11 +509,24 @@
                             </div>
                         </div>
                         <div class="col-6 col-md-4">
-                            <div class="card border-danger h-100 cursor-pointer shadow-sm"
-                                 t-on-click="() => this.openList(['|', '&amp;', '&amp;', ['state','in',['to_extract','to_return']], ['return_date','=',false], ['extraction_date','!=',false], ['state','=','to_return']], 'Por devolver hasta la fecha')">
+                            <div class="card border-info h-100 cursor-pointer shadow-sm"
+                                 t-on-click="() => this.openList([['extraction_date','=',false],['arrival_date','!=',false]], 'En puerto (sin extraer)')">
                                 <div class="card-body text-center p-3">
-                                    <div class="fs-2 fw-bold text-danger"><t t-esc="state.data.totales.por_devolver"/></div>
-                                    <div class="text-muted small">Por devolver hasta la fecha</div>
+                                    <div class="fs-2 fw-bold text-info"><t t-esc="state.data.totales.en_puerto"/></div>
+                                    <div class="text-muted small">En puerto (sin extraer)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4">
+                            <div class="card border-primary h-100 cursor-pointer shadow-sm"
+                                 t-on-click="() => this.openList([['extraction_date','!=',false]], 'Importados hasta la fecha')">
+                                <div class="card-body text-center p-3">
+                                    <div class="fs-2 fw-bold text-primary"><t t-esc="state.data.totales.importados"/></div>
+                                    <div class="text-muted small">Importados hasta la fecha</div>
+                                    <div class="text-danger small mt-1 cursor-pointer"
+                                         t-on-click.stop="() => this.openList([['state','=','to_return']], 'Por devolver hasta la fecha')">
+                                        de estos, <t t-esc="state.data.totales.por_devolver"/> por devolver
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -460,7 +599,16 @@
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="small text-muted p-2 fst-italic">Unidad: litros por defecto. Ajustar UoM más adelante.</div>
+                            <div class="small text-muted p-2 fst-italic">
+                                Litros. Las líneas expresadas en galones se convierten (1 gal US = 3,78541 L).
+                                <t t-if="state.data.volumen_sin_uom">
+                                    <br/>
+                                    <span class="text-warning-emphasis">Atención:</span>
+                                    <t t-esc="fmtNum(state.data.volumen_sin_uom)"/> de ese total viene de líneas
+                                    cargadas sin unidad de volumen (unidad genérica «Units», carga antigua):
+                                    no se han podido convertir y están sumadas tal cual.
+                                </t>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -474,7 +622,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th>Producto</th>
-                                <th class="text-end">Precio promedio</th>
+                                <th class="text-end">Precio promedio (FOB)</th>
                                 <th class="text-end">Litros totales</th>
                                 <th class="text-end">Contenedores</th>
                             </tr>
@@ -493,12 +641,33 @@
                             </tr>
                         </tbody>
                     </table>
+                    <!-- Flete y seguro: son servicios, no tienen litros -->
+                    <div t-if="state.data.flete_seguro" class="border-top px-3 py-2">
+                        <div class="d-flex justify-content-between align-items-baseline border-bottom py-1">
+                            <span class="small fw-semibold text-muted">
+                                <i class="fa fa-ship me-1"/>Flete marítimo
+                            </span>
+                            <span>
+                                <span class="fw-bold">USD <t t-esc="fmtNum(state.data.flete_seguro.flete_total)"/></span>
+                                <span class="text-muted small ms-2">(~<t t-esc="fmtNum(state.data.flete_seguro.flete_prom)"/> por OC · <t t-esc="state.data.flete_seguro.flete_n"/> OC)</span>
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-baseline py-1">
+                            <span class="small fw-semibold text-muted">
+                                <i class="fa fa-shield me-1"/>Seguro marítimo
+                            </span>
+                            <span>
+                                <span class="fw-bold">USD <t t-esc="fmtNum(state.data.flete_seguro.seguro_total)"/></span>
+                                <span class="text-muted small ms-2">(~<t t-esc="fmtNum(state.data.flete_seguro.seguro_prom)"/> por OC · <t t-esc="state.data.flete_seguro.seguro_n"/> OC)</span>
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- ① Rankings -->
             <div class="row g-3 mb-4">
-                <div class="col-12 col-lg-4">
+                <div class="col-12 col-lg-6">
                     <div class="card shadow-sm h-100">
                         <div class="card-header fw-bold"><i class="fa fa-trophy me-2 text-warning"/>Proveedores × producto × país</div>
                         <div class="card-body">
@@ -514,7 +683,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-lg-4">
+                <div class="col-12 col-lg-6">
                     <div class="card shadow-sm h-100">
                         <div class="card-header fw-bold"><i class="fa fa-users me-2 text-info"/>Clientes × producto × provincia</div>
                         <div class="card-body">
@@ -530,7 +699,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-12 col-lg-4">
+                <div class="col-12 col-lg-6">
                     <div class="card shadow-sm h-100">
                         <div class="card-header fw-bold"><i class="fa fa-ship me-2 text-primary"/>Navieras × producto × país × puerto</div>
                         <div class="card-body">
@@ -542,6 +711,22 @@
                                     </li>
                                 </t>
                                 <li t-if="state.data.ranking_navieras.length === 0" class="text-muted text-center py-3">Sin datos</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header fw-bold"><i class="fa fa-warehouse me-2 text-secondary"/>Destinos × producto</div>
+                        <div class="card-body">
+                            <ol class="list-unstyled mb-0 small">
+                                <t t-foreach="state.data.ranking_destinos" t-as="r" t-key="r_index">
+                                    <li class="d-flex justify-content-between border-bottom py-1">
+                                        <span><span class="text-muted"><t t-esc="r_index + 1"/>.</span> <t t-esc="r.label"/></span>
+                                        <span class="fw-bold"><t t-esc="r.cantidad"/></span>
+                                    </li>
+                                </t>
+                                <li t-if="state.data.ranking_destinos.length === 0" class="text-muted text-center py-3">Sin datos</li>
                             </ol>
                         </div>
                     </div>

@@ -39,12 +39,48 @@
     </record>
 
 
+    <!-- Acción: todas las oportunidades CRM (para IC) -->
+    <record id="action_ic_oportunidades" model="ir.actions.act_window">
+        <field name="name">Oportunidades</field>
+        <field name="res_model">crm.lead</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="domain">[('type', '=', 'opportunity')]</field>
+        <field name="context">{}</field>
+    </record>
+
     <!-- Menú CRM raíz: Inteligencia Comercial + Comercial + Admin -->
     <record id="crm.crm_menu_root" model="ir.ui.menu">
         <field name="groups_id" eval="[(6, 0, [
             ref('pyxel_enetradex_backend.group_commercial'),
             ref('pyxel_enetradex_backend.group_comercial'),
             ref('base.group_system'),
+        ])]"/>
+    </record>
+
+    <!-- Menú Oportunidades solo para IC (ve todo sin filtro de usuario) -->
+    <menuitem id="menu_ic_oportunidades"
+              name="Oportunidades"
+              parent="crm.crm_menu_root"
+              action="action_ic_oportunidades"
+              sequence="1"
+              groups="pyxel_enetradex_backend.group_commercial"/>
+
+    <!-- CRM submenú Ventas (pipeline): IC + Abogada + Apoderado + Comercial + Admin -->
+    <record id="crm.crm_menu_sales" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [
+            ref('pyxel_enetradex_backend.group_commercial'),
+            ref('pyxel_enetradex_backend.group_comercial'),
+            ref('pyxel_enetradex_backend.group_lawyer'),
+            ref('pyxel_customs_agent.group_customs_agent'),
+            ref('base.group_system'),
+        ])]"/>
+    </record>
+
+    <!-- CRM submenú Leads: IC + usuarios con Show Lead Menu -->
+    <record id="crm.crm_menu_leads" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [
+            ref('pyxel_enetradex_backend.group_commercial'),
+            ref('crm.group_use_lead'),
         ])]"/>
     </record>
 
@@ -55,6 +91,11 @@
             ref('pyxel_enetradex_backend.group_comercial'),
             ref('base.group_system'),
         ])]"/>
+    </record>
+
+    <!-- Link Tracker: solo Admin (Technical Features lo ven todos los usuarios internos) -->
+    <record id="utm.menu_link_tracker_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(6, 0, [ref('base.group_system')])]"/>
     </record>
 
     <!-- Menú Acreditación pendiente para Abogada -->

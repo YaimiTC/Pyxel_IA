@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_deposit_report_tree" model="ir.ui.view">
+            <field name="name">importation.load.deposit.report.tree</field>
+            <field name="model">importation.load</field>
+            <field name="arch" type="xml">
+                <tree string="Reporte de Depósitos (salida a SIOC)" create="0" edit="0" delete="0">
+                    <field name="name" string="Contenedor"/>
+                    <field name="bl_number" string="BL" optional="hide"/>
+                    <field name="packaging_type_id" string="Tipo de envase"/>
+                    <field name="customer_pyxel_code" string="Código propietario (Pyxel)"/>
+                    <field name="customer_vat" string="NIT del cliente"/>
+                    <field name="customer_id" string="Cliente"/>
+                    <field name="product_names" string="Producto"/>
+                    <field name="expected_quantity" string="Cantidad según factura (L)"/>
+                    <field name="arrival_date" string="Fecha de llegada"/>
+                    <field name="readiness_source" string="Habilitado por"/>
+                    <field name="readiness_date" string="Fecha probable de extracción"/>
+                    <field name="state" string="Estado"/>
+                    <field name="deposit_quantity_received" string="Cantidad ya recibida (L)" optional="hide"/>
+                    <field name="deposit_code" string="Código de depósito" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_deposit_report_search" model="ir.ui.view">
+            <field name="name">importation.load.deposit.report.search</field>
+            <field name="model">importation.load</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name" string="Contenedor"/>
+                    <field name="bl_number" string="BL"/>
+                    <field name="customer_id" string="Cliente"/>
+                    <field name="packaging_type_id" string="Tipo de envase"/>
+                    <filter name="con_llegada" string="Con fecha de llegada"
+                            domain="[('arrival_date', '!=', False)]"/>
+                    <group expand="0" string="Agrupar por">
+                        <filter name="g_envase" string="Tipo de envase" context="{'group_by': 'packaging_type_id'}"/>
+                        <filter name="g_cliente" string="Cliente" context="{'group_by': 'customer_id'}"/>
+                        <filter name="g_estado" string="Estado" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_deposit_report" model="ir.actions.act_window">
+            <field name="name">Reporte de Depósitos</field>
+            <field name="res_model">importation.load</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="view_deposit_report_tree"/>
+            <field name="search_view_id" ref="view_deposit_report_search"/>
+            <field name="domain">[('arrival_date', '!=', False), ('state', 'not in', ['to_return', 'returned'])]</field>
+            <field name="context">{'search_default_con_llegada': 1}</field>
+        </record>
+
+        <menuitem id="menu_deposit_report"
+                  name="Depósito: Ver contenedores por enviar"
+                  parent="menu_import_manager_root"
+                  action="action_deposit_report"
+                  sequence="10"/>
+
+        <!-- Accion contextual: selecciona filas en el Reporte de Depositos y
+             sale en el menu "Acción" (engranaje) de la lista. -->
+        <record id="action_export_deposit_package" model="ir.actions.server">
+            <field name="name">Exportar para depósito (CSV + certificados)</field>
+            <field name="model_id" ref="model_importation_load"/>
+            <field name="binding_model_id" ref="model_importation_load"/>
+            <field name="binding_view_types">list</field>
+            <field name="groups_id" eval="[(4, ref('base.group_system')), (4, ref('pyxel_customs_agent.group_customs_agent')), (4, ref('pyxel_enetradex_backend.group_lawyer'))]"/>
+            <field name="state">code</field>
+            <field name="code">action = records.action_export_deposit_package()</field>
+        </record>
+
+</odoo>

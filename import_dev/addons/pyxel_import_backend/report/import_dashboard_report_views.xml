@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report_import_dashboard_template">
+            <t t-call="web.html_container">
+                <t t-set="data" t-value="env['importation.load'].get_dashboard_data()"/>
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-size:11px;">
+                        <style>
+                            .id-h { font-size:15px; font-weight:bold; color:#1f4e79; border-bottom:2px solid #1f4e79; padding-bottom:3px; margin-top:18px; margin-bottom:8px; }
+                            .id-kpi { border:1px solid #ccc; border-left:4px solid #999; border-radius:4px; padding:8px 10px; text-align:center; }
+                            .id-kpi .n { font-size:20px; font-weight:bold; display:block; }
+                            .id-kpi .l { font-size:9px; color:#666; }
+                            .id-bar-bg { background:#e9ecef; border-radius:3px; height:14px; overflow:hidden; }
+                            .id-bar { height:100%; float:left; }
+                            table.id-t { width:100%; border-collapse:collapse; }
+                            table.id-t th { background:#1f4e79; color:#fff; padding:4px 6px; text-align:left; font-size:10px; }
+                            table.id-t td { padding:3px 6px; border-bottom:1px solid #eee; font-size:10px; }
+                        </style>
+
+                        <table style="width:100%;">
+                            <tr>
+                                <td><h2 style="color:#1f4e79; margin:0;">Tablero — Contenedores en Mariel</h2></td>
+                                <td style="text-align:right; color:#888; font-size:10px; vertical-align:bottom;">
+                                    Generado: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="id-h">KPIs generales</div>
+                        <table style="width:100%; text-align:center;"><tr>
+                            <td style="width:16.6%; padding:3px;"><div class="id-kpi" style="border-left-color:#0d6efd;">
+                                <span class="n" style="color:#0d6efd;"><t t-esc="data['kpis']['en_mariel']"/></span>
+                                <span class="l">En el Mariel</span></div></td>
+                            <td style="width:16.6%; padding:3px;"><div class="id-kpi" style="border-left-color:#dc3545;">
+                                <span class="n" style="color:#dc3545;"><t t-esc="data['kpis']['sin_habilitar']"/></span>
+                                <span class="l">Sin Habilitar</span></div></td>
+                            <td style="width:16.6%; padding:3px;"><div class="id-kpi" style="border-left-color:#198754;">
+                                <span class="n" style="color:#198754;"><t t-esc="data['kpis']['habilitados']"/></span>
+                                <span class="l">Habilitados</span></div></td>
+                            <td style="width:16.6%; padding:3px;"><div class="id-kpi" style="border-left-color:#0dcaf0;">
+                                <span class="n" style="color:#0dcaf0;"><t t-esc="data['kpis']['extraidos_hoy']"/></span>
+                                <span class="l">Extraídos (<t t-esc="data['fecha_extraccion']"/>)</span></div></td>
+                            <td style="width:16.6%; padding:3px;"><div class="id-kpi" style="border-left-color:#ffc107;">
+                                <span class="n" style="color:#e0a800;"><t t-esc="data['kpis']['plan_hoy']"/></span>
+                                <span class="l">Plan extracción</span></div></td>
+                            <td style="width:16.6%; padding:3px;"><div class="id-kpi" style="border-left-color:#6c757d;">
+                                <span class="n" style="color:#6c757d;"><t t-esc="data['alertas']['envejecidos']"/></span>
+                                <span class="l">Envejecidos +30d</span></div></td>
+                        </tr></table>
+
+                        <div class="id-h">Avance de reconciliación
+                            <span class="text-muted" style="font-size:10px; font-weight:normal;">(<t t-esc="data['avance_reconciliacion']['total']"/> contenedores en total)</span>
+                        </div>
+                        <table style="width:100%; text-align:center;"><tr>
+                            <td style="width:25%; padding:3px;"><div class="id-kpi" style="border-left-color:#ffc107;">
+                                <span class="n" style="color:#e0a800;"><t t-esc="data['avance_reconciliacion']['sin_importacion']"/></span>
+                                <span class="l">Sin importación (huérfanos)</span></div></td>
+                            <td style="width:25%; padding:3px;"><div class="id-kpi" style="border-left-color:#198754;">
+                                <span class="n" style="color:#198754;"><t t-esc="data['avance_reconciliacion']['sin_proveedor']"/></span>
+                                <span class="l">Sin proveedor</span></div></td>
+                            <td style="width:25%; padding:3px;"><div class="id-kpi" style="border-left-color:#198754;">
+                                <span class="n" style="color:#198754;"><t t-esc="data['avance_reconciliacion']['sin_cliente']"/></span>
+                                <span class="l">Sin cliente</span></div></td>
+                            <td style="width:25%; padding:3px;"><div class="id-kpi" style="border-left-color:#dc3545;">
+                                <span class="n" style="color:#dc3545;"><t t-esc="data['avance_reconciliacion']['sin_cliente_ni_proveedor']"/></span>
+                                <span class="l">Sin cliente NI proveedor</span></div></td>
+                        </tr></table>
+                        <table class="id-t mt-2" style="width:50%;">
+                            <thead><tr><th>Huérfanos por mes (llegada, desde <t t-esc="data['desglose_desde']"/>)</th><th style="text-align:right;">Cont.</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="data['huerfanos_por_mes']" t-as="m">
+                                    <td><t t-esc="m['label']"/></td>
+                                    <td style="text-align:right;"><t t-esc="m['n']"/></td>
+                                </tr>
+                                <tr t-if="not data['huerfanos_por_mes']"><td colspan="2" style="color:#888;">Sin datos</td></tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size:9px; color:#888; margin-top:2px;">
+                            El total de huérfanos cuenta todos (<t t-esc="data['avance_reconciliacion']['sin_importacion']"/>);
+                            el desglose de arriba, los <t t-esc="data['huerfanos_en_lista']"/> desde
+                            <t t-esc="data['desglose_desde']"/>.
+                        </p>
+
+                        <div class="id-h">Extraídos y pendientes de extraer, por mes</div>
+                        <table style="width:100%;"><tr>
+                            <td style="width:50%; vertical-align:top; padding-right:8px;">
+                                <table class="id-t">
+                                    <thead><tr><th>Extraídos (por fecha de extracción)</th><th style="text-align:right;">Cont.</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="data['extraidos_por_mes']" t-as="m">
+                                            <td><t t-esc="m['label']"/></td>
+                                            <td style="text-align:right;"><t t-esc="m['n']"/></td>
+                                        </tr>
+                                        <tr t-if="not data['extraidos_por_mes']"><td colspan="2" style="color:#888;">Sin datos</td></tr>
+                                        <tr><td style="font-weight:bold;">Total</td>
+                                            <td style="text-align:right; font-weight:bold;">
+                                                <t t-esc="sum([m['n'] for m in data['extraidos_por_mes']])"/></td></tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td style="width:50%; vertical-align:top;">
+                                <table class="id-t">
+                                    <thead><tr><th>Pendientes de extraer (por fecha de llegada)</th><th style="text-align:right;">Cont.</th></tr></thead>
+                                    <tbody>
+                                        <tr t-foreach="data['pendientes_por_mes']" t-as="m">
+                                            <td><t t-esc="m['label']"/></td>
+                                            <td style="text-align:right;"><t t-esc="m['n']"/></td>
+                                        </tr>
+                                        <tr t-if="not data['pendientes_por_mes']"><td colspan="2" style="color:#888;">Sin datos</td></tr>
+                                        <tr><td style="font-weight:bold;">Total</td>
+                                            <td style="text-align:right; font-weight:bold;">
+                                                <t t-esc="sum([m['n'] for m in data['pendientes_por_mes']])"/></td></tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr></table>
+                        <p style="font-size:9px; color:#888; margin-top:2px;">
+                            Ambas desde <t t-esc="data['desglose_desde']"/>. Cada columna se agrupa por
+                            una fecha distinta —el extraído por cuándo salió, el pendiente por cuándo
+                            llegó—, así que las filas de un mismo mes no son los mismos contenedores
+                            y no se restan entre sí.
+                        </p>
+
+                        <div class="id-h">Antigüedad en Mariel (sin extracción)</div>
+                        <t t-set="aging_colors" t-value="{'de_0_4': '#28a745', 'de_5_9': '#ffc107', 'de_10_19': '#fd7e14', 'de_20_29': '#dc3545', 'de_30_mas': '#6f42c1'}"/>
+                        <t t-set="aging_labels" t-value="[('de_0_4','0-4 días'), ('de_5_9','5-9 días'), ('de_10_19','10-19 días'), ('de_20_29','20-29 días'), ('de_30_mas','+30 días')]"/>
+                        <table style="width:100%;">
+                            <tr t-foreach="aging_labels" t-as="ab">
+                                <t t-set="pct" t-value="round(data['aging'][ab[0]] / data['aging']['total'] * 100) if data['aging']['total'] else 0"/>
+                                <td style="width:80px; font-size:10px;"><t t-esc="ab[1]"/></td>
+                                <td>
+                                    <div class="id-bar-bg">
+                                        <div class="id-bar" t-attf-style="width:{{pct}}%; background:{{aging_colors[ab[0]]}};"/>
+                                    </div>
+                                </td>
+                                <td style="width:110px; text-align:right; font-size:10px;">
+                                    <t t-esc="data['aging'][ab[0]]"/> cont. (<t t-esc="pct"/>%)
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="id-h">Movimiento del último dato sincronizado</div>
+                        <table class="id-t" style="width:70%;">
+                            <thead><tr><th></th><th style="text-align:right;">Diesel</th><th style="text-align:right;">Gasolina</th><th style="text-align:right;">GLP</th><th style="text-align:right;">Otro</th><th style="text-align:right;">Total</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td>Habilitados (<t t-esc="data['fecha_habilitacion']"/>)</td>
+                                    <td style="text-align:right;"><t t-esc="data['del_dia_hab']['DIESEL']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['del_dia_hab']['GASOLINA']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['del_dia_hab']['GLP']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['del_dia_hab']['OTRO']"/></td>
+                                    <td style="text-align:right; font-weight:bold;"><t t-esc="data['del_dia_hab']['total']"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Extraídos (<t t-esc="data['fecha_extraccion']"/>)</td>
+                                    <td style="text-align:right;"><t t-esc="data['del_dia_ext']['DIESEL']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['del_dia_ext']['GASOLINA']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['del_dia_ext']['GLP']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['del_dia_ext']['OTRO']"/></td>
+                                    <td style="text-align:right; font-weight:bold;"><t t-esc="data['del_dia_ext']['total']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size:10px;">
+                            <t t-esc="data['alertas']['precita_vencida']"/> contenedor(es) con precita vencida sin extraer ·
+                            <t t-esc="data['alertas']['sin_identificar']"/> contenedor(es) sin transitaria/identificar
+                        </p>
+
+                        <div class="id-h" style="page-break-before:always;">Plan de extracción — próximos 3 días</div>
+                        <table class="id-t" style="font-size:9px;">
+                            <thead>
+                                <tr>
+                                    <th>Contenedor</th><th>BL</th><th>Proveedor</th><th>Cliente</th><th>Producto</th>
+                                    <th>Destino</th><th>Transportista</th><th style="text-align:right;">Días</th><th>Fecha</th><th>Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="data['plan']" t-as="row">
+                                    <td><t t-esc="row['name']"/></td>
+                                    <td><t t-esc="row.get('bl_number') or '—'"/></td>
+                                    <td><t t-esc="row.get('providers') or '—'"/></td>
+                                    <td><t t-esc="row.get('customer') or '—'"/></td>
+                                    <td><t t-esc="row.get('product_names') or '—'"/></td>
+                                    <td><t t-esc="row.get('destination') or '—'"/></td>
+                                    <td><t t-esc="row.get('transport_company') or '—'"/></td>
+                                    <td style="text-align:right;"><t t-esc="row['days_in_tcm']"/></td>
+                                    <td><t t-esc="row.get('plan_fecha') or '—'"/></td>
+                                    <td><t t-esc="row.get('plan_fuente') or '—'"/></td>
+                                </tr>
+                                <tr t-if="not data['plan']"><td colspan="10" class="text-center text-muted">Sin datos</td></tr>
+                            </tbody>
+                        </table>
+
+                        <div class="id-h" style="page-break-before:always;">Histórico de contenedores devueltos por mes (últimos 12 meses)</div>
+                        <table style="width:100%;">
+                            <tr t-foreach="data['historico']" t-as="h">
+                                <t t-set="max_h" t-value="max([x['extraidos'] for x in data['historico']]) or 1"/>
+                                <t t-set="pct_ret" t-value="round(h['retornados'] / max_h * 100)"/>
+                                <t t-set="pct_sin" t-value="round(h['sin_retorno'] / max_h * 100)"/>
+                                <td style="width:70px; font-size:10px;"><t t-esc="h['label']"/></td>
+                                <td>
+                                    <div class="id-bar-bg">
+                                        <div class="id-bar" t-attf-style="width:{{pct_ret}}%; background:#198754;"/>
+                                        <div class="id-bar" t-attf-style="width:{{pct_sin}}%; background:#dc3545;"/>
+                                    </div>
+                                </td>
+                                <td style="width:150px; text-align:right; font-size:10px;">
+                                    <span style="color:#198754;"><t t-esc="h['retornados']"/></span> /
+                                    <span style="color:#dc3545;"><t t-esc="h['sin_retorno']"/></span>
+                                    (<t t-esc="h['dias_prom']"/>d prom)
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="id-h">Totales del sistema (histórico)</div>
+                        <table style="width:100%; text-align:center;"><tr>
+                            <td style="width:25%; padding:3px;"><div class="id-kpi" style="border-left-color:#ffc107;">
+                                <span class="n" style="color:#e0a800;"><t t-esc="data['totales']['en_transito']"/></span>
+                                <span class="l">En tránsito (por llegar)</span></div></td>
+                            <td style="width:25%; padding:3px;"><div class="id-kpi" style="border-left-color:#0dcaf0;">
+                                <span class="n" style="color:#0dcaf0;"><t t-esc="data['totales']['en_puerto']"/></span>
+                                <span class="l">En puerto (sin extraer)</span></div></td>
+                            <td style="width:25%; padding:3px;"><div class="id-kpi" style="border-left-color:#0d6efd;">
+                                <span class="n" style="color:#0d6efd;"><t t-esc="data['totales']['importados']"/></span>
+                                <span class="l">Importados hasta la fecha</span></div></td>
+                            <td style="width:25%; padding:3px;"><div class="id-kpi" style="border-left-color:#dc3545;">
+                                <span class="n" style="color:#dc3545;"><t t-esc="data['totales']['por_devolver']"/></span>
+                                <span class="l">De estos, por devolver</span></div></td>
+                        </tr></table>
+
+                        <div class="id-h">Contenedores por producto × estado</div>
+                        <table class="id-t">
+                            <thead><tr><th>Producto</th><th style="text-align:right;">Por llegar</th><th style="text-align:right;">En Terminal</th><th style="text-align:right;">Extraído</th><th style="text-align:right;">Por devolver</th><th style="text-align:right;">Total</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="data['producto_estado_conteo']" t-as="r">
+                                    <td><t t-esc="r['producto']"/></td>
+                                    <td style="text-align:right;"><t t-esc="r['Por llegar']"/></td>
+                                    <td style="text-align:right;"><t t-esc="r['En Terminal']"/></td>
+                                    <td style="text-align:right;"><t t-esc="r['Extraído']"/></td>
+                                    <td style="text-align:right;"><t t-esc="r['Por devolver']"/></td>
+                                    <td style="text-align:right; font-weight:bold;"><t t-esc="r['Total']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="id-h">Precios promedio por producto</div>
+                        <table class="id-t" style="width:70%;">
+                            <thead><tr><th>Producto</th><th style="text-align:right;">Precio prom.</th><th style="text-align:right;">Litros totales</th><th style="text-align:right;">Contenedores</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="data['precios_promedio']" t-as="r">
+                                    <td><t t-esc="r['producto']"/></td>
+                                    <td style="text-align:right;"><t t-esc="'%.4f' % r['precio_prom']"/></td>
+                                    <td style="text-align:right;"><t t-esc="r['litros_total']"/></td>
+                                    <td style="text-align:right;"><t t-esc="r['contenedores']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="id-h" style="page-break-before:always;">Rankings</div>
+                        <table style="width:100%;"><tr>
+                            <td style="width:50%; vertical-align:top; padding-right:10px;">
+                                <b style="font-size:10px;">Proveedores × producto × país</b>
+                                <ol style="font-size:10px;">
+                                    <li t-foreach="data['ranking_proveedores']" t-as="r">
+                                        <t t-esc="r['label']"/> — <b><t t-esc="r['cantidad']"/></b>
+                                    </li>
+                                </ol>
+                                <b style="font-size:10px;">Navieras × producto × país × puerto</b>
+                                <ol style="font-size:10px;">
+                                    <li t-foreach="data['ranking_navieras']" t-as="r">
+                                        <t t-esc="r['label']"/> — <b><t t-esc="r['cantidad']"/></b>
+                                    </li>
+                                </ol>
+                            </td>
+                            <td style="width:50%; vertical-align:top;">
+                                <b style="font-size:10px;">Clientes × producto × provincia</b>
+                                <ol style="font-size:10px;">
+                                    <li t-foreach="data['ranking_clientes']" t-as="r">
+                                        <t t-esc="r['label']"/> — <b><t t-esc="r['cantidad']"/></b>
+                                    </li>
+                                </ol>
+                                <b style="font-size:10px;">Destinos × producto</b>
+                                <ol style="font-size:10px;">
+                                    <li t-foreach="data['ranking_destinos']" t-as="r">
+                                        <t t-esc="r['label']"/> — <b><t t-esc="r['cantidad']"/></b>
+                                    </li>
+                                </ol>
+                            </td>
+                        </tr></table>
+
+                        <div class="id-h">Inteligencia comercial</div>
+                        <table class="id-t" style="width:60%;">
+                            <thead><tr><th></th><th style="text-align:right;">Acreditados</th><th style="text-align:right;">En aprobación</th><th style="text-align:right;">Potenciales</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td>Clientes</td>
+                                    <td style="text-align:right;"><t t-esc="data['comercial']['clientes']['acreditados']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['comercial']['clientes']['en_aprobacion']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['comercial']['clientes']['potenciales']"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Proveedores</td>
+                                    <td style="text-align:right;"><t t-esc="data['comercial']['proveedores']['acreditados']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['comercial']['proveedores']['en_aprobacion']"/></td>
+                                    <td style="text-align:right;"><t t-esc="data['comercial']['proveedores']['potenciales']"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="id-h" style="page-break-before:always;">VENTA — extraídos y pendientes de extraer</div>
+                        <table style="width:100%;"><tr>
+                            <td style="width:25%; vertical-align:top; padding-right:8px;">
+                                <b style="font-size:10px;">Extraídos por provincia</b>
+                                <table class="id-t"><tbody>
+                                    <tr t-foreach="data['venta_enetec_extraidos_por_provincia']" t-as="r">
+                                        <td><t t-esc="r['label']"/></td><td style="text-align:right;"><t t-esc="r['n']"/></td>
+                                    </tr>
+                                    <tr t-if="not data['venta_enetec_extraidos_por_provincia']"><td class="text-muted">Sin datos</td></tr>
+                                </tbody></table>
+                            </td>
+                            <td style="width:25%; vertical-align:top; padding-right:8px;">
+                                <b style="font-size:10px;">Extraídos por transportista</b>
+                                <table class="id-t"><tbody>
+                                    <tr t-foreach="data['venta_enetec_extraidos_por_transportista']" t-as="r">
+                                        <td><t t-esc="r['label']"/></td><td style="text-align:right;"><t t-esc="r['n']"/></td>
+                                    </tr>
+                                    <tr t-if="not data['venta_enetec_extraidos_por_transportista']"><td class="text-muted">Sin datos</td></tr>
+                                </tbody></table>
+                            </td>
+                            <td style="width:25%; vertical-align:top; padding-right:8px;">
+                                <b style="font-size:10px;">Pendientes por provincia</b>
+                                <table class="id-t"><tbody>
+                                    <tr t-foreach="data['venta_enetec_pendientes_por_provincia']" t-as="r">
+                                        <td><t t-esc="r['label']"/></td><td style="text-align:right;"><t t-esc="r['n']"/></td>
+                                    </tr>
+                                    <tr t-if="not data['venta_enetec_pendientes_por_provincia']"><td class="text-muted">Sin datos</td></tr>
+                                </tbody></table>
+                            </td>
+                            <td style="width:25%; vertical-align:top;">
+                                <b style="font-size:10px;">Pendientes por transportista</b>
+                                <table class="id-t"><tbody>
+                                    <tr t-foreach="data['venta_enetec_pendientes_por_transportista']" t-as="r">
+                                        <td><t t-esc="r['label']"/></td><td style="text-align:right;"><t t-esc="r['n']"/></td>
+                                    </tr>
+                                    <tr t-if="not data['venta_enetec_pendientes_por_transportista']"><td class="text-muted">Sin datos</td></tr>
+                                </tbody></table>
+                            </td>
+                        </tr></table>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <record id="action_report_import_dashboard" model="ir.actions.report">
+            <field name="name">Tablero de Importación (PDF)</field>
+            <field name="model">importation.load</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">pyxel_import_backend.report_import_dashboard_template</field>
+            <field name="report_file">pyxel_import_backend.report_import_dashboard_template</field>
+            <field name="print_report_name">'Tablero de Importación'</field>
+        </record>
+    </data>
+</odoo>

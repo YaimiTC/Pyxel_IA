@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <!-- Sin noupdate: corre en cada actualizacion del modulo (a
+             diferencia de importation_importer_data.xml, que es
+             noupdate="1" para que un admin pueda editar los datos
+             fiscales sin que el modulo se los pise, y eso tambien
+             bloquea las funciones que convivan ahi).
+             _seed_tcm_match_names() es idempotente, solo rellena
+             tcm_match_name/tcm_sync_start_date donde esten vacios,
+             nunca pisa un ajuste manual posterior. -->
+        <function model="importation.importer" name="_seed_tcm_match_names" eval="[]"/>
+
+</odoo>

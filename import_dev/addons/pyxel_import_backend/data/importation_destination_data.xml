@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+        <!-- Los "DTCC por provincia" que estaban aquí eran de prueba (16
+             registros, uno por provincia); se quitaron al llegar el
+             nomenclador oficial SIOC (más abajo). Los que ya existían en
+             bases instaladas se borran con una migración, ver
+             migrations/1.2/post-migrate.py. -->
+
+        <record id="importation_destination_propio" model="importation.destination">
+            <field name="name">Propio</field>
+            <field name="is_own_destination">True</field>
+        </record>
+
+        <!-- Nomenclador oficial SIOC 2026 (documento "UnidadFuncional"),
+             sustituye a los "DTCC por provincia" de arriba, que eran de
+             prueba. Cada registro lleva external_id (idUnidadFuncional del
+             documento) para poder reconciliar sin depender del nombre. El
+             correo de contacto se llena después, no viene en el documento. -->
+        <record id="importation_destination_sioc_00326p326" model="importation.destination">
+            <field name="name">Energas Varadero</field>
+            <field name="province">MATANZAS</field>
+            <field name="external_id">00326P326</field>
+        </record>
+        <record id="importation_destination_sioc_00326p327" model="importation.destination">
+            <field name="name">Energas Puerto Escondido</field>
+            <field name="province">MATANZAS</field>
+            <field name="external_id">00326P327</field>
+        </record>
+        <record id="importation_destination_sioc_01001d001" model="importation.destination">
+            <field name="name">Refinería Ñico López</field>
+            <field name="province">LA HABANA</field>
+            <field name="external_id">01001D001</field>
+        </record>
+        <record id="importation_destination_sioc_01002d001" model="importation.destination">
+            <field name="name">Refinería Sergio Soto</field>
+            <field name="province">SANCTI SPIRITUS</field>
+            <field name="external_id">01002D001</field>
+        </record>
+        <record id="importation_destination_sioc_01002d022" model="importation.destination">
+            <field name="name">Almacén Cilindros EGL</field>
+            <field name="province">LA HABANA</field>
+            <field name="external_id">01002D022</field>
+        </record>
+        <record id="importation_destination_sioc_01003d001" model="importation.destination">
+            <field name="name">Refinería Hermanos Díaz</field>
+            <field name="province">SANTIAGO DE CUBA</field>
+            <field name="external_id">01003D001</field>
+        </record>
+        <record id="importation_destination_sioc_01079d002" model="importation.destination">
+            <field name="name">Refinería Cienfuegos</field>
+            <field name="province">CIENFUEGOS</field>
+            <field name="external_id">01079D002</field>
+        </record>
+        <record id="importation_destination_sioc_01079d003" model="importation.destination">
+            <field name="name">Base GLP Cienfuegos</field>
+            <field name="province">CIENFUEGOS</field>
+            <field name="external_id">01079D003</field>
+        </record>
+        <record id="importation_destination_sioc_01079d004" model="importation.destination">
+            <field name="name">DTCC Cienfuegos</field>
+            <field name="province">CIENFUEGOS</field>
+            <field name="external_id">01079D004</field>
+        </record>
+        <record id="importation_destination_sioc_01079d005" model="importation.destination">
+            <field name="name">Depósito Cayo Largo</field>
+            <field name="province">CIENFUEGOS</field>
+            <field name="external_id">01079D005</field>
+        </record>
+        <record id="importation_destination_sioc_04904d001" model="importation.destination">
+            <field name="name">Terminal Supertanqueros Matanzas</field>
+            <field name="province">MATANZAS</field>
+            <field name="external_id">04904D001</field>
+        </record>
+        <record id="importation_destination_sioc_04904d002" model="importation.destination">
+            <field name="name">Depósito de Colón</field>
+            <field name="province">MATANZAS</field>
+            <field name="external_id">04904D002</field>
+        </record>
+        <record id="importation_destination_sioc_04904d003" model="importation.destination">
+            <field name="name">Depósito GLP Matanzas</field>
+            <field name="province">MATANZAS</field>
+            <field name="external_id">04904D003</field>
+        </record>
+        <record id="importation_destination_sioc_08876d001" model="importation.destination">
+            <field name="name">Depósito Antilla</field>
+            <field name="province">HOLGUIN</field>
+            <field name="external_id">08876D001</field>
+        </record>
+        <record id="importation_destination_sioc_08876d002" model="importation.destination">
+            <field name="name">Terminal Felton</field>
+            <field name="province">HOLGUIN</field>
+            <field name="external_id">08876D002</field>
+        </record>
+        <record id="importation_destination_sioc_08876d003" model="importation.destination">
+            <field name="name">Depósito Güirabo</field>
+            <field name="province">HOLGUIN</field>
+            <field name="external_id">08876D003</field>
+        </record>
+        <record id="importation_destination_sioc_08876d004" model="importation.destination">
+            <field name="name">Terminal Moa</field>
+            <field name="province">HOLGUIN</field>
+            <field name="external_id">08876D004</field>
+        </record>
+        <record id="importation_destination_sioc_08876d020" model="importation.destination">
+            <field name="name">Planta GLP Holguín</field>
+            <field name="province">HOLGUIN</field>
+            <field name="external_id">08876D020</field>
+        </record>
+        <record id="importation_destination_sioc_08876d021" model="importation.destination">
+            <field name="name">Almacén de GLP Antilla</field>
+            <field name="province">HOLGUIN</field>
+            <field name="external_id">08876D021</field>
+        </record>
+        <record id="importation_destination_sioc_08876d022" model="importation.destination">
+            <field name="name">Almacén de GLP Moa</field>
+            <field name="province">HOLGUIN</field>
+            <field name="external_id">08876D022</field>
+        </record>
+        <record id="importation_destination_sioc_12409d001" model="importation.destination">
+            <field name="name">Terminal Nueva Gerona</field>
+            <field name="province">ISLA DE LA JUVENTUD</field>
+            <field name="external_id">12409D001</field>
+        </record>
+        <record id="importation_destination_sioc_12410d001" model="importation.destination">
+            <field name="name">Depósito El Ganso Pinar</field>
+            <field name="province">PINAR DEL RIO</field>
+            <field name="external_id">12410D001</field>
+        </record>
+        <record id="importation_destination_sioc_12410d002" model="importation.destination">
+            <field name="name">Planta GLP Pinar del Río</field>
+            <field name="province">PINAR DEL RIO</field>
+            <field name="external_id">12410D002</field>
+        </record>
+        <record id="importation_destination_sioc_12411d001" model="importation.destination">
+            <field name="name">Depósito Ciego de Ávila</field>
+            <field name="province">CIEGO DE AVILA</field>
+            <field name="external_id">12411D001</field>
+        </record>
+        <record id="importation_destination_sioc_12411d002" model="importation.destination">
+            <field name="name">Planta GLP Ciego de Ávila</field>
+            <field name="province">CIEGO DE AVILA</field>
+            <field name="external_id">12411D002</field>
+        </record>
+        <record id="importation_destination_sioc_12412d002" model="importation.destination">
+            <field name="name">Terminal Nuevitas</field>
+            <field name="province">CAMAGUEY</field>
+            <field name="external_id">12412D002</field>
+        </record>
+        <record id="importation_destination_sioc_12412d006" model="importation.destination">
+            <field name="name">Depósito GLP Camaguey</field>
+            <field name="province">CAMAGUEY</field>
+            <field name="external_id">12412D006</field>
+        </record>
+        <record id="importation_destination_sioc_12412d007" model="importation.destination">
+            <field name="name">Depósito Camaguey</field>
+            <field name="province">CAMAGUEY</field>
+            <field name="external_id">12412D007</field>
+        </record>
+        <record id="importation_destination_sioc_12413d001" model="importation.destination">
+            <field name="name">Depósito Bayamo</field>
+            <field name="province">GRANMA</field>
+            <field name="external_id">12413D001</field>
+        </record>
+        <record id="importation_destination_sioc_12413d002" model="importation.destination">
+            <field name="name">Depósito Manzanillo</field>
+            <field name="province">GRANMA</field>
+            <field name="external_id">12413D002</field>
+        </record>
+        <record id="importation_destination_sioc_12413d003" model="importation.destination">
+            <field name="name">UEB GLP Granma</field>
+            <field name="province">GRANMA</field>
+            <field name="external_id">12413D003</field>
+        </record>
+        <record id="importation_destination_sioc_12471d001" model="importation.destination">
+            <field name="name">Depósito Guantánamo</field>
+            <field name="province">GUANTANAMO</field>
+            <field name="external_id">12471D001</field>
+        </record>
+        <record id="importation_destination_sioc_12471d002" model="importation.destination">
+            <field name="name">Planta GLP Guantánamo</field>
+            <field name="province">GUANTANAMO</field>
+            <field name="external_id">12471D002</field>
+        </record>
+        <record id="importation_destination_sioc_12471d003" model="importation.destination">
+            <field name="name">Depósito Baracoa</field>
+            <field name="province">GUANTANAMO</field>
+            <field name="external_id">12471D003</field>
+        </record>
+        <record id="importation_destination_sioc_12472d001" model="importation.destination">
+            <field name="name">Depósito Las Tunas</field>
+            <field name="province">LAS TUNAS</field>
+            <field name="external_id">12472D001</field>
+        </record>
+        <record id="importation_destination_sioc_12473d001" model="importation.destination">
+            <field name="name">Deposito 620 Sgo de Cuba</field>
+            <field name="province">SANTIAGO DE CUBA</field>
+            <field name="external_id">12473D001</field>
+        </record>
+        <record id="importation_destination_sioc_12473d002" model="importation.destination">
+            <field name="name">Depósito 653. Contramaest</field>
+            <field name="province">SANTIAGO DE CUBA</field>
+            <field name="external_id">12473D002</field>
+        </record>
+        <record id="importation_destination_sioc_12473d003" model="importation.destination">
+            <field name="name">Comb. Domésticos Santiago</field>
+            <field name="province">SANTIAGO DE CUBA</field>
+            <field name="external_id">12473D003</field>
+        </record>
+        <record id="importation_destination_sioc_12473d004" model="importation.destination">
+            <field name="name">Planta GLP Santiago</field>
+            <field name="province">SANTIAGO DE CUBA</field>
+            <field name="external_id">12473D004</field>
+        </record>
+        <record id="importation_destination_sioc_12505d003" model="importation.destination">
+            <field name="name">Deposito San Antonio</field>
+            <field name="province">MAYABEQUE</field>
+            <field name="external_id">12505D003</field>
+        </record>
+        <record id="importation_destination_sioc_12505d004" model="importation.destination">
+            <field name="name">Deposito Artemisa</field>
+            <field name="province">ARTEMISA</field>
+            <field name="external_id">12505D004</field>
+        </record>
+        <record id="importation_destination_sioc_12505d010" model="importation.destination">
+            <field name="name">Terminal 221</field>
+            <field name="province">LA HABANA</field>
+            <field name="external_id">12505D010</field>
+        </record>
+        <record id="importation_destination_sioc_12505d012" model="importation.destination">
+            <field name="name">Terminal Mariel</field>
+            <field name="province">LA HABANA</field>
+            <field name="external_id">12505D012</field>
+        </record>
+        <record id="importation_destination_sioc_12505d014" model="importation.destination">
+            <field name="name">Ref Ñico López (Zona 1 y 2)</field>
+            <field name="province">LA HABANA</field>
+            <field name="external_id">12505D014</field>
+        </record>
+        <record id="importation_destination_sioc_12505d015" model="importation.destination">
+            <field name="name">Terminal 223</field>
+            <field name="province">LA HABANA</field>
+            <field name="external_id">12505D015</field>
+        </record>
+        <record id="importation_destination_sioc_12645d001" model="importation.destination">
+            <field name="name">Depósito Villa Clara</field>
+            <field name="province">VILLA CLARA</field>
+            <field name="external_id">12645D001</field>
+        </record>
+        <record id="importation_destination_sioc_12645d002" model="importation.destination">
+            <field name="name">Planta GLP Villa Clara</field>
+            <field name="province">VILLA CLARA</field>
+            <field name="external_id">12645D002</field>
+        </record>
+        <record id="importation_destination_sioc_40180d001" model="importation.destination">
+            <field name="name">Planta GLP Gaslor</field>
+            <field name="province">SANTIAGO DE CUBA</field>
+            <field name="external_id">40180D001</field>
+        </record>
+</odoo>

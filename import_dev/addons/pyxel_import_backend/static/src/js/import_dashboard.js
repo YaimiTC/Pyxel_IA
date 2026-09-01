@@ -16,7 +16,17 @@ class ImportDashboard extends Component {
 
     async loadData() {
         try {
-            const data = await this.orm.call("importation.load", "get_dashboard_data", []);
+            // Los params de una ir.actions.client NO llegan como prop directo:
+            // el action service los mete dentro de props.action.params
+            // (ver _getActionInfo en action_service.js: props = {...props, action}).
+            // Se guarda en la instancia (no solo local aqui) porque openList,
+            // openExtraidos y exportPdf tambien lo necesitan, y se llaman
+            // fuera de loadData.
+            this.ventaEnetecOnly = (this.props.action && this.props.action.params
+                && this.props.action.params.ventaEnetecOnly) || false;
+            const data = await this.orm.call("importation.load", "get_dashboard_data", [], {
+                venta_enetec_only: this.ventaEnetecOnly,
+            });
             Object.assign(this.state, { data, loading: false });
         } catch (e) {
             this.state.loading = false;
@@ -29,6 +39,73 @@ class ImportDashboard extends Component {
         await this.loadData();
     }
 
+    async exportPdf() {
+        await this.action.doAction({
+            type: "ir.actions.report",
+            report_name: "pyxel_import_backend.report_import_dashboard_template",
+            report_type: "qweb-pdf",
+            report_file: "pyxel_import_backend.report_import_dashboard_template",
+            name: "Tablero de Importación",
+            data: { venta_enetec_only: this.ventaEnetecOnly },
+        });
+    }
+
+    // Mismo filtro que usa el servidor en get_dashboard_data (customer_id.name
+    // empieza por "VENTA ENETEC"). Se antepone al dominio de cada lista para
+    // que el detalle no muestre mas que el resumen de arriba. Solo aplica a
+    // las listas de importation.load -- CUPET y Comercial/Leads quedan sin
+    // filtrar a proposito, no son del cliente VENTA ENETEC.
+    ventaDomain() {
+        return this.ventaEnetecOnly ? [
+            "|",
+            ["customer_id.name", "like", "VENTA ENETEC%"],
+            ["importation_id.comercial_id.name", "ilike", "Gabriela"],
+        ] : [];
+    }
+
+    /** Primer y último día del mes "YYYY-MM", como los espera el dominio. */
+    rangoMes(mes) {
+        const [y, m] = mes.split("-").map(Number);
+        const lastDay = new Date(y, m, 0).getDate();
+        return [`${mes}-01`, `${mes}-${String(lastDay).padStart(2, "0")}`];
+    }
+
+    openHuerfanosMes(mes) {
+        const [from, to] = this.rangoMes(mes);
+        this.openList(
+            [["importation_id", "=", false], ["arrival_date", ">=", from], ["arrival_date", "<=", to]],
+            "Huérfanos " + mes
+        );
+    }
+
+    openExtraidosMes(mes) {
+        const [from, to] = this.rangoMes(mes);
+        this.openList(
+            [["extraction_date", ">=", from], ["extraction_date", "<=", to]],
+            "Extraídos " + mes
+        );
+    }
+
+    openPendientesMes(mes) {
+        const [from, to] = this.rangoMes(mes);
+        this.openList(
+            [["extraction_date", "=", false], ["arrival_date", ">=", from], ["arrival_date", "<=", to]],
+            "Pendientes de extraer " + mes
+        );
+    }
+
+    openDelDia(fila, columna) {
+        const bloque = fila === "hab" ? this.state.data.del_dia_hab
+                                      : this.state.data.del_dia_ext;
+        const ids = (bloque.ids || {})[columna] || [];
+        if (!ids.length) { return; }
+        const fecha = fila === "hab" ? this.state.data.fecha_habilitacion
+                                     : this.state.data.fecha_extraccion;
+        const queFila = fila === "hab" ? "Habilitados" : "Extraídos";
+        const queCol = columna === "total" ? "" : " · " + columna;
+        this.openList([["id", "in", ids]], `${queFila} ${fecha}${queCol}`);
+    }
+
     openList(domain, name) {
         this.action.doAction({
             type: "ir.actions.act_window",
@@ -36,7 +113,7 @@ class ImportDashboard extends Component {
             res_model: "importation.load",
             view_mode: "list,form",
             views: [[false, "list"], [false, "form"]],
-            domain: domain,
+            domain: [...this.ventaDomain(), ...domain],
         });
     }
 
@@ -75,8 +152,11 @@ class ImportDashboard extends Component {
 
     formatDate(ds) {
         if (!ds) return "—";
-        const d = new Date(ds);
-        return d.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "numeric" });
+        // Parsear la cadena ISO directamente para evitar la conversion UTC->local
+        // que correria la fecha un dia atras en zonas con UTC offset negativo.
+        const parts = ds.split('-');
+        if (parts.length === 3) return `${parts[2].padStart(2,'0')}/${parts[1].padStart(2,'0')}/${parts[0]}`;
+        return ds;
     }
 
     openHistoricoMes(mes) {
@@ -91,9 +171,23 @@ class ImportDashboard extends Component {
         );
     }
 
-    cargoLabel(ct) {
-        const m = { dry: "Seco", reefer: "Refrigerado", air: "Aéreo" };
-        return m[ct] || ct || "—";
+    openExtraidos() {
+        this.action.doAction({
+            type: "ir.actions.act_window",
+            name: "Extraídos (" + this.state.data.fecha_extraccion + ")",
+            res_model: "importation.load",
+            view_mode: "list,form",
+            views: [[this.state.data.view_extraidos_id, "list"], [false, "form"]],
+            domain: [...this.ventaDomain(), ["extraction_date", "=", this.state.data.fecha_extraccion]],
+        });
+    }
+
+    openCupetExtraidos() {
+        this.action.doAction("pyxel_import_backend.action_importation_load_cupet_extraidos");
+    }
+
+    openCupetPendientes() {
+        this.action.doAction("pyxel_import_backend.action_importation_load_cupet_pendientes");
     }
 
     fmtNum(n) {

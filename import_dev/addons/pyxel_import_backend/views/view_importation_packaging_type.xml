@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_importation_packaging_type_tree" model="ir.ui.view">
+            <field name="name">importation.packaging.type.tree</field>
+            <field name="model">importation.packaging.type</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="allowed_product_ids" widget="many2many_tags"/>
+                    <field name="active" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_importation_packaging_type_form" model="ir.ui.view">
+            <field name="name">importation.packaging.type.form</field>
+            <field name="model">importation.packaging.type</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="active"/>
+                        </group>
+                        <field name="allowed_product_ids" widget="many2many_tags"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_importation_packaging_type" model="ir.actions.act_window">
+            <field name="name">Tipos de envase</field>
+            <field name="res_model">importation.packaging.type</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_importation_packaging_type"
+                  name="Tipos de envase"
+                  parent="menu_importation_config"
+                  action="action_importation_packaging_type"
+                  sequence="30"/>
+
+</odoo>

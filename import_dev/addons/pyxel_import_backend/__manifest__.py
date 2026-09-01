@@ -4,7 +4,7 @@
 {
     "name": "Import",
     "summary": """""",
-    "version": "1.1",
+    "version": "1.2",
     "author": "Pyxel Solutions",
     'contributors': [
         'Adnielys Abday Rojas Tadeo <adnielys.rojas89@gmail.com>',
@@ -32,6 +32,10 @@
         'data/res_partner_contact_type_data.xml',
         'data/importation_sequence.xml',
         'data/importation_stage_data.xml',
+        'data/importation_importer_data.xml',
+        'data/importation_importer_tcm_seed.xml',
+        'data/importation_packaging_type_data.xml',
+        'data/importation_destination_data.xml',
         'data/import_type_data.xml',
         'data/incoterm_import_type_data.xml',
         "security/ir.model.access.csv",
@@ -45,6 +49,9 @@
         "views/view_importation_progress.xml",
         "views/view_importation_load.xml",
         "views/view_importation_stage.xml",
+        "views/view_importation_importer.xml",
+        "views/view_importation_packaging_type.xml",
+        "views/view_importation_destination.xml",
         "views/wizard_evaluate_providers_view.xml",
         "views/view_purchase_provider_evaluation.xml",
         "views/sale_order_views.xml",
@@ -52,6 +59,10 @@
         "views/view_importation_cost_wizard.xml",
         "views/account_move_views.xml",
         "views/wizard_import_tcm_view.xml",
+        "views/view_deposit_sync_log.xml",
+        "views/wizard_import_deposit_view.xml",
+        "views/wizard_export_deposit_view.xml",
+        "views/view_deposit_report.xml",
         "views/view_import_error_log.xml",
         "report/average_container_report_views.xml",
         "report/average_container_summary_report_views.xml",
@@ -69,6 +80,7 @@
         "views/mail_message_user_assigned_inherit.xml",
         "views/res_company_views.xml",
         "views/view_import_dashboard.xml",
+        "report/import_dashboard_report_views.xml",
 
      ],
     'assets': {
@@ -81,5 +93,6 @@
     },
     "installable": True,
     "auto_install": False,
+    "post_init_hook": "post_init_hook",
 
 }

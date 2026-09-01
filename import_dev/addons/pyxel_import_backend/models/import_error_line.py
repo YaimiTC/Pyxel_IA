@@ -32,12 +32,30 @@ class ImportErrorLog(models.Model):
     no_fichero_lines = fields.One2many(
         'import.error.line', 'log_id', string='En el sistema, no en el fichero',
         domain=[('line_type', '=', 'no_fichero')])
+    otro_viaje_lines = fields.One2many(
+        'import.error.line', 'log_id', string='El contenedor sí, ese viaje no',
+        domain=[('line_type', '=', 'otro_viaje')])
+    por_llegar_lines = fields.One2many(
+        'import.error.line', 'log_id', string='Todavía por llegar',
+        domain=[('line_type', '=', 'por_llegar')])
+    purgado_lines = fields.One2many(
+        'import.error.line', 'log_id', string='Dejaron de venir en el reporte',
+        domain=[('line_type', '=', 'purgado')])
+    duplicado_lines = fields.One2many(
+        'import.error.line', 'log_id', string='Duplicados a unificar',
+        domain=[('line_type', '=', 'duplicado')])
     otro_valor_lines = fields.One2many(
         'import.error.line', 'log_id', string='Otro valor, ya en el sistema',
         domain=[('line_type', '=', 'otro_valor')])
     sin_dato_lines = fields.One2many(
         'import.error.line', 'log_id', string='Sin dato, ya en el sistema',
         domain=[('line_type', '=', 'sin_dato')])
+    cuarentena_lines = fields.One2many(
+        'import.error.line', 'log_id', string='En cuarentena (BL corto)',
+        domain=[('line_type', '=', 'cuarentena')])
+    otras_importadoras_lines = fields.One2many(
+        'import.error.line', 'log_id', string='Otra importadora del catálogo',
+        domain=[('line_type', '=', 'otra_importadora')])
     import_file = fields.Binary(string="Archivo de Importación")
     filename = fields.Char(string="Nombre del Archivo")
 
@@ -60,31 +78,72 @@ class ImportErrorLog(models.Model):
     consignados_count = fields.Integer(string='Consignados (J = empresa)')
     otro_valor_count = fields.Integer(
         string='Otro valor, ya en el sistema',
-        help="Filas donde H o J tienen otra empresa (no la nuestra), el "
-             "contenedor+BL ya existe en nuestro sistema, y ya venía así de "
-             "corridas anteriores (la marca 'nuestro' ya estaba apagada).")
+        help="Filas cuyo contenedor YA existe en nuestro sistema y que el "
+             "reporte trae con una empresa en H o J que NO está en el "
+             "catálogo de importadoras (si estuviera, cae en 'Otra "
+             "importadora del catálogo'). Es nuestro, tramitado por un "
+             "tercero sin identificar (PALCO, EXPEDIMAR...): se sincroniza "
+             "igual y sigue contando como nuestro. Ver la lista.")
     cambio_importadora_count = fields.Integer(
         string='Cambió a otra importadora',
-        help="Contenedores que en corridas anteriores venían como nuestros y "
-             "en ESTA corrida aparecen por primera vez asignados a otra "
-             "importadora. Es el evento del cambio — revisando el log se ve "
-             "el día exacto en que dejó de salir como nuestro. Ver la lista.")
+        help="EN DESUSO desde que un cambio de nombre en H/J dejó de quitarle "
+             "la pertenencia al contenedor. Se conserva para los reportes "
+             "antiguos; en las corridas nuevas es siempre cero y su caso se "
+             "cuenta en 'Otro valor, ya en el sistema'.")
+    otras_importadoras_count = fields.Integer(
+        string='Otra importadora del catálogo',
+        help="Filas cuyo H o J matchea una importadora del catálogo que no "
+             "es la nuestra (PROMAX, EMSERPET...), sea porque el contenedor "
+             "ya existía o porque esta corrida lo creó. Ver la lista.")
     no_en_fichero_count = fields.Integer(
         string='En el sistema, no en el fichero',
-        help="Contenedores que están en nuestro sistema pero cuyo "
-             "contenedor+BL no aparece en el fichero de esta corrida: o aún "
-             "no arribó, o hay un error en el BL/número que impidió el match. "
-             "Ver la lista.")
+        help="Contenedores del sistema cuyo NÚMERO no aparece en ninguna fila "
+             "del fichero de esta corrida: o aún no arribó, o el número está "
+             "mal. Ver la lista.")
+    duplicado_count = fields.Integer(
+        string='Duplicados a unificar',
+        help="Embarques que el sistema tiene cargados dos veces con el BL "
+             "escrito de formas distintas ('046638' y '46638', o la partida "
+             "hija y la madre). Solo uno casa con la Terminal; el otro se "
+             "queda sin sincronizar y atascado en su último estado. No entra "
+             "en la suma de la clasificación: es un aviso sobre nuestros "
+             "datos, no un tipo de fila del fichero. Ver la lista.")
+    por_llegar_no_en_fichero_count = fields.Integer(
+        string='Todavía por llegar',
+        help="Contenedores del sistema sin fecha de arribo. Que el reporte de "
+             "la Terminal no los traiga es lo normal — aún no han llegado. Se "
+             "separan para que no ensucien las listas que sí piden revisión.")
+    purgado_count = fields.Integer(
+        string='Dejaron de venir en el reporte',
+        help="Venían en corridas anteriores y esta ya no los trae. El reporte "
+             "de la Terminal es una ventana, no un censo: purga filas cuando "
+             "se anula o corrige un manifiesto. Conviene confirmarlos.")
+    otro_viaje_count = fields.Integer(
+        string='El contenedor sí, ese viaje no',
+        help="Contenedores del sistema cuyo número sí viene en el fichero, "
+             "pero siempre con otro BL. O la Terminal no trae ese viaje, o hay "
+             "una errata en el BL o en el número. Se separan de los ausentes "
+             "porque se revisan con el fichero delante. Ver la lista.")
     sin_dato_count = fields.Integer(
         string='Sin dato, ya en el sistema',
         help="Filas donde H y J vienen vacías, pero el contenedor+BL ya "
              "existe en nuestro sistema.")
     nuevos_count = fields.Integer(
         string='Contenedores no procesados (nuevos)',
-        help="Contenedores nuestros (nativo/consignado) que venían en el "
+        help="Contenedores de alguna importadora del catálogo (nativo, "
+             "consignado u otra importadora reconocida) que venían en el "
              "fichero y NO existían en el sistema: la corrida los creó. Se "
              "listan para revisarlos/completarlos. Es un subconjunto de "
-             "nativos+consignados (no suma aparte).")
+             "nativos+consignados+otras importadoras (no suma aparte).")
+    cuarentena_count = fields.Integer(
+        string='En cuarentena (BL corto)',
+        help="Filas que NO se actualizaron porque su BL solo emparejaba por una "
+             "clave demasiado corta ('391' en vez de 'SXERMAR-391') y ese mismo "
+             "contenedor aparece en el fichero con varios embarques: podría ser "
+             "la misma caja en otro viaje. Se desatascan escribiendo el BL "
+             "completo en el sistema. No suma aparte en la clasificación — la "
+             "fila ya se contó por su H/J; esto es un aviso sobre la calidad de "
+             "nuestros BL, como los duplicados.")
     total_filas_count = fields.Integer(string='Total de filas en el archivo')
 
     # ---- Foto del estado de TODOS los contenedores al cerrar la corrida ----
@@ -109,15 +168,25 @@ class ImportErrorLog(models.Model):
     @api.depends('estado_por_llegar', 'estado_arribado', 'estado_habilitado',
                  'estado_extraido', 'estado_retornado', 'nativos_count',
                  'consignados_count', 'cambio_importadora_count',
-                 'otro_valor_count', 'sin_dato_count', 'no_en_fichero_count')
+                 'otras_importadoras_count',
+                 'otro_valor_count', 'sin_dato_count', 'no_en_fichero_count',
+                 'otro_viaje_count', 'por_llegar_no_en_fichero_count',
+                 'purgado_count')
     def _compute_totales(self):
+        # cambio_importadora_count entra en la suma solo por los reportes
+        # antiguos: en las corridas nuevas vale cero, igual que otro_viaje_count
+        # vale cero en las viejas. Así ambos cuadran sin ramificar.
         for r in self:
             r.estado_total = (r.estado_por_llegar + r.estado_arribado
                               + r.estado_habilitado + r.estado_extraido
                               + r.estado_retornado)
             r.clasificacion_total = (r.nativos_count + r.consignados_count
-                                     + r.cambio_importadora_count + r.otro_valor_count
-                                     + r.sin_dato_count + r.no_en_fichero_count)
+                                     + r.cambio_importadora_count + r.otras_importadoras_count
+                                     + r.otro_valor_count
+                                     + r.sin_dato_count + r.no_en_fichero_count
+                                     + r.otro_viaje_count
+                                     + r.por_llegar_no_en_fichero_count
+                                     + r.purgado_count)
 
     def action_generate_error_report(self, data=None):
         """Genera el reporte en Excel de líneas con error y devuelve la URL de descarga."""
@@ -225,8 +294,14 @@ class ImportErrorLine(models.Model):
         ('nuevo', 'No procesado (nuevo, creado desde el fichero)'),
         ('cambio', 'Cambió a otra importadora'),
         ('no_fichero', 'En el sistema, no en el fichero'),
+        ('otro_viaje', 'El contenedor sí, ese viaje no'),
+        ('por_llegar', 'Todavía por llegar'),
+        ('purgado', 'Dejó de venir en el reporte'),
+        ('duplicado', 'Duplicado a unificar'),
         ('otro_valor', 'Otro valor, ya en el sistema'),
         ('sin_dato', 'Sin dato, ya en el sistema'),
+        ('cuarentena', 'En cuarentena: BL demasiado corto para desempatar'),
+        ('otra_importadora', 'Otra importadora del catálogo'),
     ], string='Tipo', default='error')
     error_message = fields.Text(string='Mensaje de Error')
     data = fields.Text(string='Datos de la Línea')

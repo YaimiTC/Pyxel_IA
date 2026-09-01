@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+        <!-- Los productos permitidos (allowed_product_ids) no se siembran aqui
+             porque los productos no tienen xmlid estable entre entornos; se
+             asignan por RPC/script despues de instalar el modulo, buscando
+             por nombre (ver mapeo/asignar_envases_productos.py). -->
+        <record id="importation_packaging_isotanque_glp" model="importation.packaging.type">
+            <field name="name">Isotanque GLP</field>
+        </record>
+        <record id="importation_packaging_cilindro_glp" model="importation.packaging.type">
+            <field name="name">Cilindro GLP</field>
+        </record>
+        <record id="importation_packaging_isotanque_liquido" model="importation.packaging.type">
+            <field name="name">Isotanque líquido</field>
+        </record>
+        <record id="importation_packaging_ibc" model="importation.packaging.type">
+            <field name="name">IBC / Iso-módulos</field>
+        </record>
+        <record id="importation_packaging_flexitank" model="importation.packaging.type">
+            <field name="name">Flexitank</field>
+        </record>
+
+</odoo>

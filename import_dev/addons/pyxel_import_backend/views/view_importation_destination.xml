@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+        <record id="view_importation_destination_tree" model="ir.ui.view">
+            <field name="name">importation.destination.tree</field>
+            <field name="model">importation.destination</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="province"/>
+                    <field name="email"/>
+                    <field name="external_id" optional="hide"/>
+                    <field name="is_own_destination" optional="hide"/>
+                    <field name="active" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_importation_destination_form" model="ir.ui.view">
+            <field name="name">importation.destination.form</field>
+            <field name="model">importation.destination</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="province"/>
+                            <field name="email"/>
+                            <field name="external_id"/>
+                            <field name="is_own_destination"/>
+                            <field name="active"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_importation_destination" model="ir.actions.act_window">
+            <field name="name">Destinos</field>
+            <field name="res_model">importation.destination</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem id="menu_importation_destination"
+                  name="Destinos"
+                  parent="menu_importation_config"
+                  action="action_importation_destination"
+                  sequence="40"/>
+
+</odoo>

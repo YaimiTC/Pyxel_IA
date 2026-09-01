@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_export_deposit_wizard_form" model="ir.ui.view">
+        <field name="name">export.deposit.wizard.form</field>
+        <field name="model">export.deposit.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Exportar para Depósito">
+                <group>
+                    <field name="destination_ids" widget="many2many_tags"/>
+                </group>
+                <div class="text-muted mb-2">
+                    <field name="load_count"/> contenedor(es) — vista previa antes de exportar:
+                </div>
+                <field name="load_ids" readonly="1">
+                    <tree>
+                        <field name="name" string="Contenedor"/>
+                        <field name="bl_number" string="BL"/>
+                        <field name="destination_id" string="Destino"/>
+                        <field name="customer_id" string="Cliente"/>
+                        <field name="product_names" string="Producto"/>
+                        <field name="expected_quantity" string="Cantidad según factura"/>
+                        <field name="readiness_source" string="Habilitado por"/>
+                        <field name="readiness_date" string="Fecha probable"/>
+                    </tree>
+                </field>
+                <footer>
+                    <button name="action_export" string="Exportar (CSV + certificados)" type="object" class="btn-primary"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_export_deposit_wizard" model="ir.actions.act_window">
+        <field name="name">Exportar para Depósito</field>
+        <field name="res_model">export.deposit.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_export_deposit_wizard"
+              name="Depósito: Generar archivo para enviar"
+              parent="menu_import_manager_root"
+              action="action_export_deposit_wizard"
+              sequence="11"/>
+</odoo>
