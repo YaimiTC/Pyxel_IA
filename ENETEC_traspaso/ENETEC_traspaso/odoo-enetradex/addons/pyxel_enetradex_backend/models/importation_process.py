@@ -210,15 +210,20 @@ class ImportationProcess(models.Model):
         compute='_compute_en_can_approve_request', string="Puede aprobar solicitud")
 
     @api.depends('stage_id', 'en_both_accredited', 'en_request_approved',
-                 'customer_id', 'provider_id')
+                 'en_request_client_ids.customer_id', 'customer_id', 'provider_id')
     def _compute_en_can_approve_request(self):
         solic = self.env.ref('pyxel_import_backend.importation_stage_solicitud',
                              raise_if_not_found=False)
         for rec in self:
+            # Cliente real: si hay bloques (flujo multi-cliente) son ellos los que
+            # cuentan; si no, cae al customer_id legado. Antes esto exigía solo el
+            # customer_id legado, así que en procesos con cliente en bloque el botón
+            # "Aprobar solicitud" nunca se mostraba.
+            has_customer = bool(rec.en_request_client_ids.customer_id or rec.customer_id)
             rec.en_can_approve_request = bool(
                 solic and rec.stage_id.id == solic.id
                 and rec.en_both_accredited and not rec.en_request_approved
-                and rec.customer_id and rec.provider_id)
+                and has_customer and rec.provider_id)
 
     def _en_request_lines_for_orders(self):
         """Líneas de mercancía para PO/oferta. Usa las líneas multiproducto y, si
