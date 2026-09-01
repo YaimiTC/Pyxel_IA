@@ -715,13 +715,29 @@ class ImportationLoad(models.Model):
         # El cascade SQL (ON DELETE CASCADE en la FK cargo_id) elimina las
         # importation.load.line directamente en PostgreSQL sin pasar por el ORM.
         # Eso deja quantity_allocated (store=True) con valores obsoletos en las
-        # purchase.order.line afectadas. Se recomputa manualmente aquí para
-        # evitar que quantity_available quede en cero incorrectamente.
-        po_lines = self.mapped('cargo_line_ids.purchase_order_line_id').exists()
+        # purchase.order.line afectadas. Como el caché del ORM no se invalida
+        # automáticamente en ese cascade, se usa SQL directo para el recompute.
+        po_line_ids = self.mapped('cargo_line_ids.purchase_order_line_id').ids
         res = super().unlink()
-        if po_lines:
-            po_lines._compute_quantity_allocated()
-            po_lines._compute_quantity_available()
+        if po_line_ids:
+            self.env.cr.execute("""
+                UPDATE purchase_order_line pol
+                SET
+                    quantity_allocated = COALESCE((
+                        SELECT SUM(ill.quantity)
+                        FROM importation_load_line ill
+                        WHERE ill.purchase_order_line_id = pol.id
+                    ), 0),
+                    quantity_available = pol.product_uom_qty - COALESCE((
+                        SELECT SUM(ill.quantity)
+                        FROM importation_load_line ill
+                        WHERE ill.purchase_order_line_id = pol.id
+                    ), 0)
+                WHERE pol.id = ANY(%s)
+            """, (po_line_ids,))
+            self.env['purchase.order.line'].invalidate_model(
+                ['quantity_allocated', 'quantity_available']
+            )
         return res
 
     @api.model
