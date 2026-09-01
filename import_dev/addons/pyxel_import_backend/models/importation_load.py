@@ -711,6 +711,19 @@ class ImportationLoad(models.Model):
                 record.update_stage_importation()
         return res
 
+    def unlink(self):
+        # El cascade SQL (ON DELETE CASCADE en la FK cargo_id) elimina las
+        # importation.load.line directamente en PostgreSQL sin pasar por el ORM.
+        # Eso deja quantity_allocated (store=True) con valores obsoletos en las
+        # purchase.order.line afectadas. Se recomputa manualmente aquí para
+        # evitar que quantity_available quede en cero incorrectamente.
+        po_lines = self.mapped('cargo_line_ids.purchase_order_line_id').exists()
+        res = super().unlink()
+        if po_lines:
+            po_lines._compute_quantity_allocated()
+            po_lines._compute_quantity_available()
+        return res
+
     @api.model
     def get_dashboard_data(self, venta_enetec_only=False):
         from odoo.osv import expression

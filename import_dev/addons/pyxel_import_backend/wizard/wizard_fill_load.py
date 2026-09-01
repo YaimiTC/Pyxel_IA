@@ -85,7 +85,7 @@ class ContainerFillWizard(models.TransientModel):
             if refs:
                 update_vals['supplier_invoice_number'] = refs[0]
         if not load.packaging_type_id and load.importation_id:
-            pkg = load.importation_id.packaging_type_id
+            pkg = getattr(load.importation_id, 'packaging_type_id', False)
             if pkg:
                 update_vals['packaging_type_id'] = pkg.id
         if update_vals:
@@ -104,17 +104,5 @@ class ContainerFillWizard(models.TransientModel):
                             f"{po.name} / {line.product_id.display_name}: "
                             f"{remaining:,.2f} {line.product_uom.name or ''} pendientes"
                         )
-
-        if pendientes:
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': 'Cantidad pendiente de asignar',
-                    'message': 'Aún quedan cantidades sin contenedor:\n' + '\n'.join(pendientes),
-                    'type': 'warning',
-                    'sticky': True,
-                },
-            }
 
         return {'type': 'ir.actions.act_window_close'}
