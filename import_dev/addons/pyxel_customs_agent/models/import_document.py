@@ -5,6 +5,8 @@ import json
 import logging
 import re
 
+from markupsafe import Markup
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
@@ -291,7 +293,7 @@ class PyxelImportDocument(models.Model):
         if not text:
             msg = 'No se pudo leer el texto del PDF. Verifique manualmente.'
             imp.message_post(
-                body='<b>&#9888; DM:</b> ' + msg,
+                body=Markup('<b>&#9888; DM:</b> ') + msg,
                 subtype_xmlid='mail.mt_note')
             return {'graves': [], 'informativas': ['<b>&#9888; DM:</b> ' + msg]}
 
@@ -357,8 +359,9 @@ class PyxelImportDocument(models.Model):
                      len(graves), len(informativas), graves, informativas)
         todas = graves + informativas
         if todas:
-            body = '<b>Alertas al confirmar DM:</b><ul>' + \
-                   ''.join('<li>%s</li>' % w for w in todas) + '</ul>'
+            body = Markup('<b>Alertas al confirmar DM:</b><ul>') + \
+                   Markup('').join(Markup('<li>%s</li>') % Markup(w) for w in todas) + \
+                   Markup('</ul>')
             imp.message_post(body=body, subtype_xmlid='mail.mt_note')
         return {'graves': graves, 'informativas': informativas}
 
