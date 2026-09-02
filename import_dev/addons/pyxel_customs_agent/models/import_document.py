@@ -429,7 +429,7 @@ class PyxelImportDocument(models.Model):
 
         _set_line('Arancel de Aduana', self.dm_arancel_total or 0.0, currency=cup)
         _set_line('Servicios Aduanales', self.dm_servicio_aduana or 0.0, currency=cup)
-        _set_line('Servicio de Importación', round(cif * 0.021, 2))  # USD, 2,1% fijo del CIF de la DM
+        _set_line('Margen Comercial', round(cif * 0.021, 2))  # USD, 2,1% fijo del CIF de la DM
         return resumen
 
     # ----- Acciones del apoderado -----
