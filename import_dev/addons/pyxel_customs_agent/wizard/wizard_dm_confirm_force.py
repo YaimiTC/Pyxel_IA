@@ -7,7 +7,7 @@ class WizardDmConfirmForce(models.TransientModel):
     _description = 'Confirmación DM con advertencias'
 
     message = fields.Text(readonly=True)
-    document_ids = fields.Many2many('import.document')
+    document_ids = fields.Many2many('pyxel.import.document')
 
     def action_confirm_force(self):
         self.ensure_one()
