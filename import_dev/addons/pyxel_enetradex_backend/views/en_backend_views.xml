@@ -557,7 +557,7 @@
             <filter name="sin_cerrar" position="after">
                 <separator/>
                 <filter name="dm_pendientes" string="DM pendientes"
-                        domain="[('en_customs_stage_reached', '=', True), ('en_ready_for_customs', '=', True), ('en_customs_dm_done', '=', False)]"/>
+                        domain="['&amp;', ('en_customs_stage_reached', '=', True), '&amp;', ('en_ready_for_customs', '=', True), '&amp;', ('en_customs_dm_done', '=', False), '|', ('load_tracking_ids.arrival_date', '&gt;', '2026-08-01'), ('load_tracking_ids.arrival_date', '=', False)]"/>
                 <filter name="dm_completadas" string="DM completadas"
                         domain="[('en_customs_dm_done', '=', True)]"/>
             </filter>
