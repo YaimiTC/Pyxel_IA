@@ -324,6 +324,9 @@
             <field name="country_origin_id" position="after">
                 <field name="en_dm_number" optional="show" string="Declaración de mercancías"/>
             </field>
+            <field name="comercial_id" position="after">
+                <field name="en_customs_agent_id" optional="show" string="Apoderado"/>
+            </field>
             <field name="create_uid" position="before">
                 <field name="en_provider_pending" optional="show" string="Pendiente proveedor"/>
                 <field name="en_customer_pending" optional="show" string="Pendiente cliente"/>
@@ -541,6 +544,24 @@
         <field name="view_mode">form</field>
         <field name="view_id" ref="en_importation_process_form"/>
         <field name="act_window_id" ref="pyxel_import_backend.action_importation_process"/>
+    </record>
+
+    <!-- Filtros DM en la vista de búsqueda de Importaciones.
+         Definidos aquí (no en pyxel_import_backend) porque los campos
+         en_ready_for_customs y en_customs_dm_done viven en este módulo. -->
+    <record id="en_importation_process_search" model="ir.ui.view">
+        <field name="name">importation.process.search.enetec.dm</field>
+        <field name="model">importation.process</field>
+        <field name="inherit_id" ref="pyxel_import_backend.view_importation_process_search"/>
+        <field name="arch" type="xml">
+            <filter name="sin_cerrar" position="after">
+                <separator/>
+                <filter name="dm_pendientes" string="DM pendientes"
+                        domain="[('en_customs_stage_reached', '=', True), ('en_ready_for_customs', '=', True), ('en_customs_dm_done', '=', False)]"/>
+                <filter name="dm_completadas" string="DM completadas"
+                        domain="[('en_customs_dm_done', '=', True)]"/>
+            </filter>
+        </field>
     </record>
 
 </odoo>

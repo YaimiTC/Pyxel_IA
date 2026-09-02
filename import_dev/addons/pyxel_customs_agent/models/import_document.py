@@ -301,19 +301,26 @@ class PyxelImportDocument(models.Model):
         # cliente de la OC, no contra todos los clientes del proceso — si no,
         # un proceso con 2 clientes marcaría "no encontrado" al cliente ajeno
         # a esta DM en cada una de las dos.
+        # Normalización para comparación flexible: solo alfanuméricos en mayúsculas.
+        # Evita falsos positivos por mayúsculas, tildes, puntos o guiones.
+        text_alnum_upper = re.sub(r'[^A-Za-z0-9]', '', text).upper()
+
+        def _found_in_dm(value):
+            return re.sub(r'[^A-Za-z0-9]', '', value).upper() in text_alnum_upper
+
         po_customer = self.purchase_order_id.customer_id if 'customer_id' in self.purchase_order_id._fields else False
         cliente = po_customer or imp.customer_id
         if cliente:
             name = cliente.name or ''
             vat = cliente.vat or ''
-            if name and name not in text and (not vat or vat not in text):
+            if name and not _found_in_dm(name) and (not vat or not _found_in_dm(vat)):
                 graves.append('Cliente <b>%s</b> no encontrado en la DM.' % name)
 
         # 2. Proveedor
         if imp.provider_id:
             name = imp.provider_id.name or ''
             vat = imp.provider_id.vat or ''
-            if name and name not in text and (not vat or vat not in text):
+            if name and not _found_in_dm(name) and (not vat or not _found_in_dm(vat)):
                 graves.append('Proveedor <b>%s</b> no encontrado en la DM.' % name)
 
         # 3. Apoderado (usuario del sistema) — no bloquea: puede aparecer con
@@ -447,11 +454,23 @@ class PyxelImportDocument(models.Model):
                     d.purchase_order_id.display_name or d.document_label,
                     '\n'.join('- ' + w for w in self._plain(r['graves'])))
                 for d, r in bloqueadas)
-            raise UserError(_(
-                "No se puede confirmar: esta DM no parece corresponder a esta "
-                "operación.\n\n%s\n\nVerifique que subió el PDF correcto — si "
-                "es el equivocado, use «Reemplazar» y suba el que corresponde."
-            ) % detalle)
+            mensaje = _(
+                "Se detectaron discrepancias entre la DM y los datos de la "
+                "operación:\n\n%s\n\n"
+                "Si el PDF es correcto, puede confirmar de todas formas.\n"
+                "Si subió el equivocado, cierre y use «Reemplazar»."
+            ) % detalle
+            wizard = self.env['wizard.dm.confirm.force'].create({
+                'message': mensaje,
+                'document_ids': [(6, 0, [d.id for d, r in resultados])],
+            })
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'wizard.dm.confirm.force',
+                'res_id': wizard.id,
+                'view_mode': 'form',
+                'target': 'new',
+            }
 
         all_informativas = []
         resumen_costos = []
