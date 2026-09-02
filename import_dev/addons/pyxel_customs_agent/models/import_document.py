@@ -425,11 +425,9 @@ class PyxelImportDocument(models.Model):
                 estado = _("nueva")
             resumen.append("%s: %.2f %s (%s)" % (product_name, amount, ccy_name, estado))
 
-        cif = self.dm_cif_value or 0.0
-
         _set_line('Arancel de Aduana', self.dm_arancel_total or 0.0, currency=cup)
         _set_line('Servicios Aduanales', self.dm_servicio_aduana or 0.0, currency=cup)
-        _set_line('Margen Comercial', round(cif * 0.021, 2))  # USD, 2,1% fijo del CIF de la DM
+        _set_line('Margen Comercial', round((po.amount_total or 0.0) * 0.021, 2))
         return resumen
 
     # ----- Acciones del apoderado -----
