@@ -310,39 +310,42 @@ class PyxelImportDocument(models.Model):
         def _found_in_dm(value):
             return re.sub(r'[^A-Za-z0-9]', '', value).upper() in text_alnum_upper
 
+        # Los nombres de cliente/proveedor se verifican como informativas: las
+        # diferencias tipográficas (tildes, puntuación, orden de palabras) son
+        # frecuentes y no indican necesariamente una DM equivocada. Los campos
+        # realmente determinantes son contenedor y BL.
         po_customer = self.purchase_order_id.customer_id if 'customer_id' in self.purchase_order_id._fields else False
         cliente = po_customer or imp.customer_id
         if cliente:
             name = cliente.name or ''
             vat = cliente.vat or ''
             if name and not _found_in_dm(name) and (not vat or not _found_in_dm(vat)):
-                graves.append('Cliente <b>%s</b> no encontrado en la DM.' % name)
+                informativas.append('Cliente <b>%s</b> no encontrado en la DM.' % name)
 
         # 2. Proveedor
         if imp.provider_id:
             name = imp.provider_id.name or ''
             vat = imp.provider_id.vat or ''
             if name and not _found_in_dm(name) and (not vat or not _found_in_dm(vat)):
-                graves.append('Proveedor <b>%s</b> no encontrado en la DM.' % name)
+                informativas.append('Proveedor <b>%s</b> no encontrado en la DM.' % name)
 
-        # 3. Apoderado (usuario del sistema) — no bloquea: puede aparecer con
-        # otro nombre (declarante distinto del apoderado asignado en Odoo)
-        # sin que la DM sea de otra operación.
+        # 3. Apoderado
         agent = imp.en_customs_agent_id if hasattr(imp, 'en_customs_agent_id') else False
         if agent and agent.name and agent.name not in text:
             informativas.append('Apoderado <b>%s</b> no encontrado en la DM.' % agent.name)
 
-        # 4. BL / referencia
-        bl = imp.purchase_condition_number or ''
-        if not bl:
-            informativas.append('No hay número de BL/referencia registrado en la importación.')
-        elif bl not in text:
-            graves.append('BL/referencia <b>%s</b> no encontrado en la DM.' % bl)
+        # 4. BL — se revisan los BL de los contenedores (bl_number en
+        # importation.load), que es donde el equipo los registra realmente.
+        loads = self.env['importation.load'].search([('importation_id', '=', imp.id)])
+        bls = [l.bl_number for l in loads if l.bl_number]
+        if not bls:
+            informativas.append('No hay número de BL registrado en los contenedores de la importación.')
+        elif not any(_found_in_dm(bl) for bl in bls):
+            graves.append('Ningún BL (%s) encontrado en la DM.' % ', '.join(bls))
 
         # 5. Contenedor — el BL y la DM suelen formatear el mismo contenedor
         # distinto (ej. "CXTU1086819" en el BL vs "CXTU 108681-9" en la DM),
         # así que se compara solo por caracteres alfanuméricos.
-        loads = self.env['importation.load'].search([('importation_id', '=', imp.id)])
         containers = [l.name for l in loads if l.name]
         text_alnum = re.sub(r'[^A-Za-z0-9]', '', text).upper()
         if not containers:
