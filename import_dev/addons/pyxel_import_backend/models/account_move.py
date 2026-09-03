@@ -90,9 +90,26 @@ class AccountMove(models.Model):
         proc = self.importation_process_id
         if not proc:
             return self.env['en.import.request.client']
+        partner = self.partner_id
+        commercial = partner.commercial_partner_id
         return proc.en_request_client_ids.filtered(
-            lambda b: b.customer_id == self.partner_id
+            lambda b: b.customer_id in (partner, commercial)
         )[:1]
+
+    def _get_dm_number(self, proc, po):
+        """Busca el número de DM: primero en el campo manual del proceso,
+        luego en el documento DM confirmado de la OC del bloque."""
+        if proc and proc.en_dm_number:
+            return proc.en_dm_number
+        if po:
+            dm_doc = self.env['pyxel.import.document'].search([
+                ('purchase_order_id', '=', po.id),
+                ('document_key', '=', 'dm'),
+                ('dm_confirmed', '=', True),
+            ], limit=1)
+            if dm_doc:
+                return dm_doc.dm_number or ''
+        return ''
 
     def action_export_comercial_invoice_excel(self):
         """Descarga la factura como 'Factura Comercial' en Excel: encabezado
@@ -109,6 +126,16 @@ class AccountMove(models.Model):
         importer = proc.importer_id if proc else self.env['importation.importer']
         block = self._get_comercial_invoice_block()
         po = block.purchase_order_id
+        # Fallback: si no hay bloque, buscar OC en líneas de costo donde el cliente coincide
+        if not po and proc:
+            for cl in proc.cost_line_ids:
+                match = cl.purchase_ids.filtered(
+                    lambda p: p.customer_id == self.partner_id.commercial_partner_id
+                              or p.customer_id == self.partner_id
+                )
+                if match:
+                    po = match[:1]
+                    break
         partner = self.partner_id.commercial_partner_id
 
         output = io.BytesIO()
@@ -223,7 +250,7 @@ class AccountMove(models.Model):
             (_("Contenedor(es)"), container_names),
             (_("Producto(s)"), ", ".join(products)),
             (_("Factura del Proveedor"), po.partner_ref if po else ''),
-            (_("Declaración de Mercancía (DM)"), getattr(proc, 'en_dm_number', '') if proc else ''),
+            (_("Declaración de Mercancía (DM)"), self._get_dm_number(proc, po)),
         ])
         r += 1
 

@@ -394,7 +394,7 @@ class PyxelImportDocument(models.Model):
         cup = self.env['res.currency'].search([('name', '=', 'CUP')], limit=1)
         resumen = []
 
-        def _set_line(product_name, amount, currency=None):
+        def _set_line(product_name, amount, currency=None, dist_type='fixed'):
             product = self.env['product.product'].search([
                 ('name', '=', product_name), ('detailed_type', '=', 'service')], limit=1)
             if not product:
@@ -408,7 +408,7 @@ class PyxelImportDocument(models.Model):
                 ('product_id', '=', product.id),
                 '|', ('purchase_ids', 'in', po.id), ('purchase_ids', '=', False),
             ], limit=1)
-            vals = {'amount': amount, 'distribution_type': 'fixed'}
+            vals = {'amount': amount, 'distribution_type': dist_type}
             if currency:
                 vals['currency_id'] = currency.id
             ccy_name = currency.name if currency else 'USD'
@@ -426,11 +426,12 @@ class PyxelImportDocument(models.Model):
                 })
                 CostLine.create(vals)
                 estado = _("nueva")
-            resumen.append("%s: %.2f %s (%s)" % (product_name, amount, ccy_name, estado))
+            suffix = '%' if dist_type == 'percentage' else ccy_name
+            resumen.append("%s: %.2f %s (%s)" % (product_name, amount, suffix, estado))
 
         _set_line('Arancel de Aduana', self.dm_arancel_total or 0.0, currency=cup)
         _set_line('Servicios Aduanales', self.dm_servicio_aduana or 0.0, currency=cup)
-        _set_line('Margen Comercial', round((po.amount_total or 0.0) * 0.021, 2))
+        _set_line('Margen Comercial', 2.1, dist_type='percentage')
         return resumen
 
     # ----- Acciones del apoderado -----
@@ -451,19 +452,18 @@ class PyxelImportDocument(models.Model):
                 raise UserError(_("Sube el PDF de la DM antes de confirmarla."))
             resultados.append((d, d._validar_dm()))
 
-        bloqueadas = [(d, r) for d, r in resultados if r['graves']]
-        if bloqueadas:
-            detalle = '\n\n'.join(
-                '%s:\n%s' % (
-                    d.purchase_order_id.display_name or d.document_label,
-                    '\n'.join('- ' + w for w in self._plain(r['graves'])))
-                for d, r in bloqueadas)
+        con_avisos = [(d, r) for d, r in resultados if r['graves'] or r['informativas']]
+        if con_avisos:
+            lineas = []
+            for d, r in con_avisos:
+                nombre = d.purchase_order_id.display_name or d.document_label
+                todos = r['graves'] + r['informativas']
+                lineas.append('%s:\n%s' % (nombre, '\n'.join('- ' + w for w in self._plain(todos))))
             mensaje = _(
-                "Se detectaron discrepancias entre la DM y los datos de la "
-                "operación:\n\n%s\n\n"
-                "Si el PDF es correcto, puede confirmar de todas formas.\n"
+                "Se encontraron avisos en la DM:\n\n%s\n\n"
+                "Puede confirmar de todas formas si el PDF es correcto.\n"
                 "Si subió el equivocado, cierre y use «Reemplazar»."
-            ) % detalle
+            ) % '\n\n'.join(lineas)
             wizard = self.env['wizard.dm.confirm.force'].create({
                 'message': mensaje,
                 'document_ids': [(6, 0, [d.id for d, r in resultados])],
@@ -476,31 +476,10 @@ class PyxelImportDocument(models.Model):
                 'target': 'new',
             }
 
-        all_informativas = []
-        resumen_costos = []
         for d, r in resultados:
             d.write({'dm_confirmed': True})
-            resumen_costos.extend(d._sync_dm_cost_lines())
-            all_informativas.extend(r['informativas'])
-
-        bloques = []
-        if resumen_costos:
-            bloques.append(_("Costos cargados en la OC:\n") + '\n'.join(resumen_costos))
-        if all_informativas:
-            bloques.append(_("Avisos:\n") + '\n'.join(self._plain(all_informativas)))
-
-        if bloques:
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': 'DM confirmada',
-                    'message': '\n\n'.join(bloques),
-                    'type': 'warning' if all_informativas else 'success',
-                    'sticky': bool(all_informativas),
-                },
-            }
-        return True
+            d._sync_dm_cost_lines()
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def action_dm_replace(self):
         """Limpia el PDF y todos los datos extraídos para subir uno nuevo."""

@@ -218,7 +218,8 @@ casilla real del formulario (no adivina por palabras sueltas, porque "CIF",
 | **Subir DM** | Cuando no hay PDF subido | Abre la ficha para subir el PDF |
 | **Ver DM** | Cuando hay PDF subido | Abre el PDF en una nueva pestaña |
 | **Reemplazar** | Cuando hay PDF subido | Borra el PDF y todos los datos extraídos para empezar de nuevo |
-| **Confirmar** | Cuando hay PDF y no está confirmado | Valida los datos y marca la DM como confirmada |
+| **Confirmar** | Cuando hay PDF y no está confirmado | Valida los datos; si hay alertas graves, bloquea y no confirma (ver Paso 4) |
+| **Reabrir** | Cuando la DM ya está confirmada — solo visible para administradores | Vuelve a dejarla editable (el apoderado normal no ve este botón) |
 
 ---
 
@@ -265,37 +266,55 @@ observaciones sobre los aranceles de cada OC en texto libre.
 Cuando los datos son correctos, hacer clic en el botón **Confirmar** de esa fila.
 
 El sistema realiza automáticamente una **validación cruzada** entre el contenido del
-PDF y los datos registrados en la importación. Si detecta discrepancias, aparece un
-aviso amarillo en la esquina superior derecha con el detalle:
+PDF y los datos registrados en la importación, **antes** de guardar nada. Hay dos
+tipos de alertas, con comportamiento distinto:
 
-| Alerta posible | Qué significa |
+#### Alertas graves — BLOQUEAN la confirmación
+
+Indican que el PDF subido podría ser la DM de **otra operación** (mismo cliente
+equivocado, otro proveedor, otro BL, otro contenedor). Si aparece alguna, el
+sistema **no confirma la DM** — aparece un mensaje de error explicando cuál OC
+falló y por qué, y hay que resolverlo antes de poder continuar:
+
+| Alerta grave | Qué significa |
 |---------------|---------------|
-| "Cliente X no encontrado en la DM" | El nombre del cliente no aparece en el texto del PDF |
+| "Cliente X no encontrado en la DM" | El nombre del cliente (de esta OC en particular) no aparece en el texto del PDF |
 | "Proveedor X no encontrado en la DM" | El nombre del proveedor no aparece en el PDF |
-| "Apoderado X no encontrado en la DM" | Su nombre no aparece en el PDF de la DM |
-| "BL/referencia X no encontrado en la DM" | El número de BL no aparece en el PDF |
-| "No hay número de BL/referencia registrado" | El proceso no tiene BL registrado |
-| "Ningún contenedor (X) encontrado en la DM" | Los números de contenedor no aparecen en el PDF |
-| "No hay contenedores registrados" | El proceso no tiene contenedores registrados |
+| "BL/referencia X no encontrado en la DM" | El proceso SÍ tiene un BL registrado, pero ese número no aparece en el PDF |
+| "Ningún contenedor (X) encontrado en la DM" | El proceso SÍ tiene contenedores registrados, pero ninguno aparece en el PDF |
+
+> **Qué hacer si se bloquea:** revisar que el PDF subido sea el correcto. Si es
+> el equivocado, usar el botón **Reemplazar** y subir el que corresponde a esta
+> OC/cliente. Si el PDF SÍ es el correcto y el dato solo está escrito distinto
+> (ej. el cliente aparece abreviado en la DM), corregir el dato en el proceso
+> para que coincida, o contactar al administrador si el bloqueo parece un error
+> del sistema.
+
+#### Alertas informativas — NO bloquean
+
+Son avisos de datos que faltan o no se pudieron verificar, pero no indican que
+la DM esté cambiada — la DM **sí queda confirmada**, solo se muestra un aviso
+para que el apoderado lo revise:
+
+| Alerta informativa | Qué significa |
+|---------------|---------------|
+| "Apoderado X no encontrado en la DM" | Su nombre no aparece en el PDF (puede ser normal si el declarante en la DM es otra persona) |
+| "No hay número de BL/referencia registrado" | El proceso no tiene BL cargado — no se pudo comparar |
+| "No hay contenedores registrados" | El proceso no tiene contenedores cargados — no se pudo comparar |
 | "No existe línea de costo Arancel" | Falta añadir el Arancel en los gastos de la importación |
 | "No existe línea de costo Servicio de Aduana" | Falta añadir el Servicio de Aduana en los gastos |
 
-> Las alertas son **informativas** — la DM se confirma igual aunque haya avisos.
-> El objetivo es que el apoderado detecte cualquier discrepancia antes de cerrar.
-> Las alertas también quedan registradas en el **historial del proceso** para
-> trazabilidad.
+> Todas las alertas (graves e informativas) quedan registradas en el
+> **historial del proceso** para trazabilidad, se hayan bloqueado o no.
 
-**Si los datos son correctos y las alertas son esperadas** (por ejemplo, el nombre
-del cliente está abreviado en la DM), puede ignorar el aviso y continuar.
+**Si el bloqueo es por un error real** (subió el PDF de otra OC/cliente por
+error):
+1. Usar el botón **Reemplazar** (ver sección de casos especiales)
+2. Subir el PDF correcto de esa OC
+3. Volver a hacer clic en **Confirmar**
 
-**Si detecta un error real** (número de Arancel incorrecto, contenedor diferente):
-1. No hacer caso al aviso por ahora
-2. Corregir el dato erróneo en el proceso o en los campos de la tabla
-3. Usar el botón **Reemplazar** si el PDF es incorrecto (ver sección de casos especiales)
-4. Volver a hacer clic en **Confirmar**
-
-Una vez confirmada, la fila muestra el campo "Confirmado" activo y el botón
-Confirmar desaparece. La DM está cerrada.
+Una vez confirmada (sin alertas graves pendientes), la fila muestra el campo
+"Confirmado" activo y el botón Confirmar desaparece. La DM está cerrada.
 
 Repetir el proceso para cada OC del proceso.
 
@@ -374,9 +393,14 @@ Si dos apoderados necesitan trabajar el mismo proceso (múltiples OC):
 Sí. Cualquier usuario con acceso puede modificar el campo "Apoderado asignado".
 
 **¿Qué pasa si confirmo una DM con datos incorrectos?**
-Use el botón **Reemplazar** para volver al estado inicial y subir el PDF correcto,
-o edite directamente los campos numéricos si solo hay un valor equivocado.
-Si la DM ya está confirmada y necesita reabrirla, contacte al administrador del sistema.
+Depende del tipo de error. Si el PDF corresponde a **otra operación** (cliente,
+proveedor, BL o contenedor no coinciden), el sistema **no deja confirmar** —
+ver Paso 4, alertas graves. Si el PDF es el correcto pero algún número (CIF,
+Aranceles, Servicio de Aduana) se extrajo mal, sí se puede confirmar con datos
+incorrectos — corríjalos en la tabla antes de confirmar, o si ya confirmó, use
+**Reemplazar** para volver al estado inicial y subir el PDF de nuevo.
+Si la DM ya está confirmada y necesita reabrirla, contacte al administrador del sistema
+(botón "Reabrir", solo visible para administradores).
 
 **¿El proceso vuelve a aparecer si se desconfirma una DM?**
 Sí. Si `en_customs_dm_done` vuelve a ser False, el proceso reaparece en la lista.
@@ -423,10 +447,13 @@ en_customs_stage_reached = True  Y  en_ready_for_customs = True
                                                     6. Revisar campos — corregir si hace falta
                                                        (Servicio Aduana en 0 = ingresar manual)
                                                     7. Confirmar → sistema valida cliente,
-                                                       proveedor, apoderado, BL, contenedores
-                                                       y líneas de costo; muestra alertas
-                                                    8. Revisar alertas y corregir si procede
-                                                       (o ignorar si son esperadas)
+                                                       proveedor, BL, contenedores (GRAVE: si
+                                                       no coinciden, BLOQUEA y no confirma) y
+                                                       apoderado/líneas de costo (informativo:
+                                                       sí confirma, solo avisa)
+                                                    8. Si bloqueó: revisar el PDF, Reemplazar
+                                                       si es el equivocado, Confirmar de nuevo.
+                                                       Si solo avisó: revisar y seguir
                                                     9. Repetir por cada OC del proceso (las OC de
                                                        otros clientes que aún no estén listas se
                                                        habilitan solas cuando comercial las apruebe)
@@ -440,5 +467,7 @@ Si el PDF es incorrecto en cualquier momento:
 ---
 
 *Manual generado para ODIN 2.0 · ENETEC S.A. · Versión julio 2026 — actualizado
-con el requisito multi-cliente por OC y la visibilidad desde EN TRÁNSITO A
-PUERTO DE DESTINO.*
+con el requisito multi-cliente por OC, la visibilidad desde EN TRÁNSITO A
+PUERTO DE DESTINO, la extracción de la DM anclada a casillas del formulario
+cubano, y el bloqueo de confirmación ante alertas graves (cliente, proveedor,
+BL o contenedor que no coinciden).*
