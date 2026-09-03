@@ -204,7 +204,8 @@
         <field name="inherit_id" ref="pyxel_import_backend.view_importation_process_form"/>
         <field name="arch" type="xml">
             <xpath expr="//notebook" position="inside">
-                <page string="Expediente de documentos">
+                <page string="Expediente de documentos" name="en_expediente"
+                      invisible="not en_request_approved">
                     <group>
                         <group>
                             <field name="en_import_doc_count"/>

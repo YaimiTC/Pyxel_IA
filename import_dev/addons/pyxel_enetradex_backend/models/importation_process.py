@@ -212,9 +212,14 @@ class ImportationProcess(models.Model):
         string="Solicitud aprobada", readonly=True, copy=False)
     en_can_approve_request = fields.Boolean(
         compute='_compute_en_can_approve_request', string="Puede aprobar solicitud")
+    en_solicitud_pending = fields.Boolean(
+        compute='_compute_en_solicitud_pending', string="Solicitud pendiente de aprobar")
+    en_has_request_customer = fields.Boolean(
+        compute='_compute_en_has_request_customer', string="Tiene cliente en solicitud")
 
     @api.depends('stage_id', 'en_both_accredited', 'en_request_approved',
-                 'en_request_client_ids.customer_id', 'customer_id', 'provider_id')
+                 'en_request_client_ids.customer_id', 'customer_id', 'provider_id',
+                 'country_origin_id')
     def _compute_en_can_approve_request(self):
         solic = self.env.ref('pyxel_import_backend.importation_stage_solicitud',
                              raise_if_not_found=False)
@@ -223,7 +228,22 @@ class ImportationProcess(models.Model):
             rec.en_can_approve_request = bool(
                 solic and rec.stage_id.id == solic.id
                 and rec.en_both_accredited and not rec.en_request_approved
-                and has_customer and rec.provider_id)
+                and has_customer and rec.provider_id
+                and rec.country_origin_id)
+
+    @api.depends('stage_id', 'en_request_approved')
+    def _compute_en_solicitud_pending(self):
+        solic = self.env.ref('pyxel_import_backend.importation_stage_solicitud',
+                             raise_if_not_found=False)
+        for rec in self:
+            rec.en_solicitud_pending = bool(
+                solic and rec.stage_id.id == solic.id and not rec.en_request_approved)
+
+    @api.depends('en_request_client_ids.customer_id', 'customer_id')
+    def _compute_en_has_request_customer(self):
+        for rec in self:
+            rec.en_has_request_customer = bool(
+                rec.en_request_client_ids.customer_id or rec.customer_id)
 
     def _en_request_lines_for_orders(self):
         self.ensure_one()
@@ -257,6 +277,8 @@ class ImportationProcess(models.Model):
                 rec.en_accreditation_pending = False
             if not rec.provider_id:
                 raise ValidationError(_("Falta el proveedor en la solicitud."))
+            if not rec.country_origin_id:
+                raise ValidationError(_("Falta el país de origen en la solicitud."))
 
             client_blocks = rec.en_request_client_ids
             if not client_blocks:
@@ -331,76 +353,157 @@ class ImportationProcess(models.Model):
         return pl
 
     def action_create_cost_sale_order(self):
-        """Genera (o actualiza) la oferta de venta al cliente con solo los
-        costos de importación (margen comercial, etc.) — sin mercancía de las OC."""
+        """Genera (o actualiza) las ofertas de venta: una por cliente × moneda.
+        Agrupa por purchase.order.customer_id, que es más fiable que en_request_client_ids."""
         self.ensure_one()
         if not self.provider_id:
             raise ValidationError("Debe estar definido el proveedor en el proceso de importación.")
 
-        ccy = self.en_operation_currency_id or self.currency_id
+        # Recopilar todas las OCs referenciadas en las líneas de costo
+        all_pos = self.env['purchase.order']
+        for cl in self.cost_line_ids:
+            all_pos |= cl.purchase_ids
 
-        product_amounts = {}
-        for cost_line in self.cost_line_ids:
-            if not cost_line.purchase_ids:
+        # Agrupar por customer_id de la OC
+        client_map = {}
+        for po in all_pos:
+            partner = po.customer_id or self.customer_id
+            if not partner:
                 continue
-            total_value = 0.0
-            if cost_line.distribution_type == 'fixed':
-                total_value = cost_line.amount * len(cost_line.purchase_ids)
-            elif cost_line.distribution_type == 'percentage':
-                for purchase in cost_line.purchase_ids:
-                    total_value += purchase.amount_total * (cost_line.amount / 100.0)
-            product_id = cost_line.product_id.id
-            if product_id not in product_amounts:
-                product_amounts[product_id] = {
-                    'product': cost_line.product_id,
-                    'price_unit': 0.0,
-                    'name': cost_line.name or cost_line.product_id.name,
-                }
-            product_amounts[product_id]['price_unit'] += total_value
+            pid = partner.id
+            if pid not in client_map:
+                client_map[pid] = {'partner': partner, 'pos': self.env['purchase.order']}
+            client_map[pid]['pos'] |= po
 
-        if not product_amounts:
+        if not client_map:
+            # Fallback monocliente
+            partner = self.customer_id or self.sale_order_id.partner_id
+            if not partner:
+                raise ValidationError(_("No se pudo determinar el cliente para la oferta de venta."))
+            client_map[partner.id] = {'partner': partner, 'pos': all_pos or self.purchase_order_ids}
+
+        created = self.env['sale.order']
+        so_by_partner = {}  # {partner_id: primera OV de ese cliente (moneda op)}
+        for info in client_map.values():
+            partner = info['partner']
+            client_pos = info['pos']
+
+            # Costos de este cliente agrupados por moneda
+            by_currency = {}
+            for cl in self.cost_line_ids:
+                matching = cl.purchase_ids & client_pos
+                if not matching:
+                    continue
+                ccy = cl.currency_id
+                if cl.distribution_type == 'fixed':
+                    val = cl.amount * len(matching)
+                elif cl.distribution_type == 'percentage':
+                    val = sum(po.amount_total for po in matching) * (cl.amount / 100.0)
+                else:
+                    val = 0.0
+                by_currency.setdefault(ccy.id, {'currency': ccy, 'products': {}})
+                pid = cl.product_id.id
+                by_currency[ccy.id]['products'].setdefault(pid, {
+                    'product': cl.product_id,
+                    'price_unit': 0.0,
+                    'name': cl.name or cl.product_id.name,
+                })
+                by_currency[ccy.id]['products'][pid]['price_unit'] += val
+
+            for ccy_id, group in by_currency.items():
+                ccy = group['currency']
+                order_lines = [(0, 0, {
+                    'product_id': v['product'].id,
+                    'name': v['name'],
+                    'product_uom_qty': 1.0,
+                    'price_unit': v['price_unit'],
+                    'product_uom': v['product'].uom_id.id,
+                }) for v in group['products'].values()]
+
+                existing = self.env['sale.order'].search([
+                    ('importation_process_id', '=', self.id),
+                    ('is_cost_order', '=', True),
+                    ('partner_id', '=', partner.id),
+                    ('currency_id', '=', ccy_id),
+                ], limit=1)
+
+                if existing:
+                    so = existing
+                    if so.state not in ('draft', 'sent'):
+                        so.sudo().write({'state': 'draft'})
+                    so.sudo().order_line.unlink()
+                    so.sudo().write({'order_line': order_lines})
+                else:
+                    pl = self._en_pricelist_for_currency(ccy)
+                    so = self.env['sale.order'].create({
+                        'partner_id': partner.id,
+                        'importation_process_id': self.id,
+                        'origin': self.name,
+                        'order_type': 'importation_process',
+                        'pricelist_id': pl.id,
+                        'currency_id': ccy_id,
+                        'is_cost_order': True,
+                        'order_line': order_lines,
+                    })
+                created |= so
+                # Guardar la primera OV de este cliente (preferir moneda de operación)
+                pid = partner.id
+                if pid not in so_by_partner:
+                    so_by_partner[pid] = so
+                elif (self.en_operation_currency_id or self.currency_id) == ccy:
+                    so_by_partner[pid] = so
+
+        if not created:
             raise ValidationError(_("No hay costos con órdenes de compra asociadas para facturar."))
 
-        order_lines = [(0, 0, {
-            'product_id': val['product'].id,
-            'name': val['name'],
-            'product_uom_qty': 1.0,
-            'price_unit': val['price_unit'],
-            'product_uom': val['product'].uom_id.id,
-        }) for val in product_amounts.values()]
+        # final_sale_order_id = OV del primer cliente en moneda de operación
+        op_ccy = self.en_operation_currency_id or self.currency_id
+        first_partner = next(iter(client_map.values()))['partner']
+        primary = self.env['sale.order'].search([
+            ('importation_process_id', '=', self.id),
+            ('is_cost_order', '=', True),
+            ('partner_id', '=', first_partner.id),
+            ('currency_id', '=', op_ccy.id),
+        ], limit=1)
+        self.final_sale_order_id = (primary or created[:1]).id
 
-        if self.final_sale_order_id:
-            so = self.final_sale_order_id
-            if so.state not in ('draft', 'sent'):
-                so.sudo().write({'state': 'draft'})
-            so.sudo().order_line.unlink()
-            so.sudo().write({'order_line': order_lines})
-        else:
-            customers = self.en_request_client_ids.customer_id or self.customer_id
-            partner = customers[:1] if customers else self.sale_order_id.partner_id
-            if not partner:
-                raise ValidationError(_(
-                    "No se pudo determinar el cliente (partner_id) para la oferta de venta. "
-                    "Añade al menos un cliente en la solicitud."))
-            pl = self._en_pricelist_for_currency(ccy)
-            so = self.env['sale.order'].create({
-                'partner_id': partner.id,
-                'importation_process_id': self.id,
-                'origin': self.name,
-                'order_type': 'importation_process',
-                'pricelist_id': pl.id,
-                'currency_id': ccy.id,
-                'is_cost_order': True,
-                'order_line': order_lines,
-            })
-            self.final_sale_order_id = so.id
+        # Trazabilidad: actualizar OC y OV en los bloques de cliente
+        op_ccy_id = (self.en_operation_currency_id or self.currency_id).id
+        for pid, info in client_map.items():
+            partner = info['partner']
+            client_pos = info['pos']
+            so = so_by_partner.get(pid)
+            blocks = self.en_request_client_ids.filtered(
+                lambda b, p=partner: b.customer_id in (p, p.commercial_partner_id)
+            )
+            for block in blocks:
+                vals = {}
+                if not block.purchase_order_id and client_pos:
+                    vals['purchase_order_id'] = client_pos[:1].id
+                if so and not block.sale_order_id:
+                    vals['sale_order_id'] = so.id
+                if vals:
+                    block.write(vals)
 
+        all_cost = self.env['sale.order'].search([
+            ('importation_process_id', '=', self.id),
+            ('is_cost_order', '=', True),
+        ])
+        if len(all_cost) == 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _("Ventas"),
+                'res_model': 'sale.order',
+                'res_id': all_cost.id,
+                'view_mode': 'form',
+                'target': 'current',
+            }
         return {
             'type': 'ir.actions.act_window',
-            'name': _("Ventas"),
+            'name': _("Ventas de costos"),
             'res_model': 'sale.order',
-            'res_id': so.id,
-            'view_mode': 'form',
+            'view_mode': 'list,form',
+            'domain': [('importation_process_id', '=', self.id), ('is_cost_order', '=', True)],
             'target': 'current',
         }
 
@@ -418,9 +521,8 @@ class ImportationProcess(models.Model):
     def _compute_en_both_accredited(self):
         for rec in self:
             customers = rec.en_request_client_ids.customer_id or rec.customer_id
-            cli_ok = all(c.is_accredited for c in customers) if customers else True
-            prov_ok = (not rec.provider_id) or rec.provider_id.is_accredited
-            rec.en_both_accredited = bool(cli_ok and prov_ok)
+            cli_ok = bool(customers) and all(c.is_accredited for c in customers)
+            rec.en_both_accredited = bool(cli_ok and rec.provider_id)
 
     @api.depends('en_request_client_ids.customer_id.is_accredited',
                  'customer_id.is_accredited', 'provider_id.is_accredited')
@@ -437,21 +539,38 @@ class ImportationProcess(models.Model):
     def _compute_en_accreditation_status(self):
         for rec in self:
             customers = rec.en_request_client_ids.customer_id or rec.customer_id
-            faltan = []
-            no_acreditados = [c.name for c in customers if not c.is_accredited]
-            if no_acreditados:
-                faltan.append(_("cliente(s) «%s»") % ", ".join(no_acreditados))
-            if rec.provider_id and not rec.provider_id.is_accredited:
-                faltan.append(_("proveedor «%s»") % rec.provider_id.name)
-            if not faltan:
-                rec.en_accreditation_status = _("Ambas partes acreditadas")
+            sin_cliente = not customers
+            sin_proveedor = not rec.provider_id
+            partes = []
+            if sin_cliente and sin_proveedor:
+                partes.append(_("Falta asignar cliente y proveedor"))
             else:
-                rec.en_accreditation_status = _("Falta por acreditar: %s") % _(" y ").join(faltan)
+                if sin_cliente:
+                    partes.append(_("Falta asignar un cliente"))
+                else:
+                    no_acred = [c.name for c in customers if not c.is_accredited]
+                    if no_acred:
+                        partes.append(
+                            _("El cliente «%s» no está acreditado") % ", ".join(no_acred)
+                            if len(no_acred) == 1
+                            else _("Los clientes «%s» no están acreditados") % ", ".join(no_acred)
+                        )
+                if sin_proveedor:
+                    partes.append(_("Falta asignar un proveedor"))
+            if not partes:
+                rec.en_accreditation_status = _("Cliente y proveedor acreditados")
+            else:
+                rec.en_accreditation_status = " · ".join(partes)
 
-    @api.depends('en_request_client_ids.customer_id', 'customer_id')
+    @api.depends('en_request_client_ids.customer_id', 'customer_id',
+                 'purchase_order_ids.customer_id')
     def _compute_en_customer_ids(self):
         for rec in self:
-            rec.en_customer_ids = rec.en_request_client_ids.customer_id or rec.customer_id
+            oc_customers = rec.purchase_order_ids.filtered('customer_id').mapped('customer_id')
+            if oc_customers:
+                rec.en_customer_ids = oc_customers
+            else:
+                rec.en_customer_ids = rec.en_request_client_ids.customer_id or rec.customer_id
 
     @api.model_create_multi
     def create(self, vals_list):

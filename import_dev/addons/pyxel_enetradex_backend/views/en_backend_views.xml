@@ -346,6 +346,9 @@
                         help="Crea la orden de compra al proveedor y la oferta de venta al cliente, y pasa a SOLICITUDES APROBADAS."/>
                 <field name="en_can_approve_request" invisible="1"/>
                 <field name="en_request_approved" invisible="1"/>
+                <field name="en_solicitud_pending" invisible="1"/>
+                <field name="en_has_request_customer" invisible="1"/>
+                <field name="en_customer_pending" invisible="1"/>
             </xpath>
             <!-- Aviso destacado del estado de acreditación arriba del formulario -->
             <xpath expr="//sheet/group[@name='main_group']" position="before">
@@ -360,6 +363,42 @@
                     <span>Cliente y proveedor acreditados. La operación puede avanzar.</span>
                 </div>
             </xpath>
+            <!-- Checklist de condiciones para aprobar la solicitud -->
+            <xpath expr="//sheet/group[@name='main_group']" position="before">
+                <div class="alert alert-info" role="alert"
+                     invisible="en_request_approved or en_can_approve_request">
+                    <p class="mb-2 fw-bold">
+                        <i class="fa fa-info-circle me-1"/>
+                        Para que aparezca el botón «Aprobar solicitud» debes completar:
+                    </p>
+                    <ul class="mb-0">
+                        <li>
+                            <i class="fa fa-check-circle text-success me-1" invisible="not provider_id"/>
+                            <i class="fa fa-times-circle text-danger me-1" invisible="provider_id"/>
+                            Proveedor asignado
+                        </li>
+                        <li>
+                            <i class="fa fa-check-circle text-success me-1" invisible="not country_origin_id"/>
+                            <i class="fa fa-times-circle text-danger me-1" invisible="country_origin_id"/>
+                            País de origen
+                        </li>
+                        <li>
+                            <i class="fa fa-check-circle text-success me-1" invisible="not (en_has_request_customer and not en_customer_pending)"/>
+                            <i class="fa fa-times-circle text-danger me-1" invisible="en_has_request_customer and not en_customer_pending"/>
+                            Cliente asignado y acreditado (pestaña «Solicitud del cliente»)
+                        </li>
+                    </ul>
+                </div>
+            </xpath>
+            <!-- Banner de bloqueo antes del notebook -->
+            <xpath expr="//notebook" position="before">
+                <div class="alert alert-warning d-flex align-items-center" role="alert"
+                     invisible="en_request_approved">
+                    <i class="fa fa-lock me-2"/>
+                    <span>Las secciones de <strong>OC, contenedores, costos y expediente</strong>
+                    están bloqueadas. Usa el botón «Aprobar solicitud» para habilitarlas.</span>
+                </div>
+            </xpath>
             <!-- Indicadores de acreditación junto al proveedor -->
             <xpath expr="//group[@name='info_group']/field[@name='provider_id']" position="after">
                 <field name="en_provider_accredited" widget="boolean_toggle" readonly="1"/>
@@ -370,11 +409,32 @@
             <!-- Datos de la solicitud que llenó el cliente en el wizard -->
             <xpath expr="//notebook" position="inside">
                 <page string="Solicitud del cliente" name="en_request_data">
-                    <div class="alert alert-info d-flex align-items-center justify-content-between" role="alert"
-                         invisible="not en_can_approve_request">
-                        <span>Revisa los datos y, si todo está conforme, aprueba la solicitud para generar la orden de compra y la oferta al cliente.</span>
-                        <button name="action_en_approve_request" type="object" string="Aprobar solicitud"
-                                class="btn-primary"/>
+                    <div class="alert alert-info" role="alert" invisible="en_request_approved">
+                        <div class="d-flex align-items-start justify-content-between">
+                            <div>
+                                <p class="mb-2 fw-bold">Requisitos para aprobar la solicitud:</p>
+                                <ul class="mb-0">
+                                    <li>
+                                        <i class="fa fa-check-circle text-success me-1" invisible="not provider_id"/>
+                                        <i class="fa fa-times-circle text-danger me-1" invisible="provider_id"/>
+                                        Proveedor asignado
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-check-circle text-success me-1" invisible="not country_origin_id"/>
+                                        <i class="fa fa-times-circle text-danger me-1" invisible="country_origin_id"/>
+                                        País de origen
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-check-circle text-success me-1" invisible="not (en_has_request_customer and not en_customer_pending)"/>
+                                        <i class="fa fa-times-circle text-danger me-1" invisible="en_has_request_customer and not en_customer_pending"/>
+                                        Cliente asignado y acreditado
+                                    </li>
+                                </ul>
+                            </div>
+                            <button name="action_en_approve_request" type="object"
+                                    string="Aprobar solicitud" class="btn-primary ms-3 align-self-center"
+                                    invisible="not en_can_approve_request"/>
+                        </div>
                     </div>
                     <div class="alert alert-success" role="alert" invisible="not en_request_approved">
                         <i class="fa fa-check me-2" title="Aprobada"/>
@@ -388,7 +448,7 @@
                             <field name="bl_number"/>
                             <field name="is_accredited" widget="boolean_toggle" readonly="1"/>
                             <field name="purchase_order_id" readonly="1"/>
-                            <field name="sale_order_id" readonly="1"/>
+                            <field name="sale_order_ids" readonly="1" widget="many2many_tags"/>
                         </tree>
                         <form string="Cliente del envío">
                             <sheet>
@@ -412,7 +472,7 @@
                                         <field name="en_operation_currency_id"/>
                                         <field name="en_margin_percent"/>
                                         <field name="purchase_order_id" readonly="1"/>
-                                        <field name="sale_order_id" readonly="1"/>
+                                        <field name="sale_order_ids" readonly="1" widget="many2many_tags"/>
                                     </group>
                                 </group>
                                 <group string="Especificaciones">
@@ -510,6 +570,16 @@
             </xpath>
             <xpath expr="//page[@name='import_costs']" position="after">
                 <xpath expr="//page[@name='en_shipment_docs']" position="move"/>
+            </xpath>
+            <!-- Ocultar pestañas completas hasta que la solicitud esté aprobada -->
+            <xpath expr="//page[@name='purchase_orders']" position="attributes">
+                <attribute name="invisible">not en_request_approved</attribute>
+            </xpath>
+            <xpath expr="//page[@name='importation_load']" position="attributes">
+                <attribute name="invisible">not en_request_approved</attribute>
+            </xpath>
+            <xpath expr="//page[@name='import_costs']" position="attributes">
+                <attribute name="invisible">not en_request_approved</attribute>
             </xpath>
         </field>
     </record>
