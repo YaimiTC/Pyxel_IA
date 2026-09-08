@@ -204,6 +204,7 @@
                                    domain="['|', ('importation_id', '=', False), ('importation_id', '=', active_id)]" context="{'default_importation_id': active_id}">
                                 <tree>
                                     <field name="name"/>
+                                    <field name="partner_ref" string="Nº Factura" optional="show"/>
                                     <field name="bl_number" string="BL / AWB"/>
                                     <field name="partner_id" string="Proveedor"/>
                                     <field name="customer_id" string="Cliente"/>

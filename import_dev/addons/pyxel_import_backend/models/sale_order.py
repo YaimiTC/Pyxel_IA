@@ -10,6 +10,8 @@ class SaleOrder(models.Model):
 
     purchase_order_count = fields.Integer(string="Purchase Orders", compute='_compute_purchase_order_count')
     provider_names = fields.Char(string="Providers", compute="_compute_purchase_order_name")
+    purchase_order_refs = fields.Char(string="OC relacionadas", compute='_compute_purchase_order_refs')
+    currency_name = fields.Char(string="Moneda", related='currency_id.name', store=False)
     invoice_names = fields.Char(string='Invoices', compute='_compute_invoice_names')
 
     purchase_provider_evaluation_ids = fields.One2many('purchase.provider.evaluation', 'sale_order_id')
@@ -175,6 +177,16 @@ class SaleOrder(models.Model):
                 order.provider_names = ', '.join(sorted(set(providers_names)))
             else:
                 order.provider_names = ""
+
+    def _compute_purchase_order_refs(self):
+        for order in self:
+            if order.order_type == 'importation_process' and order.importation_process_id:
+                pos = order.importation_process_id.purchase_order_ids
+            elif order.order_type == 'evaluation_final' and order.evaluation_apply_id:
+                pos = order.evaluation_apply_id.purchase_order_ids
+            else:
+                pos = self.env['purchase.order'].search([('sale_order_id', '=', order.id)])
+            order.purchase_order_refs = ', '.join(sorted(set(pos.mapped('name')))) if pos else ''
 
     def _compute_purchase_evaluation_count(self):
         for order in self:

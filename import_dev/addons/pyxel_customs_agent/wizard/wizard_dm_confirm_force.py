@@ -14,4 +14,7 @@ class WizardDmConfirmForce(models.TransientModel):
         for doc in self.document_ids.filtered(lambda d: d.document_key == 'dm'):
             doc.write({'dm_confirmed': True})
             doc._sync_dm_cost_lines()
+            proc = doc.importation_id
+            if proc and not proc.en_customs_agent_id:
+                proc.en_customs_agent_id = self.env.user
         return {'type': 'ir.actions.client', 'tag': 'reload'}

@@ -70,6 +70,30 @@ class ImportDashboard extends Component {
         return [`${mes}-01`, `${mes}-${String(lastDay).padStart(2, "0")}`];
     }
 
+    openArribadosMes(mes) {
+        const [from, to] = this.rangoMes(mes);
+        this.openList(
+            [["arrival_date", ">=", from], ["arrival_date", "<=", to]],
+            "Arribados " + mes
+        );
+    }
+
+    openRetornadosMes(mes) {
+        const [from, to] = this.rangoMes(mes);
+        this.openList(
+            [["return_date", ">=", from], ["return_date", "<=", to]],
+            "Retornados " + mes
+        );
+    }
+
+    openPendientesRetornarMes(mes) {
+        const [from, to] = this.rangoMes(mes);
+        this.openList(
+            [["state", "=", "to_return"], ["extraction_date", ">=", from], ["extraction_date", "<=", to]],
+            "Pendientes de retornar " + mes
+        );
+    }
+
     openHuerfanosMes(mes) {
         const [from, to] = this.rangoMes(mes);
         this.openList(
@@ -96,12 +120,16 @@ class ImportDashboard extends Component {
 
     openDelDia(fila, columna) {
         const bloque = fila === "hab" ? this.state.data.del_dia_hab
+                     : fila === "arr" ? this.state.data.del_dia_arr
+                     : fila === "ret" ? this.state.data.del_dia_ret
                                       : this.state.data.del_dia_ext;
         const ids = (bloque.ids || {})[columna] || [];
         if (!ids.length) { return; }
         const fecha = fila === "hab" ? this.state.data.fecha_habilitacion
+                    : fila === "arr" ? this.state.data.fecha_arribo
+                    : fila === "ret" ? this.state.data.fecha_retorno
                                      : this.state.data.fecha_extraccion;
-        const queFila = fila === "hab" ? "Habilitados" : "Extraídos";
+        const queFila = fila === "hab" ? "Habilitados" : fila === "arr" ? "Arribados" : fila === "ret" ? "Retornados" : "Extraídos";
         const queCol = columna === "total" ? "" : " · " + columna;
         this.openList([["id", "in", ids]], `${queFila} ${fecha}${queCol}`);
     }

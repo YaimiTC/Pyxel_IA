@@ -373,6 +373,11 @@
                     </p>
                     <ul class="mb-0">
                         <li>
+                            <i class="fa fa-check-circle text-success me-1" invisible="not en_solicitud_pending"/>
+                            <i class="fa fa-times-circle text-danger me-1" invisible="en_solicitud_pending"/>
+                            Importación en etapa «Solicitudes para atender»
+                        </li>
+                        <li>
                             <i class="fa fa-check-circle text-success me-1" invisible="not provider_id"/>
                             <i class="fa fa-times-circle text-danger me-1" invisible="provider_id"/>
                             Proveedor asignado
@@ -414,6 +419,11 @@
                             <div>
                                 <p class="mb-2 fw-bold">Requisitos para aprobar la solicitud:</p>
                                 <ul class="mb-0">
+                                    <li>
+                                        <i class="fa fa-check-circle text-success me-1" invisible="not en_solicitud_pending"/>
+                                        <i class="fa fa-times-circle text-danger me-1" invisible="en_solicitud_pending"/>
+                                        Importación en etapa «Solicitudes para atender»
+                                    </li>
                                     <li>
                                         <i class="fa fa-check-circle text-success me-1" invisible="not provider_id"/>
                                         <i class="fa fa-times-circle text-danger me-1" invisible="provider_id"/>
@@ -629,7 +639,7 @@
                 <filter name="dm_pendientes" string="DM pendientes"
                         domain="['&amp;', ('en_customs_stage_reached', '=', True), '&amp;', ('en_ready_for_customs', '=', True), '&amp;', ('en_customs_dm_done', '=', False), '|', ('load_tracking_ids.arrival_date', '&gt;', '2026-08-01'), ('load_tracking_ids.arrival_date', '=', False)]"/>
                 <filter name="dm_completadas" string="DM completadas"
-                        domain="[('en_customs_dm_done', '=', True)]"/>
+                        domain="[('en_customs_dm_any_done', '=', True)]"/>
             </filter>
         </field>
     </record>

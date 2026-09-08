@@ -57,7 +57,7 @@
                 <filter name="pendientes" string="DM pendientes"
                         domain="[('en_customs_dm_done', '=', False)]"/>
                 <filter name="completadas" string="Mostrar DM completadas"
-                        domain="[('en_customs_dm_done', '=', True)]"/>
+                        domain="[('en_customs_dm_any_done', '=', True)]"/>
                 <separator/>
                 <filter name="mias" string="Asignadas a mí"
                         domain="[('en_customs_agent_id', '=', uid)]"/>

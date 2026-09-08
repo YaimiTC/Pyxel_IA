@@ -19,6 +19,7 @@
              - customer_id: ya lo declara pyxel_import_backend en este mismo grupo,
                y con dominio de clientes acreditados. Aqui salia por segunda vez. -->
         <field name="bl_number"/>
+        <field name="bl_awb_attachment" filename="bl_awb_attachment_filename" string="BL / AWB"/>
         <field name="cert_no_adeudo" filename="cert_no_adeudo_filename" string="Cert. No Adeudo"/>
       </xpath>
     </field>

@@ -34,11 +34,32 @@ class AccountMove(models.Model):
         store=True
     )
 
+    sale_order_refs = fields.Char(
+        string="OV origen",
+        compute='_compute_so_po_refs'
+    )
+    purchase_order_refs = fields.Char(
+        string="OC relacionadas",
+        compute='_compute_so_po_refs'
+    )
+
     @api.depends('importation_process_id.load_tracking_ids.name')
     def _compute_container_names(self):
         for record in self:
             containers = record.importation_process_id.load_tracking_ids
             record.container_names = ', '.join(containers.mapped('name')) if containers else ''
+
+    @api.depends('invoice_line_ids.sale_line_ids.order_id',
+                 'importation_process_id.purchase_order_ids.name')
+    def _compute_so_po_refs(self):
+        for move in self:
+            sos = move.invoice_line_ids.sale_line_ids.order_id
+            move.sale_order_refs = ', '.join(sorted(set(sos.mapped('name')))) if sos else ''
+            if move.importation_process_id:
+                pos = move.importation_process_id.purchase_order_ids
+                move.purchase_order_refs = ', '.join(sorted(set(pos.mapped('name')))) if pos else ''
+            else:
+                move.purchase_order_refs = ''
 
     @api.model
     def default_get(self, fields_list):
@@ -110,6 +131,74 @@ class AccountMove(models.Model):
             if dm_doc:
                 return dm_doc.dm_number or ''
         return ''
+
+    def _get_comercial_invoice_report_data(self):
+        """Devuelve un dict con todos los datos necesarios para el template QWeb
+        de la Factura Comercial. Misma lógica que action_export_comercial_invoice_excel."""
+        self.ensure_one()
+        proc = self.importation_process_id
+        importer = proc.importer_id if proc else self.env['importation.importer']
+        block = self._get_comercial_invoice_block()
+        po = block.purchase_order_id if block else self.env['purchase.order']
+        if not po and proc:
+            for cl in proc.cost_line_ids:
+                match = cl.purchase_ids.filtered(
+                    lambda p: p.customer_id == self.partner_id.commercial_partner_id
+                              or p.customer_id == self.partner_id
+                )
+                if match:
+                    po = match[:1]
+                    break
+        partner = self.partner_id.commercial_partner_id
+
+        importer_bank = (
+            importer.bank_account_usd if self.currency_id.name == 'USD'
+            else importer.bank_account_cup if self.currency_id.name == 'CUP'
+            else ''
+        ) or ''
+        partner_bank = (
+            partner.bank_account_usd if self.currency_id.name == 'USD'
+            else partner.bank_account_cup if self.currency_id.name == 'CUP'
+            else ''
+        ) or ''
+
+        import_type_es = {'Ocean Freight': 'Embarque Marítimo'}
+        import_type_name = proc.import_type_id.name if proc and proc.import_type_id else ''
+        import_type_name = import_type_es.get(import_type_name, import_type_name)
+
+        containers = po._get_po_containers(po) if po else self.env['importation.load']
+        container_names = ", ".join(containers.mapped('name')) if containers else (self.container_names or '')
+        products = []
+        merchandise_lines = self.env['purchase.order.line']
+        service_lines = self.env['purchase.order.line']
+        fob = 0.0
+        if po:
+            merchandise_lines = po.order_line.filtered(lambda l: l.product_id.detailed_type == 'product')
+            service_lines = po.order_line.filtered(lambda l: l.product_id.detailed_type == 'service')
+            products = merchandise_lines.mapped('product_id.display_name')
+            fob = sum(merchandise_lines.mapped('price_subtotal'))
+
+        invoice_lines = self.invoice_line_ids.filtered(
+            lambda l: l.display_type not in ('line_section', 'line_note')
+        )
+
+        return {
+            'importer': importer,
+            'importer_bank': importer_bank,
+            'block': block,
+            'po': po,
+            'partner': partner,
+            'partner_bank': partner_bank,
+            'import_type_name': import_type_name,
+            'container_names': container_names,
+            'products': products,
+            'merchandise_lines': merchandise_lines,
+            'service_lines': service_lines,
+            'fob': fob,
+            'invoice_lines': invoice_lines,
+            'dm_number': self._get_dm_number(proc, po),
+            'invoicing_user': (self.invoice_user_id or self.create_uid).name or '',
+        }
 
     def action_export_comercial_invoice_excel(self):
         """Descarga la factura como 'Factura Comercial' en Excel: encabezado

@@ -25,7 +25,7 @@
         <record id="group_comercial" model="res.groups">
             <field name="name">Comercial</field>
             <field name="category_id" ref="module_category_enetradex"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('base.group_allow_export'))]"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user')), (4, ref('base.group_allow_export')), (4, ref('account.group_account_invoice'))]"/>
         </record>
 
         <!-- Solo lectura Tablero: acceso de solo vista para usuarios externos (ej. CUPET) -->

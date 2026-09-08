@@ -81,6 +81,7 @@
         "views/res_company_views.xml",
         "views/view_import_dashboard.xml",
         "report/import_dashboard_report_views.xml",
+        "report/commercial_invoice_report_template.xml",
 
      ],
     'assets': {

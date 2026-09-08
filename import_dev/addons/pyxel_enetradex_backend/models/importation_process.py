@@ -115,6 +115,15 @@ class ImportationProcess(models.Model):
         for rec in self:
             rec.en_customs_dm_done = False
 
+    en_customs_dm_any_done = fields.Boolean(
+        compute='_compute_en_customs_dm_any_done', store=True,
+        string='Al menos una DM confirmada')
+
+    @api.depends('en_import_dm_doc_ids')
+    def _compute_en_customs_dm_any_done(self):
+        for rec in self:
+            rec.en_customs_dm_any_done = False
+
     en_ready_for_customs = fields.Boolean(
         compute='_compute_en_ready_for_customs', store=True,
         string='Lista para despacho aduanero')
@@ -213,9 +222,11 @@ class ImportationProcess(models.Model):
     en_can_approve_request = fields.Boolean(
         compute='_compute_en_can_approve_request', string="Puede aprobar solicitud")
     en_solicitud_pending = fields.Boolean(
-        compute='_compute_en_solicitud_pending', string="Solicitud pendiente de aprobar")
+        compute='_compute_en_solicitud_pending', store=True,
+        string="Solicitud pendiente de aprobar")
     en_has_request_customer = fields.Boolean(
-        compute='_compute_en_has_request_customer', string="Tiene cliente en solicitud")
+        compute='_compute_en_has_request_customer', store=True,
+        string="Tiene cliente en solicitud")
 
     @api.depends('stage_id', 'en_both_accredited', 'en_request_approved',
                  'en_request_client_ids.customer_id', 'customer_id', 'provider_id',
@@ -330,6 +341,29 @@ class ImportationProcess(models.Model):
                     })
                     if not use_legacy_lines:
                         block.purchase_order_id = po.id
+                    # Auto-añadir líneas de servicio por defecto (gastos en origen)
+                    _DEFAULT_SERVICES = [
+                        "Alquiler isotanque + lavado", "Descuento", "Entrega estándar",
+                        "Flete marítimo", "Flete reportación ISO TANQUE", "Gasto FOB",
+                        "Gastos Asociados", "Gastos de Despacho", "Gastos FOB", "IMO",
+                        "Impuestos y tasas USA", "Inspección en origen", "ISPSD", "ISPSO",
+                        "Seguro marítimo", "THCD", "THCDA", "THCO",
+                    ]
+                    Product = self.env['product.product']
+                    POLine = self.env['purchase.order.line']
+                    for svc_name in _DEFAULT_SERVICES:
+                        prod = Product.search(
+                            [('name', '=', svc_name), ('type', '=', 'service')], limit=1)
+                        if prod:
+                            POLine.create({
+                                'order_id': po.id,
+                                'product_id': prod.id,
+                                'name': prod.display_name,
+                                'product_qty': 0.0,
+                                'price_unit': 0.0,
+                                'product_uom': prod.uom_po_id.id or prod.uom_id.id,
+                                'taxes_id': [(6, 0, [])],
+                            })
 
                 # Al crear la OC se construye automáticamente su bloque en el
                 # expediente y se pre-enlazan los archivos del bloque de solicitud.

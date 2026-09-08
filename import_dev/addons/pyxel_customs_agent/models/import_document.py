@@ -479,6 +479,10 @@ class PyxelImportDocument(models.Model):
         for d, r in resultados:
             d.write({'dm_confirmed': True})
             d._sync_dm_cost_lines()
+            # Auto-asignar apoderado si el usuario pertenece al grupo y el campo está vacío
+            proc = d.importation_id
+            if proc and not proc.en_customs_agent_id:
+                proc.en_customs_agent_id = self.env.user
         return {'type': 'ir.actions.client', 'tag': 'reload'}
 
     def action_dm_replace(self):

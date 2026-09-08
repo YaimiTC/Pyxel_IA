@@ -229,6 +229,7 @@
                                          apunta a TODAS las OC del proceso y no sirve para saberlo. -->
                                     <field name="purchase_order_id" readonly="1" optional="show"/>
                                     <field name="product_id" readonly="1"/>
+                                    <field name="uom_display" string="Unit of Measure" readonly="1"/>
                                     <field name="quantity"/>
                                 </tree>
                             </field>

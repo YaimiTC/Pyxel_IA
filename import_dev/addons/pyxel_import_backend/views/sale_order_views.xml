@@ -122,12 +122,13 @@
                 <field name="process_id"/>
                 <field name="order_type" string="Order Type"/>
                 <field name="provider_names" string="Providers"/>
+                <field name="purchase_order_refs" string="OC relacionadas"/>
                 <field name="invoice_names" string="Invoices"/>
                 <field name="is_third_party_contract" string="Is third party contract"/>
             </xpath>
-<!--            <xpath expr="//tree" position="attributes">-->
-<!--              <attribute name="default_group_by">partner_id,process_id,order_type</attribute>-->
-<!--           </xpath>-->
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="currency_name" string="Moneda"/>
+            </xpath>
         </field>
     </record>
 
@@ -141,12 +142,13 @@
                 <field name="process_id"/>
                 <field name="order_type" string="Order Type"/>
                 <field name="provider_names" string="Providers"/>
+                <field name="purchase_order_refs" string="OC relacionadas"/>
                 <field name="invoice_names" string="Invoices"/>
                 <field name="is_third_party_contract" string="Is third party contract"/>
             </xpath>
-<!--            <xpath expr="//tree" position="attributes">-->
-<!--              <attribute name="default_group_by">partner_id,process_id,order_type</attribute>-->
-<!--           </xpath>-->
+            <xpath expr="//field[@name='amount_total']" position="after">
+                <field name="currency_name" string="Moneda"/>
+            </xpath>
         </field>
     </record>
 
@@ -167,8 +169,7 @@
     </record>
 
     <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
-        <field name="context" eval="{'search_default_group_by_process_year': 1,'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>
-<!--        <field name="context" eval="{ 'search_default_customer': 1, 'search_default_group_by_process_id': 1, 'search_default_group_by_order_type': 1}"/>-->
+        <field name="context" eval="{}"/>
     </record>
 
 

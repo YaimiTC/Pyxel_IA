@@ -26,6 +26,8 @@
                     <field name="invoice_type"/>
                     <field name="importation_process_id"/>
                     <field name="container_names"/>
+                    <field name="sale_order_refs" string="OV origen"/>
+                    <field name="purchase_order_refs" string="OC relacionadas"/>
                  </xpath>
             </field>
         </record>

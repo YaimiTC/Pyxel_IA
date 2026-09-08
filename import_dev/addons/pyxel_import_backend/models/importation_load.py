@@ -823,15 +823,26 @@ class ImportationLoad(models.Model):
         _appt_dom = expression.AND([[
             ('extraction_date', '=', False),
             ('appointment_date', '!=', False),
+            ('appointment_date', '>=', today),
             ('appointment_date', '<', d3_plan),
         ], venta_domain])
         _vent_dom = expression.AND([[
             ('extraction_date', '=', False),
             ('is_ventanilla', '=', True),
             ('ventanilla_date', '!=', False),
+            ('ventanilla_date', '>=', today),
             ('ventanilla_date', '<', d3_plan),
         ], venta_domain])
         plan_ids = list(set(self.search(_appt_dom).ids) | set(self.search(_vent_dom).ids))
+
+        d0 = today
+        d1 = today + timedelta(days=1)
+        d2 = today + timedelta(days=2)
+
+        def _plan_dia(dia):
+            a = expression.AND([[('extraction_date','=',False),('appointment_date','=',dia)], venta_domain])
+            v = expression.AND([[('extraction_date','=',False),('is_ventanilla','=',True),('ventanilla_date','=',dia)], venta_domain])
+            return len(set(self.search(a).ids) | set(self.search(v).ids))
 
         kpis = {
             'en_mariel': self.search_count(expression.AND([in_port, venta_domain])),
@@ -845,6 +856,12 @@ class ImportationLoad(models.Model):
                 in_port, [('pre_appointment_date', '=', False)], venta_domain,
             ])),
             'plan_hoy': len(plan_ids),
+            'plan_d0': _plan_dia(d0),
+            'plan_d1': _plan_dia(d1),
+            'plan_d2': _plan_dia(d2),
+            'plan_d0_label': str(d0),
+            'plan_d1_label': str(d1),
+            'plan_d2_label': str(d2),
         }
 
         aging = {
@@ -906,8 +923,78 @@ class ImportationLoad(models.Model):
         # relacion con cuanto tiempo llevaban en el puerto.
         plan_records.sort(key=lambda r: (r['plan_fecha'] or '9999', -(r['days_in_tcm'] or 0)))
 
+        # Producto: solo los no-servicios (flete, seguro, etc. no van en la columna Producto)
+        if plan_ids:
+            self.env.cr.execute("""
+                SELECT ill.cargo_id AS load_id,
+                       STRING_AGG(DISTINCT pt.name->>'en_US', ', '
+                                  ORDER BY pt.name->>'en_US') AS prod_names
+                  FROM importation_load_line ill
+                  JOIN product_product pp ON pp.id = ill.product_id
+                  JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                 WHERE ill.cargo_id = ANY(%s) AND pt.type != 'service'
+                 GROUP BY 1
+            """, (plan_ids,))
+            _plan_prod_map = {r['load_id']: r['prod_names'] for r in self.env.cr.dictfetchall()}
+            for r in plan_records:
+                r['product_names'] = _plan_prod_map.get(r['id']) or r.get('product_names') or '—'
+
+        # Contenedores en el terminal: con arrival_date, sin extraction_date
+        em_ids = list(set(self.search(expression.AND([in_port, venta_domain]),
+                                      order='arrival_date asc', limit=300).ids))
+        if em_ids:
+            em_records_raw = self.search_read(
+                [('id', 'in', em_ids)],
+                ['name', 'bl_number', 'arrival_date', 'days_in_tcm',
+                 'customer_id', 'destination_id', 'provider_ids', 'product_names'],
+                order='arrival_date asc',
+            )
+            em_provider_ids_all = {pid for r in em_records_raw for pid in (r.get('provider_ids') or [])}
+            em_provider_names = {
+                p['id']: p['name']
+                for p in self.env['res.partner'].search_read(
+                    [('id', 'in', list(em_provider_ids_all))], ['name'])
+            } if em_provider_ids_all else {}
+            if em_ids:
+                self.env.cr.execute("""
+                    SELECT ill.cargo_id AS load_id,
+                           STRING_AGG(DISTINCT pt.name->>'en_US', ', '
+                                      ORDER BY pt.name->>'en_US') AS prod_names
+                      FROM importation_load_line ill
+                      JOIN product_product pp ON pp.id = ill.product_id
+                      JOIN product_template pt ON pt.id = pp.product_tmpl_id
+                     WHERE ill.cargo_id = ANY(%s) AND pt.type != 'service'
+                     GROUP BY 1
+                """, (em_ids,))
+                _em_prod_map = {r['load_id']: r['prod_names'] for r in self.env.cr.dictfetchall()}
+            else:
+                _em_prod_map = {}
+            en_mariel_records = []
+            for r in em_records_raw:
+                en_mariel_records.append({
+                    'id': r['id'],
+                    'name': r['name'],
+                    'bl_number': r.get('bl_number') or '',
+                    'arrival_date': str(r['arrival_date']) if r['arrival_date'] else '',
+                    'days_in_tcm': r.get('days_in_tcm') or 0,
+                    'customer': r['customer_id'][1] if r.get('customer_id') else '',
+                    'destination': r['destination_id'][1] if r.get('destination_id') else '',
+                    'providers': ', '.join(
+                        em_provider_names[pid]
+                        for pid in (r.get('provider_ids') or []) if pid in em_provider_names
+                    ),
+                    'product_names': _em_prod_map.get(r['id']) or r.get('product_names') or '—',
+                })
+        else:
+            en_mariel_records = []
+
         alertas = {
             'precita_vencida': self.search_count(expression.AND([
+                [('pre_appointment_date', '<', today), ('pre_appointment_date', '!=', False),
+                 ('appointment_date', '=', False), ('extraction_date', '=', False)],
+                venta_domain,
+            ])),
+            'cita_vencida': self.search_count(expression.AND([
                 [('appointment_date', '<', today), ('appointment_date', '!=', False), ('extraction_date', '=', False)],
                 venta_domain,
             ])),
@@ -924,7 +1011,7 @@ class ImportationLoad(models.Model):
             # tipo de contenedor): el producto real esta en la linea de
             # carga -> linea de OC -> producto. Se toma la primera linea de
             # cada contenedor, igual que en el resto del tablero.
-            assert campo_fecha in ("release_date", "extraction_date")
+            assert campo_fecha in ("release_date", "extraction_date", "arrival_date", "return_date")
             # f-string en vez de "% campo_fecha": asi el %% de venta_sql_il
             # (pensado para que psycopg2 lo colapse a % al sustituir el %s de
             # abajo) no se procesa dos veces -- el f-string no toca los
@@ -945,8 +1032,12 @@ class ImportationLoad(models.Model):
             """, (fecha,))
             return self.env.cr.dictfetchall()
 
+        fecha_arribo = ultima_fecha('arrival_date')
+        fecha_retorno = ultima_fecha('return_date')
         del_dia_hab = _del_dia("release_date", fecha_habilitacion)
         del_dia_ext = _del_dia("extraction_date", fecha_extraccion)
+        del_dia_arr = _del_dia("arrival_date", fecha_arribo)
+        del_dia_ret = _del_dia("return_date", fecha_retorno)
 
         def summarize_del_dia(records):
             """Cuenta por combustible y guarda QUÉ contenedores son cada cifra.
@@ -1015,6 +1106,8 @@ class ImportationLoad(models.Model):
             'alertas': alertas,
             'del_dia_hab': summarize_del_dia(del_dia_hab),
             'del_dia_ext': summarize_del_dia(del_dia_ext),
+            'del_dia_arr': summarize_del_dia(del_dia_arr),
+            'del_dia_ret': summarize_del_dia(del_dia_ret),
             'historico': historico,
             # La Terminal sincroniza una vez al dia: estas son las fechas
             # reales que usan 'extraidos_hoy', 'plan_hoy', del_dia_hab y
@@ -1023,6 +1116,9 @@ class ImportationLoad(models.Model):
             'fecha_cita': str(fecha_cita),
             'fecha_precita': str(fecha_precita),
             'fecha_habilitacion': str(fecha_habilitacion),
+            'fecha_arribo': str(fecha_arribo),
+            'fecha_retorno': str(fecha_retorno),
+            'en_mariel_records': en_mariel_records,
             'view_extraidos_id': self.env.ref('pyxel_import_backend.view_importation_load_tree_extraidos').id,
             **ext,
         }
@@ -1135,6 +1231,26 @@ class ImportationLoad(models.Model):
         # recorte al cliente para que lo escriba en la propia tarjeta.
         huerfanos_en_lista = sum(r['n'] for r in huerfanos_por_mes)
 
+        # Huérfanos no extraídos: sin importation_id Y sin extraction_date
+        cr.execute(f"""
+            SELECT TO_CHAR(il.arrival_date, 'YYYY-MM') AS mes,
+                   TO_CHAR(il.arrival_date, 'Mon YYYY') AS mes_label,
+                   COUNT(*) AS n
+            FROM importation_load il
+            WHERE il.importation_id IS NULL
+              AND il.extraction_date IS NULL
+              AND il.arrival_date IS NOT NULL
+              AND il.arrival_date >= DATE '{DESGLOSE_DESDE}'
+            {venta_sql_il_noparam}
+            GROUP BY 1, 2
+            ORDER BY 1
+        """)
+        huerfanos_no_extraidos_por_mes = [
+            {'mes': r['mes'], 'label': r['mes_label'], 'n': r['n']}
+            for r in cr.dictfetchall()
+        ]
+        huerfanos_no_extraidos_en_lista = sum(r['n'] for r in huerfanos_no_extraidos_por_mes)
+
         # ---- Extraídos y pendientes de extraer, por mes ----
         # Cada uno se agrupa por la fecha que le da sentido, y NO son la misma:
         #   extraído  -> por extraction_date, el mes en que salió del puerto
@@ -1159,8 +1275,10 @@ class ImportationLoad(models.Model):
                     for r in cr.dictfetchall()]
 
         extraidos_por_mes = _por_mes('extraction_date', '')
-        pendientes_por_mes = _por_mes(
-            'arrival_date', 'AND il.extraction_date IS NULL')
+        pendientes_por_mes = _por_mes('arrival_date', 'AND il.extraction_date IS NULL')
+        arribados_por_mes = _por_mes('arrival_date', '')
+        retornados_por_mes = _por_mes('return_date', '')
+        pendientes_retornar_por_mes = _por_mes('extraction_date', "AND il.state = 'to_return'")
 
         # ---- VENTA (customer_id.name empieza por "VENTA ENETEC") extraídos
         # y pendientes de extraer, por provincia y por transportista
@@ -1694,9 +1812,14 @@ class ImportationLoad(models.Model):
             'avance_reconciliacion': avance_reconciliacion,
             'huerfanos_por_mes': huerfanos_por_mes,
             'huerfanos_en_lista': huerfanos_en_lista,
+            'huerfanos_no_extraidos_por_mes': huerfanos_no_extraidos_por_mes,
+            'huerfanos_no_extraidos_en_lista': huerfanos_no_extraidos_en_lista,
             'desglose_desde': DESGLOSE_DESDE,
             'extraidos_por_mes': extraidos_por_mes,
             'pendientes_por_mes': pendientes_por_mes,
+            'arribados_por_mes': arribados_por_mes,
+            'retornados_por_mes': retornados_por_mes,
+            'pendientes_retornar_por_mes': pendientes_retornar_por_mes,
             'venta_enetec_extraidos_por_provincia': venta_enetec_extraidos_por_provincia,
             'venta_enetec_extraidos_por_transportista': venta_enetec_extraidos_por_transportista,
             'venta_enetec_pendientes_por_provincia': venta_enetec_pendientes_por_provincia,
@@ -1785,8 +1908,19 @@ class ImportationLoadLine(models.Model):
     # linea de compra asignada, y este campo la expone para poder verla y filtrar.
     purchase_order_id = fields.Many2one(related='purchase_order_line_id.order_id', string='OC',
                                         store=True, readonly=True)
+    # Columna informativa a la izquierda de la cantidad: en qué unidad viene
+    # esa cantidad. Para servicios se muestra 'Unidad' en vez de la UoM real.
+    uom_display = fields.Char(string='Unit of Measure', compute='_compute_uom_display', store=True)
     quantity = fields.Float(string='Allocated Amount', required=True)
     price = fields.Float(string='Price')
+
+    @api.depends('purchase_order_line_id.product_uom', 'product_id.type')
+    def _compute_uom_display(self):
+        for line in self:
+            if line.product_id and line.product_id.type == 'service':
+                line.uom_display = 'Unidad'
+            else:
+                line.uom_display = line.purchase_order_line_id.product_uom.name or ''
 
     # ---------- HELPERS ----------
 

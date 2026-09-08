@@ -55,8 +55,15 @@
                                 <div class="en-card">
                                     <h4>Documento</h4>
                                     <field name="attachment_id" invisible="1"/>
+                                    <field name="is_pdf_attachment" invisible="1"/>
                                     <field name="document_file" filename="document_filename"
-                                           widget="pdf_viewer" invisible="not attachment_id"/>
+                                           widget="pdf_viewer" invisible="not is_pdf_attachment"/>
+                                    <div invisible="not (attachment_id and not is_pdf_attachment)"
+                                         class="alert alert-info py-2 px-3 mb-2">
+                                        <i class="fa fa-file me-1"/>
+                                        <field name="document_filename" readonly="1" class="fw-bold"/>
+                                        — archivo subido correctamente (sin vista previa disponible).
+                                    </div>
                                     <div invisible="attachment_id" class="text-muted mb-2">
                                         Sin documento subido. Súbelo o tómale una foto:
                                         al guardarlo se evalúa con la IA.
