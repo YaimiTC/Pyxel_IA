@@ -1025,7 +1025,7 @@
                                 <span class="small fw-semibold text-warning">
                                     <i class="fa fa-unlink me-1"/>Totales · por mes de llegada
                                 </span>
-                                <span class="fw-bold text-warning"><t t-esc="state.data.huerfanos_en_lista"/></span>
+                                <span class="fw-bold text-warning"><t t-esc="state.data.avance_reconciliacion.sin_importacion"/></span>
                             </div>
                             <ul class="list-unstyled mb-0 small">
                                 <t t-foreach="state.data.huerfanos_por_mes" t-as="m" t-key="m.mes">
@@ -1037,9 +1037,6 @@
                                 </t>
                                 <li t-if="state.data.huerfanos_por_mes.length === 0" class="text-muted text-center py-2">Sin datos</li>
                             </ul>
-                            <div class="text-muted mt-1" style="font-size:11px;">
-                                Total sin importación: <t t-esc="state.data.avance_reconciliacion.sin_importacion"/>
-                            </div>
                         </div>
                     </div>
                 </div>

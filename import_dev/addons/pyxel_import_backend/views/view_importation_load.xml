@@ -138,8 +138,14 @@
                         <group string="Información general">
                             <field name="hide_cargo_type" invisible="1"/>
 
-                            <field name="name"/>
                             <field name="bl_number"/>
+                            <field name="adopt_orphan_id"
+                                   domain="[('bl_number', '=', bl_number), ('importation_id', '=', False)]"
+                                   string="Número de contenedor"
+                                   invisible="not bl_number or id"
+                                   options="{'no_create': True, 'no_open': True, 'no_quick_create': True}"/>
+                            <field name="name" string="Número de contenedor"
+                                   invisible="adopt_orphan_id and not id"/>
                             <field name="master_bl_number" readonly="1"/>
                             <field name="container_release_partner" readonly="1"/>
                             <field name="importation_id"/>
@@ -260,11 +266,29 @@
         </field>
     </record>
 
+    <!-- Vista de búsqueda -->
+    <record id="view_importation_load_search" model="ir.ui.view">
+        <field name="name">importation.load.search</field>
+        <field name="model">importation.load</field>
+        <field name="arch" type="xml">
+            <search string="Carga de importación">
+                <field name="name" string="Contenedor"/>
+                <field name="bl_number" string="BL / AWB"/>
+                <field name="supplier_invoice_number" string="Factura del Proveedor"
+                       filter_domain="['|', ('supplier_invoice_number', 'ilike', self), ('cargo_line_ids.purchase_order_line_id.order_id.partner_ref', 'ilike', self)]"/>
+                <field name="customer_id" string="Cliente"/>
+                <field name="packaging_type_id" string="Tipo de envase"/>
+                <field name="importation_id" string="Importación"/>
+            </search>
+        </field>
+    </record>
+
     <!-- Action and Menu -->
     <record id="action_importation_load" model="ir.actions.act_window">
         <field name="name">Importation Loads</field>
         <field name="res_model">importation.load</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_importation_load_search"/>
     </record>
 
     <record id="action_open_importation_wizard" model="ir.actions.server">

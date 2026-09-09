@@ -28,6 +28,15 @@ class PurchaseOrder(models.Model):
     evaluation_id = fields.Many2one('purchase.provider.evaluation', string='Evaluation')
     is_third_party_contract = fields.Boolean(string='Third-Party Contract')
 
+    def name_get(self):
+        result = []
+        for order in self:
+            name = order.name or ''
+            if order.partner_ref:
+                name = f"{name} ({order.partner_ref})"
+            result.append((order.id, name))
+        return result
+
     commercial_invoice = fields.Binary(string='Commercial Invoice')
     commercial_invoice_filename = fields.Char()
 
@@ -54,6 +63,8 @@ class PurchaseOrder(models.Model):
              "contratos ya cargados en su ficha de contacto (pestaña "
              "Importation); no se teclea el número aquí.")
 
+    supplier_invoice_date = fields.Date(string='Fecha Factura Proveedor')
+
     declaration = fields.Char(string='Declaración de Mercancía')
     declaration_date = fields.Date(string='Fecha de Declaración')
 
@@ -64,9 +75,10 @@ class PurchaseOrder(models.Model):
 
     # Mapa: campo binary en OC -> (document_key en pyxel.import.document, campo filename)
     _OC_DOC_BINARY_MAP = {
-        'commercial_invoice': ('factura_comercial', 'commercial_invoice_filename'),
-        'signed_offer':       ('oferta',            'signed_offer_filename'),
-        'packing_list':       ('lista_empaque',     'packing_list_filename'),
+        'commercial_invoice':  ('factura_comercial', 'commercial_invoice_filename'),
+        'signed_offer':        ('oferta',            'signed_offer_filename'),
+        'packing_list':        ('lista_empaque',     'packing_list_filename'),
+        'bl_awb_attachment':   ('bl_awb',            'bl_awb_attachment_filename'),
     }
 
     def write(self, vals):

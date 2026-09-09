@@ -34,13 +34,17 @@ class ImportationProcess(models.Model):
     )
     purchase_order_ids = fields.One2many('purchase.order', 'importation_id', string='Purchase Orders')
     purchase_order_count = fields.Integer(string='Purchase Order Count', compute='_compute_purchase_order_count')
-    bl_numbers = fields.Char(string='BL / AWB', compute='_compute_bl_numbers')
+    bl_numbers = fields.Char(string='BL / AWB', compute='_compute_bl_numbers', search='_search_bl_numbers')
 
     @api.depends('purchase_order_ids.bl_number')
     def _compute_bl_numbers(self):
         for rec in self:
             bls = sorted(set(b for b in rec.purchase_order_ids.mapped('bl_number') if b))
             rec.bl_numbers = ', '.join(bls) if bls else False
+
+    def _search_bl_numbers(self, operator, value):
+        pos = self.env['purchase.order'].search([('bl_number', operator, value), ('importation_id', '!=', False)])
+        return [('id', 'in', pos.mapped('importation_id').ids)]
     cost_line_ids = fields.One2many('importation.cost.line', 'importation_id', string='Additional Costs')
     total_cost = fields.Monetary(string='Total Cost', compute='_compute_total_cost')
     currency_id = fields.Many2one('res.currency', default=lambda self: self.env.company.currency_id.id)

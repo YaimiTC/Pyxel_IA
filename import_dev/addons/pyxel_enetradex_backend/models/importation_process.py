@@ -330,7 +330,7 @@ class ImportationProcess(models.Model):
                         'product_uom': p.uom_po_id.id or p.uom_id.id,
                         'taxes_id': [(6, 0, [])],
                     }) for p, q in goods]
-                    po = PO.create({
+                    po = PO.with_context(en_approval_creating_po=True).create({
                         'partner_id': rec.provider_id.id,
                         'customer_id': customer.id,
                         'importation_id': rec.id,

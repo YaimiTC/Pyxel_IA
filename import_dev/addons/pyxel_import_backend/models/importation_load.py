@@ -173,8 +173,15 @@ class ImportationLoad(models.Model):
 
     @api.onchange('importation_id')
     def _onchange_importation_id(self):
+        # Pre-fill stored related fields so OWL client has the correct values
+        # before save. Without this, the server returns different values after
+        # save and OWL marks the form dirty, forcing a second save.
+        if self.importation_id.import_type_id:
+            self.import_type_id = self.importation_id.import_type_id
         self._inverse_boolean_value()
         self._compute_show_transport()
+        if self.importation_id.customer_id:
+            self.customer_id = self.importation_id.customer_id
 
     @api.depends('import_type_id', 'importation_id', 'importation_id.import_type_id')
     def _inverse_boolean_value(self):
@@ -513,6 +520,17 @@ class ImportationLoad(models.Model):
     # proceso/OC vinculado (contenedor creado directo desde la Terminal, ver
     # wizard_import_tcm.py), se conserva el valor puesto manualmente/por el wizard.
     bl_number = fields.Char(string='BL / AWB', compute='_compute_bl_number', store=True, readonly=False)
+    adopt_orphan_id = fields.Many2one(
+        'importation.load',
+        string='Número de contenedor',
+        store=False,
+        help="Selecciona un contenedor ya registrado con este BL.",
+    )
+
+    @api.onchange('adopt_orphan_id')
+    def _onchange_adopt_orphan_id(self):
+        if self.adopt_orphan_id:
+            self.name = self.adopt_orphan_id.name
 
     @api.depends('cargo_line_ids')
     def _compute_total_cargo_line(self):

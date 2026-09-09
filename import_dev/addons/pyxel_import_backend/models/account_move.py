@@ -174,7 +174,7 @@ class AccountMove(models.Model):
         fob = 0.0
         if po:
             merchandise_lines = po.order_line.filtered(lambda l: l.product_id.detailed_type == 'product')
-            service_lines = po.order_line.filtered(lambda l: l.product_id.detailed_type == 'service')
+            service_lines = po.order_line.filtered(lambda l: l.product_id.detailed_type != 'product')
             products = merchandise_lines.mapped('product_id.display_name')
             fob = sum(merchandise_lines.mapped('price_subtotal'))
 
@@ -343,9 +343,9 @@ class AccountMove(models.Model):
         ])
         r += 1
 
-        if po:
+        if po and self.currency_id.name != 'CUP':
             merchandise_lines = po.order_line.filtered(lambda l: l.product_id.detailed_type == 'product')
-            service_lines = po.order_line.filtered(lambda l: l.product_id.detailed_type == 'service')
+            service_lines = po.order_line.filtered(lambda l: l.product_id.detailed_type != 'product')
             fob = sum(merchandise_lines.mapped('price_subtotal'))
 
             origin_ccy = po.currency_id.name or ''

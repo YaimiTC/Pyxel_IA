@@ -39,6 +39,11 @@
         <attribute name="domain">[('contact_type_id.type_of_contact', '=', 'Supplier'), ('is_accredited', '=', True)]</attribute>
       </xpath>
 
+      <!-- Fecha de la factura del proveedor, junto al número de factura -->
+      <xpath expr="//field[@name='partner_ref']" position="after">
+        <field name="supplier_invoice_date" string="Fecha Factura Proveedor"/>
+      </xpath>
+
        <xpath expr="//page[@name='purchase_delivery_invoice']//group[@name='other_info']" position="inside">
             <field name="customer_id"
                    domain="[('contact_type_id.type_of_contact', '=', 'Client'), ('is_accredited', '=', True)]"

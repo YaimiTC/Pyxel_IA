@@ -269,6 +269,8 @@
                 <field name="importer_id" string="Importadora"/>
                 <field name="comercial_id" string="Comercial"/>
                 <field name="bl_numbers" string="BL / AWB"/>
+                <field name="purchase_order_ids" string="Factura del Proveedor"
+                       filter_domain="[('purchase_order_ids.partner_ref', 'ilike', self)]"/>
                 <field name="stage_id" string="Etapa"/>
 
                 <filter name="mias" string="Mías"
