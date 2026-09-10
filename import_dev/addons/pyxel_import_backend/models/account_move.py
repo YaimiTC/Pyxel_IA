@@ -436,6 +436,412 @@ class AccountMove(models.Model):
         }
 
 
+    def action_export_etec_invoice_excel(self):
+        """Genera el Excel en formato ETEC con 3 hojas visibles:
+        tabla contenido / Hoja de Calculo / Factura."""
+        self.ensure_one()
+        if self.move_type not in ('out_invoice', 'out_refund'):
+            raise UserError(_("Esta descarga solo aplica a facturas de cliente."))
+
+        proc = self.importation_process_id
+        importer = proc.importer_id if proc else self.env['importation.importer']
+        block = self._get_comercial_invoice_block()
+        po = block.purchase_order_id if block else self.env['purchase.order']
+        if not po and proc:
+            for cl in proc.cost_line_ids:
+                match = cl.purchase_ids.filtered(
+                    lambda p: p.customer_id == self.partner_id.commercial_partner_id
+                              or p.customer_id == self.partner_id
+                )
+                if match:
+                    po = match[:1]
+                    break
+        if not po and proc:
+            po = self.env['purchase.order'].search(
+                [('importation_id', '=', proc.id)], limit=1
+            )
+
+        partner = self.partner_id.commercial_partner_id
+
+        # Contenedores vinculados a la OC específica vía sus líneas de carga
+        if po and proc:
+            containers = proc.load_tracking_ids.filtered(
+                lambda c: po in c.cargo_line_ids.mapped('purchase_order_id')
+            )
+        elif proc:
+            containers = proc.load_tracking_ids
+        else:
+            containers = self.env['importation.load']
+        loads = proc.load_tracking_ids if proc else self.env['importation.load']
+        first_load = containers[:1] or loads[:1]
+
+        merch_lines = po.order_line.filtered(
+            lambda l: l.product_id.detailed_type == 'product'
+        ) if po else self.env['purchase.order.line']
+        service_lines = po.order_line.filtered(
+            lambda l: l.product_id.detailed_type != 'product'
+        ) if po else self.env['purchase.order.line']
+        products = merch_lines.mapped('product_id.display_name')
+        fob_amount = sum(merch_lines.mapped('price_subtotal'))
+        cif_amount = po.amount_untaxed if po else 0.0
+        dm_number = self._get_dm_number(proc, po)
+
+        vessel = ', '.join(set(filter(None, containers.mapped('shipping_company')))) or ''
+        bl_numbers = ', '.join(set(filter(None, containers.mapped('bl_number')))) or ''
+        dest_names = ', '.join(set(filter(None, containers.mapped('destination_id.name')))) or ''
+        purchase_cond = ', '.join(set(filter(None, loads.mapped('purchase_condition')))) or ''
+        bl_date = (first_load.mbl_release_date.strftime('%d/%m/%Y')
+                   if first_load and first_load.mbl_release_date else '')
+        arrival_date = (first_load.arrival_date.strftime('%d/%m/%Y')
+                        if first_load and first_load.arrival_date else '')
+
+        # Tasa CUP/USD a la fecha de la factura
+        cup_rate = 24.0
+        try:
+            usd_cur = self.env['res.currency'].search([('name', '=', 'USD')], limit=1)
+            cup_cur = self.env['res.currency'].search([('name', '=', 'CUP')], limit=1)
+            if usd_cur and cup_cur:
+                converted = round(usd_cur._convert(
+                    1.0, cup_cur, self.company_id,
+                    self.invoice_date or fields.Date.today()
+                ), 2)
+                if converted > 1.0:
+                    cup_rate = converted
+        except Exception:
+            pass
+
+        invoice_lines = self.invoice_line_ids.filtered(
+            lambda l: l.display_type not in ('line_section', 'line_note')
+        )
+
+        output = io.BytesIO()
+        wb = xlsxwriter.Workbook(output, {'in_memory': True})
+
+        ft = wb.add_format({'bold': True, 'font_size': 12, 'align': 'center',
+                            'valign': 'vcenter', 'bg_color': '#BDD7EE', 'border': 1})
+        fh = wb.add_format({'bold': True, 'bg_color': '#D9E1F2', 'border': 1})
+        fl = wb.add_format({'bold': True, 'border': 1})
+        fv = wb.add_format({'border': 1, 'text_wrap': True})
+        fm = wb.add_format({'border': 1, 'num_format': '#,##0.00', 'align': 'right'})
+        fb = wb.add_format({'bold': True, 'border': 1, 'num_format': '#,##0.00',
+                            'align': 'right', 'bg_color': '#FCE4D6'})
+        flb = wb.add_format({'bold': True, 'border': 1, 'bg_color': '#FCE4D6'})
+        fr = wb.add_format({'align': 'right', 'bold': True})
+        fsig = wb.add_format({'top': 1})
+
+        # ── HOJA 1: tabla contenido ──────────────────────────────────────────
+        ws1 = wb.add_worksheet('tabla contenido')
+        ws1.set_column('A:A', 4)
+        ws1.set_column('B:B', 36)
+        ws1.set_column('C:C', 42)
+
+        r = 0
+        ws1.merge_range(r, 0, r, 2, 'DATOS DEL EMBARQUE', ft)
+        r += 1
+        embarque_rows = [
+            ('Tipo Operación', 'Importación'),
+            ('No. De Compra', po.name if po else ''),
+            ('No. De Contrato', po.client_contract_id.name if po and po.client_contract_id else ''),
+            ('Forma de Pago', po.payment_term_id.name if po else ''),
+            ('Proveedor / Cliente', (po.partner_id.name if po else '') + ' / ' + (partner.name or '')),
+            ('Condición de Entrega', purchase_cond),
+            ('Producto', ', '.join(products)),
+            ('Buque', vessel),
+            ('Fecha Bill of Lading (B/L)', bl_date),
+            ('No. Bill of Lading (B/L)', bl_numbers),
+            ('Puertos de Descarga', dest_names),
+            ('Puertos de Carga', proc.port.name if proc and proc.port else ''),
+            ('Usuario Final', proc.customer_id.name if proc and proc.customer_id else partner.name or ''),
+            ('Factura Proveedor', po.partner_ref if po else ''),
+            ('No. DM', dm_number),
+            ('Referencia ETEC', proc.name if proc else ''),
+            ('Fecha Descarga', arrival_date),
+        ]
+        for label, val in embarque_rows:
+            ws1.write(r, 1, label, fl)
+            ws1.write(r, 2, val or '', fv)
+            r += 1
+
+        r += 1
+        ws1.merge_range(r, 0, r, 2, 'TABLA DE CONTENIDO', ft)
+        r += 1
+        for num, desc in [
+            (1, 'Operación de Compra/Venta'),
+            (2, 'Solicitud de apertura de Carta de Crédito (Importación)'),
+            (3, 'Documentos de embarque y reportes de Supervisión'),
+            (4, 'Proforma de factura para DECLARACION MERCANCIA'),
+            (5, 'Declaración de Mercancías'),
+            (6, 'Hoja de cálculo'),
+            (7, 'Factura Comercial de Compra'),
+            (8, 'Factura Comercial de Venta'),
+        ]:
+            ws1.write(r, 0, num, fv)
+            ws1.merge_range(r, 1, r, 2, desc, fv)
+            r += 1
+
+        # ── HOJA 2: Hoja de Calculo ──────────────────────────────────────────
+        ws2 = wb.add_worksheet('Hoja de Calculo')
+        ws2.set_column('A:A', 36)
+        ws2.set_column('B:B', 14)
+        ws2.set_column('C:C', 14)
+        ws2.set_column('D:D', 18)
+        ws2.set_column('E:E', 18)
+
+        r = 0
+        ws2.write(r, 0, 'IMPORTACIÓN  X', fh)
+        ws2.write(r, 3, 'REF. FACT:', fl)
+        ws2.write(r, 4, proc.name if proc else '', fv)
+        r += 1
+        ws2.write(r, 3, 'FECHA:', fl)
+        ws2.write(r, 4,
+                  self.invoice_date.strftime('%d/%m/%Y') if self.invoice_date else '', fv)
+        r += 2
+
+        ws2.merge_range(r, 0, r, 4, 'DATOS DEL CONTRATO / DATOS DEL EMBARQUE', fh)
+        r += 1
+        contract_rows = [
+            ('NO. DE COMPRA:', po.name if po else '',
+             'BUQUE:', vessel),
+            ('Forma de Pago:', po.payment_term_id.name if po else '',
+             'CONDIC. ENTREGA:', purchase_cond),
+            ('SUMINISTRADOR:', po.partner_id.name if po else '',
+             'FECHA B/L:', bl_date),
+            ('PAIS ORIGEN:', proc.country_origin_id.name if proc and proc.country_origin_id else '',
+             'NO. BL:', bl_numbers),
+            ('Factura Proveedor:', po.partner_ref if po else '',
+             'PTO. CARGA:', proc.port.name if proc and proc.port else ''),
+            ('PRODUCTO:', ', '.join(products),
+             'No. DM:', dm_number),
+            ('USUARIO FINAL:', proc.customer_id.name if proc and proc.customer_id else partner.name or '',
+             'PTO. DESCARGA:', dest_names),
+            ('FECHA DESCARGA:', arrival_date, '', ''),
+        ]
+        for ll, lv, rl, rv in contract_rows:
+            ws2.write(r, 0, ll, fl)
+            ws2.write(r, 1, lv or '', fv)
+            ws2.write(r, 3, rl, fl)
+            ws2.write(r, 4, rv or '', fv)
+            r += 1
+
+        r += 1
+        # Quantities
+        ws2.merge_range(r, 0, r, 4, 'CANTIDADES', fh)
+        r += 1
+        for hdr in ['PRODUCTO', 'CANTIDAD', 'UM', 'PRECIO UNIT (USD)', 'IMPORTE (USD)']:
+            ws2.write(r, ['PRODUCTO', 'CANTIDAD', 'UM',
+                          'PRECIO UNIT (USD)', 'IMPORTE (USD)'].index(hdr), hdr, fl)
+        r += 1
+        for ml in merch_lines:
+            ws2.write(r, 0, ml.product_id.display_name or '', fv)
+            ws2.write_number(r, 1, ml.product_uom_qty, fm)
+            ws2.write(r, 2, ml.product_uom.name or '', fv)
+            ws2.write_number(r, 3, ml.price_unit, fm)
+            ws2.write_number(r, 4, ml.price_subtotal, fm)
+            r += 1
+
+        r += 1
+        ws2.merge_range(r, 0, r, 4, 'DETERMINACIÓN DEL COSTO EXTERNO', fh)
+        r += 1
+        ws2.write(r, 0, 'Concepto', fl)
+        ws2.write(r, 3, f'IMPORTE (USD)', fl)
+        ws2.write(r, 4, f'IMPORTE (CUP)  rate={cup_rate}', fl)
+        r += 1
+
+        ws2.write(r, 0, 'VALOR FOB', fl)
+        ws2.write_number(r, 3, fob_amount, fm)
+        ws2.write_number(r, 4, fob_amount * cup_rate, fm)
+        r += 1
+
+        for sl in service_lines:
+            ws2.write(r, 0, sl.product_id.display_name or sl.name or '', fl)
+            ws2.write_number(r, 3, sl.price_subtotal, fm)
+            ws2.write_number(r, 4, sl.price_subtotal * cup_rate, fm)
+            r += 1
+
+        ws2.write(r, 0, 'VALOR CIF', flb)
+        ws2.write_number(r, 3, cif_amount, fb)
+        ws2.write_number(r, 4, cif_amount * cup_rate, fb)
+        r += 2
+
+        ws2.merge_range(r, 0, r, 4, 'COSTOS DE DESTINO (FACTURA)', fh)
+        r += 1
+        ws2.write(r, 0, 'Concepto', fl)
+        ws2.write(r, 3, 'IMPORTE (USD)', fl)
+        ws2.write(r, 4, 'IMPORTE (CUP)', fl)
+        r += 1
+
+        total_dest_usd = 0.0
+        total_dest_cup = 0.0
+        for il in invoice_lines:
+            if self.currency_id and self.currency_id.name == 'CUP':
+                il_cup = il.price_subtotal
+                il_usd = (il.price_subtotal / cup_rate) if cup_rate else 0.0
+            else:
+                il_usd = il.price_subtotal
+                il_cup = il.price_subtotal * cup_rate
+            ws2.write(r, 0, il.name or il.product_id.display_name or '', fv)
+            ws2.write_number(r, 3, il_usd, fm)
+            ws2.write_number(r, 4, il_cup, fm)
+            total_dest_usd += il_usd
+            total_dest_cup += il_cup
+            r += 1
+
+        ws2.write(r, 0, 'TOTAL GENERAL', flb)
+        ws2.write_number(r, 3, cif_amount + total_dest_usd, fb)
+        ws2.write_number(r, 4, cif_amount * cup_rate + total_dest_cup, fb)
+        r += 1
+
+        # ── HOJA 3: Factura. ─────────────────────────────────────────────────
+        ws3 = wb.add_worksheet('Factura.')
+        ws3.set_column('A:A', 42)
+        ws3.set_column('B:B', 12)
+        ws3.set_column('C:C', 18)
+        ws3.set_column('D:D', 18)
+
+        r = 0
+        logo_rows = 0
+        if importer and importer.logo:
+            try:
+                ws3.insert_image(r, 0, 'logo.png', {
+                    'image_data': io.BytesIO(base64.b64decode(importer.logo)),
+                    'x_scale': 0.5, 'y_scale': 0.5,
+                })
+                logo_rows = 4
+            except Exception:
+                pass
+
+        lh = 0
+        if importer:
+            ws3.merge_range(lh, 2, lh, 3, importer.name or '', fr)
+            lh += 1
+            for lbl, val in [
+                ('REEUP:', importer.registro_comercial),
+                ('DIRECCIÓN:', importer.street),
+                ('NIT:', importer.vat),
+                ('Cuenta:', importer.bank_account_cup),
+            ]:
+                ws3.write(lh, 2, lbl, fl)
+                ws3.write(lh, 3, val or '', fv)
+                lh += 1
+
+        r = max(logo_rows, lh) + 1
+        ws3.merge_range(r, 0, r, 3, 'FACTURA COMERCIAL', ft)
+        r += 1
+        ws3.write(r, 0, 'No.:', fl)
+        ws3.write(r, 1, self.name or '', fv)
+        ws3.write(r, 2, 'Fecha:', fl)
+        ws3.write(r, 3,
+                  self.invoice_date.strftime('%d/%m/%Y') if self.invoice_date else '', fv)
+        r += 2
+
+        ws3.merge_range(r, 0, r, 3, 'DATOS DEL CLIENTE', fh)
+        r += 1
+        for lbl, val in [
+            ('Nombre:', partner.name or ''),
+            ('NIT:', getattr(partner, 'vat', '') or ''),
+            ('REEUP:', getattr(partner, 'registro_comercial', '') or ''),
+            ('Dirección:', getattr(partner, 'street', '') or ''),
+        ]:
+            ws3.write(r, 0, lbl, fl)
+            ws3.merge_range(r, 1, r, 3, val, fv)
+            r += 1
+        r += 1
+
+        ws3.merge_range(r, 0, r, 3, 'REFERENCIA DE LA IMPORTACIÓN', fh)
+        r += 1
+        for lbl, val in [
+            ('Proveedor:', po.partner_id.name if po else ''),
+            ('No. DM:', dm_number),
+            ('Buque:', vessel),
+            ('Producto:', ', '.join(products)),
+            ('BL:', bl_numbers),
+            ('Contenedores:', ', '.join(containers.mapped('name') if containers else [])),
+            ('Factura Proveedor:', po.partner_ref if po else ''),
+        ]:
+            ws3.write(r, 0, lbl, fl)
+            ws3.merge_range(r, 1, r, 3, val or '', fv)
+            r += 1
+        r += 1
+
+        # Mercancía (CIF)
+        ws3.merge_range(r, 0, r, 3, 'VALOR MERCANCÍA Y COSTOS', fh)
+        r += 1
+        ws3.write(r, 0, 'Concepto', fl)
+        ws3.write(r, 1, 'Moneda', fl)
+        ws3.write(r, 2, 'Importe USD', fl)
+        ws3.write(r, 3, 'Importe CUP', fl)
+        r += 1
+
+        po_ccy = po.currency_id.name if po and po.currency_id else 'USD'
+        ws3.write(r, 0, 'VALOR MERCANCÍA (CIF)', fl)
+        ws3.write(r, 1, po_ccy, fv)
+        ws3.write_number(r, 2, cif_amount, fm)
+        ws3.write_number(r, 3, cif_amount * cup_rate, fm)
+        r += 1
+
+        grand_usd = cif_amount
+        grand_cup = cif_amount * cup_rate
+
+        for il in invoice_lines:
+            if self.currency_id and self.currency_id.name == 'CUP':
+                il_cup = il.price_subtotal
+                il_usd = (il.price_subtotal / cup_rate) if cup_rate else 0.0
+            else:
+                il_usd = il.price_subtotal
+                il_cup = il.price_subtotal * cup_rate
+            ws3.write(r, 0, il.name or il.product_id.display_name or '', fv)
+            ws3.write(r, 1, self.currency_id.name if self.currency_id else '', fv)
+            ws3.write_number(r, 2, il_usd, fm)
+            ws3.write_number(r, 3, il_cup, fm)
+            grand_usd += il_usd
+            grand_cup += il_cup
+            r += 1
+        r += 1
+
+        ws3.write(r, 0, 'TOTAL EN USD (FACTURA DEL PROVEEDOR)', flb)
+        ws3.write_number(r, 2, cif_amount, fb)
+        r += 1
+        ws3.write(r, 0, 'TOTAL A PAGAR EN MN', flb)
+        ws3.write_number(r, 3, grand_cup, fb)
+        r += 2
+
+        obs = 'FACTURA: %s  BL/ %s\nCONTENEDORES: %s' % (
+            po.partner_ref or '' if po else '',
+            bl_numbers,
+            '; '.join(containers.mapped('name') if containers else []),
+        )
+        ws3.write(r, 0, 'OBSERVACIONES:', fl)
+        r += 1
+        ws3.merge_range(r, 0, r + 2, 3, obs, fv)
+        r += 4
+
+        invoicing_user = (self.invoice_user_id or self.create_uid).name or ''
+        ws3.write(r, 2, 'FACTURADO POR:', fl)
+        r += 2
+        ws3.write(r, 2, invoicing_user, fsig)
+        r += 1
+        ws3.write(r, 2, 'Especialista Comercial', fv)
+
+        wb.close()
+        output.seek(0)
+        data = base64.b64encode(output.read())
+
+        filename = ('Factura_ETEC_%s.xlsx' % (self.name or self.id)).replace('/', '_')
+        attachment = self.env['ir.attachment'].create({
+            'name': filename,
+            'datas': data,
+            'res_model': 'account.move',
+            'res_id': self.id,
+            'type': 'binary',
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        })
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f"/web/content/{attachment.id}?download=true",
+            'target': 'self',
+        }
+
+
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"
 

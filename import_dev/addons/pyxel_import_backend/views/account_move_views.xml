@@ -10,7 +10,12 @@
                     <field name="importation_process_id" invisible="1"/>
                     <button name="action_export_comercial_invoice_excel"
                             type="object"
-                            string="Descargar Factura Comercial (Excel)"
+                            string="Fact. Comercial"
+                            class="btn-secondary"
+                            invisible="move_type not in ('out_invoice', 'out_refund') or not importation_process_id"/>
+                    <button name="action_export_etec_invoice_excel"
+                            type="object"
+                            string="Fact. ETEC"
                             class="btn-secondary"
                             invisible="move_type not in ('out_invoice', 'out_refund') or not importation_process_id"/>
                 </xpath>

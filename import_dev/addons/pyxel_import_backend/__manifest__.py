@@ -57,6 +57,7 @@
         "views/sale_order_views.xml",
         "views/purchase_order_view.xml",
         "views/view_importation_cost_wizard.xml",
+        "views/view_dump_oc_costs_wizard.xml",
         "views/account_move_views.xml",
         "views/wizard_import_tcm_view.xml",
         "views/view_deposit_sync_log.xml",

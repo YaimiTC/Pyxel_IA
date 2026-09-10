@@ -9,6 +9,7 @@ from .import wizard_average_container
 from .import po_line_import_wizard
 from .import import_container_billing_wizard
 from .import so_line_import_wizard
+from .import wizard_dump_oc_costs
 
 
 

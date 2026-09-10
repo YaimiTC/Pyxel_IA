@@ -100,6 +100,8 @@ class ImportationProcess(models.Model):
 
     purchase_condition_number = fields.Char(string='Number/Reference by Condition')
 
+    is_for_sale = fields.Boolean(string='Para la venta', default=False)
+
     is_third_party_contract = fields.Boolean(
         string='Third-Party Contract',
         compute='_compute_is_third_party_contract',
@@ -334,6 +336,20 @@ class ImportationProcess(models.Model):
             'context': {}
         }
 
+    def action_dump_oc_costs(self):
+        self.ensure_one()
+        wizard = self.env['importation.dump.oc.costs.wizard'].create({
+            'importation_id': self.id,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Volcar costos de OC',
+            'res_model': 'importation.dump.oc.costs.wizard',
+            'res_id': wizard.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
     @api.depends('cost_line_ids.amount')
     def _compute_total_cost(self):
         for rec in self:
@@ -406,6 +422,15 @@ class ImportationProcess(models.Model):
                         })
 
         res = super().write(vals)
+
+        if 'is_for_sale' in vals:
+            for rec in self:
+                rec.purchase_order_ids.with_context(_is_for_sale_propagating=True).write(
+                    {'is_for_sale': vals['is_for_sale']}
+                )
+                rec.load_tracking_ids.with_context(_is_for_sale_propagating=True).write(
+                    {'is_for_sale': vals['is_for_sale']}
+                )
 
         # # Después de guardar, hacer validación para enviar alerta y mensajes (sin modificar registros)
         # for record in self:
@@ -682,7 +707,7 @@ class ImportationCostLine(models.Model):
         ('fixed', 'Fixed Amount per Order'),
         ('percentage', 'Percentage on Order'),
     ], string='Distribution Type', required=True)
-    currency_id = fields.Many2one('res.currency', related='importation_id.currency_id', readonly=True)
+    currency_id = fields.Many2one('res.currency', string='Moneda')
     purchase_ids = fields.Many2many('purchase.order', string='Purchase Orders Applied',
                                     domain="[('id', 'in', parent.purchase_order_ids)]")
 

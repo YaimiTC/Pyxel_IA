@@ -26,6 +26,9 @@
                                     <field name="purchase_condition_number"/>
                                 </div>
                                 <div>
+                                    <field name="is_for_sale"/>
+                                </div>
+                                <div>
                                     <strong>Days in the stage:</strong>
                                     <field name="days_in_stage"/>
                                 </div>
@@ -61,6 +64,7 @@
                 <field name="bl_numbers" optional="show"/>
                 <field name="import_type_id" optional="show"/>
                 <field name="is_third_party_contract" optional="hide"/>
+                <field name="is_for_sale"/>
                 <field name="purchase_order_count" optional="show"/>
                 <field name="sale_order_count" optional="hide"/>
                 <field name="invoice_count" optional="hide"/>
@@ -150,6 +154,7 @@
                             <field name="port" invisible="use_port == False" domain="filtered_port"/>
                             <field name="airport" invisible="use_airport == False" domain="filtered_airport"/>
                             <field name="state" readonly="1"/>
+                            <field name="is_for_sale"/>
                         </group>
 
                         <group name="date_group">
@@ -216,6 +221,11 @@
                         </page>
 
                         <page string="Import costs" name="import_costs">
+                            <div class="mb-2">
+                                <button name="action_dump_oc_costs" type="object"
+                                        string="Volcar costos de OC"
+                                        class="btn btn-secondary"/>
+                            </div>
                             <field name="cost_line_ids">
                                 <tree editable="top" create="true" edit="true">
                                     <field name="product_id"
@@ -280,6 +290,8 @@
                 <separator/>
                 <filter name="sin_cerrar" string="Sin cerrar"
                         domain="[('date_import_closed', '=', False)]"/>
+                <filter name="para_la_venta" string="Para la venta"
+                        domain="[('is_for_sale', '=', True)]"/>
                 <separator/>
                 <filter name="arribo" string="Arribo" date="estimated_start_date"/>
 
@@ -305,5 +317,17 @@
         <menuitem id="menu_importation_solicitud" sequence="1" name="Imports" action="action_importation_process"/>
     </menuitem>
 
+
+
+    <record id="view_importation_process_form_is_for_sale" model="ir.ui.view">
+        <field name="name">importation.process.form.is_for_sale</field>
+        <field name="model">importation.process</field>
+        <field name="inherit_id" ref="view_importation_process_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="is_for_sale"/>
+            </xpath>
+        </field>
+    </record>
 
 </odoo>

@@ -9,6 +9,9 @@
       <xpath expr="//tree/field[@name='name']" position="after">
         <field name="evaluation_id" />
       </xpath>
+      <xpath expr="//tree/field[last()]" position="after">
+        <field name="is_for_sale"/>
+      </xpath>
     </field>
   </record>
 
@@ -50,6 +53,7 @@
                    help="Cliente al que corresponde esta OC, cuando el proceso de importación tiene varios clientes."/>
             <field name="client_contract_id"/>
             <field name="is_third_party_contract"/>
+            <field name="is_for_sale"/>
             <field name="commercial_invoice" filename="commercial_invoice_filename"/>
             <field name="signed_offer" filename="signed_offer_filename"/>
             <field name="packing_list" filename="packing_list_filename" string="Packing List"/>
@@ -74,4 +78,18 @@
         </xpath>
     </field>
   </record>
+
+  <record id="purchase_order_search_inherit_is_for_sale" model="ir.ui.view">
+    <field name="name">purchase.order.search.inherit.is_for_sale</field>
+    <field name="model">purchase.order</field>
+    <field name="inherit_id" ref="purchase.purchase_order_search"/>
+    <field name="arch" type="xml">
+      <xpath expr="//search/filter[last()]" position="after">
+        <separator/>
+        <filter name="para_la_venta" string="Para la venta"
+                domain="[('is_for_sale', '=', True)]"/>
+      </xpath>
+    </field>
+  </record>
+
 </odoo>

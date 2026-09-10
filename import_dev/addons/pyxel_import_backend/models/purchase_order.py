@@ -28,6 +28,16 @@ class PurchaseOrder(models.Model):
     evaluation_id = fields.Many2one('purchase.provider.evaluation', string='Evaluation')
     is_third_party_contract = fields.Boolean(string='Third-Party Contract')
 
+    is_for_sale = fields.Boolean(string='Para la venta', default=False)
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for rec in records:
+            if rec.importation_id and rec.importation_id.is_for_sale and not rec.is_for_sale:
+                rec.is_for_sale = True
+        return records
+
     def name_get(self):
         result = []
         for order in self:
@@ -122,6 +132,13 @@ class PurchaseOrder(models.Model):
                         if doc.attachment_id:
                             doc.attachment_id.unlink()
                             doc.write({'attachment_id': False, 'upload_date': False})
+        if vals.get('is_for_sale') and not self.env.context.get('_is_for_sale_propagating'):
+            for po in self:
+                if po.importation_id:
+                    containers = po.importation_id.load_tracking_ids.filtered(
+                        lambda c: po in c.cargo_line_ids.mapped('purchase_order_id')
+                    )
+                    containers.with_context(_is_for_sale_propagating=True).write({'is_for_sale': True})
         return res
 
     def unlink(self):

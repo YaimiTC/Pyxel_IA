@@ -19,6 +19,7 @@
                 <field name="supplier_invoice_number" optional="show"/>
                 <field name="importation_id"/>
                 <field name="purchase_condition" optional="show"/>
+                <field name="is_for_sale"/>
                 <field name="days_in_tcm"/>
                 <field name="days_extracted"/>
                 <field name="create_uid" optional="show"/>
@@ -212,6 +213,7 @@
                             <field name="bulk" invisible="hide_bulk == True"/>
                             <field name="supplier_invoice_number"/>
                             <field name="opening_date" invisible="hide_opening_date"/>
+                            <field name="is_for_sale"/>
                             <field name="is_ventanilla"/>
                             <field name="ventanilla_date" invisible="not is_ventanilla" required="is_ventanilla"/>
                             <field name="state" readonly="1"/>
@@ -279,6 +281,8 @@
                 <field name="customer_id" string="Cliente"/>
                 <field name="packaging_type_id" string="Tipo de envase"/>
                 <field name="importation_id" string="Importación"/>
+                <filter name="para_la_venta" string="Para la venta"
+                        domain="[('is_for_sale', '=', True)]"/>
             </search>
         </field>
     </record>

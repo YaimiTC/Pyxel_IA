@@ -65,6 +65,8 @@ class ImportationLoad(models.Model):
     importation_id = fields.Many2one('importation.process', string='Import')
     purchase_condition = fields.Selection(related='importation_id.purchase_condition', string='Purchase Condition',
                                           readonly=True)
+    is_for_sale = fields.Boolean(string='Para la venta', default=False)
+
     import_type_id = fields.Many2one(comodel_name='import.type',
                                               related='importation_id.import_type_id', string='IIT', store=True)
 
@@ -182,6 +184,8 @@ class ImportationLoad(models.Model):
         self._compute_show_transport()
         if self.importation_id.customer_id:
             self.customer_id = self.importation_id.customer_id
+        if self.importation_id.is_for_sale:
+            self.is_for_sale = True
 
     @api.depends('import_type_id', 'importation_id', 'importation_id.import_type_id')
     def _inverse_boolean_value(self):
@@ -703,6 +707,8 @@ class ImportationLoad(models.Model):
 
         if res is None:
             res = super().create(vals)
+        if res.importation_id and res.importation_id.is_for_sale and not vals.get('is_for_sale'):
+            res.is_for_sale = True
         # Si se trata del primer contenedor de esa importación
         if res.importation_id and len(res.importation_id.load_tracking_ids) == 1:
             transit_stage = self.env['importation.stage'].search([('name', '=', 'EN TRANSITO A PUERTO DE DESTINO')],
